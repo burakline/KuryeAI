@@ -3,64 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI | Geleceğin Lojistiği</title>
+    <title>KuryeAI | Akıllı Teslimat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #0f172a; overflow-x: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .neon-text { text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee; }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        
+        body { background-color: #0f172a; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .neon-text { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px #f97316, 0 0 20px #f97316; }
+        .slogan-text { letter-spacing: 0.2em; text-transform: uppercase; color: #94a3b8; font-weight: 300; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .hero-gradient { background: radial-gradient(circle at center, rgba(249, 115, 22, 0.15) 0%, transparent 70%); }
     </style>
 </head>
-<body class="text-slate-200">
+<body class="text-white min-h-screen flex flex-col items-center justify-center relative px-6">
 
-    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px]"></div>
-    </div>
+    <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
 
-    <div class="relative z-10 min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        
-        <div class="mb-8 animate-float">
-            <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter text-white neon-text">
-                KURYE<span class="text-cyan-400">AI</span>
-            </h1>
-            <p class="mt-4 text-slate-400 tracking-widest uppercase text-sm font-light">Yapay Zeka Destekli Teslimat Ağı</p>
+    <div class="z-10 text-center space-y-8 max-w-2xl">
+        <div class="space-y-2 animate-bounce-slow">
+            <h1 class="text-6xl md:text-8xl font-bold neon-text text-orange-500">KuryeAI</h1>
+            <p class="slogan-text text-sm md:text-base animate-pulse">Akıllı Teslimat.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-            
-            <button onclick="window.location.href='courier.html'" class="glass p-8 rounded-3xl hover:bg-cyan-500/10 transition-all group text-left">
-                <div class="flex items-center justify-between mb-4">
-                    <i class="fa-solid fa-motorcycle text-4xl text-cyan-400"></i>
-                    <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Kurye Paneli</h3>
-                <p class="text-slate-400 text-sm">Vardiyanı başlat, siparişleri takip et ve kazancını yönet.</p>
+        <p class="text-slate-400 text-lg md:text-xl font-light">
+            Lojistikte yapay zeka dönemi başladı. Siparişleri akıllıca yönetin, kuryeleri anlık takip edin.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8">
+            <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500 hover:text-white transition-all duration-300 p-6 rounded-3xl flex flex-col items-center gap-3 group">
+                <i class="fa-solid fa-store text-3xl text-orange-500 group-hover:text-white"></i>
+                <span class="font-semibold text-lg">Restoran Paneli</span>
+                <span class="text-xs text-slate-500 group-hover:text-orange-100 italic">Sipariş Oluştur</span>
             </button>
 
-            <button onclick="window.location.href='restaurant.html'" class="glass p-8 rounded-3xl hover:bg-orange-500/10 transition-all group text-left">
-                <div class="flex items-center justify-between mb-4">
-                    <i class="fa-solid fa-utensils text-4xl text-orange-400"></i>
-                    <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-orange-400 transition-colors"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Restoran Paneli</h3>
-                <p class="text-slate-400 text-sm">Yeni sipariş oluştur, kuryeleri canlı izle ve rapor al.</p>
+            <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500 hover:text-white transition-all duration-300 p-6 rounded-3xl flex flex-col items-center gap-3 group">
+                <i class="fa-solid fa-motorcycle text-3xl text-cyan-500 group-hover:text-white"></i>
+                <span class="font-semibold text-lg">Kurye Paneli</span>
+                <span class="text-xs text-slate-500 group-hover:text-cyan-100 italic">İşleri Yönet</span>
             </button>
-
         </div>
 
-        <div class="mt-12 text-slate-500 text-[10px] uppercase tracking-[0.3em]">
-            <a href="admin.html" class="hover:text-cyan-400 transition-colors">Sistem Yönetimi</a>
+        <div class="pt-12 flex justify-center gap-8 text-slate-500 text-sm">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-orange-500"></i>
+                <span>Gerçek Zamanlı</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-cyan-500"></i>
+                <span>Güvenli Altyapı</span>
+            </div>
         </div>
-
     </div>
-
-    <footer class="fixed bottom-6 text-center w-full text-slate-600 text-[10px]">
-        © 2026 KuryeAI Technologies | Tüm Hakları Saklıdır.
-    </footer>
 
 </body>
 </html>

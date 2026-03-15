@@ -1,23 +1,72 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Admin Panel</title>
-<link rel="stylesheet" href="../css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Canlı Takip - KuryeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>#adminMap { height: 400px; border-radius: 1rem; z-index: 1; }</style>
 </head>
-<body>
+<body class="bg-slate-900 text-white font-sans">
+    <nav class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-cyan-400">KuryeAI <span class="text-white font-light text-sm">| Admin</span></h1>
+            <span class="flex items-center gap-1 text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/50">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> SİSTEM CANLI
+            </span>
+        </div>
+    </nav>
 
-<h1>Admin Panel</h1>
+    <div class="p-4 space-y-6">
+        <div class="bg-slate-800 p-2 rounded-2xl border border-slate-700 shadow-2xl">
+            <div id="adminMap"></div>
+        </div>
 
-<ul>
-<li>Canlı Kurye Haritası</li>
-<li>Restoran Yönetimi</li>
-<li>Raporlar</li>
-<li>Duyurular</li>
-</ul>
+        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+            <h2 class="text-cyan-400 font-bold mb-4 flex items-center gap-2">📍 Aktif Kuryeler</h2>
+            <div id="courierList" class="space-y-2 text-sm text-slate-400">
+                Kurye bekleniyor...
+            </div>
+        </div>
+    </div>
 
-<footer>Developed by BURAKLINE 2026</footer>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script type="module">
+        import { db } from "./js/firebase.js";
+        import { onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+        const adminMap = L.map('adminMap').setView([39.92, 32.85], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(adminMap);
+        
+        let markers = {};
+
+        // CANLI VERİ DİNLEME: Firebase'den konumları anlık çek
+        onSnapshot(collection(db, "activeLocations"), (snapshot) => {
+            const listDiv = document.getElementById("courierList");
+            listDiv.innerHTML = "";
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const id = doc.id;
+                const pos = [data.lat, data.lng];
+
+                // Haritada Marker Güncelle veya Oluştur
+                if (markers[id]) {
+                    markers[id].setLatLng(pos);
+                } else {
+                    markers[id] = L.marker(pos).addTo(adminMap)
+                        .bindPopup(`<b>${data.name}</b>`);
+                }
+
+                // Listeyi Güncelle
+                listDiv.innerHTML += `
+                    <div class="flex justify-between items-center border-b border-slate-700 py-2">
+                        <span>${data.name}</span>
+                        <span class="text-[10px] text-cyan-500">Aktif</span>
+                    </div>`;
+            });
+        });
+    </script>
 </body>
 </html>

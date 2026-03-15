@@ -6,45 +6,59 @@
     <title>Admin Canlı Takip - KuryeAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-    <style>#adminMap { height: 400px; border-radius: 1rem; z-index: 1; }</style>
+    <style>#adminMap { height: 450px; border-radius: 1rem; z-index: 1; background: #1e293b; }</style>
 </head>
-<body class="bg-slate-900 text-white font-sans">
-    <nav class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg">
+<body class="bg-slate-900 text-white font-sans pb-10">
+    
+    <nav class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold text-cyan-400">KuryeAI <span class="text-white font-light text-sm">| Admin</span></h1>
-            <span class="flex items-center gap-1 text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/50">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> SİSTEM CANLI
-            </span>
+            <div class="flex items-center gap-3">
+                 <button onclick="window.location.href='index.html'" class="text-xs bg-slate-700 px-3 py-1 rounded-lg border border-slate-600">Çıkış</button>
+                 <span class="flex items-center gap-1 text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/50">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> SİSTEM CANLI
+                </span>
+            </div>
         </div>
     </nav>
 
-    <div class="p-4 space-y-6">
+    <div class="p-4 space-y-6 max-w-4xl mx-auto">
         <div class="bg-slate-800 p-2 rounded-2xl border border-slate-700 shadow-2xl">
             <div id="adminMap"></div>
         </div>
 
         <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
-            <h2 class="text-cyan-400 font-bold mb-4 flex items-center gap-2">📍 Aktif Kuryeler</h2>
-            <div id="courierList" class="space-y-2 text-sm text-slate-400">
-                Kurye bekleniyor...
+            <h2 class="text-cyan-400 font-bold mb-4 flex items-center gap-2 italic">
+                📍 Sahadaki Aktif Kuryeler
+            </h2>
+            <div id="courierList" class="space-y-3">
+                <p class="text-slate-500 text-sm italic">Kurye verisi bekleniyor...</p>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
     <script type="module">
-        import { db } from "./js/firebase.js";
+        // Firebase Bağlantısı - Dosya yolunu ana dizine göre ayarladım
+        import { db } from "./firebase.js";
         import { onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-        const adminMap = L.map('adminMap').setView([39.92, 32.85], 13);
+        // Admin Harita Kurulumu (Ankara Merkezli)
+        const adminMap = L.map('adminMap').setView([39.9334, 32.8597], 12);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(adminMap);
         
         let markers = {};
 
-        // CANLI VERİ DİNLEME: Firebase'den konumları anlık çek
+        // CANLI VERİ DİNLEME: Kurye konumlarını anlık yakala
         onSnapshot(collection(db, "activeLocations"), (snapshot) => {
             const listDiv = document.getElementById("courierList");
-            listDiv.innerHTML = "";
+            if (snapshot.empty) {
+                listDiv.innerHTML = '<p class="text-slate-500 text-sm italic">Şu an aktif kurye yok.</p>';
+                return;
+            }
+
+            listDiv.innerHTML = ""; // Listeyi temizle
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
@@ -56,14 +70,20 @@
                     markers[id].setLatLng(pos);
                 } else {
                     markers[id] = L.marker(pos).addTo(adminMap)
-                        .bindPopup(`<b>${data.name}</b>`);
+                        .bindPopup(`<b class="text-slate-900">${data.name}</b><br><span class="text-xs text-slate-600">Durum: Aktif</span>`);
                 }
+
+                // Haritayı kuryenin olduğu yere odakla (Opsiyonel: İlk kuryede odaklanması için)
+                adminMap.panTo(pos);
 
                 // Listeyi Güncelle
                 listDiv.innerHTML += `
-                    <div class="flex justify-between items-center border-b border-slate-700 py-2">
-                        <span>${data.name}</span>
-                        <span class="text-[10px] text-cyan-500">Aktif</span>
+                    <div class="flex justify-between items-center bg-slate-700/30 p-3 rounded-xl border border-slate-700">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-white">${data.name}</span>
+                            <span class="text-[10px] text-slate-400 italic">Son Konum: ${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}</span>
+                        </div>
+                        <span class="px-2 py-1 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-bold uppercase tracking-widest border border-emerald-500/50">Çevrimiçi</span>
                     </div>`;
             });
         });

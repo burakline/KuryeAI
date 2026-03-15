@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db } from "../firebase.js";
 import { collection, addDoc, doc, setDoc, onSnapshot, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 // HARİTA KURULUMU

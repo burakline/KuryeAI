@@ -3,41 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restoran Paneli - KuryeAI</title>
+    <title>KuryeAI | Restoran Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { background: #0f172a; color: white; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        #map { height: 300px; border-radius: 1rem; z-index: 1; }
+    </style>
 </head>
-<body class="bg-slate-900 text-white p-6">
-    <div class="max-w-md mx-auto space-y-6">
-        <h1 class="text-3xl font-bold text-cyan-400 text-center">Restoran Paneli</h1>
-        
-        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4">
-            <h2 class="text-lg font-semibold border-b border-slate-700 pb-2">Yeni Sipariş Oluştur</h2>
-            <input id="customerName" type="text" placeholder="Müşteri Adı" class="w-full p-3 bg-slate-700 rounded-lg outline-none border border-slate-600 focus:border-cyan-500">
-            <input id="address" type="text" placeholder="Teslimat Adresi" class="w-full p-3 bg-slate-700 rounded-lg outline-none border border-slate-600 focus:border-cyan-500">
-            <button onclick="createOrder()" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-bold transition transform active:scale-95">Kurye Çağır</button>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-orange-400">Restoran Paneli</h1>
+                <p class="text-slate-400 text-sm">Yeni sipariş oluşturun ve kurye çağırın.</p>
+            </div>
+            <button onclick="window.location.href='index.html'" class="text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-2xl"></i> Ana Sayfa
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="glass p-6 rounded-3xl">
+                <h2 class="text-xl font-semibold mb-4 text-white">Sipariş Detayları</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-slate-500 mb-1">Müşteri Adı</label>
+                        <input type="text" id="customerName" placeholder="Örn: Ahmet Yılmaz" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-slate-500 mb-1">Sipariş Notu / Paket</label>
+                        <textarea id="orderNote" placeholder="Örn: 2 Lahmacun, 1 Ayran" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition h-24"></textarea>
+                    </div>
+
+                    <div class="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                        <p class="text-xs text-orange-300">Haritadan teslimat konumunu iğneleyin.</p>
+                        <p id="coordsText" class="text-[10px] text-slate-500 mt-1">Konum seçilmedi.</p>
+                    </div>
+
+                    <button onclick="sendOrder()" id="sendBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all transform active:scale-95">
+                        SİPARİŞİ GÖNDER VE KURYE ÇAĞIR
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-3xl h-full">
+                <h2 class="text-xl font-semibold mb-4 text-white">Teslimat Konumu</h2>
+                <div id="map"></div>
+            </div>
         </div>
     </div>
 
     <script type="module">
-        import { db } from "../js/firebase.js";
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        import { db } from "./firebase.js";
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        window.createOrder = async function() {
-            const customer = document.getElementById("customerName").value;
-            const address = document.getElementById("address").value;
+        // Harita Kurulumu
+        const map = L.map('map').setView([41.0082, 28.9784], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        let marker;
+        let selectedCoords = null;
 
-            if(!customer || !address) return alert("Lütfen boş alan bırakmayın!");
+        map.on('click', (e) => {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker(e.latlng).addTo(map);
+            selectedCoords = e.latlng;
+            document.getElementById('coordsText').innerText = `Lat: ${e.latlng.lat.toFixed(5)}, Lng: ${e.latlng.lng.toFixed(5)}`;
+        });
 
-            await addDoc(collection(db, "orders"), {
-                customer,
-                address,
-                status: "bekliyor",
-                createdAt: new Date()
-            });
-            alert("Sipariş havuzuna eklendi!");
-            document.getElementById("customerName").value = "";
-            document.getElementById("address").value = "";
-        }
+        window.sendOrder = async () => {
+            const name = document.getElementById('customerName').value;
+            const note = document.getElementById('orderNote').value;
+            const btn = document.getElementById('sendBtn');
+
+            if (!name || !selectedCoords) {
+                alert("Lütfen müşteri adını girin ve haritadan konum seçin!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "GÖNDERİLİYOR...";
+
+            try {
+                await addDoc(collection(db, "orders"), {
+                    customerName: name,
+                    orderNote: note,
+                    lat: selectedCoords.lat,
+                    lng: selectedCoords.lng,
+                    status: "waiting", // Kurye bekliyor
+                    timestamp: serverTimestamp()
+                });
+                alert("Sipariş başarıyla oluşturuldu! Kuryeler bilgilendiriliyor.");
+                location.reload();
+            } catch (e) {
+                console.error("Hata: ", e);
+                btn.disabled = false;
+                btn.innerText = "HATA OLUŞTU, TEKRAR DENE";
+            }
+        };
     </script>
 </body>
 </html>

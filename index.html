@@ -35,15 +35,17 @@
         </div>
     </div>
 
-    <script>
+       <script>
         function login() {
-            const user = document.getElementById("user").value;
-            const pass = document.getElementById("pass").value;
+            const user = document.getElementById("user").value.trim();
+            const pass = document.getElementById("pass").value.trim();
 
             if (user === "burakline" && pass === "burakline123") {
-                window.location.href = "pages/admin.html";
+                // BAŞINDAKİ pages/ KISMINI SİLDİK
+                window.location.href = "admin.html"; 
             } else if (user === "kurye" && pass === "123") {
-                window.location.href = "pages/courier.html";
+                // BAŞINDAKİ pages/ KISMINI SİLDİK
+                window.location.href = "courier.html"; 
             } else {
                 alert("Hatalı kullanıcı adı veya şifre!");
             }

@@ -1,18 +1,43 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Restoran Panel</title>
-<link rel="stylesheet" href="../css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restoran Paneli - KuryeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-white p-6">
+    <div class="max-w-md mx-auto space-y-6">
+        <h1 class="text-3xl font-bold text-cyan-400 text-center">Restoran Paneli</h1>
+        
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4">
+            <h2 class="text-lg font-semibold border-b border-slate-700 pb-2">Yeni Sipariş Oluştur</h2>
+            <input id="customerName" type="text" placeholder="Müşteri Adı" class="w-full p-3 bg-slate-700 rounded-lg outline-none border border-slate-600 focus:border-cyan-500">
+            <input id="address" type="text" placeholder="Teslimat Adresi" class="w-full p-3 bg-slate-700 rounded-lg outline-none border border-slate-600 focus:border-cyan-500">
+            <button onclick="createOrder()" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-bold transition transform active:scale-95">Kurye Çağır</button>
+        </div>
+    </div>
 
-<h1>Restoran Panel</h1>
+    <script type="module">
+        import { db } from "../js/firebase.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-<p>Online platform verileri burada yönetilecek.</p>
+        window.createOrder = async function() {
+            const customer = document.getElementById("customerName").value;
+            const address = document.getElementById("address").value;
 
-<footer>Developed by BURAKLINE 2026</footer>
+            if(!customer || !address) return alert("Lütfen boş alan bırakmayın!");
 
+            await addDoc(collection(db, "orders"), {
+                customer,
+                address,
+                status: "bekliyor",
+                createdAt: new Date()
+            });
+            alert("Sipariş havuzuna eklendi!");
+            document.getElementById("customerName").value = "";
+            document.getElementById("address").value = "";
+        }
+    </script>
 </body>
 </html>

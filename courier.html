@@ -1,38 +1,56 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-
-<meta charset="UTF-8">
-<title>Kurye Panel</title>
-
-<link rel="stylesheet" href="../css/style.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurye Paneli - KuryeAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        #map { height: 300px; border-radius: 1rem; z-index: 1; }
+    </style>
 </head>
+<body class="bg-slate-900 text-white pb-20">
 
-<body>
+    <nav class="p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center sticky top-0 z-10">
+        <h1 class="text-xl font-bold text-cyan-400 font-mono">KuryeAI</h1>
+        <div id="status" class="px-3 py-1 rounded-full text-[10px] bg-red-500/20 text-red-400 border border-red-500/50 uppercase font-bold">Vardiya Kapalı</div>
+    </nav>
 
-<h1>Kurye Panel</h1>
+    <div class="p-4 space-y-4">
+        <div id="map" class="shadow-2xl border border-slate-700"></div>
 
-<div id="map" style="height:400px"></div>
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="startShift()" class="py-4 bg-emerald-600 rounded-xl font-bold active:scale-95 transition-transform">Vardiya Başlat</button>
+            <button onclick="endShift()" class="py-4 bg-rose-600 rounded-xl font-bold active:scale-95 transition-transform">Vardiya Bitir</button>
+        </div>
 
-<button onclick="startShift()">Vardiya Başlat</button>
-<button onclick="endShift()">Vardiya Bitir</button>
+        <div class="space-y-3">
+            <h3 class="text-cyan-400 font-bold flex items-center gap-2">
+                📦 Yeni Sipariş Havuzu
+            </h3>
+            <div id="orderPool" class="space-y-3">
+                <p class="text-slate-500 text-sm text-center py-4 italic">Sipariş bekleniyor...</p>
+            </div>
+        </div>
 
-<h3>Günsonu Raporu</h3>
+        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4">
+            <h3 class="text-slate-400 font-bold border-b border-slate-700 pb-2 text-sm">Gün Sonu Raporu</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <input id="packages" type="number" placeholder="Paket" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600">
+                <input id="hours" type="number" placeholder="Saat" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600">
+                <input id="km" type="number" placeholder="KM" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600">
+                <input id="revenue" type="number" placeholder="Ciro" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600">
+            </div>
+            <button onclick="saveDayEnd()" class="w-full py-3 bg-cyan-600 rounded-lg font-bold shadow-lg shadow-cyan-900/20">Raporu Kaydet</button>
+        </div>
+    </div>
 
-<input id="packages" placeholder="Paket">
-<input id="hours" placeholder="Saat">
-<input id="km" placeholder="KM">
-<input id="revenue" placeholder="Ciro">
+    <footer class="text-center text-slate-600 text-[10px] py-4">
+        Developed by BURAKLINE 2026
+    </footer>
 
-<button onclick="saveDayEnd()">Kaydet</button>
-
-<footer>Developed by BURAKLINE 2026</footer>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script type="module" src="../js/courier.js"></script>
-
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script type="module" src="../js/courier.js"></script>
 </body>
 </html>

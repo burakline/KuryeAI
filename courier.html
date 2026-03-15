@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Kurye Panel</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+</head>
+
+<body>
+
+<h1>Kurye Panel</h1>
+
+<div id="map" style="height:400px"></div>
+
+<button onclick="startShift()">Vardiya Başlat</button>
+<button onclick="endShift()">Vardiya Bitir</button>
+
+<h3>Günsonu Raporu</h3>
+
+<input id="packages" placeholder="Paket">
+<input id="hours" placeholder="Saat">
+<input id="km" placeholder="KM">
+<input id="revenue" placeholder="Ciro">
+
+<button onclick="saveDayEnd()">Kaydet</button>
+
+<footer>Developed by BURAKLINE 2026</footer>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script type="module" src="../js/courier.js"></script>
+
+</body>
+</html>

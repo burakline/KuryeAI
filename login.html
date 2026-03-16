@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap | KuryeAI</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0e14; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #fff; }
+        .login-box { background: #161b22; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
+        h1 { color: #00d4ff; margin-bottom: 5px; }
+        p { color: #8b949e; margin-bottom: 30px; font-size: 14px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #fff; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #00d4ff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; color: #000; }
+        button:hover { background: #fff; transform: translateY(-2px); }
+        .footer-text { margin-top: 30px; font-size: 11px; color: #484f58; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1 id="panelTitle">KuryeAI</h1>
+        <p id="subTitle">Lojistik yönetim paneli</p>
+        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <input type="password" id="password" placeholder="Şifre">
+        <button onclick="performLogin()">Giriş Yap</button>
+        <div class="footer-text">Developed by BURAKLINE 2026</div>
+    </div>
+    <script src="firebase.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type') || 'restaurant';
+        document.getElementById('panelTitle').innerText = "KuryeAI " + type.toUpperCase();
+
+        function performLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            handleSecureLogin(type, user, pass);
+        }
+    </script>
+</body>
+</html>

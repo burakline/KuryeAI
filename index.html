@@ -6,7 +6,6 @@
     <title>KuryeAI | Akıllı Teslimat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="1000413588.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
         body { background-color: #0f172a; font-family: 'Inter', sans-serif; overflow: hidden; color: white; margin: 0; }
@@ -14,63 +13,47 @@
         .hero-gradient { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15) 0%, transparent 70%); }
         @keyframes slow-bounce { 0%, 100% { transform: translateY(-5%); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: slow-bounce 3s infinite; }
-        #loader { transition: opacity 0.5s ease, visibility 0.5s; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center relative px-6">
 
-    <div id="loader" class="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col items-center justify-center">
-        <div class="w-20 h-20 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
-        <p class="mt-4 text-cyan-400 font-['Orbitron'] text-[10px] tracking-[0.3em] animate-pulse">SİSTEM HAZIRLANIYOR</p>
+    <div id="loader" class="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
     </div>
 
     <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
 
-    <div class="z-10 text-center space-y-10 max-w-2xl">
+    <div class="z-10 text-center space-y-10 max-w-2xl w-full">
         <div class="animate-bounce-slow">
-            <img id="logoImg" src="1000413588.png" 
-                 onerror="this.src='./1000413588.png'; this.onerror=null;"
+            <img src="https://raw.githubusercontent.com/Burak-AI/kuryeai/main/1000413588.png" 
+                 onerror="this.src='1000413588.png'"
                  alt="KuryeAI Logo" 
-                 class="mx-auto max-w-[220px] md:max-w-[280px] drop-shadow-[0_0_25px_rgba(6,182,212,0.4)]">
-            <p class="mt-6 text-sm md:text-base tracking-[0.25em] text-slate-400 font-light uppercase animate-pulse">Akıllı Teslimat.</p>
+                 class="mx-auto w-64 md:w-80 drop-shadow-[0_0_25px_rgba(6,182,212,0.4)]">
+            <p class="mt-6 text-xs md:text-sm tracking-[0.3em] text-slate-400 font-light uppercase animate-pulse">Akıllı Teslimat.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-lg mx-auto">
-            <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/10 transition-all duration-300 p-8 rounded-[2.5rem] border border-orange-500/20 group">
-                <i class="fa-solid fa-store text-4xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-xl font-['Orbitron'] tracking-wide">RESTORAN</span>
-                <span class="text-[10px] text-slate-500 mt-2 block uppercase">Sipariş Yönetimi</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
+            <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/10 transition-all p-8 rounded-[2rem] border border-orange-500/20 group">
+                <i class="fa-solid fa-store text-3xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold text-lg font-['Orbitron']">RESTORAN</span>
+                <span class="text-[10px] text-slate-500 block">SİPARİŞ YÖNETİMİ</span>
             </button>
 
-            <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/10 transition-all duration-300 p-8 rounded-[2.5rem] border border-cyan-500/20 group">
-                <i class="fa-solid fa-motorcycle text-4xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-xl font-['Orbitron'] tracking-wide">KURYE</span>
-                <span class="text-[10px] text-slate-500 mt-2 block uppercase">Saha Operasyonu</span>
+            <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/10 transition-all p-8 rounded-[2rem] border border-cyan-500/20 group">
+                <i class="fa-solid fa-motorcycle text-3xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold text-lg font-['Orbitron']">KURYE</span>
+                <span class="text-[10px] text-slate-500 block">SAHA OPERASYONU</span>
             </button>
-        </div>
-
-        <div class="pt-4 flex justify-center gap-10 text-slate-500 text-[10px] font-['Orbitron'] tracking-widest uppercase">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-orange-500"></i>
-                <span>Gerçek Zamanlı</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-brain text-cyan-500"></i>
-                <span>Yapay Zeka</span>
-            </div>
         </div>
     </div>
 
     <script>
-        // Sayfa yükleme tamamlandığında loader'ı kaldır
         window.addEventListener('load', () => {
-            const loader = document.getElementById('loader');
             setTimeout(() => {
-                loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.visibility = 'hidden';
-                }, 500);
-            }, 1000);
+                const ldr = document.getElementById('loader');
+                ldr.style.opacity = '0';
+                setTimeout(() => ldr.style.display = 'none', 500);
+            }, 800);
         });
     </script>
 </body>

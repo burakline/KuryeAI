@@ -6,74 +6,61 @@
     <title>KuryeAI | Akıllı Teslimat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="1000413588.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
-        body { background-color: #0f172a; font-family: 'Inter', sans-serif; margin: 0; color: white; overflow-x: hidden; }
+        body { background-color: #0f172a; font-family: 'Inter', sans-serif; margin: 0; color: white; overflow: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         .hero-gradient { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.1) 0%, transparent 70%); }
         @keyframes slow-bounce { 0%, 100% { transform: translateY(-3%); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: slow-bounce 3s infinite ease-in-out; }
-        #loader { transition: opacity 0.5s ease; }
+        .logo-glow { filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.6)); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center relative px-6">
-
-    <div id="loader" class="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col items-center justify-center">
-        <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
-    </div>
 
     <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
 
     <div class="z-10 text-center space-y-12 max-w-2xl w-full">
         <div class="animate-bounce-slow flex flex-col items-center">
-            <img src="1000413588.png" 
-                 alt="KuryeAI" 
-                 class="mx-auto w-64 md:w-80 drop-shadow-[0_0_30px_rgba(6,182,212,0.6)]"
-                 onerror="this.src='https://raw.githubusercontent.com/Burak-AI/kuryeai/main/1000413588.png'">
-            
-            <p class="mt-8 text-sm tracking-[0.4em] text-cyan-400 font-bold font-['Orbitron'] animate-pulse">
-                AKILLI TESLİMAT
+            <div class="logo-glow mb-4">
+                <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" stroke="#06b6d4" stroke-width="2" stroke-dasharray="10 5"/>
+                    <path d="M35 30L55 50L35 70" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M55 30L75 50L55 70" stroke="#06b6d4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-['Orbitron'] font-bold tracking-tighter bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
+                KURYE<span class="text-cyan-500">AI</span>
+            </h1>
+            <p class="mt-4 text-[10px] md:text-xs tracking-[0.5em] text-cyan-500/80 font-bold uppercase animate-pulse font-['Orbitron']">
+                Akıllı Teslimat Sistemi
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto w-full">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto w-full font-['Orbitron']">
             <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/20 transition-all p-8 rounded-[2rem] border border-orange-500/30 group">
                 <i class="fa-solid fa-store text-4xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-xl font-['Orbitron'] tracking-wider">RESTORAN</span>
-                <span class="text-[10px] text-slate-400 block mt-1 tracking-widest uppercase">Sipariş Oluştur</span>
+                <span class="block font-bold text-lg tracking-wider">RESTORAN</span>
+                <span class="text-[9px] text-slate-400 block mt-2 font-['Inter']">SİPARİŞ OLUŞTUR</span>
             </button>
 
             <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/20 transition-all p-8 rounded-[2rem] border border-cyan-500/30 group">
                 <i class="fa-solid fa-motorcycle text-4xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-xl font-['Orbitron'] tracking-wider">KURYE</span>
-                <span class="text-[10px] text-slate-400 block mt-1 tracking-widest uppercase">Operasyon Yönet</span>
+                <span class="block font-bold text-lg tracking-wider">KURYE</span>
+                <span class="text-[9px] text-slate-400 block mt-2 font-['Inter']">OPERASYON YÖNET</span>
             </button>
         </div>
 
-        <div class="flex justify-center gap-10 text-[10px] font-['Orbitron'] text-slate-500 tracking-widest">
+        <div class="flex justify-center gap-10 text-[10px] font-['Orbitron'] text-slate-500 tracking-widest uppercase">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bolt text-orange-500"></i>
                 <span>ANLIK TAKİP</span>
             </div>
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-brain text-cyan-400"></i>
-                <span>YAPAY ZEKA</span>
+                <i class="fa-solid fa-brain text-cyan-500"></i>
+                <span>AI DESTEKLİ</span>
             </div>
         </div>
     </div>
-
-    <script>
-        function hideLoader() {
-            const loader = document.getElementById('loader');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            }
-        }
-        window.addEventListener('load', hideLoader);
-        // Sayfa yüklenmese bile 2.5 saniye sonra loader'ı kaldır
-        setTimeout(hideLoader, 2500);
-    </script>
 </body>
 </html>

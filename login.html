@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giriş Yap | KuryeAI</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0b0e14; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #fff; }
-        .login-box { background: #161b22; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
-        h1 { color: #00d4ff; margin-bottom: 5px; }
-        p { color: #8b949e; margin-bottom: 30px; font-size: 14px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #fff; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #00d4ff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; color: #000; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0b1118; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #fff; }
+        .login-box { background: #161b22; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 380px; text-align: center; border: 1px solid #30363d; }
+        h1 { color: #00d4ff; margin-bottom: 5px; font-size: 28px; }
+        p { color: #8b949e; margin-bottom: 25px; font-size: 14px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 16px; }
+        input:focus { border-color: #00d4ff; outline: none; }
+        button { width: 100%; padding: 14px; background: #00d4ff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; color: #000; font-size: 16px; }
         button:hover { background: #fff; transform: translateY(-2px); }
-        .footer-text { margin-top: 30px; font-size: 11px; color: #484f58; letter-spacing: 1px; }
+        .footer-text { margin-top: 30px; font-size: 11px; color: #484f58; letter-spacing: 1px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -28,7 +29,8 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const type = urlParams.get('type') || 'restaurant';
-        document.getElementById('panelTitle').innerText = "KuryeAI " + type.toUpperCase();
+        const titles = { 'admin': 'Admin Paneli', 'restaurant': 'Restoran Paneli', 'courier': 'Kurye Paneli' };
+        document.getElementById('subTitle').innerText = titles[type] || "Lojistik yönetim paneli";
 
         function performLogin() {
             const user = document.getElementById('username').value;

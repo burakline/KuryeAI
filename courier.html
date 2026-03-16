@@ -107,19 +107,17 @@
 
         let map, marker, pathLine, watchId, startTime, lastPos, startKM = 0, route = [], speeds = [], wakeLock = null;
 
-        // HARİTA KURULUMU
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([39.9334, 32.8597], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         pathLine = L.polyline([], {color: '#22d3ee', weight: 6, opacity: 0.8}).addTo(map);
 
-        // EKRANI UYANIK TUTMA (WAKE LOCK)
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Ekran kilidi aktif.');
+                    console.log('Wake Lock Aktif');
                 }
-            } catch (err) { console.error('WakeLock hatası:', err); }
+            } catch (err) { console.error('WakeLock Hatası:', err); }
         }
 
         function toggleMenu() {
@@ -166,7 +164,7 @@
 
                 map.panTo(current);
                 lastPos = current;
-            }, (err) => { console.error('GPS Hatası:', err); }, { enableHighAccuracy: true, maximumAge: 0 });
+            }, null, { enableHighAccuracy: true, maximumAge: 0 });
         }
 
         let currentMode = '';
@@ -176,31 +174,29 @@
         function openKM() {
             document.getElementById('km-modal').style.display = 'flex';
             document.getElementById('file-label').innerText = currentMode === 'start' ? 'Vardiya Başlangıç KM Foto' : 'Vardiya Bitiş KM Foto';
-            document.getElementById('km-title').innerText = currentMode === 'start' ? 'GİRİŞ KAYDI' : 'ÇIKIŞ KAYDI';
         }
 
         document.getElementById('save-btn').onclick = async () => {
             const kmVal = parseFloat(document.getElementById('km-input').value);
-            if(!kmVal || !document.getElementById('km-photo').files[0]) { alert("Lütfen fotoğraf yükleyin ve KM değerini girin!"); return; }
+            if(!kmVal || !document.getElementById('km-photo').files[0]) { alert("Fotoğraf ve KM şart!"); return; }
 
             if(currentMode === 'start') {
                 startKM = kmVal;
                 startTime = Date.now();
                 startTracking();
-                requestWakeLock(); // Vardiya başlarken ekranı sabitle
+                requestWakeLock();
                 document.getElementById('status-badge').innerText = "VARDİYA AKTİF";
                 document.getElementById('status-badge').className = "px-4 py-1.5 rounded-full text-[9px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 tracking-widest";
                 document.getElementById('btn-start').disabled = true; document.getElementById('btn-start').classList.add('opacity-30');
                 document.getElementById('btn-end').disabled = false; document.getElementById('btn-end').classList.remove('opacity-30');
             } else {
-                // Bitir ve Veritabanına Yaz
                 await db.ref('arsiv/harun_kaya').push({
                     tarih: new Date().toLocaleString('tr-TR'),
                     giris_km: startKM,
                     cikis_km: kmVal,
-                    alinan_yol: document.getElementById('km-display').innerText,
-                    toplam_kazanc: document.getElementById('earnings').innerText,
-                    calisma_suresi: document.getElementById('timer').innerText
+                    yol: document.getElementById('km-display').innerText,
+                    kazanc: document.getElementById('earnings').innerText,
+                    sure: document.getElementById('timer').innerText
                 });
                 if(wakeLock) wakeLock.release();
                 location.reload();
@@ -208,15 +204,13 @@
             document.getElementById('km-modal').style.display = 'none';
         };
 
-        // Arka Plan Süre Sayacı
         setInterval(() => {
             if(startTime) {
                 const diff = Date.now() - startTime;
-                const hrs = Math.floor(diff / 3600000);
-                const mins = Math.floor((diff % 3600000) / 60000);
-                const secs = Math.floor((diff % 60000) / 1000);
-                document.getElementById('timer').innerText = 
-                    `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                const hrs = Math.floor(diff / 3600000).toString().padStart(2, '0');
+                const mins = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                const secs = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${hrs}:${mins}:${secs}`;
             }
         }, 1000);
 

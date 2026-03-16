@@ -3,96 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI - Kurye Paneli</title>
+    <title>KuryeAI - Profesyonel Kurye Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { background-color: #0f172a; color: white; }
-        #map { height: 300px; border-radius: 1rem; margin-bottom: 1rem; z-index: 1; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        body { background-color: #0f172a; color: white; overflow-x: hidden; font-family: sans-serif; }
+        #map { height: 380px; border-radius: 2rem; z-index: 1; border: 2px solid rgba(34, 211, 238, 0.1); }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .stat-value { font-family: 'Courier New', Courier, monospace; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
     <header class="p-4 flex justify-between items-center border-b border-slate-800 glass-card sticky top-0 z-50">
-        <h1 class="text-xl font-bold text-cyan-400 italic">KuryeAI</h1>
+        <h1 class="text-xl font-black text-cyan-400 italic tracking-tighter">KuryeAI PRO</h1>
         <div class="flex items-center gap-3">
-            <span id="status-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/50">KAPALI</span>
-            <button onclick="window.location.href='index.html'" class="text-xs bg-slate-700 px-3 py-1 rounded shadow-lg text-slate-300">Çıkış Yap</button>
+            <span id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black bg-red-500/20 text-red-400 border border-red-500/50 uppercase">Kapalı</span>
+            <button onclick="window.location.href='index.html'" class="text-[10px] bg-slate-800 px-3 py-1 rounded-lg text-slate-400">Çıkış</button>
         </div>
     </header>
 
     <main class="p-4 space-y-6">
         
-        <div class="space-y-2">
-            <div id="map" class="shadow-2xl shadow-cyan-900/20"></div>
+        <div class="relative">
+            <div id="map" class="shadow-2xl shadow-cyan-900/40"></div>
+            <div id="gps-loading" class="hidden absolute inset-0 bg-slate-900/80 z-[10] flex items-center justify-center rounded-[2rem]">
+                <p class="text-cyan-400 text-sm animate-pulse font-bold">📡 GPS Bağlantısı Kuruluyor...</p>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <button id="start-shift" class="bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95">Vardiya Başlat</button>
-            <button id="end-shift" class="bg-rose-600 hover:bg-rose-500 py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95">Vardiya Bitir</button>
-        </div>
-
-        <div class="glass-card p-4 rounded-2xl">
-            <h2 class="text-cyan-400 font-bold mb-3 flex items-center gap-2">📦 Yeni Sipariş Havuzu</h2>
-            <div id="order-list" class="text-center py-8 text-slate-500 italic text-sm">
-                Siparişler bekleniyor...
+            <div class="glass-card p-4 rounded-3xl text-center border-b-4 border-b-cyan-500">
+                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Çalışma Süresi</p>
+                <p id="timer-display" class="text-2xl font-black stat-value text-white">00:00:00</p>
+            </div>
+            <div class="glass-card p-4 rounded-3xl text-center border-b-4 border-b-emerald-500">
+                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Toplam Yol</p>
+                <p id="km-display" class="text-2xl font-black stat-value text-emerald-400">0.00 <span class="text-xs">km</span></p>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-            <div class="glass-card p-3 rounded-xl text-center">
-                <p class="text-[10px] text-slate-400 uppercase tracking-wider">Paket</p>
-                <p class="text-xl font-bold">0</p>
-            </div>
-            <div class="glass-card p-3 rounded-xl text-center">
-                <p class="text-[10px] text-slate-400 uppercase tracking-wider">Ciro</p>
-                <p class="text-xl font-bold">₺0.00</p>
+        <div class="grid grid-cols-2 gap-4">
+            <button id="start-shift" class="bg-emerald-600 hover:bg-emerald-500 py-5 rounded-3xl font-black shadow-lg transition-all active:scale-95 uppercase text-sm">Vardiya Başlat</button>
+            <button id="end-shift" class="bg-rose-600 hover:bg-rose-500 py-5 rounded-3xl font-black shadow-lg transition-all active:scale-95 uppercase text-sm">Vardiya Bitir</button>
+        </div>
+
+        <div class="glass-card p-5 rounded-3xl">
+            <h2 class="text-cyan-400 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-widest text-center justify-center">
+                📦 Sipariş Havuzu Aktif
+            </h2>
+            <div id="order-list" class="text-center py-4 text-slate-500 italic text-xs">
+                Vardiyayı başlattığınızda siparişler listelenecek...
             </div>
         </div>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-slate-700 p-3 flex justify-around items-center z-50">
-        <button class="flex flex-col items-center gap-1 text-cyan-400">
-            <span class="text-[10px] font-bold">ANA SAYFA</span>
-        </button>
-        <button onclick="alert('Profil: Burakline\nBölge: Ankara\nPuan: 5.0 ⭐')" class="flex flex-col items-center gap-1 text-slate-400">
-            <span class="text-[10px] font-bold">PROFİL</span>
-        </button>
-    </nav>
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // 1. Haritayı Başlat (Ankara Merkezli)
-        var map = L.map('map').setView([39.9334, 32.8597], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
+        // Değişkenler
+        let map, kuryeMarker, pathLine;
+        let watchId = null, timerInterval = null;
+        let startTime, totalDistance = 0, lastCoords = null;
+        let routeCoords = [];
+
+        // Harita Başlatma
+        map = L.map('map').setView([39.9334, 32.8597], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: '© KuryeAI',
+            className: 'map-tiles' 
         }).addTo(map);
 
-        // Kurye İkonu
-        var kuryeMarker = L.marker([39.9334, 32.8597]).addTo(map)
-            .bindPopup('Şu anki konumunuz (Ankara)')
-            .openPopup();
+        // Rota Çizgisi (Polyline) Tanımlama
+        pathLine = L.polyline([], {color: '#22d3ee', weight: 5, opacity: 0.7}).addTo(map);
 
-        // 2. Vardiya Mantığı
-        const startBtn = document.getElementById('start-shift');
-        const endBtn = document.getElementById('end-shift');
-        const statusBadge = document.getElementById('status-badge');
-        const orderList = document.getElementById('order-list');
+        // KM Hesaplama Fonksiyonu (Haversine Formülü)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Dünya yarıçapı (km)
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
 
-        startBtn.onclick = function() {
-            statusBadge.innerText = "AÇIK";
-            statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
-            orderList.innerHTML = "<div class='text-emerald-400 animate-pulse'>Siparişler aranıyor...</div>";
-            alert("Vardiya Başlatıldı! Sipariş havuzu aktif.");
+        // Zaman Sayacı Başlatma
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const diff = Date.now() - startTime;
+                const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+                const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        // Konum Takibi ve Çizim
+        function trackLocation() {
+            if (!navigator.geolocation) return alert("GPS Desteklenmiyor.");
+            
+            document.getElementById('gps-loading').classList.remove('hidden');
+
+            watchId = navigator.geolocation.watchPosition((pos) => {
+                document.getElementById('gps-loading').classList.add('hidden');
+                const { latitude, longitude } = pos.coords;
+                const newCoords = [latitude, longitude];
+
+                // Haritayı merkeze al ve Marker'ı güncelle
+                map.setView(newCoords, 16);
+                if (kuryeMarker) map.removeLayer(kuryeMarker);
+                kuryeMarker = L.marker(newCoords).addTo(map).bindPopup("Anlık Konumunuz").openPopup();
+
+                // Çizgi Ekle
+                routeCoords.push(newCoords);
+                pathLine.setLatLngs(routeCoords);
+
+                // KM Hesapla
+                if (lastCoords) {
+                    const dist = calculateDistance(lastCoords.lat, lastCoords.lng, latitude, longitude);
+                    if (dist > 0.005) { // Sadece 5 metreden büyük hareketleri say (titremeyi engellemek için)
+                        totalDistance += dist;
+                        document.getElementById('km-display').innerHTML = `${totalDistance.toFixed(2)} <span class="text-xs">km</span>`;
+                    }
+                }
+                lastCoords = { lat: latitude, lng: longitude };
+
+            }, (err) => {
+                console.error(err);
+                document.getElementById('gps-loading').classList.add('hidden');
+            }, { enableHighAccuracy: true });
+        }
+
+        // Buton Fonksiyonları
+        document.getElementById('start-shift').onclick = function() {
+            document.getElementById('status-badge').innerText = "Açık";
+            document.getElementById('status-badge').className = "px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
+            document.getElementById('order-list').innerText = "Siparişler aranıyor...";
+            
+            startTimer();
+            trackLocation();
+            this.disabled = true;
+            this.style.opacity = "0.5";
         };
 
-        endBtn.onclick = function() {
-            statusBadge.innerText = "KAPALI";
-            statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/50";
-            orderList.innerHTML = "Siparişler bekleniyor...";
-            alert("Vardiya Bitirildi. İyi dinlenmeler!");
+        document.getElementById('end-shift').onclick = function() {
+            if (confirm("Vardiyayı bitirmek istediğinize emin misiniz?")) {
+                location.reload(); // Verileri sıfırlamak için en temizi sayfayı yenilemek
+            }
         };
     </script>
 </body>

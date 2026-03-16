@@ -3,155 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI - Profesyonel Kurye Paneli</title>
+    <title>KuryeAI - Saha Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
         body { background-color: #0f172a; color: white; overflow-x: hidden; font-family: sans-serif; }
-        #map { height: 380px; border-radius: 2rem; z-index: 1; border: 2px solid rgba(34, 211, 238, 0.1); }
+        #map { height: 420px; border-radius: 2.5rem; z-index: 1; border: 2px solid rgba(34, 211, 238, 0.1); margin-top: 10px; }
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
-        .stat-value { font-family: 'Courier New', Courier, monospace; }
+        
+        /* 80 KM Hız Tabelası */
+        .speed-limit-sign { 
+            width: 50px; height: 50px; border: 5px solid red; background: white; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: black; font-weight: 900; font-size: 18px; animation: blink 0.5s infinite;
+        }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* 3D Turkuaz/Siyah Moto İkon */
+        .moto-container {
+            width: 45px; height: 45px; background: #000; border: 3px solid #22d3ee;
+            border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+        }
+        .moto-container::after { content: "AI"; color: #22d3ee; font-size: 12px; font-weight: 900; }
     </style>
 </head>
-<body class="pb-28">
+<body class="pb-32">
 
     <header class="p-4 flex justify-between items-center border-b border-slate-800 glass-card sticky top-0 z-50">
-        <h1 class="text-xl font-black text-cyan-400 italic tracking-tighter">KuryeAI PRO</h1>
-        <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-black text-cyan-400 italic tracking-tighter">KuryeAI</h1>
+        <div class="flex items-center gap-4">
+            <div id="speed-alert" class="hidden"><div class="speed-limit-sign">80</div></div>
             <span id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black bg-red-500/20 text-red-400 border border-red-500/50 uppercase">Kapalı</span>
-            <button onclick="window.location.href='index.html'" class="text-[10px] bg-slate-800 px-3 py-1 rounded-lg text-slate-400">Çıkış</button>
         </div>
     </header>
 
-    <main class="p-4 space-y-6">
-        
+    <main class="p-4 space-y-4">
         <div class="relative">
             <div id="map" class="shadow-2xl shadow-cyan-900/40"></div>
-            <div id="gps-loading" class="hidden absolute inset-0 bg-slate-900/80 z-[10] flex items-center justify-center rounded-[2rem]">
-                <p class="text-cyan-400 text-sm animate-pulse font-bold">📡 GPS Bağlantısı Kuruluyor...</p>
+            <button onclick="reCenter()" class="absolute bottom-6 left-6 z-[40] bg-white p-3 rounded-full shadow-xl active:scale-90 transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="3"><path d="M21 10h-5.58l3.29-3.29a1 1 0 0 0-1.42-1.42L14 8.58V3a1 1 0 0 0-2 0v5.58l-3.29-3.29a1 1 0 0 0-1.42 1.42L10.58 12H5a1 1 0 0 0 0 2h5.58l-3.29 3.29a1 1 0 0 0 1.42 1.42L12 15.42V21a1 1 0 0 0 2 0v-5.58l3.29 3.29a1 1 0 0 0 1.42-1.42L15.42 14H21a1 1 0 0 0 0-2z"/></svg>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="glass-card p-4 rounded-3xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Hız</p>
+                <p id="speed-display" class="text-2xl font-black text-cyan-400">0</p>
+            </div>
+            <div class="glass-card p-4 rounded-3xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Kazanç</p>
+                <p id="earning-display" class="text-2xl font-black text-emerald-400">₺0</p>
+            </div>
+            <div class="glass-card p-4 rounded-3xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Süre</p>
+                <p id="timer-display" class="text-2xl font-black">00:00</p>
+            </div>
+            <div class="glass-card p-4 rounded-3xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Mesafe</p>
+                <p id="km-display" class="text-2xl font-black">0.00</p>
             </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <div class="glass-card p-4 rounded-3xl text-center border-b-4 border-b-cyan-500">
-                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Çalışma Süresi</p>
-                <p id="timer-display" class="text-2xl font-black stat-value text-white">00:00:00</p>
-            </div>
-            <div class="glass-card p-4 rounded-3xl text-center border-b-4 border-b-emerald-500">
-                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Toplam Yol</p>
-                <p id="km-display" class="text-2xl font-black stat-value text-emerald-400">0.00 <span class="text-xs">km</span></p>
-            </div>
+            <button id="start-shift" class="bg-emerald-600 py-5 rounded-3xl font-black uppercase shadow-lg active:scale-95 transition-all">Vardiya Başlat</button>
+            <button id="end-shift" class="bg-rose-600 py-5 rounded-3xl font-black uppercase shadow-lg active:scale-95 transition-all">Vardiya Bitir</button>
         </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <button id="start-shift" class="bg-emerald-600 hover:bg-emerald-500 py-5 rounded-3xl font-black shadow-lg transition-all active:scale-95 uppercase text-sm">Vardiya Başlat</button>
-            <button id="end-shift" class="bg-rose-600 hover:bg-rose-500 py-5 rounded-3xl font-black shadow-lg transition-all active:scale-95 uppercase text-sm">Vardiya Bitir</button>
-        </div>
-
-        <div class="glass-card p-5 rounded-3xl">
-            <h2 class="text-cyan-400 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-widest text-center justify-center">
-                📦 Sipariş Havuzu Aktif
-            </h2>
-            <div id="order-list" class="text-center py-4 text-slate-500 italic text-xs">
-                Vardiyayı başlattığınızda siparişler listelenecek...
-            </div>
-        </div>
-
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Değişkenler
-        let map, kuryeMarker, pathLine;
-        let watchId = null, timerInterval = null;
-        let startTime, totalDistance = 0, lastCoords = null;
-        let routeCoords = [];
+        // Senin Firebase Config Bilgilerin (Entegre Edildi)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+            authDomain: "kuryeai.firebaseapp.com",
+            databaseURL: "https://kuryeai-default-rtdb.firebaseio.com",
+            projectId: "kuryeai",
+            storageBucket: "kuryeai.firebasestorage.app",
+            messagingSenderId: "655930514402",
+            appId: "1:655930514402:web:379321cbb83f48daf077bb",
+            measurementId: "G-JYQP30LJG3"
+        };
 
-        // Harita Başlatma
-        map = L.map('map').setView([39.9334, 32.8597], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '© KuryeAI',
-            className: 'map-tiles' 
-        }).addTo(map);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // Rota Çizgisi (Polyline) Tanımlama
-        pathLine = L.polyline([], {color: '#22d3ee', weight: 5, opacity: 0.7}).addTo(map);
+        let map, kuryeMarker, pathLine, watchId, timerInterval;
+        let startTime, totalDist = 0, lastPos = null, route = [];
+        let autoFollow = true;
 
-        // KM Hesaplama Fonksiyonu (Haversine Formülü)
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Dünya yarıçapı (km)
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+        // Harita Kurulumu
+        map = L.map('map', { zoomControl: false }).setView([39.9334, 32.8597], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        pathLine = L.polyline([], {color: '#22d3ee', weight: 5, opacity: 0.8}).addTo(map);
+
+        // Manuel kontrol algılama
+        map.on('dragstart', () => autoFollow = false);
+        function reCenter() { autoFollow = true; if(lastPos) map.setView(lastPos, 17); }
+
+        function track() {
+            watchId = navigator.geolocation.watchPosition((pos) => {
+                const { latitude, longitude, speed } = pos.coords;
+                const kmh = speed ? Math.round(speed * 3.6) : 0;
+                const currentPos = [latitude, longitude];
+
+                document.getElementById('speed-display').innerText = kmh;
+                // Hız Sınırı Uyarısı (80 KM)
+                document.getElementById('speed-alert').classList.toggle('hidden', kmh <= 80);
+
+                if (autoFollow) map.setView(currentPos, 17);
+
+                // Özel Moto İkonu
+                const icon = L.divIcon({ className: '', html: `<div class="moto-container"></div>`, iconSize: [45, 45] });
+                if (kuryeMarker) map.removeLayer(kuryeMarker);
+                kuryeMarker = L.marker(currentPos, {icon: icon}).addTo(map)
+                    .bindPopup(`<b style="color:black">Harun Kaya</b><br><span style="color:gray">Tava Makarna</span>`).openPopup();
+
+                // Firebase Canlı Takip Verisi
+                db.ref('canli_takip/harun_kaya').set({ 
+                    lat: latitude, 
+                    lng: longitude, 
+                    hiz: kmh, 
+                    zaman: Date.now() 
+                });
+
+                // Mesafe Hesabı (Sadece hareketliyken)
+                if (lastPos && kmh > 3) {
+                    const d = L.latLng(lastPos).distanceTo(L.latLng(currentPos)) / 1000;
+                    totalDist += d;
+                    document.getElementById('km-display').innerText = totalDist.toFixed(2);
+                    route.push(currentPos);
+                    pathLine.setLatLngs(route);
+                }
+                lastPos = currentPos;
+            }, (err) => console.error(err), { enableHighAccuracy: true });
         }
 
-        // Zaman Sayacı Başlatma
-        function startTimer() {
+        document.getElementById('start-shift').onclick = function() {
             startTime = Date.now();
             timerInterval = setInterval(() => {
                 const diff = Date.now() - startTime;
-                const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
-                const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
-                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+                const hours = diff / 3600000;
+                // Saatlik 215 TL + KM Başı 8 TL Hesabı
+                document.getElementById('timer-display').innerText = new Date(diff).toISOString().substr(11, 8);
+                document.getElementById('earning-display').innerText = `₺${((hours * 215) + (totalDist * 8)).toFixed(1)}`;
             }, 1000);
-        }
-
-        // Konum Takibi ve Çizim
-        function trackLocation() {
-            if (!navigator.geolocation) return alert("GPS Desteklenmiyor.");
             
-            document.getElementById('gps-loading').classList.remove('hidden');
-
-            watchId = navigator.geolocation.watchPosition((pos) => {
-                document.getElementById('gps-loading').classList.add('hidden');
-                const { latitude, longitude } = pos.coords;
-                const newCoords = [latitude, longitude];
-
-                // Haritayı merkeze al ve Marker'ı güncelle
-                map.setView(newCoords, 16);
-                if (kuryeMarker) map.removeLayer(kuryeMarker);
-                kuryeMarker = L.marker(newCoords).addTo(map).bindPopup("Anlık Konumunuz").openPopup();
-
-                // Çizgi Ekle
-                routeCoords.push(newCoords);
-                pathLine.setLatLngs(routeCoords);
-
-                // KM Hesapla
-                if (lastCoords) {
-                    const dist = calculateDistance(lastCoords.lat, lastCoords.lng, latitude, longitude);
-                    if (dist > 0.005) { // Sadece 5 metreden büyük hareketleri say (titremeyi engellemek için)
-                        totalDistance += dist;
-                        document.getElementById('km-display').innerHTML = `${totalDistance.toFixed(2)} <span class="text-xs">km</span>`;
-                    }
-                }
-                lastCoords = { lat: latitude, lng: longitude };
-
-            }, (err) => {
-                console.error(err);
-                document.getElementById('gps-loading').classList.add('hidden');
-            }, { enableHighAccuracy: true });
-        }
-
-        // Buton Fonksiyonları
-        document.getElementById('start-shift').onclick = function() {
-            document.getElementById('status-badge').innerText = "Açık";
-            document.getElementById('status-badge').className = "px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
-            document.getElementById('order-list').innerText = "Siparişler aranıyor...";
-            
-            startTimer();
-            trackLocation();
-            this.disabled = true;
+            track();
+            this.disabled = true; 
             this.style.opacity = "0.5";
+            document.getElementById('status-badge').innerText = "AÇIK";
+            document.getElementById('status-badge').className = "px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 uppercase";
         };
 
         document.getElementById('end-shift').onclick = function() {
-            if (confirm("Vardiyayı bitirmek istediğinize emin misiniz?")) {
-                location.reload(); // Verileri sıfırlamak için en temizi sayfayı yenilemek
+            const paket = prompt("Bugün toplam kaç paket attınız?");
+            const ciro = prompt("Taşınan toplam sipariş cirosu nedir?");
+            
+            if(paket && ciro) {
+                const data = {
+                    tarih: new Date().toLocaleString('tr-TR'),
+                    sure: document.getElementById('timer-display').innerText,
+                    km: totalDist.toFixed(2),
+                    kazanc: document.getElementById('earning-display').innerText,
+                    paket_sayisi: paket,
+                    toplam_ciro: ciro,
+                    ort_km_basina_paket: (totalDist / paket).toFixed(2)
+                };
+
+                // Firebase Arşiv Kaydı
+                db.ref('arsiv/harun_kaya').push(data).then(() => {
+                    alert("Veriler Firebase bulutuna güvenle kaydedildi! İyi istirahatler Harun.");
+                    location.reload();
+                });
             }
         };
     </script>

@@ -3,90 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Canlı Takip - KuryeAI</title>
+    <title>KuryeAI - Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-    <style>#adminMap { height: 450px; border-radius: 1rem; z-index: 1; background: #1e293b; }</style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { background-color: #0f172a; color: white; }
+        #admin-map { height: 400px; border-radius: 1.5rem; border: 1px solid rgba(34, 211, 238, 0.2); }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .stat-card { border-left: 4px solid #22d3ee; }
+    </style>
 </head>
-<body class="bg-slate-900 text-white font-sans pb-10">
-    
-    <nav class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-cyan-400">KuryeAI <span class="text-white font-light text-sm">| Admin</span></h1>
-            <div class="flex items-center gap-3">
-                 <button onclick="window.location.href='index.html'" class="text-xs bg-slate-700 px-3 py-1 rounded-lg border border-slate-600">Çıkış</button>
-                 <span class="flex items-center gap-1 text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/50">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> SİSTEM CANLI
-                </span>
-            </div>
-        </div>
-    </nav>
+<body class="p-4 md:p-8">
 
-    <div class="p-4 space-y-6 max-w-4xl mx-auto">
-        <div class="bg-slate-800 p-2 rounded-2xl border border-slate-700 shadow-2xl">
-            <div id="adminMap"></div>
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-cyan-400">Yönetim Paneli</h1>
+            <p class="text-slate-400 text-sm">Sistem Genel Durumu ve Takip</p>
         </div>
+        <button onclick="window.location.href='index.html'" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm transition-all">Güvenli Çıkış</button>
+    </header>
 
-        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
-            <h2 class="text-cyan-400 font-bold mb-4 flex items-center gap-2 italic">
-                📍 Sahadaki Aktif Kuryeler
-            </h2>
-            <div id="courierList" class="space-y-3">
-                <p class="text-slate-500 text-sm italic">Kurye verisi bekleniyor...</p>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="glass-card p-6 rounded-2xl stat-card">
+            <p class="text-slate-400 text-xs uppercase font-bold tracking-widest">Aktif Kuryeler</p>
+            <p class="text-3xl font-black mt-1">12</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl stat-card" style="border-left-color: #f59e0b;">
+            <p class="text-slate-400 text-xs uppercase font-bold tracking-widest">Bekleyen Sipariş</p>
+            <p class="text-3xl font-black mt-1">5</p>
+        </div>
+        <div class="glass-card p-6 rounded-2xl stat-card" style="border-left-color: #10b981;">
+            <p class="text-slate-400 text-xs uppercase font-bold tracking-widest">Günlük Ciro</p>
+            <p class="text-3xl font-black mt-1 text-emerald-400">₺4,250</p>
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    
-    <script type="module">
-        // Firebase Bağlantısı - Dosya yolunu ana dizine göre ayarladım
-        import { db } from "./firebase.js";
-        import { onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-        // Admin Harita Kurulumu (Ankara Merkezli)
-        const adminMap = L.map('adminMap').setView([39.9334, 32.8597], 12);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(adminMap);
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        let markers = {};
+        <div class="lg:col-span-2 space-y-4">
+            <h2 class="text-lg font-semibold flex items-center gap-2">🌐 Canlı Kurye Takibi <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span></h2>
+            <div id="admin-map" class="shadow-2xl shadow-cyan-900/10"></div>
+        </div>
 
-        // CANLI VERİ DİNLEME: Kurye konumlarını anlık yakala
-        onSnapshot(collection(db, "activeLocations"), (snapshot) => {
-            const listDiv = document.getElementById("courierList");
-            if (snapshot.empty) {
-                listDiv.innerHTML = '<p class="text-slate-500 text-sm italic">Şu an aktif kurye yok.</p>';
-                return;
-            }
+        <div class="space-y-4">
+            <h2 class="text-lg font-semibold">👤 Vardiyadaki Kuryeler</h2>
+            <div class="glass-card rounded-2xl divide-y divide-slate-700 overflow-hidden">
+                <div class="p-4 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-sm">Ahmet Yılmaz</p>
+                        <p class="text-xs text-slate-400 text-emerald-400">Teslimatta</p>
+                    </div>
+                    <span class="text-xs bg-slate-800 px-2 py-1 rounded">Ankara</span>
+                </div>
+                <div class="p-4 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-sm">Mehmet Demir</p>
+                        <p class="text-xs text-slate-400 text-cyan-400">Boşta</p>
+                    </div>
+                    <span class="text-xs bg-slate-800 px-2 py-1 rounded">Ankara</span>
+                </div>
+                <div class="p-4 flex justify-between items-center opacity-50">
+                    <div>
+                        <p class="font-bold text-sm">Caner Şahin</p>
+                        <p class="text-xs text-slate-400">Çevrimdışı</p>
+                    </div>
+                    <span class="text-xs bg-slate-800 px-2 py-1 rounded">İstanbul</span>
+                </div>
+            </div>
+            
+            <button onclick="alert('Sistem raporu oluşturuluyor...')" class="w-full bg-cyan-600 hover:bg-cyan-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-cyan-900/20">
+                📊 Günlük Rapor Al
+            </button>
+        </div>
+    </div>
 
-            listDiv.innerHTML = ""; // Listeyi temizle
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Harita Kurulumu (Ankara Merkezli)
+        var adminMap = L.map('admin-map').setView([39.9334, 32.8597], 12);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(adminMap);
 
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const id = doc.id;
-                const pos = [data.lat, data.lng];
+        // Örnek Kurye İşaretçileri
+        var kuryePositions = [
+            {lat: 39.9400, lng: 32.8600, name: "Ahmet Yılmaz (Teslimatta)"},
+            {lat: 39.9200, lng: 32.8400, name: "Mehmet Demir (Boşta)"},
+            {lat: 39.9500, lng: 32.8200, name: "Sistem Aracı 03"}
+        ];
 
-                // Haritada Marker Güncelle veya Oluştur
-                if (markers[id]) {
-                    markers[id].setLatLng(pos);
-                } else {
-                    markers[id] = L.marker(pos).addTo(adminMap)
-                        .bindPopup(`<b class="text-slate-900">${data.name}</b><br><span class="text-xs text-slate-600">Durum: Aktif</span>`);
-                }
-
-                // Haritayı kuryenin olduğu yere odakla (Opsiyonel: İlk kuryede odaklanması için)
-                adminMap.panTo(pos);
-
-                // Listeyi Güncelle
-                listDiv.innerHTML += `
-                    <div class="flex justify-between items-center bg-slate-700/30 p-3 rounded-xl border border-slate-700">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-white">${data.name}</span>
-                            <span class="text-[10px] text-slate-400 italic">Son Konum: ${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}</span>
-                        </div>
-                        <span class="px-2 py-1 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-bold uppercase tracking-widest border border-emerald-500/50">Çevrimiçi</span>
-                    </div>`;
-            });
+        kuryePositions.forEach(function(pos) {
+            L.circleMarker([pos.lat, pos.lng], {
+                radius: 8,
+                fillColor: "#22d3ee",
+                color: "#fff",
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(adminMap).bindPopup(pos.name);
         });
     </script>
-<script src="google-util.js"></script> </body>
+</body>
 </html>

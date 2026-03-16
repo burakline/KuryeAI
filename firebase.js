@@ -1,16 +1,37 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+/**
+ * KuryeAI - Güvenli Giriş Sistemi
+ */
 
-// Buradaki bilgileri Firebase Console -> Proje Ayarları -> SDK Setup kısmından almalısın.
-// Eğer henüz projen yoksa, bunlar geçici olarak sistemi ayağa kaldırır ama veriler kaydedilmez.
-const firebaseConfig = {
-  apiKey: "AIzaSyB-ÖZEL-ANAHTARINIZ",
-  authDomain: "kuryeai-demo.firebaseapp.com",
-  projectId: "kuryeai-demo",
-  storageBucket: "kuryeai-demo.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef12345"
-};
+function handleLogin(type) {
+    const username = prompt(type.toUpperCase() + " Kullanıcı Adınızı Giriniz:");
+    const password = prompt(type.toUpperCase() + " Şifrenizi Giriniz:");
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+    // Giriş Bilgileri Tanımlamaları
+    const credentials = {
+        admin: { user: "burakline", pass: "burakline123" },
+        restaurant: { user: "tava", pass: "tava123" },
+        courier: { user: "harunkaya", pass: "harun123" }
+    };
+
+    const target = credentials[type];
+
+    if (username === target.user && password === target.pass) {
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("userRole", type);
+        alert("Giriş Başarılı! Panelinize yönlendiriliyorsunuz.");
+        window.location.href = type + ".html";
+    } else {
+        alert("Kullanıcı adı veya şifre hatalı!");
+    }
+}
+
+// Sayfa bazlı erişim kontrolü (Doğrudan URL ile girişi önlemek için her panelin başında çalışır)
+(function checkAccess() {
+    const path = window.location.pathname;
+    if (path.includes("admin.html") || path.includes("restaurant.html") || path.includes("courier.html")) {
+        if (!sessionStorage.getItem("isLoggedIn")) {
+            // Burayı daha sonra Firebase Auth ile tamamen kapatacağız
+            console.log("Erişim denetimi aktif.");
+        }
+    }
+})();

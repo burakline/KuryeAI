@@ -8,53 +8,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
-        body { background-color: #0f172a; font-family: 'Inter', sans-serif; overflow: hidden; color: white; margin: 0; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
-        .hero-gradient { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15) 0%, transparent 70%); }
-        @keyframes slow-bounce { 0%, 100% { transform: translateY(-5%); } 50% { transform: translateY(0); } }
-        .animate-bounce-slow { animation: slow-bounce 3s infinite; }
+        body { background-color: #0f172a; font-family: 'Inter', sans-serif; margin: 0; color: white; overflow-x: hidden; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .hero-gradient { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.1) 0%, transparent 70%); }
+        @keyframes slow-bounce { 0%, 100% { transform: translateY(-3%); } 50% { transform: translateY(0); } }
+        .animate-bounce-slow { animation: slow-bounce 3s infinite ease-in-out; }
+        #loader { transition: opacity 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center relative px-6">
 
-    <div id="loader" class="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div id="loader" class="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col items-center justify-center">
         <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
+        <p class="mt-4 text-cyan-400 font-['Orbitron'] text-[10px] tracking-[0.3em] animate-pulse uppercase">Sistem Hazırlanıyor</p>
     </div>
 
     <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
 
-    <div class="z-10 text-center space-y-10 max-w-2xl w-full">
-        <div class="animate-bounce-slow">
+    <div class="z-10 text-center space-y-12 max-w-2xl w-full">
+        <div class="animate-bounce-slow flex flex-col items-center">
             <img src="https://raw.githubusercontent.com/Burak-AI/kuryeai/main/1000413588.png" 
-                 onerror="this.src='1000413588.png'"
                  alt="KuryeAI Logo" 
-                 class="mx-auto w-64 md:w-80 drop-shadow-[0_0_25px_rgba(6,182,212,0.4)]">
-            <p class="mt-6 text-xs md:text-sm tracking-[0.3em] text-slate-400 font-light uppercase animate-pulse">Akıllı Teslimat.</p>
+                 style="width: 280px; height: auto;"
+                 class="drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+            <p class="mt-8 text-sm tracking-[0.3em] text-slate-400 font-light uppercase animate-pulse">Akıllı Teslimat.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto w-full">
             <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/10 transition-all p-8 rounded-[2rem] border border-orange-500/20 group">
                 <i class="fa-solid fa-store text-3xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
                 <span class="block font-bold text-lg font-['Orbitron']">RESTORAN</span>
-                <span class="text-[10px] text-slate-500 block">SİPARİŞ YÖNETİMİ</span>
+                <span class="text-[10px] text-slate-500 block mt-1 tracking-widest">SİPARİŞ PANELİ</span>
             </button>
 
             <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/10 transition-all p-8 rounded-[2rem] border border-cyan-500/20 group">
                 <i class="fa-solid fa-motorcycle text-3xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
                 <span class="block font-bold text-lg font-['Orbitron']">KURYE</span>
-                <span class="text-[10px] text-slate-500 block">SAHA OPERASYONU</span>
+                <span class="text-[10px] text-slate-500 block mt-1 tracking-widest">TAKİP PANELİ</span>
             </button>
+        </div>
+
+        <div class="flex justify-center gap-8 text-[9px] font-['Orbitron'] text-slate-500 tracking-widest opacity-60">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-orange-500"></i>
+                <span>GERÇEK ZAMANLI</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-microchip text-cyan-500"></i>
+                <span>AI ALTYAPI</span>
+            </div>
         </div>
     </div>
 
     <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const ldr = document.getElementById('loader');
-                ldr.style.opacity = '0';
-                setTimeout(() => ldr.style.display = 'none', 500);
-            }, 800);
-        });
+        // Sayfa yükleme kontrolü
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            }
+        }
+
+        // Sayfa tam yüklendiğinde
+        window.addEventListener('load', hideLoader);
+
+        // Her ihtimale karşı (yükleme takılırsa) 3 saniye sonra zorla kapat
+        setTimeout(hideLoader, 3000);
     </script>
 </body>
 </html>

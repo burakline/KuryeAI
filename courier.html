@@ -10,96 +10,61 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: { colors: { darkBg: '#0f172a', lightBg: '#f8fafc' } } }
-        }
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { darkBg: '#0f172a' } } } }
     </script>
 
     <style>
         body, html { height: 100%; margin: 0; overflow: hidden; font-family: sans-serif; }
-        #map { height: 48vh; width: 100%; z-index: 1; }
+        #map { height: 55vh; width: 100%; z-index: 10; }
         .glass-card { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.4); }
-        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; }
-        .moto-container { width: 32px; height: 32px; background: #000; border: 2.5px solid #22d3ee; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px #22d3ee; }
+        .moto-container { width: 34px; height: 34px; background: #000; border: 3px solid #22d3ee; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px #22d3ee; }
         .moto-container::after { content: "AI"; color: #22d3ee; font-size: 11px; font-weight: 900; }
-        .target-btn { width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .target-btn { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: absolute; bottom: 20px; right: 20px; z-index: 1000; }
+        #km-input-modal { z-index: 4000; }
     </style>
 </head>
-<body class="dark bg-darkBg text-white transition-colors duration-300 flex flex-col">
+<body class="dark bg-darkBg text-white flex flex-col">
 
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 shadow-2xl transform -translate-x-full p-6 space-y-6 border-r border-slate-800">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-            <h2 class="text-2xl font-black text-cyan-400">KuryeAI</h2>
-            <button onclick="toggleSidebar()" class="text-slate-400 p-2 text-2xl">✕</button>
-        </div>
-        <div class="space-y-3">
-            <button onclick="showSection('profile')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 flex items-center gap-3 transition-colors">👤 Profilim</button>
-            <button onclick="showSection('reports')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 flex items-center gap-3 transition-colors">📊 Geçmiş Raporlar</button>
-            <button onclick="showSection('earnings')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 flex items-center gap-3 transition-colors">💰 Geçmiş Kazançlar</button>
-        </div>
-        <div class="pt-10 space-y-4 border-t border-slate-800">
-            <button onclick="toggleTheme()" id="theme-btn" class="w-full py-4 rounded-2xl border border-slate-700 font-bold">🌙 Karanlık Mod</button>
-            <button onclick="location.reload()" class="w-full py-4 bg-rose-600/10 text-rose-500 rounded-2xl font-black border border-rose-600/30">🚪 Oturumu Kapat</button>
+    <div id="km-input-modal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center p-6">
+        <div class="bg-slate-800 p-6 rounded-3xl w-full max-w-sm space-y-4 border border-slate-700 shadow-2xl">
+            <h3 id="km-modal-title" class="text-xl font-black text-cyan-400 uppercase">Vardiya Girişi</h3>
+            <p class="text-xs text-slate-400 italic">Lütfen aracınızın KM gösterge fotoğrafını sisteme yükleyiniz!</p>
+            <input type="file" accept="image/*" capture="camera" id="km-photo" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500">
+            <input type="number" id="km-value" placeholder="Mevcut KM Verisini Giriniz" class="w-full p-4 bg-slate-900 rounded-xl border border-slate-700 text-white font-bold outline-none focus:border-cyan-500">
+            <button id="km-submit-btn" class="w-full py-4 bg-emerald-600 rounded-2xl font-black uppercase tracking-widest transition-all active:scale-95">ONAYLA VE DEVAM ET</button>
         </div>
     </div>
 
     <header class="h-16 px-5 flex justify-between items-center glass-card z-[1001]">
         <div class="flex items-center gap-4">
-            <button onclick="toggleSidebar()" class="p-2.5 bg-slate-800/60 rounded-xl">
-                <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24" stroke-width="2.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
-            <h1 class="text-2xl font-black text-cyan-400 italic tracking-tighter">KuryeAI</h1>
+            <button onclick="document.getElementById('sidebar').style.transform='translateX(0)'" class="p-2.5 bg-slate-800/60 rounded-xl text-xl">☰</button>
+            <h1 class="text-2xl font-black text-cyan-400 italic">KuryeAI</h1>
         </div>
-        <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black bg-rose-500/10 text-rose-500 border border-rose-500/30 uppercase tracking-widest">KAPALI</div>
+        <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black bg-rose-500/10 text-rose-500 border border-rose-500/30 uppercase">KAPALI</div>
     </header>
 
     <main class="flex-grow flex flex-col relative overflow-hidden">
-        <div id="map"></div>
-        <button onclick="reCenter()" class="target-btn absolute bottom-4 right-4 z-[40] active:scale-90 transition-transform">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="3"><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
-        </button>
-
-        <div class="p-4 bg-darkBg grid grid-cols-3 gap-2 border-t border-slate-800/50 shadow-2xl">
-            <div class="glass-card p-3 rounded-2xl text-center">
-                <p class="text-[9px] opacity-50 font-bold uppercase">Anlık Hız</p>
-                <p id="speed-display" class="text-xl font-black text-cyan-400 tracking-tight">0</p>
-            </div>
-            <div class="glass-card p-3 rounded-2xl text-center">
-                <p class="text-[9px] opacity-50 font-bold uppercase">Toplam KM</p>
-                <p id="km-display" class="text-xl font-black text-yellow-400">0.0</p>
-            </div>
-            <div class="glass-card p-3 rounded-2xl text-center">
-                <p class="text-[9px] opacity-50 font-bold uppercase">Süre</p>
-                <p id="timer-display" class="text-xl font-black">00:00</p>
-            </div>
-            <div class="glass-card p-3 rounded-2xl text-center">
-                <p class="text-[9px] opacity-50 font-bold uppercase">Ort. Hız</p>
-                <p id="avg-speed-display" class="text-xl font-black text-blue-400">0</p>
-            </div>
-            <div class="glass-card p-3 rounded-2xl text-center">
-                <p class="text-[9px] opacity-50 font-bold uppercase">S. Kazanç</p>
-                <p class="text-xl font-black text-emerald-400">₺215</p>
-            </div>
-            <div class="glass-card p-3 rounded-2xl text-center">
-                <p class="text-[9px] opacity-50 font-bold uppercase">Kazanç</p>
-                <p id="earning-display" class="text-xl font-black text-emerald-500">₺0</p>
-            </div>
+        <div class="relative flex-grow">
+            <div id="map"></div>
+            <button onclick="reCenter()" class="target-btn active:scale-90 transition-transform">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+            </button>
         </div>
 
-        <div class="px-4 pb-10 pt-2 grid grid-cols-2 gap-4">
-            <button id="start-shift" class="bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all">Vardiya Başlat</button>
-            <button id="end-shift" class="bg-rose-600 hover:bg-rose-500 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all">Vardiya Bitir</button>
+        <div class="p-4 bg-darkBg grid grid-cols-3 gap-2 border-t border-slate-800/50">
+            <div class="glass-card p-3 rounded-2xl text-center"><p class="text-[9px] opacity-50 font-bold uppercase">Hız</p><p id="speed-display" class="text-xl font-black text-cyan-400">0</p></div>
+            <div class="glass-card p-3 rounded-2xl text-center"><p class="text-[9px] opacity-50 font-bold uppercase">Toplam KM</p><p id="km-display" class="text-xl font-black text-yellow-400">0.0</p></div>
+            <div class="glass-card p-3 rounded-2xl text-center"><p class="text-[9px] opacity-50 font-bold uppercase">Süre</p><p id="timer-display" class="text-xl font-black">00:00</p></div>
+            <div class="glass-card p-3 rounded-2xl text-center"><p class="text-[9px] opacity-50 font-bold uppercase">Ort. Hız</p><p id="avg-speed-display" class="text-xl font-black text-blue-400">0</p></div>
+            <div class="glass-card p-3 rounded-2xl text-center"><p class="text-[9px] opacity-50 font-bold uppercase">S. Kazanç</p><p class="text-xl font-black text-emerald-400">₺215</p></div>
+            <div class="glass-card p-3 rounded-2xl text-center"><p class="text-[9px] opacity-50 font-bold uppercase">Kazanç</p><p id="earning-display" class="text-xl font-black text-emerald-500">₺0</p></div>
+        </div>
+
+        <div class="px-4 pb-8 pt-2 grid grid-cols-2 gap-4">
+            <button id="start-shift" class="bg-emerald-600 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl">Vardiya Başlat</button>
+            <button id="end-shift" class="bg-rose-600 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl">Vardiya Bitir</button>
         </div>
     </main>
-
-    <div id="history-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden p-6 overflow-y-auto">
-        <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-            <h2 id="modal-title" class="text-2xl font-black text-cyan-400 uppercase"></h2>
-            <button onclick="closeModal()" class="text-3xl text-slate-400">✕</button>
-        </div>
-        <div id="modal-list" class="space-y-4"></div>
-    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -116,19 +81,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let wakeLock = null, map, kuryeMarker, watchId, startTime, totalDist = 0, lastPos = null, speedLogs = [];
-
-        function toggleSidebar() { 
-            const s = document.getElementById('sidebar');
-            s.style.transform = (s.style.transform === 'translateX(0px)') ? 'translateX(-100%)' : 'translateX(0px)';
-        }
-        function closeModal() { document.getElementById('history-modal').classList.add('hidden'); }
-        function toggleTheme() { document.body.classList.toggle('dark'); }
+        let map, kuryeMarker, watchId, startTime, totalDist = 0, lastPos = null, speedLogs = [], shiftType = '';
 
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([39.9334, 32.8597], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         function track() {
+            if(watchId) navigator.geolocation.clearWatch(watchId);
             watchId = navigator.geolocation.watchPosition((pos) => {
                 const { latitude, longitude, speed } = pos.coords;
                 const kmh = speed ? Math.round(speed * 3.6) : 0;
@@ -136,90 +95,60 @@
                 document.getElementById('speed-display').innerText = kmh;
                 
                 const currentPos = [latitude, longitude];
-                map.setView(currentPos, 17);
+                map.panTo(currentPos);
                 
-                const icon = L.divIcon({ className: '', html: `<div class="moto-container"></div>`, iconSize: [32, 32] });
-                if (kuryeMarker) map.removeLayer(kuryeMarker);
-                kuryeMarker = L.marker(currentPos, {icon: icon}).addTo(map);
+                // Marker Çizimi - Force Update
+                const icon = L.divIcon({ className: '', html: `<div class="moto-container"></div>`, iconSize: [34, 34] });
+                if (kuryeMarker) { kuryeMarker.setLatLng(currentPos); } 
+                else { kuryeMarker = L.marker(currentPos, {icon: icon}).addTo(map); }
                 
                 if (lastPos && kmh > 2) {
                     totalDist += L.latLng(lastPos).distanceTo(L.latLng(currentPos)) / 1000;
                     document.getElementById('km-display').innerText = totalDist.toFixed(1);
                 }
                 lastPos = currentPos;
-                const avgSpeed = speedLogs.length > 0 ? Math.round(speedLogs.reduce((a, b) => a + b) / speedLogs.length) : 0;
-                document.getElementById('avg-speed-display').innerText = avgSpeed;
-            }, null, { enableHighAccuracy: true });
+            }, (err) => console.error(err), { enableHighAccuracy: true, maximumAge: 0 });
         }
 
-        document.getElementById('start-shift').onclick = function() {
-            startTime = Date.now();
-            if ('wakeLock' in navigator) navigator.wakeLock.request('screen');
-            track();
-            setInterval(() => {
-                const diff = Date.now() - startTime;
-                document.getElementById('timer-display').innerText = new Date(diff).toISOString().substr(11, 8);
-                document.getElementById('earning-display').innerText = `₺${((diff/3600000)*215 + totalDist*8).toFixed(1)}`;
-            }, 1000);
-            document.getElementById('status-badge').innerText = "AÇIK";
-            document.getElementById('status-badge').className = "px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 uppercase tracking-widest";
-            this.disabled = true; this.style.opacity = "0.5";
-        };
+        // Vardiya Başlat ve Bitir Akışı
+        document.getElementById('start-shift').onclick = () => { shiftType = 'start'; openKMModal(); };
+        document.getElementById('end-shift').onclick = () => { shiftType = 'end'; openKMModal(); };
 
-        async function showSection(type) {
-            toggleSidebar();
-            const modal = document.getElementById('history-modal');
-            const title = document.getElementById('modal-title');
-            const list = document.getElementById('modal-list');
-            modal.classList.remove('hidden');
-            list.innerHTML = `<p class="text-center opacity-50 py-10">Veriler getiriliyor...</p>`;
-
-            if(type === 'profile') {
-                title.innerText = "PROFİLİM";
-                list.innerHTML = `<div class="glass-card p-6 rounded-3xl space-y-4 border-cyan-500/30">
-                    <div class="flex items-center gap-4 border-b border-slate-700 pb-4">
-                        <div class="w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center text-3xl">👤</div>
-                        <div><h3 class="text-xl font-bold">Harun Kaya</h3><p class="text-xs text-cyan-400">KuryeID: #06-42</p></div>
-                    </div>
-                    <div class="space-y-3 text-sm">
-                        <p class="flex justify-between"><span>Bölge:</span> <span class="text-slate-300">Ankara</span></p>
-                        <p class="flex justify-between"><span>Puan:</span> <span class="text-yellow-400">⭐ 4.9</span></p>
-                        <p class="flex justify-between"><span>Durum:</span> <span class="text-emerald-400 font-bold">Aktif</span></p>
-                    </div>
-                </div>`;
-                return;
-            }
-
-            const snapshot = await db.ref('arsiv/harun_kaya').limitToLast(10).once('value');
-            const data = snapshot.val();
-            list.innerHTML = "";
-            if (!data) { list.innerHTML = "Kayıt bulunamadı."; return; }
-
-            Object.values(data).reverse().forEach(item => {
-                const card = document.createElement('div');
-                card.className = "glass-card p-4 rounded-2xl border-l-4 " + (type === 'earnings' ? 'border-emerald-500' : 'border-cyan-500');
-                if(type === 'earnings') {
-                    title.innerText = "GEÇMİŞ KAZANÇLAR";
-                    card.innerHTML = `<div class="flex justify-between items-center"><div><p class="text-[10px] opacity-50">${item.tarih}</p><p class="font-bold">${item.paket} Paket</p></div><b class="text-xl text-emerald-400">${item.kazanc}</b></div>`;
-                } else {
-                    title.innerText = "GEÇMİŞ RAPORLAR";
-                    card.innerHTML = `<div class="text-[10px] opacity-50">${item.tarih}</div><div class="flex justify-between mt-2 font-bold text-sm"><span>${item.km} KM</span><span>${item.sure}</span><span class="text-cyan-400">${item.paket} Paket</span></div>`;
-                }
-                list.appendChild(card);
-            });
+        function openKMModal() {
+            document.getElementById('km-modal-title').innerText = shiftType === 'start' ? "Vardiya Girişi" : "Vardiya Çıkışı";
+            document.getElementById('km-input-modal').classList.remove('hidden');
         }
 
-        document.getElementById('end-shift').onclick = function() {
-            const p = prompt("Vardiya bitti! Toplam kaç paket attın?");
-            if(p) {
-                db.ref('arsiv/harun_kaya').push({
+        document.getElementById('km-submit-btn').onclick = async function() {
+            const kmValue = document.getElementById('km-value').value;
+            const photo = document.getElementById('km-photo').files[0];
+
+            if(!kmValue || !photo) { alert("Lütfen hem fotoğraf seçin hem de KM değerini girin!"); return; }
+
+            if(shiftType === 'start') {
+                startTime = Date.now();
+                if ('wakeLock' in navigator) navigator.wakeLock.request('screen');
+                track();
+                setInterval(() => {
+                    const diff = Date.now() - startTime;
+                    document.getElementById('timer-display').innerText = new Date(diff).toISOString().substr(11, 8);
+                    document.getElementById('earning-display').innerText = `₺${((diff/3600000)*215 + totalDist*8).toFixed(1)}`;
+                }, 1000);
+                document.getElementById('status-badge').innerText = "AÇIK";
+                document.getElementById('status-badge').className = "px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 uppercase";
+                document.getElementById('start-shift').disabled = true;
+                document.getElementById('start-shift').style.opacity = "0.5";
+            } else {
+                await db.ref('arsiv/harun_kaya').push({
                     tarih: new Date().toLocaleString('tr-TR'),
+                    bitis_km: kmValue,
+                    toplam_km: totalDist.toFixed(1),
                     kazanc: document.getElementById('earning-display').innerText,
-                    km: totalDist.toFixed(1),
-                    sure: document.getElementById('timer-display').innerText,
-                    paket: p
-                }).then(() => location.reload());
+                    sure: document.getElementById('timer-display').innerText
+                });
+                location.reload();
             }
+            document.getElementById('km-input-modal').classList.add('hidden');
         };
 
         function reCenter() { if(lastPos) map.setView(lastPos, 17); }

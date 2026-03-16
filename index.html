@@ -3,64 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI | Akıllı Teslimat</title>
+    <title>KuryeAI | Sistem Girişi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
-        body { background-color: #0f172a; font-family: 'Inter', sans-serif; margin: 0; color: white; overflow: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .hero-gradient { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.1) 0%, transparent 70%); }
-        @keyframes slow-bounce { 0%, 100% { transform: translateY(-3%); } 50% { transform: translateY(0); } }
-        .animate-bounce-slow { animation: slow-bounce 3s infinite ease-in-out; }
+        body { background-color: #0f172a; font-family: 'Inter', sans-serif; color: white; margin: 0; overflow: hidden; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .hero-gradient { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15) 0%, transparent 70%); }
+        .input-field { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(6, 182, 212, 0.2); transition: all 0.3s; color: white; }
+        .input-field:focus { border-color: #06b6d4; box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); outline: none; }
+        .hidden { display: none; }
         .logo-glow { filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.6)); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center relative px-6">
+<body class="min-h-screen flex items-center justify-center relative px-4">
 
     <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
 
-    <div class="z-10 text-center space-y-12 max-w-2xl w-full">
-        <div class="animate-bounce-slow flex flex-col items-center">
-            <div class="logo-glow mb-4">
-                <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div id="roleSelection" class="z-10 text-center space-y-8 max-w-4xl w-full">
+        <div class="animate-pulse">
+            <div class="logo-glow flex justify-center mb-4">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="48" stroke="#06b6d4" stroke-width="2" stroke-dasharray="10 5"/>
                     <path d="M35 30L55 50L35 70" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M55 30L75 50L55 70" stroke="#06b6d4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
-            <h1 class="text-4xl md:text-5xl font-['Orbitron'] font-bold tracking-tighter bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
-                KURYE<span class="text-cyan-500">AI</span>
-            </h1>
-            <p class="mt-4 text-[10px] md:text-xs tracking-[0.5em] text-cyan-500/80 font-bold uppercase animate-pulse font-['Orbitron']">
-                Akıllı Teslimat Sistemi
-            </p>
+            <h1 class="text-3xl font-['Orbitron'] font-bold tracking-widest text-white">KURYE<span class="text-cyan-400">AI</span></h1>
+            <p class="text-slate-400 text-[10px] tracking-[0.4em] uppercase mt-2">Sistem Giriş Paneli</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto w-full font-['Orbitron']">
-            <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/20 transition-all p-8 rounded-[2rem] border border-orange-500/30 group">
-                <i class="fa-solid fa-store text-4xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-lg tracking-wider">RESTORAN</span>
-                <span class="text-[9px] text-slate-400 block mt-2 font-['Inter']">SİPARİŞ OLUŞTUR</span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            <button onclick="showLogin('Admin')" class="glass p-8 rounded-3xl hover:bg-red-500/10 border-red-500/20 transition-all group">
+                <i class="fa-solid fa-user-shield text-3xl text-red-500 mb-4 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold font-['Orbitron'] text-sm tracking-widest">ADMIN</span>
             </button>
-
-            <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/20 transition-all p-8 rounded-[2rem] border border-cyan-500/30 group">
-                <i class="fa-solid fa-motorcycle text-4xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-lg tracking-wider">KURYE</span>
-                <span class="text-[9px] text-slate-400 block mt-2 font-['Inter']">OPERASYON YÖNET</span>
+            <button onclick="showLogin('Restoran')" class="glass p-8 rounded-3xl hover:bg-orange-500/10 border-orange-500/20 transition-all group">
+                <i class="fa-solid fa-store text-3xl text-orange-500 mb-4 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold font-['Orbitron'] text-sm tracking-widest">RESTORAN</span>
             </button>
-        </div>
-
-        <div class="flex justify-center gap-10 text-[10px] font-['Orbitron'] text-slate-500 tracking-widest uppercase">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-orange-500"></i>
-                <span>ANLIK TAKİP</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-brain text-cyan-500"></i>
-                <span>AI DESTEKLİ</span>
-            </div>
+            <button onclick="showLogin('Kurye')" class="glass p-8 rounded-3xl hover:bg-cyan-500/10 border-cyan-500/20 transition-all group">
+                <i class="fa-solid fa-motorcycle text-3xl text-cyan-500 mb-4 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold font-['Orbitron'] text-sm tracking-widest">KURYE</span>
+            </button>
         </div>
     </div>
+
+    <div id="loginPanel" class="hidden z-20 w-full max-w-sm glass p-8 rounded-[2.5rem]">
+        <button onclick="hideLogin()" class="text-slate-500 hover:text-white mb-6 text-sm">
+            <i class="fa-solid fa-arrow-left mr-2"></i> Geri
+        </button>
+        <h2 id="loginTitle" class="text-xl font-['Orbitron'] font-bold text-center mb-8 text-cyan-400 tracking-wider">GİRİŞ</h2>
+        <form onsubmit="handleLogin(event)" class="space-y-5">
+            <div>
+                <input type="text" id="username" placeholder="Kullanıcı Adı" required class="w-full p-4 rounded-2xl input-field">
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Şifre" required class="w-full p-4 rounded-2xl input-field">
+            </div>
+            <div id="errorMessage" class="text-red-500 text-xs text-center hidden font-bold">Hatalı bilgiler!</div>
+            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-2xl transition-all font-['Orbitron'] tracking-widest">
+                GİRİŞ YAP
+            </button>
+        </form>
+    </div>
+
+    <script>
+        let selectedRole = "";
+        
+        // Tanımladığın yetkili kullanıcı bilgileri
+        const users = {
+            "Admin": { user: "burakline", pass: "burakline123", url: "admin.html" },
+            "Restoran": { user: "tava", pass: "tava123", url: "restaurant.html" },
+            "Kurye": { user: "harunkaya", pass: "harun123", url: "courier.html" }
+        };
+
+        function showLogin(role) {
+            selectedRole = role;
+            document.getElementById('roleSelection').classList.add('hidden');
+            document.getElementById('loginPanel').classList.remove('hidden');
+            document.getElementById('loginTitle').innerText = role.toUpperCase() + " GİRİŞİ";
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function hideLogin() {
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('roleSelection').classList.remove('hidden');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const uInput = document.getElementById('username').value;
+            const pInput = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMessage');
+
+            const target = users[selectedRole];
+
+            if (uInput === target.user && pInput === target.pass) {
+                // Giriş Başarılı
+                window.location.href = target.url;
+            } else {
+                // Hatalı Giriş
+                errorMsg.classList.remove('hidden');
+                document.getElementById('password').value = "";
+            }
+        }
+    </script>
 </body>
 </html>

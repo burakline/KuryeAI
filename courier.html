@@ -3,62 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurye Paneli - KuryeAI</title>
+    <title>KuryeAI - Kurye Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map { height: 250px; border-radius: 1rem; z-index: 1; background: #1e293b; }
+        body { background-color: #0f172a; color: white; }
+        #map { height: 300px; border-radius: 1rem; margin-bottom: 1rem; z-index: 1; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
     </style>
 </head>
-<body class="bg-slate-900 text-white pb-24">
+<body class="pb-24">
 
-    <nav class="p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center sticky top-0 z-10 shadow-xl">
-        <h1 class="text-xl font-bold text-cyan-400">KuryeAI</h1>
+    <header class="p-4 flex justify-between items-center border-b border-slate-800 glass-card sticky top-0 z-50">
+        <h1 class="text-xl font-bold text-cyan-400 italic">KuryeAI</h1>
         <div class="flex items-center gap-3">
-            <button onclick="window.location.href='index.html'" class="text-xs bg-slate-700 px-3 py-2 rounded-lg border border-slate-600">Çıkış Yap</button>
-            <div id="statusBadge" class="px-2 py-1 rounded-md text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/50 uppercase font-bold">Kapalı</div>
+            <span id="status-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/50">KAPALI</span>
+            <button onclick="window.location.href='index.html'" class="text-xs bg-slate-700 px-3 py-1 rounded shadow-lg text-slate-300">Çıkış Yap</button>
         </div>
-    </nav>
+    </header>
 
-    <div class="p-4 space-y-4">
-        <div id="map" class="shadow-2xl border border-slate-700"></div>
+    <main class="p-4 space-y-6">
+        
+        <div class="space-y-2">
+            <div id="map" class="shadow-2xl shadow-cyan-900/20"></div>
+        </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="startShift()" id="startBtn" class="py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold shadow-lg shadow-emerald-900/20 transition active:scale-95">Vardiya Başlat</button>
-            <button onclick="endShift()" id="endBtn" class="py-4 bg-rose-600 hover:bg-rose-500 rounded-xl font-bold shadow-lg shadow-rose-900/20 transition active:scale-95">Vardiya Bitir</button>
+            <button id="start-shift" class="bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95">Vardiya Başlat</button>
+            <button id="end-shift" class="bg-rose-600 hover:bg-rose-500 py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95">Vardiya Bitir</button>
         </div>
 
-        <div class="space-y-3">
-            <h3 class="text-cyan-400 font-bold flex items-center gap-2 text-sm italic">
-                📦 Yeni Sipariş Havuzu
-            </h3>
-            <div id="orderPool" class="space-y-3">
-                <p class="text-slate-500 text-xs text-center py-4 italic">Siparişler bekleniyor...</p>
+        <div class="glass-card p-4 rounded-2xl">
+            <h2 class="text-cyan-400 font-bold mb-3 flex items-center gap-2">📦 Yeni Sipariş Havuzu</h2>
+            <div id="order-list" class="text-center py-8 text-slate-500 italic text-sm">
+                Siparişler bekleniyor...
             </div>
         </div>
 
-        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
-            <h3 class="text-slate-400 font-bold border-b border-slate-700 pb-2 text-xs uppercase tracking-wider">Gün Sonu Raporu</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <input id="packages" type="number" placeholder="Paket" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600 focus:border-cyan-500">
-                <input id="hours" type="number" placeholder="Saat" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600 focus:border-cyan-500">
-                <input id="km" type="number" placeholder="KM" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600 focus:border-cyan-500">
-                <input id="revenue" type="number" placeholder="Ciro" class="bg-slate-700 p-3 rounded-lg outline-none text-sm border border-slate-600 focus:border-cyan-500">
+        <div class="grid grid-cols-2 gap-3">
+            <div class="glass-card p-3 rounded-xl text-center">
+                <p class="text-[10px] text-slate-400 uppercase tracking-wider">Paket</p>
+                <p class="text-xl font-bold">0</p>
             </div>
-            <button onclick="saveDayEnd()" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 rounded-lg font-bold shadow-lg transition active:scale-95">Raporu Kaydet</button>
+            <div class="glass-card p-3 rounded-xl text-center">
+                <p class="text-[10px] text-slate-400 uppercase tracking-wider">Ciro</p>
+                <p class="text-xl font-bold">₺0.00</p>
+            </div>
         </div>
-    </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 p-3 flex justify-around items-center z-20">
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-slate-700 p-3 flex justify-around items-center z-50">
         <button class="flex flex-col items-center gap-1 text-cyan-400">
             <span class="text-[10px] font-bold">ANA SAYFA</span>
         </button>
-        <button onclick="alert('Profil: Burakline\nBölge: Ankara')" class="flex flex-col items-center gap-1 text-slate-400">
-            <span class="text-[10px] font-bold text-white">PROFİL</span>
+        <button onclick="alert('Profil: Burakline\nBölge: Ankara\nPuan: 5.0 ⭐')" class="flex flex-col items-center gap-1 text-slate-400">
+            <span class="text-[10px] font-bold">PROFİL</span>
         </button>
-    </div>
+    </nav>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script type="module" src="js/courier.js"></script>
-<script src="google-util.js"></script> </body>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 1. Haritayı Başlat (Ankara Merkezli)
+        var map = L.map('map').setView([39.9334, 32.8597], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Kurye İkonu
+        var kuryeMarker = L.marker([39.9334, 32.8597]).addTo(map)
+            .bindPopup('Şu anki konumunuz (Ankara)')
+            .openPopup();
+
+        // 2. Vardiya Mantığı
+        const startBtn = document.getElementById('start-shift');
+        const endBtn = document.getElementById('end-shift');
+        const statusBadge = document.getElementById('status-badge');
+        const orderList = document.getElementById('order-list');
+
+        startBtn.onclick = function() {
+            statusBadge.innerText = "AÇIK";
+            statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
+            orderList.innerHTML = "<div class='text-emerald-400 animate-pulse'>Siparişler aranıyor...</div>";
+            alert("Vardiya Başlatıldı! Sipariş havuzu aktif.");
+        };
+
+        endBtn.onclick = function() {
+            statusBadge.innerText = "KAPALI";
+            statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/50";
+            orderList.innerHTML = "Siparişler bekleniyor...";
+            alert("Vardiya Bitirildi. İyi dinlenmeler!");
+        };
+    </script>
+</body>
 </html>

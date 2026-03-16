@@ -1,9 +1,7 @@
 /**
- * KuryeAI - Güvenli Giriş ve Yetkilendirme Sistemi
+ * KuryeAI - Güvenli Giriş Sistemi
  */
-
 function handleSecureLogin(type, user, pass) {
-    // Belirlediğin Kimlik Bilgileri
     const accounts = {
         admin: { u: "burakline", p: "burakline123", url: "admin.html" },
         restaurant: { u: "tava", p: "tava123", url: "restaurant.html" },
@@ -20,15 +18,3 @@ function handleSecureLogin(type, user, pass) {
         alert("Hatalı kullanıcı adı veya şifre!");
     }
 }
-
-// URL üzerinden doğrudan girişi engelleme (Basit Koruma)
-(function checkRoute() {
-    const page = window.location.pathname;
-    const protectedPages = ["admin.html", "restaurant.html", "courier.html"];
-    
-    protectedPages.forEach(p => {
-        if (page.includes(p) && !sessionStorage.getItem("isLoggedIn")) {
-            // window.location.href = "index.html";
-        }
-    });
-})();

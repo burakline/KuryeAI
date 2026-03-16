@@ -6,6 +6,7 @@
     <title>KuryeAI | Akıllı Teslimat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="1000413588.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
         body { background-color: #0f172a; font-family: 'Inter', sans-serif; margin: 0; color: white; overflow-x: hidden; }
@@ -26,37 +27,38 @@
 
     <div class="z-10 text-center space-y-12 max-w-2xl w-full">
         <div class="animate-bounce-slow flex flex-col items-center">
-            <img src="https://raw.githubusercontent.com/Burak-AI/kuryeai/main/1000413588.png" 
-                 alt="KuryeAI Logo" 
-                 style="width: 280px; height: auto;"
-                 class="drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]"
-                 onload="console.log('Logo yüklendi')"
-                 onerror="this.src='https://i.ibb.co/LzNfXmC/kuryeai-logo.png'"> 
-            <p class="mt-8 text-sm tracking-[0.3em] text-slate-400 font-light uppercase animate-pulse">Akıllı Teslimat.</p>
+            <img src="1000413588.png" 
+                 alt="KuryeAI" 
+                 class="mx-auto w-64 md:w-80 drop-shadow-[0_0_30px_rgba(6,182,212,0.6)]"
+                 onerror="this.src='https://raw.githubusercontent.com/Burak-AI/kuryeai/main/1000413588.png'">
+            
+            <p class="mt-8 text-sm tracking-[0.4em] text-cyan-400 font-bold font-['Orbitron'] animate-pulse">
+                AKILLI TESLİMAT
+            </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto w-full">
-            <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/10 transition-all p-8 rounded-[2rem] border border-orange-500/20 group">
-                <i class="fa-solid fa-store text-3xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-lg font-['Orbitron'] tracking-wider">RESTORAN</span>
-                <span class="text-[10px] text-slate-500 block mt-1 tracking-widest">SİPARİŞ PANELİ</span>
+            <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/20 transition-all p-8 rounded-[2rem] border border-orange-500/30 group">
+                <i class="fa-solid fa-store text-4xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold text-xl font-['Orbitron'] tracking-wider">RESTORAN</span>
+                <span class="text-[10px] text-slate-400 block mt-1 tracking-widest uppercase">Sipariş Oluştur</span>
             </button>
 
-            <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/10 transition-all p-8 rounded-[2rem] border border-cyan-500/20 group">
-                <i class="fa-solid fa-motorcycle text-3xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-lg font-['Orbitron'] tracking-wider">KURYE</span>
-                <span class="text-[10px] text-slate-500 block mt-1 tracking-widest">TAKİP PANELİ</span>
+            <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/20 transition-all p-8 rounded-[2rem] border border-cyan-500/30 group">
+                <i class="fa-solid fa-motorcycle text-4xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <span class="block font-bold text-xl font-['Orbitron'] tracking-wider">KURYE</span>
+                <span class="text-[10px] text-slate-400 block mt-1 tracking-widest uppercase">Operasyon Yönet</span>
             </button>
         </div>
 
-        <div class="flex justify-center gap-8 text-[9px] font-['Orbitron'] text-slate-500 tracking-widest opacity-60">
+        <div class="flex justify-center gap-10 text-[10px] font-['Orbitron'] text-slate-500 tracking-widest">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bolt text-orange-500"></i>
-                <span>GERÇEK ZAMANLI</span>
+                <span>ANLIK TAKİP</span>
             </div>
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-microchip text-cyan-500"></i>
-                <span>AI ALTYAPI</span>
+                <i class="fa-solid fa-brain text-cyan-400"></i>
+                <span>YAPAY ZEKA</span>
             </div>
         </div>
     </div>
@@ -70,7 +72,8 @@
             }
         }
         window.addEventListener('load', hideLoader);
-        setTimeout(hideLoader, 2000); // Yedek kapatma
+        // Sayfa yüklenmese bile 2.5 saniye sonra loader'ı kaldır
+        setTimeout(hideLoader, 2500);
     </script>
 </body>
 </html>

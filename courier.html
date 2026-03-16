@@ -77,11 +77,11 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Senin Firebase Config Bilgilerin (Entegre Edildi)
+        // Senin Firebase Config Bilgilerin (Tam Entegre Edildi)
         const firebaseConfig = {
             apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
             authDomain: "kuryeai.firebaseapp.com",
-            databaseURL: "https://kuryeai-default-rtdb.firebaseio.com",
+            databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/",
             projectId: "kuryeai",
             storageBucket: "kuryeai.firebasestorage.app",
             messagingSenderId: "655930514402",
@@ -131,7 +131,7 @@
                     zaman: Date.now() 
                 });
 
-                // Mesafe Hesabı (Sadece hareketliyken)
+                // Mesafe Hesabı (Dururken KM artmaz, kmh > 3 olmalı)
                 if (lastPos && kmh > 3) {
                     const d = L.latLng(lastPos).distanceTo(L.latLng(currentPos)) / 1000;
                     totalDist += d;

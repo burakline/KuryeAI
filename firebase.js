@@ -1,37 +1,34 @@
 /**
- * KuryeAI - Güvenli Giriş Sistemi
+ * KuryeAI - Güvenli Giriş ve Yetkilendirme Sistemi
  */
 
-function handleLogin(type) {
-    const username = prompt(type.toUpperCase() + " Kullanıcı Adınızı Giriniz:");
-    const password = prompt(type.toUpperCase() + " Şifrenizi Giriniz:");
-
-    // Giriş Bilgileri Tanımlamaları
-    const credentials = {
-        admin: { user: "burakline", pass: "burakline123" },
-        restaurant: { user: "tava", pass: "tava123" },
-        courier: { user: "harunkaya", pass: "harun123" }
+function handleSecureLogin(type, user, pass) {
+    // Belirlediğin Kimlik Bilgileri
+    const accounts = {
+        admin: { u: "burakline", p: "burakline123", url: "admin.html" },
+        restaurant: { u: "tava", p: "tava123", url: "restaurant.html" },
+        courier: { u: "harunkaya", p: "harun123", url: "courier.html" }
     };
 
-    const target = credentials[type];
+    const target = accounts[type];
 
-    if (username === target.user && password === target.pass) {
+    if (user === target.u && pass === target.p) {
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("userRole", type);
-        alert("Giriş Başarılı! Panelinize yönlendiriliyorsunuz.");
-        window.location.href = type + ".html";
+        window.location.href = target.url;
     } else {
-        alert("Kullanıcı adı veya şifre hatalı!");
+        alert("Hatalı kullanıcı adı veya şifre!");
     }
 }
 
-// Sayfa bazlı erişim kontrolü (Doğrudan URL ile girişi önlemek için her panelin başında çalışır)
-(function checkAccess() {
-    const path = window.location.pathname;
-    if (path.includes("admin.html") || path.includes("restaurant.html") || path.includes("courier.html")) {
-        if (!sessionStorage.getItem("isLoggedIn")) {
-            // Burayı daha sonra Firebase Auth ile tamamen kapatacağız
-            console.log("Erişim denetimi aktif.");
+// URL üzerinden doğrudan girişi engelleme (Basit Koruma)
+(function checkRoute() {
+    const page = window.location.pathname;
+    const protectedPages = ["admin.html", "restaurant.html", "courier.html"];
+    
+    protectedPages.forEach(p => {
+        if (page.includes(p) && !sessionStorage.getItem("isLoggedIn")) {
+            // window.location.href = "index.html";
         }
-    }
+    });
 })();

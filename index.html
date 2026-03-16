@@ -20,7 +20,6 @@
 
     <div id="loader" class="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col items-center justify-center">
         <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
-        <p class="mt-4 text-cyan-400 font-['Orbitron'] text-[10px] tracking-[0.3em] animate-pulse uppercase">Sistem Hazırlanıyor</p>
     </div>
 
     <div class="fixed inset-0 hero-gradient pointer-events-none"></div>
@@ -30,20 +29,22 @@
             <img src="https://raw.githubusercontent.com/Burak-AI/kuryeai/main/1000413588.png" 
                  alt="KuryeAI Logo" 
                  style="width: 280px; height: auto;"
-                 class="drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+                 class="drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]"
+                 onload="console.log('Logo yüklendi')"
+                 onerror="this.src='https://i.ibb.co/LzNfXmC/kuryeai-logo.png'"> 
             <p class="mt-8 text-sm tracking-[0.3em] text-slate-400 font-light uppercase animate-pulse">Akıllı Teslimat.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-lg mx-auto w-full">
             <button onclick="window.location.href='restaurant.html'" class="glass hover:bg-orange-500/10 transition-all p-8 rounded-[2rem] border border-orange-500/20 group">
                 <i class="fa-solid fa-store text-3xl text-orange-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-lg font-['Orbitron']">RESTORAN</span>
+                <span class="block font-bold text-lg font-['Orbitron'] tracking-wider">RESTORAN</span>
                 <span class="text-[10px] text-slate-500 block mt-1 tracking-widest">SİPARİŞ PANELİ</span>
             </button>
 
             <button onclick="window.location.href='courier.html'" class="glass hover:bg-cyan-500/10 transition-all p-8 rounded-[2rem] border border-cyan-500/20 group">
                 <i class="fa-solid fa-motorcycle text-3xl text-cyan-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <span class="block font-bold text-lg font-['Orbitron']">KURYE</span>
+                <span class="block font-bold text-lg font-['Orbitron'] tracking-wider">KURYE</span>
                 <span class="text-[10px] text-slate-500 block mt-1 tracking-widest">TAKİP PANELİ</span>
             </button>
         </div>
@@ -61,7 +62,6 @@
     </div>
 
     <script>
-        // Sayfa yükleme kontrolü
         function hideLoader() {
             const loader = document.getElementById('loader');
             if (loader) {
@@ -69,12 +69,8 @@
                 setTimeout(() => { loader.style.display = 'none'; }, 500);
             }
         }
-
-        // Sayfa tam yüklendiğinde
         window.addEventListener('load', hideLoader);
-
-        // Her ihtimale karşı (yükleme takılırsa) 3 saniye sonra zorla kapat
-        setTimeout(hideLoader, 3000);
+        setTimeout(hideLoader, 2000); // Yedek kapatma
     </script>
 </body>
 </html>

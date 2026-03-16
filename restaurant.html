@@ -3,110 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI | Restoran Paneli</title>
+    <title>KuryeAI - Restoran Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        body { background: #0f172a; color: white; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        #map { height: 300px; border-radius: 1rem; z-index: 1; }
+        body { background-color: #0f172a; color: white; }
+        #res-map { height: 350px; border-radius: 1.5rem; margin-bottom: 1rem; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        input, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="pb-20">
 
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-orange-400">Restoran Paneli</h1>
-                <p class="text-slate-400 text-sm">Yeni sipariş oluşturun ve kurye çağırın.</p>
-            </div>
-            <button onclick="window.location.href='index.html'" class="text-slate-400 hover:text-white transition">
-                <i class="fa-solid fa-xmark text-2xl"></i> Ana Sayfa
+    <header class="p-4 flex justify-between items-center border-b border-slate-800 glass-card sticky top-0 z-50">
+        <div>
+            <h1 class="text-xl font-bold text-cyan-400 italic">KuryeAI</h1>
+            <p class="text-[10px] text-slate-400">Restoran Yönetim Ekranı</p>
+        </div>
+        <button onclick="window.location.href='index.html'" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-3 py-1 rounded-lg">Çıkış</button>
+    </header>
+
+    <main class="p-4 space-y-6">
+
+        <div class="grid grid-cols-1 gap-4">
+            <button onclick="cağır()" class="bg-cyan-600 hover:bg-cyan-500 py-4 rounded-2xl font-black text-lg shadow-lg shadow-cyan-900/40 transition-all active:scale-95 flex flex-col items-center">
+                🚀 HEMEN KURYE ÇAĞIR
+                <span class="text-[10px] font-normal opacity-80 italic">En yakın kuryeye sinyal gönderilir</span>
             </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="glass p-6 rounded-3xl">
-                <h2 class="text-xl font-semibold mb-4 text-white">Sipariş Detayları</h2>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-slate-500 mb-1">Müşteri Adı</label>
-                        <input type="text" id="customerName" placeholder="Örn: Ahmet Yılmaz" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-slate-500 mb-1">Sipariş Notu / Paket</label>
-                        <textarea id="orderNote" placeholder="Örn: 2 Lahmacun, 1 Ayran" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition h-24"></textarea>
-                    </div>
-
-                    <div class="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">
-                        <p class="text-xs text-orange-300">Haritadan teslimat konumunu iğneleyin.</p>
-                        <p id="coordsText" class="text-[10px] text-slate-500 mt-1">Konum seçilmedi.</p>
-                    </div>
-
-                    <button onclick="sendOrder()" id="sendBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all transform active:scale-95">
-                        SİPARİŞİ GÖNDER VE KURYE ÇAĞIR
-                    </button>
+        <div class="glass-card p-5 rounded-3xl space-y-4">
+            <h2 class="text-sm font-bold text-slate-300 uppercase tracking-widest">📦 Yeni Sipariş Detayı</h2>
+            <div class="space-y-3">
+                <input type="text" placeholder="Müşteri Adresi (Mahalle/Sokak)" class="w-full p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-cyan-500">
+                <div class="grid grid-cols-2 gap-3">
+                    <select class="p-3 rounded-xl text-sm outline-none">
+                        <option>Ödeme: Nakit</option>
+                        <option>Ödeme: Kredi Kartı</option>
+                        <option>Ödeme: Online</option>
+                    </select>
+                    <input type="number" placeholder="Tutar (₺)" class="p-3 rounded-xl text-sm outline-none">
                 </div>
             </div>
-
-            <div class="glass p-6 rounded-3xl h-full">
-                <h2 class="text-xl font-semibold mb-4 text-white">Teslimat Konumu</h2>
-                <div id="map"></div>
-            </div>
         </div>
-    </div>
 
-    <script type="module">
-        import { db } from "./firebase.js";
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        <div class="space-y-3">
+            <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">📍 Yakındaki Kuryeler & Takip</h2>
+            <div id="res-map" class="shadow-2xl shadow-cyan-900/20"></div>
+        </div>
 
-        // Harita Kurulumu
-        const map = L.map('map').setView([41.0082, 28.9784], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        
-        let marker;
-        let selectedCoords = null;
+    </main>
 
-        map.on('click', (e) => {
-            if (marker) map.removeLayer(marker);
-            marker = L.marker(e.latlng).addTo(map);
-            selectedCoords = e.latlng;
-            document.getElementById('coordsText').innerText = `Lat: ${e.latlng.lat.toFixed(5)}, Lng: ${e.latlng.lng.toFixed(5)}`;
-        });
+    <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-slate-700 p-3 flex justify-around items-center z-50">
+        <button class="flex flex-col items-center gap-1 text-cyan-400">
+            <span class="text-[10px] font-bold">PANEL</span>
+        </button>
+        <button onclick="alert('Geçmiş Siparişler Listesi Yakında!')" class="flex flex-col items-center gap-1 text-slate-500">
+            <span class="text-[10px] font-bold">GEÇMİŞ</span>
+        </button>
+    </nav>
 
-        window.sendOrder = async () => {
-            const name = document.getElementById('customerName').value;
-            const note = document.getElementById('orderNote').value;
-            const btn = document.getElementById('sendBtn');
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Harita Başlatma (Ankara - Kızılay civarı)
+        var map = L.map('res-map').setView([39.9208, 32.8541], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
 
-            if (!name || !selectedCoords) {
-                alert("Lütfen müşteri adını girin ve haritadan konum seçin!");
-                return;
-            }
+        // Restoran Konumu (Sabit İkon)
+        var resIcon = L.divIcon({className: 'bg-cyan-500 w-4 h-4 rounded-full border-2 border-white'});
+        L.marker([39.9208, 32.8541]).addTo(map).bindPopup('<b>Sizin Restoranınız</b>').openPopup();
 
-            btn.disabled = true;
-            btn.innerText = "GÖNDERİLİYOR...";
+        // Yakındaki Kurye Simülasyonu
+        var kuryeMarker = L.circleMarker([39.9250, 32.8600], {
+            radius: 7,
+            fillColor: "#fbbf24",
+            color: "#fff",
+            weight: 2,
+            fillOpacity: 1
+        }).addTo(map).bindPopup('Yakın Kurye: Ahmet (3 dk)');
 
-            try {
-                await addDoc(collection(db, "orders"), {
-                    customerName: name,
-                    orderNote: note,
-                    lat: selectedCoords.lat,
-                    lng: selectedCoords.lng,
-                    status: "waiting", // Kurye bekliyor
-                    timestamp: serverTimestamp()
-                });
-                alert("Sipariş başarıyla oluşturuldu! Kuryeler bilgilendiriliyor.");
-                location.reload();
-            } catch (e) {
-                console.error("Hata: ", e);
-                btn.disabled = false;
-                btn.innerText = "HATA OLUŞTU, TEKRAR DENE";
-            }
-        };
+        function cağır() {
+            alert("Sinyal Gönderildi! Yakındaki 3 kurye bilgilendiriliyor...");
+            kuryeMarker.setStyle({fillColor: "#10b981"}); // Kurye rengini değiştir (aktifleşti)
+        }
     </script>
-<script src="google-util.js"></script> </body>
+</body>
 </html>

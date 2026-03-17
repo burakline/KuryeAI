@@ -3,189 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KuryeAI v12 - Full Sistem</title>
+    <title>KuryeAI Pro v15 - courier.html</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
-        body, html { height: 100%; margin: 0; overflow: hidden; background: #0f172a; font-family: sans-serif; }
-        #map { height: 40vh; width: 100%; z-index: 1; }
-        .stat-card { background: rgba(30, 41, 59, 0.7); border-radius: 1.2rem; padding: 1rem 0.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        #sidebar { transition: transform 0.3s ease; z-index: 9999; }
-        .input-field { background: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; padding: 0.75rem; width: 100%; color: white; font-size: 0.875rem; }
-        .section-view { display: none; height: calc(100vh - 64px); overflow-y: auto; background: #0f172a; padding: 20px; }
+        body, html { height: 100%; margin: 0; overflow: hidden; background: #0f172a; font-family: 'Inter', sans-serif; }
+        #map { height: 38vh; width: 100%; z-index: 1; border-bottom: 2px solid #1e293b; }
+        .stat-card { background: rgba(30, 41, 59, 0.7); border-radius: 1.2rem; padding: 0.8rem 0.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; }
+        .modal-overlay { background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        .section-view { display: none; height: calc(100vh - 64px); overflow-y: auto; background: #0f172a; }
         .active-view { display: block !important; }
+        .notif-dot { position: absolute; top: 6px; right: 6px; width: 12px; height: 12px; background: #f43f5e; border: 2px solid #0f172a; border-radius: 50%; box-shadow: 0 0 10px #f43f5e; }
+        input:focus { outline: none; border-color: #22d3ee !important; }
     </style>
 </head>
 <body class="text-white flex flex-col h-screen">
 
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 transform -translate-x-full p-6 border-r border-slate-800 flex flex-col">
-        <div class="flex justify-between items-center mb-6">
+    <div id="notif-modal" class="fixed inset-0 modal-overlay">
+        <div class="bg-slate-800 w-full max-w-sm rounded-[30px] p-6 border border-slate-700 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="text-lg font-black italic text-cyan-400">BİLDİRİMLER</h3>
+                <button onclick="closeModal('notif-modal')" class="text-slate-500 text-2xl">✕</button>
+            </div>
+            <div id="notif-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                </div>
+        </div>
+    </div>
+
+    <div id="km-modal" class="fixed inset-0 modal-overlay">
+        <div class="bg-slate-800 p-8 rounded-[40px] w-full max-w-sm border border-slate-700 text-center space-y-6">
+            <div id="modal-icon" class="text-5xl animate-pulse">📸</div>
+            <h3 id="modal-title" class="text-xl font-black uppercase tracking-widest text-cyan-400">KM Doğrulaması</h3>
+            <div class="space-y-4">
+                <div class="text-left">
+                    <label class="text-[10px] font-bold text-slate-500 ml-2 uppercase">Gösterge Fotoğrafı</label>
+                    <input type="file" accept="image/*" capture="camera" id="km-photo" class="w-full mt-1 p-3 bg-slate-900 rounded-2xl text-xs text-slate-400 file:bg-cyan-600 file:border-0 file:rounded-lg file:text-white file:font-bold file:mr-4">
+                </div>
+                <div class="text-left">
+                    <label class="text-[10px] font-bold text-slate-500 ml-2 uppercase">Manuel KM Girişi</label>
+                    <input type="number" id="km-input" placeholder="000000" class="w-full p-5 bg-slate-900 rounded-3xl border border-slate-700 font-black text-3xl text-center text-cyan-400">
+                </div>
+            </div>
+            <button onclick="processShiftStep()" class="w-full py-5 bg-emerald-600 rounded-3xl font-black shadow-xl active:scale-95 transition">SİSTEME KAYDET VE ONAYLA</button>
+            <button onclick="closeModal('km-modal')" class="text-slate-500 text-xs font-bold uppercase">İptal Et</button>
+        </div>
+    </div>
+
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 transform -translate-x-full p-6 border-r border-slate-800 flex flex-col shadow-2xl">
+        <div class="flex justify-between items-center mb-8">
             <h2 class="text-2xl font-black text-cyan-400 italic">KuryeAI</h2>
             <button onclick="toggleMenu()" class="text-slate-400 text-3xl">✕</button>
         </div>
-        <nav class="space-y-2 flex-grow overflow-y-auto">
-            <button onclick="showPage('profile')" class="w-full text-left p-3 rounded-xl hover:bg-slate-800 flex items-center gap-3">👤 Profilim</button>
-            <button onclick="showPage('reports')" class="w-full text-left p-3 rounded-xl hover:bg-slate-800 flex items-center gap-3">📊 Geçmiş Raporlar</button>
-            <button onclick="showPage('earnings')" class="w-full text-left p-3 rounded-xl hover:bg-slate-800 flex items-center gap-3">💰 Geçmiş Kazançlar</button>
-            <hr class="border-slate-800 my-2">
-            <button onclick="showPage('platforms')" class="w-full text-left p-3 rounded-xl hover:bg-slate-800 flex items-center gap-3">📱 Platformlar</button>
-            <button onclick="showPage('tools')" class="w-full text-left p-3 rounded-xl hover:bg-slate-800 flex items-center gap-3">🔧 Araçlar</button>
-            <button onclick="showPage('pdf')" class="w-full text-left p-3 rounded-xl hover:bg-slate-800 flex items-center gap-3">📄 PDF Rapor</button>
-            <button onclick="showPage('main')" class="w-full text-center p-3 rounded-xl bg-cyan-600 font-bold mt-4">ANA EKRAN</button>
+        <nav class="space-y-3 flex-grow overflow-y-auto">
+            <button onclick="showPage('profile')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 flex items-center gap-3 transition">👤 Profilim</button>
+            <button onclick="showPage('reports')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 flex items-center gap-3 transition">📊 Geçmiş Raporlar</button>
+            <button onclick="showPage('earnings')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 flex items-center gap-3 transition">💰 Kazanç Geçmişi</button>
+            <button onclick="showPage('main')" class="w-full text-center p-4 rounded-2xl bg-cyan-600 font-bold mt-6 shadow-lg shadow-cyan-900/20">ANA PANEL</button>
         </nav>
-        <button onclick="logout()" class="w-full p-4 bg-rose-900/40 text-rose-400 border border-rose-800 rounded-2xl font-bold mt-4">🚪 Oturumu Kapat</button>
+        <button onclick="location.reload()" class="w-full p-4 bg-rose-900/30 text-rose-400 border border-rose-800/50 rounded-2xl font-bold mt-4">🚪 Oturumu Kapat</button>
     </div>
 
-    <header class="h-16 px-5 flex justify-between items-center bg-slate-900/90 z-[2000]">
-        <button onclick="toggleMenu()" class="text-2xl">☰</button>
-        <h1 class="text-xl font-black text-cyan-400 italic">KuryeAI</h1>
-        <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-500 border border-rose-500/50">KAPALI</div>
+    <header class="h-16 px-5 flex justify-between items-center bg-slate-900/95 z-[2000] border-b border-slate-800">
+        <button onclick="toggleMenu()" class="text-2xl p-2 bg-slate-800 rounded-xl">☰</button>
+        <h1 class="text-xl font-black text-cyan-400 italic tracking-tighter">KuryeAI</h1>
+        <button onclick="openNotif()" class="relative p-2 bg-slate-800 rounded-xl">
+            <span class="text-xl">🔔</span>
+            <span id="badge" class="notif-dot hidden"></span>
+        </button>
     </header>
 
-    <main id="main-view" class="section-view active-view p-0">
+    <main id="main-view" class="section-view active-view">
         <div id="map"></div>
-        <div class="px-4 py-4 space-y-3 bg-slate-900/60">
-            <div class="grid grid-cols-2 gap-3">
-                <button id="btn-start" onclick="startShift()" class="bg-emerald-600 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Vardiya Başlat</button>
-                <button id="btn-end" onclick="endShift()" class="bg-rose-600 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest opacity-30" disabled>Vardiya Bitir</button>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="sendEmergency('Kaza Yaptım')" class="bg-rose-800/80 py-3 rounded-xl font-bold text-[9px] uppercase">⚠️ Kaza Yaptım</button>
-                <button onclick="sendEmergency('Aracım Arıza Yaptı')" class="bg-orange-800/80 py-3 rounded-xl font-bold text-[9px] uppercase">🛠 Aracım Arıza Yaptı</button>
-            </div>
+        <div class="px-4 py-4 grid grid-cols-2 gap-3 bg-slate-900/60">
+            <button id="btn-start" onclick="openKMModal('start')" class="bg-emerald-600 py-4 rounded-xl font-black uppercase text-[10px] shadow-lg shadow-emerald-900/20">Vardiya Başlat</button>
+            <button id="btn-end" onclick="openKMModal('end')" class="bg-rose-600 py-4 rounded-xl font-black uppercase text-[10px] opacity-30 shadow-lg" disabled>Vardiya Bitir</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3 px-4 mb-4">
+            <button onclick="sendSOS('Kaza Yaptım')" class="bg-rose-900/40 border border-rose-500/30 py-3 rounded-xl font-bold text-[9px] text-rose-500 uppercase">⚠️ KAZA YAPTIM</button>
+            <button onclick="sendSOS('Aracım Arıza Yaptı')" class="bg-orange-900/40 border border-orange-500/30 py-3 rounded-xl font-bold text-[9px] text-orange-500 uppercase">🛠 ARIZA BİLDİR</button>
         </div>
         <div class="p-4 grid grid-cols-3 gap-2">
-            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold">HIZ</p><p id="speed" class="text-xl font-black text-cyan-400">0</p></div>
-            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold">TOPLAM KM</p><p id="km-display" class="text-xl font-black text-yellow-400">0.00</p></div>
-            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold">SÜRE</p><p id="timer" class="text-xl font-black">00:00:00</p></div>
-            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold">ORT. HIZ</p><p id="avg-speed" class="text-xl font-black text-blue-400">0</p></div>
-            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold">SAATLİK KAZANÇ</p><p id="hourly-rate" class="text-lg font-black text-emerald-400">₺0</p></div>
-            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold">KAZANÇ</p><p id="earnings" class="text-xl font-black text-emerald-500">₺0.0</p></div>
+            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold uppercase">Hız</p><p id="speed" class="text-xl font-black text-cyan-400">0</p></div>
+            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold uppercase">GPS KM</p><p id="gps-km" class="text-xl font-black text-yellow-500">0.0</p></div>
+            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold uppercase">Süre</p><p id="timer" class="text-xl font-black">00:00</p></div>
+            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold uppercase">Saatlik Kazanç</p><p id="hourly-rate" class="text-lg font-black text-emerald-400">₺0</p></div>
+            <div class="stat-card"><p class="text-[8px] opacity-50 font-bold uppercase">Kazanç</p><p id="earnings" class="text-xl font-black text-emerald-500">₺0</p></div>
+            <div id="status-badge" class="stat-card border-rose-500/30 flex items-center justify-center text-[10px] font-black text-rose-500">KAPALI</div>
         </div>
     </main>
 
-    <div id="profile-view" class="section-view">
-        <h2 class="text-xl font-bold mb-4 border-b border-slate-800 pb-2">Kişisel Bilgiler</h2>
-        <div class="space-y-4 pb-20">
-            <div><label class="text-[10px] text-slate-400 uppercase">Ad Soyad</label><input type="text" id="p-ad" class="input-field"></div>
-            <div class="grid grid-cols-2 gap-3">
-                <div><label class="text-[10px] text-slate-400 uppercase">Doğum Tarihi</label><input type="date" id="p-dt" class="input-field"></div>
-                <div><label class="text-[10px] text-slate-400 uppercase">Doğum Yeri</label><input type="text" id="p-dy" class="input-field"></div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div><label class="text-[10px] text-slate-400 uppercase">Medeni Durum</label><select id="p-medeni" class="input-field"><option>Bekar</option><option>Evli</option></select></div>
-                <div><label class="text-[10px] text-slate-400 uppercase">Kan Grubu</label><input type="text" id="p-kan" class="input-field" placeholder="0 Rh+"></div>
-            </div>
-            <hr class="border-slate-800">
-            <div><label class="text-[10px] text-slate-400 uppercase">Motor Marka Model</label><input type="text" id="p-motor" class="input-field"></div>
-            <div><label class="text-[10px] text-slate-400 uppercase">Motor Plaka</label><input type="text" id="p-plaka" class="input-field"></div>
-            <div class="grid grid-cols-2 gap-3">
-                <div><label class="text-[10px] text-slate-400 uppercase">Ehliyet Sınıfı</label><input type="text" id="p-ehliyet" class="input-field"></div>
-                <div><label class="text-[10px] text-slate-400 uppercase">Sigorta Bitiş</label><input type="date" id="p-sigorta" class="input-field"></div>
-            </div>
-            <button onclick="saveProfile()" class="w-full py-4 bg-emerald-600 rounded-2xl font-black mt-4 shadow-lg">BİLGİLERİ GÜNCELLE</button>
+    <div id="profile-view" class="section-view p-6 space-y-5">
+        <h2 class="text-xl font-black italic text-cyan-400 border-b border-slate-800 pb-3 uppercase">Kişisel Bilgiler</h2>
+        <div class="space-y-4">
+            <div><label class="text-[10px] text-slate-500 uppercase ml-2">Ad Soyad</label><input type="text" id="p-ad" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 mt-1"></div>
+            <div><label class="text-[10px] text-slate-500 uppercase ml-2">Kan Grubu</label><input type="text" id="p-kan" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 mt-1"></div>
+            <div><label class="text-[10px] text-slate-500 uppercase ml-2">Motor Plaka</label><input type="text" id="p-plaka" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 mt-1"></div>
+            <button onclick="saveProfile()" class="w-full py-4 bg-cyan-600 rounded-2xl font-black uppercase mt-4 shadow-xl">GÜNCELLE</button>
         </div>
     </div>
 
-    <div id="reports-view" class="section-view"> <h2 class="text-xl font-bold">📊 Geçmiş Raporlar</h2> </div>
-    <div id="earnings-view" class="section-view"> <h2 class="text-xl font-bold">💰 Geçmiş Kazançlar</h2> </div>
-    <div id="platforms-view" class="section-view"> <h2 class="text-xl font-bold">📱 Entegre Platformlar</h2> </div>
-    <div id="tools-view" class="section-view"> <h2 class="text-xl font-bold">🔧 Ekipmanlarım</h2> </div>
-    <div id="pdf-view" class="section-view"> <h2 class="text-xl font-bold">📄 PDF Rapor Oluştur</h2> </div>
+    <div id="reports-view" class="section-view p-6">
+        <h2 class="text-xl font-black italic text-cyan-400 mb-4">📊 GEÇMİŞ RAPORLAR</h2>
+        <div id="report-list" class="space-y-3">
+            </div>
+    </div>
+    
+    <div id="earnings-view" class="section-view p-6">
+        <h2 class="text-xl font-black italic text-cyan-400 mb-4">💰 KAZANÇ GEÇMİŞİ</h2>
+        <div id="earnings-list" class="space-y-3"></div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // FIREBASE KURULUMU
         const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const kuryeID = "harun_kaya"; 
 
-        let map, marker, startTime, lastPos, watchId, isShiftActive = false;
+        let map, marker, startTime, startKM = 0, lastPos, isShiftActive = false, gpsDist = 0;
 
-        // HARİTA KURULUMU
+        // HARİTA BAŞLATMA
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([39.9334, 32.8597], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+        // VARDİYA MODAL AÇMA
+        function openKMModal(mode) {
+            window.shiftMode = mode;
+            document.getElementById('km-modal').style.display = 'flex';
+            document.getElementById('modal-title').innerText = mode === 'start' ? 'Vardiya Başlat' : 'Vardiya Bitir';
+        }
+
+        // VARDİYA KAYIT VE DOĞRULAMA MANTIĞI
+        async function processShiftStep() {
+            const kmVal = parseFloat(document.getElementById('km-input').value);
+            const photo = document.getElementById('km-photo').files[0];
+            
+            if(!kmVal || !photo) return alert("Lütfen hem fotoğraf çekin hem de KM bilgisini girin!");
+
+            if(window.shiftMode === 'start') {
+                startKM = kmVal;
+                startTime = Date.now();
+                isShiftActive = true;
+                
+                document.getElementById('btn-start').disabled = true; document.getElementById('btn-start').style.opacity = "0.2";
+                document.getElementById('btn-end').disabled = false; document.getElementById('btn-end').style.opacity = "1";
+                document.getElementById('status-badge').innerText = "AÇIK";
+                document.getElementById('status-badge').className = "stat-card border-emerald-500/30 flex items-center justify-center text-[10px] font-black text-emerald-500";
+                
+                startLocationTracking();
+                alert("Vardiya Başlatıldı! İyi yolculuklar.");
+            } else {
+                // Bitiş KM ve Güven Skoru Hesaplama
+                const manuelFark = kmVal - startKM;
+                if(manuelFark < 0) return alert("Bitiş KM'si başlangıçtan küçük olamaz!");
+                
+                const sapmaOrani = Math.abs(manuelFark - gpsDist) / (gpsDist || 1);
+                const guvenDurumu = sapmaOrani > 0.20 ? "supheli" : "onayli";
+                
+                const d = Date.now() - startTime;
+                const kazanc = (manuelFark * 8) + ((d/3600000) * 215);
+
+                await db.ref('arsiv/' + kuryeID).push({
+                    tarih: new Date().toLocaleString('tr-TR'),
+                    manuelKM: manuelFark.toFixed(1),
+                    gpsKM: gpsDist.toFixed(1),
+                    kazanc: kazanc.toFixed(0),
+                    durum: guvenDurumu,
+                    sapma: "%" + (sapmaOrani * 100).toFixed(0)
+                });
+
+                if(guvenDurumu === "supheli") {
+                    db.ref('sistem_uyarilari').set({ 
+                        kurye: kuryeID, 
+                        tur: "KM_SAPMA", 
+                        mesaj: `%${(sapmaOrani*100).toFixed(0)} sapma tespit edildi!`,
+                        zaman: new Date().toLocaleTimeString()
+                    });
+                }
+                
+                alert(`Vardiya Bitti! \nKazancınız: ₺${kazanc.toFixed(0)}`);
+                location.reload();
+            }
+            closeModal('km-modal');
+        }
+
+        // BİLDİRİMLERİ DİNLE
+        function openNotif() {
+            document.getElementById('notif-modal').style.display = 'flex';
+            document.getElementById('badge').classList.add('hidden');
+        }
+
+        db.ref('bildirimler/' + kuryeID).on('child_added', (snap) => {
+            const b = snap.val();
+            document.getElementById('badge').classList.remove('hidden');
+            const item = document.createElement('div');
+            item.className = "p-4 bg-slate-900/50 rounded-2xl border-l-4 border-cyan-500 text-xs shadow-inner";
+            item.innerHTML = `<div class="flex justify-between font-black text-cyan-400"><span>${b.baslik}</span><span class="text-[9px] text-slate-500 italic">${new Date(b.zaman).toLocaleTimeString()}</span></div><p class="mt-1 opacity-70 leading-relaxed">${b.mesaj}</p>`;
+            document.getElementById('notif-list').prepend(item);
+        });
+
+        // GENEL YARDIMCI FONKSİYONLAR
         function toggleMenu() {
             const s = document.getElementById('sidebar');
             s.style.transform = s.style.transform === 'translateX(0px)' ? 'translateX(-100%)' : 'translateX(0px)';
         }
 
-        function showPage(pageId) {
+        function showPage(p) {
             document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active-view'));
-            document.getElementById(pageId + '-view').classList.add('active-view');
+            document.getElementById(p + '-view').classList.add('active-view');
             toggleMenu();
         }
 
-        // VARDİYA SİSTEMİ
-        function startShift() {
-            isShiftActive = true;
-            startTime = Date.now();
-            document.getElementById('status-badge').innerText = "AÇIK";
-            document.getElementById('status-badge').className = "px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
-            document.getElementById('btn-start').disabled = true; document.getElementById('btn-start').style.opacity = "0.2";
-            document.getElementById('btn-end').disabled = false; document.getElementById('btn-end').style.opacity = "1";
-            trackLocation();
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function startLocationTracking() {
+            navigator.geolocation.watchPosition((pos) => {
+                const cur = [pos.coords.latitude, pos.coords.longitude];
+                if(lastPos) gpsDist += L.latLng(lastPos).distanceTo(L.latLng(cur)) / 1000;
+                document.getElementById('gps-km').innerText = gpsDist.toFixed(1);
+                
+                if(!marker) {
+                    marker = L.marker(cur, {icon: L.divIcon({className: 'moto-marker', html: '<div class="w-4 h-4 bg-cyan-400 rounded-full border-2 border-white"></div>'})}).addTo(map);
+                } else { marker.setLatLng(cur); }
+                
+                map.panTo(cur);
+                lastPos = cur;
+                document.getElementById('speed').innerText = Math.round((pos.coords.speed || 0) * 3.6);
+            }, null, {enableHighAccuracy: true});
         }
 
-        function endShift() {
-            if(confirm("Vardiyayı bitirmek istiyor musunuz?")) {
-                db.ref('arsiv/' + kuryeID).push({
-                    tarih: new Date().toLocaleString(),
-                    kazanc: document.getElementById('earnings').innerText,
-                    yol: document.getElementById('km-display').innerText
-                });
-                location.reload();
-            }
-        }
-
-        function trackLocation() {
-            watchId = navigator.geolocation.watchPosition((pos) => {
-                lastPos = [pos.coords.latitude, pos.coords.longitude];
-                if (!marker) {
-                    marker = L.marker(lastPos).addTo(map);
-                } else { marker.setLatLng(lastPos); }
-                map.panTo(lastPos);
-                // Mesafe ve kazanç hesaplama mantığı buraya v11'den eklenecek
-            }, null, { enableHighAccuracy: true });
-        }
-
-        // PROFİL SİSTEMİ
-        function saveProfile() {
-            const data = {
-                ad: document.getElementById('p-ad').value,
-                dtarihi: document.getElementById('p-dt').value,
-                dyeri: document.getElementById('p-dy').value,
-                medeni: document.getElementById('p-medeni').value,
-                kan: document.getElementById('p-kan').value,
-                motor: document.getElementById('p-motor').value,
-                plaka: document.getElementById('p-plaka').value,
-                ehliyet: document.getElementById('p-ehliyet').value,
-                sigorta: document.getElementById('p-sigorta').value
-            };
-            db.ref('kuryeler/' + kuryeID + '/profil').set(data).then(() => {
-                alert("Bilgiler başarıyla güncellendi ve restorana iletildi!");
-            });
-        }
-
-        function logout() { if(confirm("Oturumu kapatmak istiyor musunuz?")) location.reload(); }
-
-        function sendEmergency(mesaj) {
-            db.ref('acil_durumlar').set({ kurye: kuryeID, tur: mesaj, zaman: new Date().toLocaleTimeString() });
-            alert("Bildirim gönderildi!");
-        }
-
+        // SÜRE SAYAÇ (Her Dakika)
         setInterval(() => {
-            if(isShiftActive) {
-                const diff = Date.now() - startTime;
-                const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-                const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-                const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-                document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            if(startTime) {
+                const d = Date.now() - startTime;
+                const h = Math.floor(d/3600000).toString().padStart(2,'0');
+                const m = Math.floor((d%3600000)/60000).toString().padStart(2,'0');
+                document.getElementById('timer').innerText = h + ":" + m;
             }
-        }, 1000);
+        }, 60000);
+
+        function sendSOS(tur) { 
+            db.ref('acil_durumlar').set({kurye: kuryeID, tur: tur, zaman: new Date().toLocaleTimeString()}); 
+            alert("Yardım çağrısı merkeze ve diğer kuryelere iletildi!"); 
+        }
+
+        function saveProfile() {
+            const d = { ad: document.getElementById('p-ad').value, kan: document.getElementById('p-kan').value, plaka: document.getElementById('p-plaka').value };
+            db.ref('kuryeler/'+kuryeID+'/profil').set(d); alert("Bilgileriniz başarıyla güncellendi.");
+        }
     </script>
 </body>
 </html>

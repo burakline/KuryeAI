@@ -5,83 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoranAI | Mağaza Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #fcfcfd; }
-        .active-tab { background-color: #f9f5ff; color: #7f56d9; border-right: 3px solid #7f56d9; }
-        #map { height: 100%; width: 100%; border-radius: 24px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+        .active-tab { background-color: #F1F5F9; color: #06B6D4; border-bottom: 3px solid #06B6D4; }
+        .card-jilet { border-radius: 24px; background: white; border: 1px solid #E2E8F0; }
+        .btn-turkuaz { background-color: #06B6D4; color: white; border-radius: 16px; font-weight: 700; }
+        .btn-turkuaz:active { transform: scale(0.97); }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex flex-col h-screen overflow-hidden bg-[#F8FAFC]">
 
-    <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col p-6">
-        <div class="flex items-center gap-2 mb-10">
-            <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center"><i data-lucide="store" class="text-white w-5 h-5"></i></div>
-            <span class="text-xl font-bold tracking-tight text-gray-900">Restoran<span class="text-purple-600">AI</span></span>
-        </div>
-        <nav class="space-y-1">
-            <button onclick="switchTab('map')" class="active-tab w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition">
-                <i data-lucide="map" class="w-5 h-5"></i> Canlı Harita
-            </button>
-            <button onclick="switchTab('drivers')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 transition">
-                <i data-lucide="users" class="w-5 h-5"></i> Kuryelerimiz
-            </button>
-        </nav>
-    </aside>
-
-    <main class="flex-grow flex flex-col overflow-hidden">
-        <header class="h-16 px-8 flex items-center justify-between bg-white border-b border-gray-100">
-            <h2 id="page-title" class="font-bold text-gray-800">Canlı Takip Paneli</h2>
-            <button class="p-2 text-gray-400 hover:bg-gray-50 rounded-xl transition"><i data-lucide="bell" class="w-5 h-5"></i></button>
-        </header>
-
-        <div id="content-map" class="flex-grow p-6">
-            <div class="h-full w-full bg-white rounded-[32px] border border-gray-200 shadow-sm p-2 overflow-hidden">
-                <div id="map"></div>
+    <header class="h-20 bg-white border-b border-slate-200 px-6 lg:px-10 flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-200">
+                <i data-lucide="store" class="text-white w-5 h-5"></i>
             </div>
+            <span class="text-xl font-extrabold text-slate-900 tracking-tighter uppercase italic">Burger<span class="text-cyan-500">AI</span></span>
         </div>
+        <div class="flex items-center gap-4">
+            <div class="text-right hidden sm:block">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest leading-tight">Şube Durumu</p>
+                <p class="text-sm font-black text-emerald-500 uppercase">Açık • Paket Servis</p>
+            </div>
+            <button class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-slate-400"><i data-lucide="settings"></i></button>
+        </div>
+    </header>
 
-        <div id="content-drivers" class="flex-grow p-8 hidden overflow-y-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="driver-list">
+    <nav class="bg-white px-6 lg:px-10 flex gap-8 border-b border-slate-200 shrink-0">
+        <button class="px-2 py-5 active-tab text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4"></i> Canlı Takip
+        </button>
+        <button class="px-2 py-5 text-slate-400 text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4"></i> Kurye Listesi
+        </button>
+    </nav>
+
+    <main class="flex-grow p-6 lg:p-10 overflow-y-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+            
+            <div class="lg:col-span-1 space-y-4">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Mevcut Kuryeler</h4>
+                
+                <div class="card-jilet p-5 flex items-center justify-between hover:border-cyan-200 transition cursor-pointer group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center font-bold text-slate-400 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition">HK</div>
+                        <div>
+                            <p class="text-sm font-extrabold text-slate-900 uppercase">Harun Kaya</p>
+                            <p class="text-[10px] text-emerald-500 font-bold uppercase">Teslimatta</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="text-slate-300"></i>
                 </div>
+
+                <div class="card-jilet p-5 flex items-center justify-between opacity-60">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center font-bold text-slate-400">AY</div>
+                        <div>
+                            <p class="text-sm font-extrabold text-slate-900 uppercase">Ahmet Yılmaz</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Molada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 card-jilet p-3 min-h-[400px] shadow-xl shadow-slate-200/50">
+                <div id="map" class="w-full h-full bg-slate-50 rounded-[20px] flex items-center justify-center border border-dashed border-slate-200">
+                    <div class="text-center">
+                        <i data-lucide="map" class="w-12 h-12 text-slate-200 mx-auto mb-2"></i>
+                        <p class="text-xs font-bold text-slate-300 uppercase tracking-widest">Harita Modülü Yükleniyor...</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        lucide.createIcons();
-        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 13);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-
-        function switchTab(tab) {
-            document.getElementById('content-map').classList.toggle('hidden', tab !== 'map');
-            document.getElementById('content-drivers').classList.toggle('hidden', tab !== 'drivers');
-            document.getElementById('page-title').innerText = tab === 'map' ? 'Canlı Takip Paneli' : 'Kuryelerimiz';
-            if(tab === 'map') setTimeout(() => map.invalidateSize(), 200);
-        }
-
-        db.ref('kuryeler').on('value', snap => {
-            const list = document.getElementById('driver-list');
-            list.innerHTML = "";
-            snap.forEach(c => {
-                list.innerHTML += `
-                    <div class="bg-white p-6 rounded-[24px] border border-gray-200 shadow-sm">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center font-bold text-purple-600">${c.key.charAt(0).toUpperCase()}</div>
-                            <p class="font-bold text-gray-900 uppercase">${c.key.replace('_',' ')}</p>
-                        </div>
-                        <button class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold shadow-lg shadow-purple-100 uppercase text-xs">Durum Bildir</button>
-                    </div>`;
-            });
-        });
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

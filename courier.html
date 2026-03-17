@@ -17,27 +17,42 @@
         .btn-action { background-color: #06B6D4; color: white; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .nav-glass { position: fixed; bottom: 0; width: 100%; height: 75px; background: #1E293B; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
         .status-pill { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #1E293B; color: white; padding: 10px 20px; border-radius: 99px; font-size: 11px; font-weight: 800; z-index: 50; border: 1px solid #334155; }
+        /* Haritadaki Kurye İkonu Stili */
+        .kurye-marker { background: #06B6D4; width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 15px rgba(6,182,212,0.6); }
     </style>
 </head>
 <body>
     <div id="status-pill" class="status-pill flex items-center gap-2 uppercase tracking-tighter">
         <span class="w-2 h-2 bg-slate-500 rounded-full"></span> Çevrimdışı • Mola
     </div>
+
     <div id="map"></div>
+
     <div class="bottom-card">
-        <div class="flex justify-between items-end mb-6">
+        <div class="grid grid-cols-2 gap-4 mb-6">
             <div>
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Bugünkü Kazanç</h4>
-                <p id="earnings" class="text-3xl font-extrabold text-slate-900">₺0,00</p>
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kazanç</h4>
+                <p id="earnings" class="text-2xl font-extrabold text-slate-900 tracking-tighter italic">₺0,00</p>
             </div>
             <div class="text-right">
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Vardiya Süresi</h4>
                 <p id="timer" class="text-xl font-bold text-slate-800 tracking-tighter">00:00:00</p>
             </div>
+            <div class="border-t border-slate-100 pt-3">
+                <h4 class="text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-1">Anlık Hız</h4>
+                <p id="speed" class="text-xl font-black text-slate-900 italic">0 <span class="text-[10px]">km/s</span></p>
+            </div>
+            <div class="border-t border-slate-100 pt-3 text-right">
+                <h4 class="text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-1">Gidilen Yol</h4>
+                <p id="distance" class="text-xl font-black text-slate-900 italic">0.0 <span class="text-[10px]">km</span></p>
+            </div>
         </div>
+
         <button id="main-btn" onclick="handleShift()" class="btn-action w-full py-5 rounded-2xl font-extrabold text-lg flex items-center justify-center gap-3 shadow-xl shadow-cyan-500/20 uppercase tracking-tight">
             <i data-lucide="zap" class="fill-current w-5 h-5"></i> Vardiyayı Başlat
         </button>
     </div>
+
     <nav class="nav-glass px-6">
         <button class="flex flex-col items-center gap-1 text-cyan-400"><i data-lucide="navigation"></i><span class="text-[10px] font-bold uppercase">Harita</span></button>
         <button class="flex flex-col items-center gap-1 text-slate-400 opacity-50"><i data-lucide="package"></i><span class="text-[10px] font-bold uppercase">Paket</span></button>
@@ -47,40 +62,105 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         lucide.createIcons();
-        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", 
+            authDomain: "kuryeai.firebaseapp.com", 
+            databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", 
+            projectId: "kuryeai", 
+            storageBucket: "kuryeai.firebasestorage.app", 
+            messagingSenderId: "655930514402", 
+            appId: "1:655930514402:web:379321cbb83f48daf077bb" 
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const kuryeID = "burak_haskoy"; // Buraya kendi adını yazabilirsin
+        const kuryeID = "burak_haskoy"; 
 
+        // Harita Kurulumu
         var map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 15);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
 
-        let isActive = false; let startTime; let timerInterval; let watchID;
+        let isActive = false; 
+        let startTime; 
+        let timerInterval; 
+        let watchID = null;
+        let marker = null;
+        let totalDistance = 0;
+        let lastCoord = null;
 
         function handleShift() {
             const btn = document.getElementById('main-btn');
             const pill = document.getElementById('status-pill');
             if (!isActive) {
-                isActive = true; startTime = Date.now();
-                btn.innerHTML = 'Vardiyayı Bitir'; btn.style.backgroundColor = '#1E293B';
+                // BAŞLAT
+                isActive = true; 
+                startTime = Date.now();
+                btn.innerHTML = 'Vardiyayı Bitir'; 
+                btn.style.backgroundColor = '#1E293B';
                 pill.innerHTML = '<span class="w-2 h-2 bg-cyan-400 rounded-full animate-ping"></span> Aktif • Çalışıyor';
-                db.ref('kuryeler/' + kuryeID).update({ durum: "Aktif", sonGuncelleme: new Date().toLocaleTimeString() });
-                startTracking(); startTimer();
+                db.ref('kuryeler/' + kuryeID).update({ 
+                    durum: "Aktif", 
+                    sonGuncelleme: new Date().toLocaleTimeString() 
+                });
+                startTracking(); 
+                startTimer();
             } else {
+                // BİTİR
                 if(confirm("Vardiyayı bitirmek istiyor musun?")) {
-                    db.ref('arsiv/' + kuryeID).push({ tarih: new Date().toLocaleString(), sure: document.getElementById('timer').innerText, kazanc: document.getElementById('earnings').innerText });
+                    const finalEarnings = document.getElementById('earnings').innerText;
+                    const finalTime = document.getElementById('timer').innerText;
+                    const finalKM = document.getElementById('distance').innerText.replace(' km', '');
+
+                    db.ref('arsiv/' + kuryeID).push({ 
+                        tarih: new Date().toLocaleString(), 
+                        sure: finalTime, 
+                        kazanc: finalEarnings,
+                        gpsKM: finalKM,
+                        manuelKM: "0" // Sonradan eklenebilir
+                    });
+                    
                     db.ref('kuryeler/' + kuryeID).update({ durum: "Mola" });
+                    if (watchID) navigator.geolocation.clearWatch(watchID);
                     location.reload();
                 }
             }
+            lucide.createIcons();
         }
 
         function startTracking() {
-            watchID = navigator.geolocation.watchPosition(pos => {
-                const { latitude, longitude } = pos.coords;
-                map.setView([latitude, longitude], 17);
-                db.ref('kuryeler/' + kuryeID + '/konum').set({ lat: latitude, lng: longitude });
-            });
+            if (navigator.geolocation) {
+                watchID = navigator.geolocation.watchPosition(pos => {
+                    const { latitude, longitude, speed } = pos.coords;
+                    const currentCoord = [latitude, longitude];
+
+                    // Harita Marker Güncelleme
+                    if (marker) {
+                        marker.setLatLng(currentCoord);
+                    } else {
+                        const kuryeIcon = L.divIcon({ className: 'kurye-marker', iconSize: [18, 18] });
+                        marker = L.marker(currentCoord, { icon: kuryeIcon }).addTo(map);
+                    }
+                    map.panTo(currentCoord);
+
+                    // Hız Hesaplama (m/s -> km/h)
+                    const currentSpeed = speed ? (speed * 3.6).toFixed(0) : 0;
+                    document.getElementById('speed').innerHTML = `${currentSpeed} <span class="text-[10px]">km/s</span>`;
+
+                    // KM Hesaplama
+                    if (lastCoord && currentSpeed > 1) {
+                        const dist = map.distance(lastCoord, currentCoord);
+                        totalDistance += dist / 1000;
+                        document.getElementById('distance').innerHTML = `${totalDistance.toFixed(1)} <span class="text-[10px]">km</span>`;
+                    }
+                    lastCoord = currentCoord;
+
+                    // Firebase'e Konum ve Hız Gönder
+                    db.ref('kuryeler/' + kuryeID).update({ 
+                        konum: { lat: latitude, lng: longitude },
+                        hiz: currentSpeed,
+                        toplamKM: totalDistance.toFixed(2)
+                    });
+                }, err => console.error(err), { enableHighAccuracy: true });
+            }
         }
 
         function startTimer() {
@@ -90,7 +170,10 @@
                 const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
                 const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
                 document.getElementById('timer').innerText = `${h}:${m}:${s}`;
-                document.getElementById('earnings').innerText = '₺' + ((diff / 3600000) * 120).toFixed(2);
+                
+                // Kazanç: Saatlik 120 TL üzerinden hesaplama
+                const currentEarnings = (diff / 3600000) * 120;
+                document.getElementById('earnings').innerText = '₺' + currentEarnings.toFixed(2).replace('.', ',');
             }, 1000);
         }
     </script>

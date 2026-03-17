@@ -1,1 +1,201 @@
-d69e19d78e5890efe71a6b01372808bd9756bfc7
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KuryeAI - Profesyonel Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root { --bg: #0B1120; --cyan: #06B6D4; --card: #1E293B; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); overflow: hidden; margin: 0; color: white; }
+        #map { height: 100vh; width: 100%; position: absolute; z-index: 0; filter: grayscale(0.2) contrast(1.1); }
+        
+        /* Sidebar Gelişmiş Tasarım */
+        .sidebar { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #0F172A; z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; overflow-y: auto; border-right: 1px solid rgba(6, 182, 212, 0.2); }
+        .sidebar.active { left: 0; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; transition: 0.2s; cursor: pointer; color: #94A3B8; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .menu-item:hover { background: rgba(6, 182, 212, 0.1); color: white; }
+        .menu-item i { width: 18px; height: 18px; }
+        .menu-active { background: var(--cyan); color: white !important; }
+
+        /* Modern UI Bileşenleri */
+        .glass-card { background: rgba(255, 255, 255, 0.95); border-radius: 24px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .speed-badge { position: fixed; bottom: 250px; left: 20px; z-index: 200; width: 60px; height: 60px; background: #1E293B; border-radius: 50%; border: 3px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+        /* Marker */
+        .kurye-marker { display: flex; flex-direction: column; align-items: center; }
+        .kurye-label { background: #000; color: white; padding: 2px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; border: 1px solid var(--cyan); margin-bottom: 4px; }
+        .kurye-icon { width: 32px; height: 32px; background: var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 2px solid white; box-shadow: 0 0 15px var(--cyan); }
+
+        /* "Yakında" Modalı */
+        #soon-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .soon-content { background: #1E293B; border-radius: 24px; padding: 30px; text-align: center; max-width: 300px; border: 1px solid var(--cyan); }
+    </style>
+</head>
+<body>
+
+    <button onclick="toggleMenu()" class="fixed top-4 left-4 z-[500] bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-xl">
+        <i data-lucide="menu" class="text-white"></i>
+    </button>
+
+    <div class="speed-badge">
+        <span id="live-speed" class="text-xl font-black text-white leading-none">0</span>
+        <span class="text-[8px] font-bold text-cyan-400 uppercase">km/s</span>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-black italic text-white">KURYE<span class="text-cyan-500 text-xs">AI</span></h2>
+            <button onclick="toggleMenu()"><i data-lucide="x" class="text-slate-500"></i></button>
+        </div>
+
+        <div class="bg-slate-800/50 p-4 rounded-2xl mb-6 border border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center font-bold text-lg">HK</div>
+                <div>
+                    <p id="display-name" class="font-bold text-sm">Harun Kaya</p>
+                    <p id="display-plaka" class="text-xs text-slate-400">06BMK415</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="space-y-1">
+            <div class="menu-item menu-active" onclick="toggleMenu()"><i data-lucide="map"></i> Harita Paneli</div>
+            <div class="menu-item text-white border-b border-slate-800 pb-2 mb-2" onclick="showSoon('Geçmiş Kazançlarım')"><i data-lucide="history" class="text-cyan-400"></i> Geçmiş Kazançlarım</div>
+            
+            <p class="text-[10px] font-bold text-slate-500 uppercase px-3 mt-4 mb-2">Hizmetler</p>
+            <div class="menu-item" onclick="showSoon('Online Platformlar')"><i data-lucide="globe"></i> Online Platformlar</div>
+            <div class="menu-item" onclick="showSoon('AI Arıza Tespit')"><i data-lucide="cpu"></i> AI Arıza Tespit</div>
+            <div class="menu-item" onclick="showSoon('Kurye Kazanç Defteri')"><i data-lucide="book-open"></i> Kazanç Defteri</div>
+            <div class="menu-item" onclick="showSoon('KM / Yakıt Hesaplama')"><i data-lucide="fuel"></i> KM / Yakıt Hesabı</div>
+            <div class="menu-item" onclick="showSoon('Pusula')"><i data-lucide="compass"></i> Pusula</div>
+            <div class="menu-item" onclick="showSoon('PDF Rapor')"><i data-lucide="file-text"></i> PDF Rapor Al</div>
+            <div class="menu-item" onclick="showSoon('KuryeAI Chat')"><i data-lucide="message-square"></i> KuryeAI Chat</div>
+            
+            <p class="text-[10px] font-bold text-slate-500 uppercase px-3 mt-4 mb-2">Yönetim</p>
+            <div class="menu-item" onclick="showSoon('Bakım Takip')"><i data-lucide="settings"></i> Bakım Takip</div>
+            <div class="menu-item" onclick="showSoon('Performans')"><i data-lucide="bar-chart"></i> Performans</div>
+            <div class="menu-item" onclick="showSoon('Günlük Menü')"><i data-lucide="utensils"></i> Günlük Menü</div>
+            <div class="menu-item" onclick="showSoon('Vardiya Planı')"><i data-lucide="calendar"></i> Vardiya Planı</div>
+        </nav>
+
+        <div class="mt-8 pt-4 border-t border-slate-800">
+            <button onclick="location.reload()" class="menu-item text-rose-500 w-full"><i data-lucide="log-out"></i> Güvenli Çıkış</button>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="fixed bottom-6 left-4 right-4 z-[100] glass-card text-slate-900">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Anlık Kazanç</p>
+                <p id="earnings" class="text-3xl font-black italic">₺0,00</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Vardiya Süresi</p>
+                <p id="timer" class="text-xl font-bold font-mono">00:00:00</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-6 border-t border-slate-100 pt-4 text-center">
+            <div><p class="text-[9px] font-bold text-cyan-600 uppercase">Mesafe</p><p id="distance" class="font-bold text-sm text-slate-800">0.0 km</p></div>
+            <div><p class="text-[9px] font-bold text-cyan-600 uppercase">Ort. Hız</p><p id="avg-speed" class="font-bold text-sm text-slate-800">0</p></div>
+            <div><p class="text-[9px] font-bold text-rose-500 uppercase">Saat/₺</p><p id="hourly-rate" class="font-bold text-sm text-slate-800">₺0</p></div>
+            <div><p class="text-[9px] font-bold text-slate-400 uppercase">Paket</p><p class="font-bold text-sm text-slate-800">0</p></div>
+        </div>
+
+        <button id="main-btn" onclick="toggleShift()" class="w-full h-16 bg-[#0F172A] text-white rounded-2xl font-black uppercase text-lg tracking-wider flex items-center justify-center gap-3 active:scale-95 transition-all">
+            <i data-lucide="zap" class="fill-cyan-400 text-cyan-400"></i> Vardiyayı Başlat
+        </button>
+    </div>
+
+    <div id="soon-modal" onclick="closeSoon()">
+        <div class="soon-content" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="construction" class="text-cyan-400 w-8 h-8"></i>
+            </div>
+            <h3 id="soon-title" class="text-xl font-bold mb-2">Çok Yakında</h3>
+            <p class="text-slate-400 text-sm mb-6">Bu özellik üzerinde kuryelerimiz için titizlikle çalışıyoruz. Yakında burada olacak!</p>
+            <button onclick="closeSoon()" class="w-full py-3 bg-cyan-500 rounded-xl font-bold uppercase text-xs">Anladım</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        // Harita Başlatma
+        var map = L.map('map', { zoomControl: false }).setView([39.9334, 32.8597], 15);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+        let isShiftActive = false, startTime, timerInterval, marker, polyline;
+        let coords = [];
+
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+        
+        function showSoon(title) {
+            document.getElementById('soon-title').innerText = title;
+            document.getElementById('soon-modal').style.display = 'flex';
+        }
+
+        function closeSoon() { document.getElementById('soon-modal').style.display = 'none'; }
+
+        function toggleShift() {
+            const btn = document.getElementById('main-btn');
+            if(!isShiftActive) {
+                isShiftActive = true;
+                startTime = Date.now();
+                btn.innerHTML = '<i data-lucide="square" class="fill-white"></i> Vardiyayı Bitir';
+                btn.classList.replace('bg-[#0F172A]', 'bg-rose-600');
+                timerInterval = setInterval(updateUI, 1000);
+                startTracking();
+            } else {
+                location.reload();
+            }
+            lucide.createIcons();
+        }
+
+        function updateUI() {
+            const diff = Date.now() - startTime;
+            const h = Math.floor(diff/3600000).toString().padStart(2,'0');
+            const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
+            const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+        }
+
+        function startTracking() {
+            navigator.geolocation.watchPosition(p => {
+                const pos = [p.coords.latitude, p.coords.longitude];
+                const speed = p.coords.speed ? Math.round(p.coords.speed * 3.6) : 0;
+                document.getElementById('live-speed').innerText = speed;
+
+                if(!marker) {
+                    marker = L.marker(pos, {
+                        icon: L.divIcon({
+                            className: '',
+                            html: `<div class="kurye-marker"><div class="kurye-label">Harun Kaya</div><div class="kurye-icon">AI</div></div>`,
+                            iconSize: [80, 50], iconAnchor: [40, 50]
+                        })
+                    }).addTo(map);
+                    polyline = L.polyline([], {color: '#06B6D4', weight: 4, opacity: 0.8}).addTo(map);
+                } else {
+                    marker.setLatLng(pos);
+                }
+                
+                if(isShiftActive) {
+                    polyline.addLatLng(pos);
+                    map.panTo(pos);
+                }
+            }, null, { enableHighAccuracy: true });
+        }
+    </script>
+</body>
+</html>

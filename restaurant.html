@@ -7,16 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
-        .active-tab { background-color: #F1F5F9; color: #06B6D4; border-bottom: 3px solid #06B6D4; }
         .card-jilet { border-radius: 24px; background: white; border: 1px solid #E2E8F0; }
-        .btn-turkuaz { background-color: #06B6D4; color: white; border-radius: 16px; font-weight: 700; }
-        .btn-turkuaz:active { transform: scale(0.97); }
+        .active-tab { border-bottom: 3px solid #06B6D4; color: #06B6D4; }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden bg-[#F8FAFC]">
-
     <header class="h-20 bg-white border-b border-slate-200 px-6 lg:px-10 flex justify-between items-center shrink-0">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-200">
@@ -24,64 +23,48 @@
             </div>
             <span class="text-xl font-extrabold text-slate-900 tracking-tighter uppercase italic">Burger<span class="text-cyan-500">AI</span></span>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="text-right hidden sm:block">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest leading-tight">Şube Durumu</p>
-                <p class="text-sm font-black text-emerald-500 uppercase">Açık • Paket Servis</p>
-            </div>
-            <button class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-slate-400"><i data-lucide="settings"></i></button>
-        </div>
     </header>
 
     <nav class="bg-white px-6 lg:px-10 flex gap-8 border-b border-slate-200 shrink-0">
         <button class="px-2 py-5 active-tab text-sm font-bold uppercase tracking-widest flex items-center gap-2">
-            <i data-lucide="map-pin" class="w-4 h-4"></i> Canlı Takip
-        </button>
-        <button class="px-2 py-5 text-slate-400 text-sm font-bold uppercase tracking-widest flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4"></i> Kurye Listesi
+            <i data-lucide="users" class="w-4 h-4"></i> Kuryelerimiz
         </button>
     </nav>
 
     <main class="flex-grow p-6 lg:p-10 overflow-y-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
-            
-            <div class="lg:col-span-1 space-y-4">
-                <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Mevcut Kuryeler</h4>
-                
-                <div class="card-jilet p-5 flex items-center justify-between hover:border-cyan-200 transition cursor-pointer group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center font-bold text-slate-400 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition">HK</div>
-                        <div>
-                            <p class="text-sm font-extrabold text-slate-900 uppercase">Harun Kaya</p>
-                            <p class="text-[10px] text-emerald-500 font-bold uppercase">Teslimatta</p>
-                        </div>
-                    </div>
-                    <i data-lucide="chevron-right" class="text-slate-300"></i>
-                </div>
-
-                <div class="card-jilet p-5 flex items-center justify-between opacity-60">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center font-bold text-slate-400">AY</div>
-                        <div>
-                            <p class="text-sm font-extrabold text-slate-900 uppercase">Ahmet Yılmaz</p>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">Molada</p>
-                        </div>
-                    </div>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="rest-driver-list">
             </div>
-
-            <div class="lg:col-span-2 card-jilet p-3 min-h-[400px] shadow-xl shadow-slate-200/50">
-                <div id="map" class="w-full h-full bg-slate-50 rounded-[20px] flex items-center justify-center border border-dashed border-slate-200">
-                    <div class="text-center">
-                        <i data-lucide="map" class="w-12 h-12 text-slate-200 mx-auto mb-2"></i>
-                        <p class="text-xs font-bold text-slate-300 uppercase tracking-widest">Harita Modülü Yükleniyor...</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </main>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('kuryeler').on('value', snap => {
+            const list = document.getElementById('rest-driver-list');
+            list.innerHTML = "";
+            snap.forEach(c => {
+                const d = c.val();
+                const isOnline = d.durum === 'Aktif';
+                list.innerHTML += `
+                    <div class="card-jilet p-6 flex items-center justify-between hover:border-cyan-200 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center font-bold text-slate-400">
+                                ${c.key.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <p class="text-sm font-extrabold text-slate-900 uppercase">${c.key.replace('_',' ')}</p>
+                                <p class="text-[10px] ${isOnline ? 'text-emerald-500' : 'text-slate-400'} font-bold uppercase">
+                                    ${isOnline ? 'Aktif • Teslimatta' : 'Mola • Çevrimdışı'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>

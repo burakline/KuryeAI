@@ -3,76 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin AI</title>
+    <title>AdminAI - Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        body { background: #020617; color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .sidebar-item:hover { background: rgba(34, 211, 238, 0.05); }
+        .table-row:hover { background: rgba(34, 211, 238, 0.02); }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
 </head>
-<body class="bg-[#020617] text-white flex h-screen overflow-hidden">
+<body class="flex h-screen">
 
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col p-6">
-        <h1 class="text-2xl font-black italic text-cyan-400 mb-10">ADMIN</h1>
-        <nav class="space-y-4 flex-grow">
-            <button class="w-full text-left p-4 rounded-xl bg-cyan-600 font-bold">🏠 Dashboard</button>
-            <button class="w-full text-left p-4 rounded-xl hover:bg-slate-800">🛵 Kurye Yönetimi</button>
+    <div id="photo-modal" class="fixed inset-0 bg-black/90 z-[60000] hidden flex flex-col items-center justify-center p-6">
+        <div class="relative bg-slate-800 p-4 rounded-3xl border border-slate-700 max-w-2xl w-full">
+            <button onclick="closePhoto()" class="absolute -top-12 right-0 text-white text-4xl">✕</button>
+            <img id="modal-img" src="" class="w-full h-auto rounded-2xl shadow-2xl">
+            <p id="modal-caption" class="mt-4 text-center font-bold text-cyan-400 uppercase tracking-widest text-xs"></p>
+        </div>
+    </div>
+
+    <aside class="w-72 bg-slate-900 border-r border-slate-800 hidden lg:flex flex-col p-8">
+        <div class="flex items-center gap-4 mb-12">
+            <div class="w-12 h-12 bg-cyan-600 rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg shadow-cyan-600/20">A</div>
+            <h1 class="text-2xl font-black italic tracking-tighter">AdminAI</h1>
+        </div>
+        <nav class="space-y-4">
+            <button class="w-full text-left p-5 rounded-2xl bg-cyan-600 font-black shadow-xl">🏠 DASHBOARD</button>
+            <button class="w-full text-left p-5 rounded-2xl text-slate-400 font-bold sidebar-item transition">🛵 KURYE YÖNETİMİ</button>
+            <button class="w-full text-left p-5 rounded-2xl text-slate-400 font-bold sidebar-item transition">📊 ANALİZLER</button>
         </nav>
     </aside>
 
-    <main class="flex-grow p-8 overflow-y-auto">
-        <header class="flex justify-between items-center mb-10">
-            <h2 class="text-3xl font-bold">Genel Durum</h2>
-            <div class="flex items-center gap-4">
-                <button class="relative bg-slate-800 p-3 rounded-xl">🔔<span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full"></span></button>
+    <main class="flex-grow flex flex-col min-w-0">
+        <header class="h-24 border-b border-slate-800 flex items-center justify-between px-10 bg-slate-900/30">
+            <h2 class="text-2xl font-black italic">GENEL DURUM</h2>
+            <div class="flex gap-6 items-center">
+                <button class="relative p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-inner">
+                    🔔<span class="absolute top-3 right-3 w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></span>
+                </button>
+                <div class="h-10 w-[1px] bg-slate-800"></div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-slate-500 uppercase">Yönetici</p>
+                    <p class="font-bold text-sm">SuperAdmin</p>
+                </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-3 gap-6 mb-10">
-            <div class="bg-slate-900 p-6 rounded-[32px] border border-slate-800">
-                <p class="text-slate-500 text-xs font-bold">ŞÜPHELİ KM</p>
-                <h3 id="alert-count" class="text-4xl font-black mt-2 text-orange-500">0</h3>
+        <div class="p-10 flex-grow overflow-y-auto custom-scroll">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="bg-slate-900 p-8 rounded-[40px] border border-slate-800 shadow-2xl">
+                    <p class="text-orange-500 text-[10px] font-black uppercase mb-2 tracking-widest">Şüpheli İşlemler</p>
+                    <h3 id="stat-alert" class="text-5xl font-black italic">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-[40px] border border-slate-800 overflow-hidden shadow-2xl">
+                <div class="p-8 border-b border-slate-800 bg-slate-900/50 flex justify-between items-center">
+                    <h3 class="font-black italic text-cyan-400">DENETİM VE GEÇMİŞ KAYITLAR</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-800/30">
+                            <tr>
+                                <th class="p-6 text-[10px] font-black text-slate-500 uppercase">Kurye Bilgisi</th>
+                                <th class="p-6 text-[10px] font-black text-slate-500 uppercase text-center">KM (Manuel/GPS)</th>
+                                <th class="p-6 text-[10px] font-black text-slate-500 uppercase text-center">Kanıt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-logs"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
-        <div class="bg-slate-900 rounded-[32px] border border-slate-800 overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-slate-800/50">
-                    <tr>
-                        <th class="p-4 uppercase text-[10px]">Kurye</th>
-                        <th class="p-4 uppercase text-[10px]">Mesafe (Manuel/GPS)</th>
-                        <th class="p-4 uppercase text-[10px]">Kanıt</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-table"></tbody>
-            </table>
-        </div>
     </main>
-
-    <div id="photo-modal" class="fixed inset-0 bg-black/95 z-[50000] hidden flex-col items-center justify-center p-10">
-        <img id="modal-img" src="" class="max-w-full max-h-[80vh] rounded-2xl mb-6 shadow-2xl">
-        <button onclick="document.getElementById('photo-modal').classList.add('hidden')" class="bg-cyan-600 px-10 py-4 rounded-2xl font-black">KAPAT</button>
-    </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function openPhoto(url) {
-            document.getElementById('modal-img').src = "https://via.placeholder.com/800x600?text=KM+Gosterge+Fotografi"; // Gerçek URL geldiğinde buraya atanacak
+        function openPhoto(url, kurye) {
+            document.getElementById('modal-img').src = "https://via.placeholder.com/800x600/0f172a/22d3ee?text=KM+KAYIT+FOTOGRAFI"; // Gerçek storage URL gelince buraya bağlanacak
+            document.getElementById('modal-caption').innerText = kurye + " - KM KANIT FOTOGRAFI";
             document.getElementById('photo-modal').classList.remove('hidden');
         }
 
-        db.ref('arsiv').on('value', (snap) => {
-            const table = document.getElementById('admin-table');
-            table.innerHTML = "";
-            snap.forEach((child) => {
-                child.forEach((log) => {
-                    const data = log.val();
-                    table.innerHTML += `<tr class="border-t border-slate-800">
-                        <td class="p-4 font-bold uppercase">${child.key}</td>
-                        <td class="p-4">${data.manuelKM} / ${data.gpsKM} km</td>
-                        <td class="p-4">
-                            <button onclick="openPhoto()" class="bg-slate-800 px-4 py-2 rounded-lg text-xs">📸 Görüntüle</button>
+        function closePhoto() { document.getElementById('photo-modal').classList.add('hidden'); }
+
+        db.ref('arsiv').on('value', snap => {
+            const list = document.getElementById('admin-logs');
+            list.innerHTML = "";
+            snap.forEach(c => {
+                c.forEach(log => {
+                    const d = log.val();
+                    list.innerHTML += `<tr class="table-row border-b border-slate-800/50">
+                        <td class="p-6">
+                            <p class="font-black uppercase text-cyan-400">${c.key.replace('_',' ')}</p>
+                            <p class="text-[9px] text-slate-500 mt-1 italic">${d.tarih}</p>
+                        </td>
+                        <td class="p-6 text-center font-bold">
+                            <div class="text-sm">M: ${d.manuelKM}km</div>
+                            <div class="text-[10px] text-slate-500 italic">G: ${d.gpsKM}km</div>
+                        </td>
+                        <td class="p-6 text-center">
+                            <button onclick="openPhoto('', '${c.key}')" class="bg-slate-800 p-3 rounded-2xl hover:bg-cyan-600 transition shadow-lg active:scale-95">📸 Görüntüle</button>
                         </td>
                     </tr>`;
                 });

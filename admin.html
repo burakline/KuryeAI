@@ -7,17 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #1E293B; }
-        .sidebar { background-color: #0F172A; } /* Koyu Siyah/Lacivert */
+        .sidebar { background-color: #0F172A; }
         .active-link { background-color: #06B6D4; color: white; box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3); }
         .card-jilet { border-radius: 24px; background: white; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .turkuaz-text { color: #06B6D4; }
         .status-pill { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
-
     <aside class="w-72 sidebar h-full flex flex-col p-6 text-slate-400 hidden lg:flex">
         <div class="flex items-center gap-3 mb-12 px-2">
             <div class="w-10 h-10 bg-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
@@ -25,34 +25,22 @@
             </div>
             <span class="text-xl font-extrabold text-white tracking-tight italic">Kurye<span class="text-cyan-500 italic">AI</span></span>
         </div>
-
         <nav class="flex-grow space-y-2">
             <a href="#" class="active-link flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition">
                 <i data-lucide="layout-grid"></i> Dashboard
             </a>
-            <a href="#" class="flex items-center gap-4 px-4 py-4 rounded-2xl font-semibold hover:bg-slate-800 transition">
+            <a href="#" class="flex items-center gap-4 px-4 py-4 rounded-2xl font-semibold hover:bg-slate-800 transition text-slate-400">
                 <i data-lucide="navigation"></i> Canlı Takip
             </a>
-            <a href="#" class="flex items-center gap-4 px-4 py-4 rounded-2xl font-semibold hover:bg-slate-800 transition">
-                <i data-lucide="users"></i> Kurye Listesi
-            </a>
         </nav>
-
-        <div class="mt-auto bg-slate-800/50 p-4 rounded-3xl border border-slate-700">
-            <p class="text-[10px] font-black uppercase text-slate-500 mb-2">Yönetici</p>
-            <p class="text-sm font-bold text-white">Harun Kaya</p>
-        </div>
     </aside>
 
     <main class="flex-grow overflow-y-auto bg-[#F8FAFC] p-6 lg:p-10">
         <header class="flex justify-between items-center mb-10">
             <div>
                 <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight uppercase italic">Operasyon Merkezi</h2>
-                <p class="text-sm text-slate-400 font-medium">Sistem durumu ve verimlilik raporu.</p>
+                <p class="text-sm text-slate-400 font-medium italic">Gerçek zamanlı veri akışı aktif.</p>
             </div>
-            <button class="p-3 bg-white rounded-2xl border border-slate-200 text-slate-400 hover:text-cyan-500 transition shadow-sm">
-                <i data-lucide="bell"></i>
-            </button>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -61,28 +49,27 @@
                     <div class="p-3 bg-cyan-50 text-cyan-600 rounded-2xl"><i data-lucide="truck"></i></div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Aktif Kurye</p>
                 </div>
-                <h3 class="text-3xl font-black text-slate-900">12</h3>
+                <h3 id="stat-kurye" class="text-3xl font-black text-slate-900">0</h3>
             </div>
             <div class="card-jilet p-6 border-l-4 border-l-cyan-500">
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="p-3 bg-slate-50 text-slate-600 rounded-2xl"><i data-lucide="alert-circle"></i></div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest text-rose-500">Kritik Sapma</p>
+                    <div class="p-3 bg-rose-50 text-rose-600 rounded-2xl"><i data-lucide="alert-circle"></i></div>
+                    <p class="text-xs font-bold text-rose-500 uppercase tracking-widest">Kritik Sapma</p>
                 </div>
-                <h3 class="text-3xl font-black text-rose-600">3</h3>
+                <h3 id="stat-sapma" class="text-3xl font-black text-rose-600">0</h3>
             </div>
             <div class="card-jilet p-6">
                 <div class="flex items-center gap-4 mb-4">
                     <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><i data-lucide="banknote"></i></div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Toplam Ciro</p>
                 </div>
-                <h3 class="text-3xl font-black text-slate-900">₺14.250</h3>
+                <h3 id="stat-ciro" class="text-3xl font-black text-slate-900">₺0</h3>
             </div>
         </div>
 
         <div class="card-jilet overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <h4 class="font-bold text-slate-800 tracking-tight">Vardiya Hareketleri</h4>
-                <button class="text-xs font-bold text-cyan-600 uppercase tracking-widest">Tümünü Gör</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -91,31 +78,59 @@
                             <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase">Kurye</th>
                             <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase text-center">KM Analizi</th>
                             <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase text-center">Durum</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase text-right">İşlem</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        <tr class="hover:bg-slate-50/50 transition">
-                            <td class="px-8 py-5">
-                                <p class="text-sm font-bold text-slate-800">HARUN KAYA</p>
-                                <p class="text-[10px] text-slate-400">17.03.2026 • 12:45</p>
-                            </td>
-                            <td class="px-8 py-5 text-center">
-                                <span class="text-sm font-bold text-slate-700 uppercase">32 KM / 31.8 KM</span>
-                            </td>
-                            <td class="px-8 py-5 text-center">
-                                <span class="status-pill bg-emerald-100 text-emerald-600">Onaylandı</span>
-                            </td>
-                            <td class="px-8 py-5 text-right">
-                                <button class="text-slate-300 hover:text-cyan-500"><i data-lucide="more-horizontal"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="admin-table-body" class="divide-y divide-slate-100">
+                        </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('arsiv').on('value', snap => {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = "";
+            let sapmaCount = 0; let totalCiro = 0;
+
+            snap.forEach(driver => {
+                driver.forEach(log => {
+                    const d = log.val();
+                    const isSupheli = Math.abs(d.manuelKM - d.gpsKM) > 3;
+                    if(isSupheli) sapmaCount++;
+                    totalCiro += parseFloat(d.kazanc || 0);
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50/50 transition">
+                            <td class="px-8 py-5">
+                                <p class="text-sm font-bold text-slate-800 uppercase">${driver.key.replace('_',' ')}</p>
+                                <p class="text-[10px] text-slate-400">${d.tarih}</p>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <span class="text-sm font-bold text-slate-700 uppercase">${d.manuelKM || 0} / ${d.gpsKM || 0} KM</span>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <span class="status-pill ${isSupheli ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}">
+                                    ${isSupheli ? 'Sapma' : 'Normal'}
+                                </span>
+                            </td>
+                        </tr>`;
+                });
+            });
+            document.getElementById('stat-sapma').innerText = sapmaCount;
+            document.getElementById('stat-ciro').innerText = '₺' + totalCiro.toLocaleString();
+            lucide.createIcons();
+        });
+
+        db.ref('kuryeler').on('value', snap => {
+            document.getElementById('stat-kurye').innerText = snap.numChildren();
+        });
+    </script>
 </body>
 </html>

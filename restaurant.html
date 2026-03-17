@@ -3,90 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI - Restoran Paneli</title>
+    <title>KuryeAI - Restoran Kontrol Merkezi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #0f172a; color: white; }
-        #res-map { height: 350px; border-radius: 1.5rem; margin-bottom: 1rem; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
-        input, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
+        body { background: #020617; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        #map { height: 100%; border-radius: 0 20px 20px 0; }
+        .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-right: 1px solid #1e293b; }
+        .emergency-blink { animation: blink 1s infinite; border: 4px solid #ef4444 !important; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .detail-card { background: #1e293b; border-radius: 1rem; padding: 1rem; margin-top: 1rem; border: 1px solid #334155; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body class="pb-20">
+<body class="flex">
 
-    <header class="p-4 flex justify-between items-center border-b border-slate-800 glass-card sticky top-0 z-50">
-        <div>
-            <h1 class="text-xl font-bold text-cyan-400 italic">KuryeAI</h1>
-            <p class="text-[10px] text-slate-400">Restoran Yönetim Ekranı</p>
-        </div>
-        <button onclick="window.location.href='index.html'" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-3 py-1 rounded-lg">Çıkış</button>
-    </header>
-
-    <main class="p-4 space-y-6">
-
-        <div class="grid grid-cols-1 gap-4">
-            <button onclick="cağır()" class="bg-cyan-600 hover:bg-cyan-500 py-4 rounded-2xl font-black text-lg shadow-lg shadow-cyan-900/40 transition-all active:scale-95 flex flex-col items-center">
-                🚀 HEMEN KURYE ÇAĞIR
-                <span class="text-[10px] font-normal opacity-80 italic">En yakın kuryeye sinyal gönderilir</span>
-            </button>
+    <aside class="w-96 glass-panel h-screen flex flex-col p-6 z-50">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 bg-cyan-500 rounded-xl flex items-center justify-center font-black">AI</div>
+            <h1 class="text-2xl font-black italic text-cyan-400">Restoran Kontrol</h1>
         </div>
 
-        <div class="glass-card p-5 rounded-3xl space-y-4">
-            <h2 class="text-sm font-bold text-slate-300 uppercase tracking-widest">📦 Yeni Sipariş Detayı</h2>
-            <div class="space-y-3">
-                <input type="text" placeholder="Müşteri Adresi (Mahalle/Sokak)" class="w-full p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-cyan-500">
-                <div class="grid grid-cols-2 gap-3">
-                    <select class="p-3 rounded-xl text-sm outline-none">
-                        <option>Ödeme: Nakit</option>
-                        <option>Ödeme: Kredi Kartı</option>
-                        <option>Ödeme: Online</option>
-                    </select>
-                    <input type="number" placeholder="Tutar (₺)" class="p-3 rounded-xl text-sm outline-none">
-                </div>
+        <div id="emergency-box" class="hidden mb-6 p-4 bg-rose-900/40 border border-rose-500 rounded-2xl text-center">
+            <h3 class="text-rose-500 font-black animate-pulse uppercase">🚨 ACİL DURUM BİLDİRİMİ</h3>
+            <p id="emergency-info" class="text-sm mt-1 font-bold">Kurye kaza bildirdi!</p>
+            <button onclick="clearEmergency()" class="mt-3 text-[10px] bg-rose-600 px-4 py-1.5 rounded-full font-black uppercase">Bildirimi Kapat</button>
+        </div>
+
+        <div class="flex-grow overflow-y-auto">
+            <h2 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Saha Personeli</h2>
+            <div id="kurye-list" class="space-y-3">
+                <div class="text-slate-500 text-sm animate-pulse">Veriler okunuyor...</div>
             </div>
         </div>
 
-        <div class="space-y-3">
-            <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">📍 Yakındaki Kuryeler & Takip</h2>
-            <div id="res-map" class="shadow-2xl shadow-cyan-900/20"></div>
+        <div id="kurye-detail" class="hidden mt-6 pt-6 border-t border-slate-800">
+            <h2 class="text-cyan-400 font-bold uppercase text-xs mb-3 italic">Kurye Özgeçmiş & Araç Bilgisi</h2>
+            <div class="space-y-2 text-[11px]">
+                <div class="flex justify-between"><span class="text-slate-500">Ad Soyad:</span> <span id="det-ad" class="font-bold">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Kan Grubu:</span> <span id="det-kan" class="font-bold text-rose-400">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Motor / Plaka:</span> <span id="det-motor" class="font-bold">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Ehliyet:</span> <span id="det-ehliyet" class="font-bold">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Sigorta Bitiş:</span> <span id="det-sigorta" class="font-bold text-yellow-400">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Medeni Durum:</span> <span id="det-medeni" class="font-bold">-</span></div>
+            </div>
         </div>
+    </aside>
 
-    </main>
-
-    <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-slate-700 p-3 flex justify-around items-center z-50">
-        <button class="flex flex-col items-center gap-1 text-cyan-400">
-            <span class="text-[10px] font-bold">PANEL</span>
-        </button>
-        <button onclick="alert('Geçmiş Siparişler Listesi Yakında!')" class="flex flex-col items-center gap-1 text-slate-500">
-            <span class="text-[10px] font-bold">GEÇMİŞ</span>
-        </button>
-    </nav>
+    <main class="flex-grow relative">
+        <div id="map"></div>
+        </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Harita Başlatma (Ankara - Kızılay civarı)
-        var map = L.map('res-map').setView([39.9208, 32.8541], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // Restoran Konumu (Sabit İkon)
-        var resIcon = L.divIcon({className: 'bg-cyan-500 w-4 h-4 rounded-full border-2 border-white'});
-        L.marker([39.9208, 32.8541]).addTo(map).bindPopup('<b>Sizin Restoranınız</b>').openPopup();
+        let map, markers = {};
 
-        // Yakındaki Kurye Simülasyonu
-        var kuryeMarker = L.circleMarker([39.9250, 32.8600], {
-            radius: 7,
-            fillColor: "#fbbf24",
-            color: "#fff",
-            weight: 2,
-            fillOpacity: 1
-        }).addTo(map).bindPopup('Yakın Kurye: Ahmet (3 dk)');
+        map = L.map('map', { zoomControl: false, attributionControl: false }).setView([39.9334, 32.8597], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        function cağır() {
-            alert("Sinyal Gönderildi! Yakındaki 3 kurye bilgilendiriliyor...");
-            kuryeMarker.setStyle({fillColor: "#10b981"}); // Kurye rengini değiştir (aktifleşti)
+        // KURYE VERİLERİNİ DİNLE (CANLI KONUM + PROFİL)
+        db.ref('kuryeler').on('value', (snapshot) => {
+            const listDiv = document.getElementById('kurye-list');
+            listDiv.innerHTML = "";
+            const kuryeler = snapshot.val();
+
+            for (let id in kuryeler) {
+                const k = kuryeler[id];
+                const profil = k.profil || {};
+                
+                // Liste Kartı Oluştur
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-800/40 border border-slate-700 rounded-2xl cursor-pointer hover:border-cyan-500 transition-all";
+                card.onclick = () => showKuryeDetails(profil);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-black text-sm">${profil.ad || id}</p>
+                            <p class="text-[10px] text-slate-500">${profil.plaka || 'Plaka Yok'}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[8px] font-black bg-emerald-500/20 text-emerald-400">AKTİF</span>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+
+                // Harita Markeri Güncelle
+                if (k.konum) {
+                    if (markers[id]) {
+                        markers[id].setLatLng([k.konum.lat, k.konum.lng]);
+                    } else {
+                        markers[id] = L.marker([k.konum.lat, k.konum.lng]).addTo(map).bindPopup(profil.ad || id);
+                    }
+                }
+            }
+        });
+
+        // KURYE DETAYLARINI GÖSTER (PROFİLDEN GELEN VERİLER)
+        function showKuryeDetails(p) {
+            document.getElementById('kurye-detail').classList.remove('hidden');
+            document.getElementById('det-ad').innerText = p.ad || "-";
+            document.getElementById('det-kan').innerText = p.kan || "-";
+            document.getElementById('det-motor').innerText = (p.motor || "-") + " / " + (p.plaka || "-");
+            document.getElementById('det-ehliyet').innerText = p.ehliyet || "-";
+            document.getElementById('det-sigorta').innerText = p.sigorta || "-";
+            document.getElementById('det-medeni').innerText = p.medeni || "-";
+        }
+
+        // ACİL DURUM DİNLEYİCİ
+        db.ref('acil_durumlar').on('value', (snapshot) => {
+            const alert = snapshot.val();
+            const box = document.getElementById('emergency-box');
+            if (alert) {
+                box.classList.remove('hidden');
+                document.getElementById('emergency-info').innerText = `${alert.kurye}: ${alert.tur}`;
+                // Haritayı kaza bölgesine odakla
+                if(alert.lat) map.setView([alert.lat, alert.lng], 17);
+            } else {
+                box.classList.add('hidden');
+            }
+        });
+
+        function clearEmergency() {
+            db.ref('acil_durumlar').remove();
         }
     </script>
 </body>

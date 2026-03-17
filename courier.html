@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KuryeAI Pro - v2.1</title>
+    <title>KuryeAI Pro - GPS & Tracking v2.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,33 +14,27 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --bg: #F8FAFC; --card: rgba(255, 255, 255, 0.98); --text: #1E293B; }
-        .dark-mode { --bg: #0B1120; --card: rgba(30, 41, 59, 0.98); --text: #F1F5F9; }
+        :root { --bg: #0B1120; --cyan: #06B6D4; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); overflow: hidden; margin: 0; }
         #map { height: 100vh; width: 100%; position: absolute; z-index: 0; }
         
-        /* Sidebar */
+        /* Marker Stilleri */
+        .custom-kurye-marker { display: flex; flex-direction: column; align-items: center; }
+        .kurye-name-label { background: rgba(15, 23, 42, 0.95); color: white; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; white-space: nowrap; margin-bottom: 5px; border: 1px solid var(--cyan); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .kurye-ai-circle { width: 36px; height: 36px; background: #000; border: 2px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--cyan); font-weight: 900; font-style: italic; font-size: 14px; box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
+
+        /* Sidebar & UI */
         .sidebar { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: #0F172A; z-index: 300; transition: 0.4s; padding: 25px; color: white; }
-        .sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
-        .menu-btn { position: fixed; top: 15px; left: 15px; z-index: 150; background: #1E293B; color: white; padding: 10px; border-radius: 12px; border: none; cursor: pointer; }
+        .sidebar.active { left: 0; }
+        .menu-btn { position: fixed; top: 15px; left: 15px; z-index: 150; background: #1E293B; color: white; padding: 10px; border-radius: 12px; border: none; }
+        .locate-btn { position: fixed; bottom: 245px; right: 20px; z-index: 200; background: white; color: #1E293B; padding: 12px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: none; }
 
-        /* Hız Göstergesi */
-        #speed-overlay { position: fixed; bottom: 235px; left: 20px; z-index: 200; width: 65px; height: 65px; background: #1E293B; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 3px solid white; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .speed-limit-warn { border-color: #EF4444 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0px rgba(239, 68, 68, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } }
-
-        /* Konum Butonu - Veri Kartının Üstünde */
-        .locate-btn { position: fixed; bottom: 235px; right: 20px; z-index: 200; background: white; color: #1E293B; padding: 12px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; cursor: pointer; }
-
-        /* Alt Kart */
-        .bottom-card { position: fixed; bottom: 15px; left: 12px; right: 12px; background: var(--card); border-radius: 24px; padding: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 100; color: var(--text); }
-        #main-btn { width: 100%; height: 54px; border-radius: 16px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; cursor: pointer; transition: 0.3s; }
+        /* Veri Kartı */
+        .bottom-card { position: fixed; bottom: 15px; left: 12px; right: 12px; background: white; border-radius: 24px; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 100; }
         
-        .photo-box { width: 90px; height: 90px; background: #1E293B; border-radius: 25px; display: flex; align-items: center; justify-content: center; border: 2px solid #06B6D4; overflow: hidden; position: relative; }
-        #p-loader { position: absolute; display: none; border: 4px solid #f3f3f3; border-top: 4px solid #06B6D4; border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; z-index: 10; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #stats-modal { position: fixed; inset: 0; background: #0F172A; z-index: 400; display: none; padding: 20px; overflow-y: auto; color: white; }
+        #speed-overlay { position: fixed; bottom: 245px; left: 20px; z-index: 200; width: 65px; height: 65px; background: #1E293B; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 3px solid white; color: white; }
+        .speed-limit-warn { border-color: #EF4444 !important; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; background: #EF4444; } }
     </style>
 </head>
 <body>
@@ -54,156 +48,133 @@
     </div>
 
     <div id="sidebar" class="sidebar">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-black italic">KURYE<span class="text-cyan-500">AI</span></h2>
-            <button onclick="toggleMenu()" class="text-white bg-transparent border-none"><i data-lucide="x"></i></button>
-        </div>
-
-        <div class="flex flex-col items-center mb-6">
-            <div class="photo-box">
+        <h2 class="text-xl font-black italic mb-8 text-center">KURYE<span class="text-cyan-500">AI</span></h2>
+        
+        <div class="flex flex-col items-center mb-8">
+            <div class="w-24 h-24 bg-slate-800 rounded-3xl border-2 border-cyan-500 overflow-hidden relative" id="photo-container">
                 <img id="p-preview" class="w-full h-full object-cover hidden">
-                <i id="p-icon" data-lucide="user" class="text-slate-500 w-10 h-10"></i>
-                <div id="p-loader"></div>
+                <i id="p-icon" data-lucide="user" class="text-slate-600 w-12 h-12 mt-6 ml-6"></i>
+                <div id="p-loader" class="absolute inset-0 bg-black/50 hidden items-center justify-center">
+                    <div class="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
             </div>
             <input type="file" id="file-input" class="hidden" accept="image/*">
-            <button onclick="document.getElementById('file-input').click()" class="text-[11px] font-bold text-cyan-400 uppercase mt-3 bg-transparent border-none cursor-pointer">Fotoğrafı Güncelle</button>
-            <p class="text-[10px] text-slate-500 mt-2 font-mono">Cihaz ID: <span id="kurye-id-display">...</span></p>
+            <button onclick="document.getElementById('file-input').click()" class="mt-3 text-xs font-bold text-cyan-400 uppercase">Fotoğrafı Güncelle</button>
         </div>
 
         <div class="space-y-4">
-            <button onclick="openStats()" class="w-full flex items-center gap-3 font-bold text-slate-300 py-3 border-b border-slate-800 text-sm bg-transparent border-none text-left cursor-pointer">
-                <i data-lucide="history"></i> Geçmiş Kazançlarım
+            <input type="text" id="p-ad" class="w-full bg-slate-800 border-none p-4 rounded-xl text-white" placeholder="Ad Soyad">
+            <input type="text" id="p-plaka" class="w-full bg-slate-800 border-none p-4 rounded-xl text-white" placeholder="Plaka">
+            <button onclick="saveProfile()" class="w-full bg-cyan-600 py-4 rounded-xl font-bold uppercase text-white">Verileri Kaydet</button>
+        </div>
+
+        <div class="absolute bottom-10 left-0 w-full px-6">
+            <button onclick="logout()" class="w-full text-rose-500 font-bold flex items-center justify-center gap-2 py-4 bg-slate-900 rounded-xl">
+                <i data-lucide="power"></i> Güvenli Çıkış
             </button>
-            
-            <div class="space-y-2 pt-2">
-                <input type="text" id="p-ad" class="w-full bg-slate-800 border-none p-4 rounded-xl text-sm text-white" placeholder="Ad Soyad">
-                <input type="text" id="p-plaka" class="w-full bg-slate-800 border-none p-4 rounded-xl text-sm text-white" placeholder="Motosiklet Plakası">
-                <button onclick="saveProfile()" class="w-full bg-cyan-500 py-4 rounded-xl font-bold text-xs uppercase text-white border-none mt-2 cursor-pointer">Profil Verilerini Kaydet</button>
-            </div>
         </div>
-
-        <div class="mt-auto flex justify-between items-center pt-10">
-            <button onclick="toggleTheme()" class="flex items-center gap-2 text-xs font-bold text-white bg-transparent border-none cursor-pointer"><i data-lucide="moon"></i> Karanlık Mod</button>
-            <button onclick="logout()" class="text-rose-500 font-bold flex items-center gap-2 text-xs bg-transparent border-none cursor-pointer"><i data-lucide="power"></i> Çıkış Yap</button>
-        </div>
-    </div>
-
-    <div id="stats-modal">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-black italic uppercase">Vardiya Geçmişi</h2>
-            <button onclick="closeStats()" class="bg-transparent border-none text-white"><i data-lucide="chevron-left"></i></button>
-        </div>
-        <div id="history-list" class="space-y-4"></div>
     </div>
 
     <div id="map"></div>
 
     <div class="bottom-card">
-        <div class="flex justify-between items-end mb-4 px-1">
-            <div>
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Anlık Kazanç</h4>
-                <p id="earnings" class="text-2xl font-black text-slate-900 italic">₺0,00</p>
-            </div>
-            <div class="text-right">
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Vardiya Süresi</h4>
-                <p id="timer" class="text-lg font-bold text-slate-800">00:00:00</p>
-            </div>
+        <div class="flex justify-between items-center mb-4">
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">Anlık Kazanç</p><p id="earnings" class="text-2xl font-black italic text-slate-900">₺0,00</p></div>
+            <div class="text-right"><p class="text-[10px] font-bold text-slate-400 uppercase">Vardiya</p><p id="timer" class="text-lg font-bold">00:00:00</p></div>
         </div>
-
-        <div class="grid grid-cols-3 gap-2 mb-4 border-y border-slate-100 py-3 text-center">
-            <div><h4 class="text-[9px] text-cyan-600 font-bold uppercase">Mesafe</h4><p id="distance" class="text-sm font-black">0.0 km</p></div>
-            <div><h4 class="text-[9px] text-cyan-600 font-bold uppercase">Ort. Hız</h4><p id="avg-speed" class="text-sm font-black">0</p></div>
-            <div><h4 class="text-[9px] text-rose-500 font-bold uppercase">Verim (Saat/₺)</h4><p id="hourly-rate" class="text-sm font-black">₺0</p></div>
+        <div class="grid grid-cols-3 gap-2 border-t border-slate-100 pt-4 mb-4 text-center">
+            <div><p class="text-[9px] text-cyan-600 font-bold uppercase">Mesafe</p><p id="distance" class="font-black">0.0 km</p></div>
+            <div><p class="text-[9px] text-cyan-600 font-bold uppercase">Ort. Hız</p><p id="avg-speed" class="font-black">0</p></div>
+            <div><p class="text-[9px] text-rose-500 font-bold uppercase">Saat/₺</p><p id="hourly-rate" class="font-black">₺0</p></div>
         </div>
-
-        <button id="main-btn" onclick="handleShiftToggle()" class="bg-cyan-500 text-white shadow-lg">
-            <i data-lucide="zap" class="w-5 h-5 fill-current"></i> Vardiyayı Başlat
+        <button id="main-btn" onclick="handleShiftToggle()" class="w-full h-14 bg-cyan-500 text-white rounded-2xl font-black uppercase flex items-center justify-center gap-2">
+            <i data-lucide="zap"></i> Vardiyayı Başlat
         </button>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         lucide.createIcons();
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", 
-            authDomain: "kuryeai.firebaseapp.com", 
-            databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", 
-            projectId: "kuryeai", 
-            storageBucket: "kuryeai.firebasestorage.app" 
-        };
+        
+        // Firebase Başlatma
+        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const storage = firebase.storage();
 
-        let kuryeID = localStorage.getItem('kuryeAI_ID') || 'KAI-0000001';
-        document.getElementById('kurye-id-display').innerText = kuryeID;
+        let kuryeID = localStorage.getItem('kuryeAI_ID') || 'KAI-BURAK';
+        let kuryeName = "Yükleniyor...";
+        let routeColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Her kuryeye özel rastgele renk
 
-        // Harita (Kurye İkonu Sabitlendi)
+        // Harita Kurulumu
         var map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 15);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-        
-        const kuryeIcon = L.divIcon({
-            className: 'kurye-marker',
-            html: `<div style="background:#06B6D4; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 10px rgba(6,182,212,0.5);"></div>`,
-            iconSize: [24, 24]
-        });
 
         let isActive = false, startTime, timerInterval, marker, currentPos = null;
-        let totalDistance = 0, lastCoord = null;
+        let totalDistance = 0, lastCoord = null, speedSum = 0, speedCount = 0;
+        let routeLine = L.polyline([], {color: routeColor, weight: 5, opacity: 0.7}).addTo(map);
+
+        // Profil Verilerini Firebase'den Getir (Kalıcı Çözüm)
+        db.ref(`kuryeler/${kuryeID}/profil`).on('value', snap => {
+            const d = snap.val();
+            if(d) {
+                document.getElementById('p-ad').value = d.adSoyad || "";
+                document.getElementById('p-plaka').value = d.plaka || "";
+                kuryeName = d.adSoyad || "İsimsiz Kurye";
+                if(d.photo) {
+                    const img = document.getElementById('p-preview');
+                    img.src = d.photo; img.classList.remove('hidden');
+                    document.getElementById('p-icon').classList.add('hidden');
+                }
+            }
+        });
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-        function openStats() { loadHistory(); document.getElementById('stats-modal').style.display = 'block'; toggleMenu(); }
-        function closeStats() { document.getElementById('stats-modal').style.display = 'none'; }
         function locateUser() { if(currentPos) map.flyTo(currentPos, 17); }
 
-        // Fotoğraf Yükleme ve Anlık Görüntüleme
+        function saveProfile() {
+            const ad = document.getElementById('p-ad').value;
+            const plaka = document.getElementById('p-plaka').value;
+            db.ref(`kuryeler/${kuryeID}/profil`).update({ adSoyad: ad, plaka: plaka })
+            .then(() => alert("Profil verileri güncellendi!"));
+        }
+
+        // Fotoğraf Yükleme Fix
         document.getElementById('file-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(!file) return;
-            
-            const loader = document.getElementById('p-loader');
-            loader.style.display = 'block';
-            
-            const ref = storage.ref(`kuryeler/${kuryeID}/profil.jpg`);
+            document.getElementById('p-loader').style.display = 'flex';
+            const ref = storage.ref(`avatars/${kuryeID}.jpg`);
             ref.put(file).then(() => ref.getDownloadURL()).then(url => {
                 db.ref(`kuryeler/${kuryeID}/profil`).update({ photo: url });
-                const img = document.getElementById('p-preview');
-                img.src = url;
-                img.classList.remove('hidden');
-                document.getElementById('p-icon').classList.add('hidden');
-                loader.style.display = 'none';
-            }).catch(err => {
-                console.error(err);
-                loader.style.display = 'none';
-                alert("Yükleme başarısız!");
-            });
+                document.getElementById('p-loader').style.display = 'none';
+            }).catch(() => document.getElementById('p-loader').style.display = 'none');
         });
 
         function handleShiftToggle() {
-            const btn = document.getElementById('main-btn');
             if (!isActive) {
                 isActive = true;
                 startTime = Date.now();
-                btn.innerHTML = '<i data-lucide="stop-circle"></i> Vardiyayı Bitir';
-                btn.classList.replace('bg-cyan-500', 'bg-slate-900');
-                lucide.createIcons();
+                document.getElementById('main-btn').innerHTML = '<i data-lucide="stop-circle"></i> Vardiyayı Bitir';
+                document.getElementById('main-btn').classList.replace('bg-cyan-500', 'bg-slate-900');
                 timerInterval = setInterval(updateStats, 1000);
                 startTracking();
             } else {
-                saveShiftData();
+                location.reload(); // Vardiya bitince sistemi temizle
             }
         }
 
         function updateStats() {
             const diff = Date.now() - startTime;
-            const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-            const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-            const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            const h = Math.floor(diff/3600000);
+            const m = Math.floor((diff%3600000)/60000);
+            const s = Math.floor((diff%60000)/1000);
+            document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             
-            let kazanc = (totalDistance * 12.5) + ((diff/3600000) * 150); // Dinamik Kazanç
+            // Kazanç Hesaplama (Örnek: KM başı 15TL + Saatlik 100TL)
+            let kazanc = (totalDistance * 15) + ((diff/3600000) * 100);
             document.getElementById('earnings').innerText = "₺" + kazanc.toFixed(2);
+            document.getElementById('hourly-rate').innerText = "₺" + (kazanc / (diff/3600000 || 1)).toFixed(0);
         }
 
         function startTracking() {
@@ -212,70 +183,49 @@
                 currentPos = [latitude, longitude];
                 const s = speed ? speed * 3.6 : 0;
                 
-                // 50 KM/S Hız Sınırı Uyarısı
-                const speedEl = document.getElementById('speed-overlay');
+                // Hız Göstergesi & Limit
                 document.getElementById('live-speed').innerText = Math.round(s);
-                if(s > 50) speedEl.classList.add('speed-limit-warn');
-                else speedEl.classList.remove('speed-limit-warn');
+                if(s > 50) document.getElementById('speed-overlay').classList.add('speed-limit-warn');
+                else document.getElementById('speed-overlay').classList.remove('speed-limit-warn');
 
+                if(isActive) {
+                    // Ortalama Hız Hesapla
+                    if(s > 2) { speedSum += s; speedCount++; }
+                    document.getElementById('avg-speed').innerText = speedCount > 0 ? Math.round(speedSum/speedCount) : 0;
+                    
+                    // Mesafe ve GPS Çizgisi
+                    if(lastCoord) {
+                        const d = map.distance(lastCoord, currentPos) / 1000;
+                        if(d > 0.005) { // Sıçramaları önlemek için 5 metreden küçük hareketleri sayma
+                            totalDistance += d;
+                            document.getElementById('distance').innerText = totalDistance.toFixed(1) + " km";
+                            routeLine.addLatLng(currentPos);
+                        }
+                    } else {
+                        routeLine.addLatLng(currentPos);
+                    }
+                    map.panTo(currentPos); // Kuryeyi takip et
+                }
+                lastCoord = currentPos;
+
+                // Özel Marker (İsim + AI İkonu)
+                const iconHTML = `
+                    <div class="custom-kurye-marker">
+                        <div class="kurye-name-label">${kuryeName}</div>
+                        <div class="kurye-ai-circle">AI</div>
+                    </div>`;
+                
                 if(!marker) {
-                    marker = L.marker(currentPos, {icon: kuryeIcon}).addTo(map);
+                    marker = L.marker(currentPos, {icon: L.divIcon({className:'', html:iconHTML, iconSize:[100,60], iconAnchor:[50,55]})}).addTo(map);
                     map.setView(currentPos, 17);
                 } else {
                     marker.setLatLng(currentPos);
+                    marker.setIcon(L.divIcon({className:'', html:iconHTML, iconSize:[100,60], iconAnchor:[50,55]}));
                 }
-                
-                if(isActive && lastCoord && s > 1) {
-                    const d = map.distance(lastCoord, currentPos) / 1000;
-                    totalDistance += d;
-                    document.getElementById('distance').innerText = totalDistance.toFixed(1) + " km";
-                }
-                lastCoord = currentPos;
-            }, null, {enableHighAccuracy: true});
-        }
-
-        function saveShiftData() {
-            const finalKazanc = document.getElementById('earnings').innerText;
-            const finalMesafe = document.getElementById('distance').innerText;
-            const shiftData = {
-                tarih: new Date().toLocaleString('tr-TR'),
-                kazanc: finalKazanc,
-                mesafe: finalMesafe,
-                sure: document.getElementById('timer').innerText
-            };
-            
-            // Firebase ve LocalStorage'a kaydet
-            db.ref(`kuryeler/${kuryeID}/gecmis`).push(shiftData);
-            let localHistory = JSON.parse(localStorage.getItem('shift_history') || '[]');
-            localHistory.push(shiftData);
-            localStorage.setItem('shift_history', JSON.stringify(localHistory));
-            
-            alert("Vardiya Kaydedildi: " + finalKazanc);
-            location.reload();
-        }
-
-        function loadHistory() {
-            const list = document.getElementById('history-list');
-            db.ref(`kuryeler/${kuryeID}/gecmis`).limitToLast(10).once('value', snap => {
-                list.innerHTML = "";
-                if(!snap.val()) { list.innerHTML = "<p class='text-center text-slate-500'>Kayıt bulunamadı.</p>"; return; }
-                snap.forEach(child => {
-                    const d = child.val();
-                    list.innerHTML += `
-                        <div class="bg-slate-800 p-4 rounded-2xl flex justify-between items-center">
-                            <div><p class="text-[10px] text-slate-400">${d.tarih}</p><p class="font-bold text-cyan-400">${d.mesafe}</p></div>
-                            <div class="text-right"><p class="font-black text-lg">${d.kazanc}</p><p class="text-[10px] uppercase text-slate-500">${d.sure}</p></div>
-                        </div>`;
-                });
-            });
+            }, err => console.error(err), {enableHighAccuracy: true, maximumAge: 0});
         }
 
         function logout() { window.location.href = "index.html"; }
-        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-        function saveProfile() {
-            const data = { adSoyad: document.getElementById('p-ad').value, plaka: document.getElementById('p-plaka').value };
-            db.ref(`kuryeler/${kuryeID}/profil`).update(data).then(() => alert("Profil güncellendi!"));
-        }
     </script>
 </body>
 </html>

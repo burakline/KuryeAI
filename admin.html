@@ -1,135 +1,139 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI | Cloud Dashboard</title>
+    <title>KuryeAI | Enterprise Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; }
-        .sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .active-link { background: #0ea5e9 !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3); }
-        .nav-item { transition: all 0.2s; }
-        .nav-item:hover:not(.active-link) { background: #f1f5f9; transform: translateX(5px); }
-        #map { height: 400px; border-radius: 24px; z-index: 10; }
-        /* Mobil Menü Kontrolü */
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; }
-            .sidebar.open { transform: translateX(0); }
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-gradient { background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); }
+        .card-glow:hover { box-shadow: 0 0 20px rgba(14, 165, 233, 0.15); border-color: rgba(14, 165, 233, 0.4); }
+        .status-dot { position: relative; }
+        .status-dot::after { content: ''; position: absolute; width: 8px; height: 8px; border-radius: 50%; right: -2px; bottom: -2px; border: 2px solid white; }
+        .active-tab { border-left: 4px solid #0ea5e9; background: rgba(14, 165, 233, 0.1); color: #38bdf8; }
+        #map { height: 100%; width: 100%; border-radius: 2rem; }
+        .drawer { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
-<body class="overflow-x-hidden">
+<body class="bg-[#020617] text-slate-200">
 
-    <div id="overlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden"></div>
-
-    <div class="flex min-h-screen">
-        <aside id="sidebar" class="sidebar w-72 h-screen bg-white border-r border-slate-200 flex flex-col p-6 shrink-0">
-            <div class="flex items-center gap-3 px-2 mb-10">
-                <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center shadow-lg shadow-sky-200">
-                    <i data-lucide="zap" class="text-white w-6 h-6"></i>
+    <div class="flex h-screen overflow-hidden">
+        
+        <aside id="main-sidebar" class="w-72 sidebar-gradient border-r border-slate-800 flex flex-col hidden lg:flex">
+            <div class="p-8">
+                <div class="flex items-center gap-3 group cursor-pointer">
+                    <div class="w-12 h-12 bg-sky-500 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(14,165,233,0.4)] group-hover:scale-110 transition">
+                        <i data-lucide="shield-check" class="text-white w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-extrabold tracking-tighter text-white uppercase italic">KuryeAI</h1>
+                        <p class="text-[10px] text-sky-400 font-bold tracking-[0.2em]">CONTROL CENTER</p>
+                    </div>
                 </div>
-                <span class="text-xl font-extrabold tracking-tight text-slate-800 italic">KuryeAI <span class="text-sky-600">PRO</span></span>
             </div>
 
-            <nav class="flex-grow space-y-2">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mb-2">Genel Menü</p>
-                <a href="#" onclick="showSection('dashboard')" class="nav-item active-link flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-semibold">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+            <nav class="flex-grow px-4 space-y-1">
+                <a href="#" onclick="switchTab('dashboard')" class="active-tab flex items-center gap-4 px-6 py-4 rounded-xl font-semibold transition group">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i> Dashboard
                 </a>
-                <a href="#" onclick="showSection('couriers')" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-500 text-sm font-semibold">
-                    <i data-lucide="truck" class="w-5 h-5"></i> Kurye Yönetimi
+                <a href="#" onclick="switchTab('live')" class="flex items-center gap-4 px-6 py-4 rounded-xl font-semibold text-slate-400 hover:bg-slate-800 transition">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i> Canlı Takip
                 </a>
-                <a href="#" onclick="showSection('finance')" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-500 text-sm font-semibold">
-                    <i data-lucide="banknote" class="w-5 h-5"></i> Finans & Ödemeler
+                <a href="#" onclick="switchTab('drivers')" class="flex items-center gap-4 px-6 py-4 rounded-xl font-semibold text-slate-400 hover:bg-slate-800 transition">
+                    <i data-lucide="users" class="w-5 h-5"></i> Kurye Listesi
                 </a>
-                <div class="my-6 border-t border-slate-100"></div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mb-2">Sistem</p>
-                <a href="#" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-500 text-sm font-semibold">
-                    <i data-lucide="settings" class="w-5 h-5"></i> Ayarlar
+                <a href="#" onclick="switchTab('reports')" class="flex items-center gap-4 px-6 py-4 rounded-xl font-semibold text-slate-400 hover:bg-slate-800 transition">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Finansal Rapor
                 </a>
             </nav>
 
-            <div class="mt-auto bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-sky-100 border-2 border-white flex items-center justify-center font-bold text-sky-600">A</div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-800">Harun Kaya</p>
-                        <p class="text-[10px] text-slate-500 font-medium">Yönetici</p>
+            <div class="p-6">
+                <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700">
+                    <div class="flex items-center gap-3">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0ea5e9&color=fff" class="w-10 h-10 rounded-xl">
+                        <div>
+                            <p class="text-sm font-bold text-white">Yönetici Paneli</p>
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase">Çevrimiçi</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-grow flex flex-col min-w-0 max-h-screen overflow-y-auto bg-[#f8fafc]">
-            <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleMenu()" class="p-2.5 bg-slate-50 rounded-xl text-slate-600 lg:hidden">
-                        <i data-lucide="menu"></i>
-                    </button>
-                    <h2 id="page-title" class="text-lg font-bold text-slate-800">Yönetim Paneli</h2>
+        <main class="flex-grow flex flex-col min-w-0 bg-[#020617] overflow-y-auto">
+            
+            <header class="h-24 px-8 flex items-center justify-between border-b border-slate-800 bg-[#020617]/80 backdrop-blur-xl sticky top-0 z-40">
+                <div>
+                    <h2 id="view-title" class="text-2xl font-bold text-white">Dashboard</h2>
+                    <p class="text-xs text-slate-500 font-medium">Sistem durumu ve kurye performans verileri.</p>
                 </div>
-                
-                <div class="flex items-center gap-2 lg:gap-4">
-                    <div class="hidden md:flex items-center bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
-                        <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
-                        <input type="text" placeholder="Kurye Ara..." class="bg-transparent border-none text-sm ml-2 outline-none w-32 lg:w-48">
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center bg-slate-900 border border-slate-800 px-4 py-2.5 rounded-2xl focus-within:border-sky-500 transition">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-500"></i>
+                        <input type="text" placeholder="Hızlı ara..." class="bg-transparent border-none outline-none text-sm ml-3 text-white w-64">
                     </div>
-                    <button class="relative p-2.5 bg-slate-50 rounded-xl text-slate-600 hover:bg-slate-100 transition">
+                    <button class="w-12 h-12 flex items-center justify-center bg-slate-900 border border-slate-800 rounded-2xl text-slate-400 hover:text-white transition">
                         <i data-lucide="bell" class="w-5 h-5"></i>
-                        <span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="lg:hidden w-12 h-12 flex items-center justify-center bg-sky-500 rounded-2xl text-white">
+                        <i data-lucide="menu"></i>
                     </button>
                 </div>
             </header>
 
-            <div class="p-4 lg:p-8 space-y-8">
+            <div class="p-8 space-y-8">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="glass-card p-6 rounded-[2rem] shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-sky-50 text-sky-600 rounded-2xl"><i data-lucide="users"></i></div>
-                            <span class="text-emerald-500 text-xs font-bold">+12%</span>
-                        </div>
-                        <p class="text-sm font-medium text-slate-500">Aktif Kuryeler</p>
-                        <h3 id="count-active" class="text-2xl font-extrabold mt-1 text-slate-800">0</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 text-white">
+                    <div class="bg-slate-900/40 p-6 rounded-[2rem] border border-slate-800 card-glow transition">
+                        <div class="w-12 h-12 bg-sky-500/10 text-sky-500 rounded-2xl flex items-center justify-center mb-4"><i data-lucide="navigation"></i></div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Aktif Kurye</p>
+                        <h3 id="stat-active" class="text-3xl font-black mt-1">0</h3>
                     </div>
-                    <div class="glass-card p-6 rounded-[2rem] shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-rose-50 text-rose-600 rounded-2xl"><i data-lucide="alert-triangle"></i></div>
-                        </div>
-                        <p class="text-sm font-medium text-slate-500">Şüpheli KM</p>
-                        <h3 id="count-alert" class="text-2xl font-extrabold mt-1 text-rose-600">0</h3>
+                    <div class="bg-slate-900/40 p-6 rounded-[2rem] border border-slate-800 card-glow transition">
+                        <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mb-4"><i data-lucide="alert-octagon"></i></div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Kritik Sapma</p>
+                        <h3 id="stat-alerts" class="text-3xl font-black mt-1 text-rose-500">0</h3>
+                    </div>
+                    <div class="bg-slate-900/40 p-6 rounded-[2rem] border border-slate-800 card-glow transition">
+                        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mb-4"><i data-lucide="wallet"></i></div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Bugünkü Ciro</p>
+                        <h3 id="stat-money" class="text-3xl font-black mt-1">₺0</h3>
                     </div>
                 </div>
 
-                <section id="table-section" class="glass-card rounded-[2.5rem] overflow-hidden shadow-sm">
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white/50">
-                        <h4 class="font-bold text-slate-800">Son Vardiya Hareketleri</h4>
-                        <button class="text-xs font-bold text-sky-600 hover:underline">Tümünü Gör</button>
+                <div id="section-main" class="bg-slate-900/20 rounded-[2.5rem] border border-slate-800 overflow-hidden backdrop-blur-md">
+                    <div class="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-900/40">
+                        <h4 class="text-lg font-bold text-white flex items-center gap-3">
+                            <i data-lucide="history" class="w-5 h-5 text-sky-500"></i> Son Hareketler
+                        </h4>
+                        <div class="flex gap-2">
+                            <button class="bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-lg shadow-sky-600/20">Dışa Aktar</button>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto">
+                    
+                    <div class="overflow-x-auto overflow-y-auto max-h-[600px]">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50/50">
+                            <thead class="bg-slate-950/50 sticky top-0 z-10">
                                 <tr>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kurye</th>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Mesafe (M/G)</th>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Durum</th>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">İşlem</th>
+                                    <th class="px-8 py-5 text-[11px] font-black text-slate-500 uppercase tracking-[0.15em]">Kurye Profili</th>
+                                    <th class="px-8 py-5 text-[11px] font-black text-slate-500 uppercase tracking-[0.15em] text-center">KM Verisi</th>
+                                    <th class="px-8 py-5 text-[11px] font-black text-slate-500 uppercase tracking-[0.15em] text-center">Analiz</th>
+                                    <th class="px-8 py-5 text-[11px] font-black text-slate-500 uppercase tracking-[0.15em] text-right">Eylem</th>
                                 </tr>
                             </thead>
-                            <tbody id="log-table" class="divide-y divide-slate-100">
+                            <tbody id="driver-logs" class="divide-y divide-slate-800/50">
                                 </tbody>
                         </table>
                     </div>
-                </section>
+                </div>
 
-                <div class="glass-card p-2 rounded-[2.5rem] shadow-xl overflow-hidden">
+                <div id="section-map" class="h-[500px] bg-slate-900/40 rounded-[2.5rem] border border-slate-800 p-2 shadow-2xl">
                     <div id="map"></div>
                 </div>
 
@@ -137,71 +141,80 @@
         </main>
     </div>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Lucide Icons Init
+        // Icons
         lucide.createIcons();
 
-        // Firebase Setup
+        // Firebase Setup (Same credentials)
         const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Menü Toggle
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('hidden');
+        // UI Logic
+        function switchTab(tab) {
+            document.querySelectorAll('nav a').forEach(el => el.classList.remove('active-tab'));
+            event.currentTarget.classList.add('active-tab');
+            document.getElementById('view-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
         }
 
-        // Bölüm Değiştirme
-        function showSection(name) {
-            document.getElementById('page-title').innerText = name.charAt(0).toUpperCase() + name.slice(1);
-            if(window.innerWidth < 1024) toggleMenu();
-        }
-
-        // Tablo Veri Çekme
+        // Live Data Feed
         db.ref('arsiv').on('value', snap => {
-            const table = document.getElementById('log-table');
-            table.innerHTML = "";
+            const container = document.getElementById('driver-logs');
+            container.innerHTML = "";
             let alertCount = 0;
+            let totalMoney = 0;
 
-            snap.forEach(kurye => {
-                kurye.forEach(log => {
-                    const d = log.val();
-                    const isAlert = Math.abs(d.manuelKM - d.gpsKM) > 2; // Örnek 2km sapma kuralı
-                    if(isAlert) alertCount++;
+            snap.forEach(driver => {
+                driver.forEach(log => {
+                    const data = log.val();
+                    const diff = Math.abs(data.manuelKM - data.gpsKM);
+                    const isDangerous = diff > 3;
+                    if(isDangerous) alertCount++;
+                    totalMoney += parseFloat(data.kazanc || 0);
 
-                    table.innerHTML += `
-                        <tr class="hover:bg-slate-50/50 transition">
-                            <td class="px-6 py-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">${kurye.key.charAt(0).toUpperCase()}</div>
-                                    <div><p class="text-sm font-bold text-slate-800 uppercase">${kurye.key.replace('_',' ')}</p><p class="text-[10px] text-slate-400">${d.tarih}</p></div>
+                    container.innerHTML += `
+                        <tr class="hover:bg-sky-500/5 transition group">
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center font-bold text-sky-400 border border-slate-700 group-hover:border-sky-500/50 transition">
+                                        ${driver.key.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-white uppercase tracking-tight">${driver.key.replace('_',' ')}</p>
+                                        <p class="text-[10px] text-slate-500 font-medium">${data.tarih}</p>
+                                    </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-5 text-center">
-                                <span class="text-xs font-bold text-slate-700">${d.manuelKM} km</span>
-                                <span class="text-[10px] text-slate-400 block italic">GPS: ${d.gpsKM} km</span>
+                            <td class="px-8 py-6 text-center">
+                                <div class="inline-block text-left">
+                                    <p class="text-xs font-bold text-slate-200">M: ${data.manuelKM} km</p>
+                                    <p class="text-[10px] text-slate-500 italic font-medium">G: ${data.gpsKM} km</p>
+                                </div>
                             </td>
-                            <td class="px-6 py-5 text-center">
-                                <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${isAlert ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-500'}">
-                                    ${isAlert ? 'Şüpheli Sapma' : 'Onaylandı'}
+                            <td class="px-8 py-6 text-center">
+                                <span class="px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${isDangerous ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}">
+                                    ${isDangerous ? 'KRİTİK SAPMA' : 'GÜVENLİ'}
                                 </span>
                             </td>
-                            <td class="px-6 py-5 text-right">
-                                <button class="p-2 hover:bg-white rounded-lg transition shadow-sm border border-slate-100"><i data-lucide="eye" class="w-4 h-4 text-slate-400"></i></button>
+                            <td class="px-8 py-6 text-right">
+                                <button class="w-10 h-10 bg-slate-800 rounded-xl hover:bg-sky-500 hover:text-white transition flex items-center justify-center ml-auto">
+                                    <i data-lucide="more-horizontal" class="w-4 h-4 text-slate-400 hover:text-inherit"></i>
+                                </button>
                             </td>
                         </tr>
                     `;
                 });
             });
-            document.getElementById('count-alert').innerText = alertCount;
+            document.getElementById('stat-alerts').innerText = alertCount;
+            document.getElementById('stat-money').innerText = '₺' + totalMoney.toLocaleString();
             lucide.createIcons();
         });
 
-        // Harita Başlat
-        var map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        // Initialize Map
+        var map = L.map('map', {zoomControl: false, attributionControl: false}).setView([39.9334, 32.8597], 12);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
     </script>
 </body>
 </html>

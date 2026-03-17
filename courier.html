@@ -9,64 +9,72 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --bg: #0F172A; --card: rgba(255, 255, 255, 0.95); --text: #1E293B; }
-        .dark-mode { --bg: #020617; --card: rgba(30, 41, 59, 0.98); --text: #F1F5F9; }
+        :root { --bg: #F8FAFC; --card: rgba(255, 255, 255, 0.95); --text: #1E293B; --sidebar-bg: #0F172A; }
+        .dark-mode { --bg: #020617; --card: rgba(30, 41, 59, 0.98); --text: #F1F5F9; --sidebar-bg: #020617; }
         
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); overflow: hidden; transition: 0.3s; }
         #map { height: 100vh; width: 100%; position: absolute; top: 0; z-index: 0; }
         
-        /* Menu Styles */
-        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: var(--bg); z-index: 200; transition: 0.4s; padding: 30px; color: white; }
+        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: var(--sidebar-bg); z-index: 200; transition: 0.4s; padding: 30px; color: white; }
         .sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
         .menu-btn { position: fixed; top: 20px; left: 20px; z-index: 150; background: #1E293B; color: white; padding: 12px; border-radius: 15px; }
+        
+        /* Harita Butonu */
+        .map-control-btn { position: fixed; bottom: 320px; right: 20px; z-index: 100; background: white; color: #1E293B; padding: 12px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: none; }
+        .dark-mode .map-control-btn { background: #1E293B; color: white; }
 
-        /* UI Cards */
         .bottom-card { position: fixed; bottom: 25px; left: 12px; right: 12px; background: var(--card); backdrop-filter: blur(10px); border-radius: 32px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); z-index: 50; color: var(--text); }
         .status-pill { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #1E293B; color: white; padding: 10px 20px; border-radius: 99px; font-size: 11px; font-weight: 800; z-index: 50; border: 1px solid #334155; }
         
-        /* Marker & Line */
-        .kurye-marker { background: #06B6D4; width: 20px; height: 20px; border: 4px solid white; border-radius: 50%; box-shadow: 0 0 20px rgba(6,182,212,0.8); }
-        input, select { background: #1E293B; border: 1px solid #334155; padding: 10px; border-radius: 12px; width: 100%; color: white; margin-bottom: 10px; }
+        /* Özel AI Marker */
+        .ai-marker { background: #000; width: 32px; height: 32px; border: 2px solid #06B6D4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #06B6D4; font-weight: 900; font-style: italic; font-size: 12px; box-shadow: 0 0 15px rgba(6,182,212,0.5); }
+        
+        input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; width: 100%; color: white; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <button class="menu-btn shadow-xl" onclick="toggleMenu()"><i data-lucide="menu"></i></button>
+    <button class="menu-btn" onclick="toggleMenu()"><i data-lucide="menu"></i></button>
+    <button class="map-control-btn shadow-lg" onclick="locateUser()"><i data-lucide="locate-fixed"></i></button>
 
     <div id="sidebar" class="sidebar overflow-y-auto">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-black italic">PROFIL<span class="text-cyan-500 italic">IM</span></h2>
+            <h2 class="text-xl font-black italic uppercase tracking-tighter">Kurye<span class="text-cyan-500 italic">AI</span> <span class="text-[10px] font-normal text-slate-400 ml-1">| Akıllı Teslimat</span></h2>
             <button onclick="toggleMenu()"><i data-lucide="x"></i></button>
         </div>
 
         <div class="flex flex-col items-center mb-6">
-            <div id="p-img" class="w-24 h-24 bg-slate-800 rounded-3xl mb-3 flex items-center justify-center border-2 border-cyan-500 overflow-hidden">
-                <i data-lucide="user" class="text-slate-500 w-10 h-10"></i>
+            <div id="p-img-container" class="w-24 h-24 bg-slate-800 rounded-3xl mb-3 flex items-center justify-center border-2 border-cyan-500 overflow-hidden relative">
+                <img id="profile-img-preview" src="" class="w-full h-full object-cover hidden">
+                <i id="p-placeholder" data-lucide="user" class="text-slate-500 w-10 h-10"></i>
             </div>
-            <button class="text-xs font-bold text-cyan-400 uppercase">Fotoğraf Değiştir</button>
+            <input type="file" id="p-file" class="hidden" accept="image/*" onchange="uploadPhoto()">
+            <button onclick="document.getElementById('p-file').click()" class="text-xs font-bold text-cyan-400 uppercase">Fotoğraf Değiştir</button>
         </div>
 
-        <div id="profile-form" class="space-y-1">
+        <div id="profile-form">
             <input type="text" id="p-ad" placeholder="Ad Soyad">
             <input type="text" id="p-dogum" placeholder="Doğum Tarihi (GG.AA.YYYY)">
             <input type="text" id="p-dogumyeri" placeholder="Doğum Yeri">
             <input type="text" id="p-marka" placeholder="Araç Marka / Model">
             <input type="text" id="p-plaka" placeholder="Araç Plakası">
-            <button onclick="saveProfile()" class="w-full bg-cyan-500 py-3 rounded-xl font-bold mt-4">KAYDET</button>
+            <button onclick="saveProfile()" class="w-full bg-cyan-500 py-3 rounded-xl font-bold mt-2 text-white">KAYDET</button>
         </div>
 
         <hr class="my-6 border-slate-800">
-        <button class="flex items-center gap-3 font-bold text-slate-300 mb-6"><i data-lucide="history"></i> Geçmiş Kazançlar</button>
+        <button onclick="showHistory()" class="flex items-center gap-3 font-bold text-slate-300 mb-6"><i data-lucide="history"></i> Geçmiş Kazançlar</button>
         
         <div class="flex items-center justify-between mt-auto pt-10">
             <button onclick="toggleTheme()" class="flex items-center gap-2 text-sm font-bold"><i data-lucide="moon"></i> Tema</button>
-            <button onclick="location.reload()" class="text-rose-500 font-bold flex items-center gap-2"><i data-lucide="log-out"></i> Çıkış</button>
+            <button onclick="logout()" class="text-rose-500 font-bold flex items-center gap-2"><i data-lucide="log-out"></i> Çıkış</button>
         </div>
     </div>
 
-    <div id="status-pill" class="status-pill flex items-center gap-2 uppercase italic tracking-tighter">
+    <div id="status-pill" class="status-pill flex items-center gap-2 uppercase tracking-tighter">
         <span class="w-2 h-2 bg-slate-500 rounded-full"></span> Çevrimdışı • Mola
     </div>
 
@@ -80,22 +88,26 @@
             </div>
             <div class="text-right">
                 <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vardiya Süresi</h4>
-                <p id="timer" class="text-lg font-bold text-slate-800">00:00:00</p>
+                <p id="timer" class="text-lg font-bold text-slate-800 tracking-tighter">00:00:00</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 mb-6 border-t border-slate-100 pt-4 text-center">
+        <div class="grid grid-cols-4 gap-1 mb-6 border-t border-slate-100 pt-4 text-center">
             <div>
-                <h4 class="text-[8px] font-bold text-cyan-600 uppercase">Hız</h4>
-                <p id="speed" class="font-black text-sm">0 <span class="text-[8px]">km/s</span></p>
+                <h4 class="text-[7px] font-bold text-cyan-600 uppercase">Hız</h4>
+                <p id="speed" class="font-black text-xs">0 <span class="text-[7px]">km/s</span></p>
             </div>
             <div>
-                <h4 class="text-[8px] font-bold text-cyan-600 uppercase">Toplam KM</h4>
-                <p id="distance" class="font-black text-sm">0.0 <span class="text-[8px]">km</span></p>
+                <h4 class="text-[7px] font-bold text-cyan-600 uppercase">Toplam KM</h4>
+                <p id="distance" class="font-black text-xs">0.0 <span class="text-[7px]">km</span></p>
             </div>
             <div>
-                <h4 class="text-[8px] font-bold text-cyan-600 uppercase">Ort. Hız</h4>
-                <p id="avg-speed" class="font-black text-sm">0 <span class="text-[8px]">km/s</span></p>
+                <h4 class="text-[7px] font-bold text-cyan-600 uppercase">Ort. Hız</h4>
+                <p id="avg-speed" class="font-black text-xs">0 <span class="text-[7px]">km/s</span></p>
+            </div>
+            <div>
+                <h4 class="text-[7px] font-bold text-rose-500 uppercase">Saat/₺</h4>
+                <p id="hourly-rate" class="font-black text-xs">₺0</p>
             </div>
         </div>
 
@@ -110,16 +122,46 @@
         const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
         const kuryeID = "burak_haskoy";
 
         var map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 15);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+        let lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+        let darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png');
 
         let isActive = false, startTime, timerInterval, watchID, marker, pathLine;
         let totalDistance = 0, lastCoord = null, pathCoords = [];
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+        
+        function toggleTheme() { 
+            const isDark = document.body.classList.toggle('dark-mode');
+            if(isDark) { map.removeLayer(lightLayer); darkLayer.addTo(map); }
+            else { map.removeLayer(darkLayer); lightLayer.addTo(map); }
+        }
+
+        function locateUser() {
+            if(lastCoord) map.flyTo(lastCoord, 17);
+        }
+
+        function uploadPhoto() {
+            const file = document.getElementById('p-file').files[0];
+            if(!file) return;
+            const ref = storage.ref(`kuryeler/${kuryeID}/profil.jpg`);
+            ref.put(file).then(() => {
+                ref.getDownloadURL().then(url => {
+                    db.ref(`kuryeler/${kuryeID}/profil/photo`).set(url);
+                    updatePhotoUI(url);
+                });
+            });
+        }
+
+        function updatePhotoUI(url) {
+            document.getElementById('profile-img-preview').src = url;
+            document.getElementById('profile-img-preview').classList.remove('hidden');
+            document.getElementById('p-placeholder').classList.add('hidden');
+        }
 
         function saveProfile() {
             const data = {
@@ -129,7 +171,24 @@
                 markaModel: document.getElementById('p-marka').value,
                 plaka: document.getElementById('p-plaka').value
             };
-            db.ref('kuryeler/' + kuryeID + '/profil').set(data).then(() => alert("Profil Güncellendi!"));
+            db.ref('kuryeler/' + kuryeID + '/profil').update(data).then(() => alert("Profil Güncellendi!"));
+        }
+
+        function showHistory() {
+            db.ref('arsiv/' + kuryeID).once('value', snap => {
+                let text = "GEÇMİŞ KAZANÇLAR:\n\n";
+                snap.forEach(child => {
+                    const d = child.val();
+                    text += `${d.tarih}: ${d.kazanc} (${d.gpsKM} KM)\n`;
+                });
+                alert(text);
+            });
+        }
+
+        function logout() {
+            if(confirm("Oturumu kapatmak istediğinize emin misiniz?")) {
+                window.location.href = "login.html"; // Burayı kendi login sayfanın adıyla değiştir
+            }
         }
 
         function handleShift() {
@@ -152,7 +211,7 @@
                 const current = [latitude, longitude];
 
                 if (!marker) {
-                    marker = L.marker(current, {icon: L.divIcon({className: 'kurye-marker'})}).addTo(map);
+                    marker = L.marker(current, {icon: L.divIcon({className: 'ai-marker', html: 'AI'})}).addTo(map);
                 } else { marker.setLatLng(current); }
                 
                 map.panTo(current);
@@ -160,14 +219,13 @@
                 pathLine.setLatLngs(pathCoords);
 
                 const s = speed ? (speed * 3.6) : 0;
-                document.getElementById('speed').innerHTML = `${s.toFixed(0)} <span class="text-[8px]">km/s</span>`;
+                document.getElementById('speed').innerHTML = `${s.toFixed(0)} <span class="text-[7px]">km/s</span>`;
 
                 if (lastCoord && s > 1) {
                     totalDistance += map.distance(lastCoord, current) / 1000;
-                    document.getElementById('distance').innerHTML = `${totalDistance.toFixed(1)} <span class="text-[8px]">km</span>`;
+                    document.getElementById('distance').innerHTML = `${totalDistance.toFixed(1)} <span class="text-[7px]">km</span>`;
                 }
                 lastCoord = current;
-
                 db.ref('kuryeler/' + kuryeID).update({ konum: {lat: latitude, lng: longitude}, hiz: s.toFixed(0), km: totalDistance.toFixed(2) });
             }, null, {enableHighAccuracy: true});
         }
@@ -175,18 +233,31 @@
         function startTimer() {
             timerInterval = setInterval(() => {
                 const diff = Date.now() - startTime;
-                const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                const hours = diff / 3600000;
+                const h = Math.floor(hours), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
                 document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
                 
-                // KAZANÇ HESABI: 215 TL Saatlik + 8 TL KM başı
-                const saatlikKazanc = (diff / 3600000) * 215;
-                const kmKazanc = totalDistance * 8;
-                const toplam = saatlikKazanc + kmKazanc;
-                
+                const toplam = (hours * 215) + (totalDistance * 8);
                 document.getElementById('earnings').innerText = '₺' + toplam.toLocaleString('tr-TR', {minimumFractionDigits: 2});
-                document.getElementById('avg-speed').innerText = totalDistance > 0 ? (totalDistance / (diff/3600000)).toFixed(1) : 0;
+                
+                // İstatistiki Veriler
+                document.getElementById('avg-speed').innerText = totalDistance > 0 ? (totalDistance / hours).toFixed(1) : 0;
+                document.getElementById('hourly-rate').innerText = '₺' + (toplam / (hours || 1)).toFixed(0);
             }, 1000);
         }
+
+        // Profil verilerini Firebase'den çek
+        db.ref(`kuryeler/${kuryeID}/profil`).on('value', snap => {
+            const d = snap.val();
+            if(d) {
+                if(d.photo) updatePhotoUI(d.photo);
+                document.getElementById('p-ad').value = d.adSoyad || '';
+                document.getElementById('p-dogum').value = d.dogum || '';
+                document.getElementById('p-dogumyeri').value = d.dogumYeri || '';
+                document.getElementById('p-marka').value = d.markaModel || '';
+                document.getElementById('p-plaka').value = d.plaka || '';
+            }
+        });
     </script>
 </body>
 </html>

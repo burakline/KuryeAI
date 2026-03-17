@@ -3,155 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KuryeAI Pro</title>
+    <title>KuryeAI Go</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0F172A; overflow: hidden; }
-        
-        /* Harita Karartma (Profesyonel Görünüm) */
-        #map { height: 100vh; width: 100%; position: absolute; top: 0; z-index: 0; filter: grayscale(0.2) contrast(1.1); }
-
-        /* TrendyolGO Tarzı Floating Panel */
-        .bottom-card {
-            position: fixed;
-            bottom: 90px;
-            left: 12px;
-            right: 12px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            z-index: 50;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        /* Turkuaz Buton Tasarımı */
-        .btn-action {
-            background-color: #06B6D4; /* Turkuaz */
-            color: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-action:active { transform: scale(0.95); background-color: #0891B2; }
-
-        /* Navigasyon Bar (Siyah/Gri) */
-        .nav-glass {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 75px;
-            background: #1E293B; /* Koyu Gri/Siyah */
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid #334155;
-            z-index: 100;
-        }
-
-        .status-pill {
-            position: fixed;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1E293B;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            z-index: 50;
-            border: 1px solid #334155;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-        }
+        #map { height: 100vh; width: 100%; position: absolute; top: 0; z-index: 0; }
+        .bottom-card { position: fixed; bottom: 90px; left: 12px; right: 12px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 28px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); z-index: 50; }
+        .btn-action { background-color: #06B6D4; color: white; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .nav-glass { position: fixed; bottom: 0; width: 100%; height: 75px; background: #1E293B; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .status-pill { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #1E293B; color: white; padding: 10px 20px; border-radius: 99px; font-size: 11px; font-weight: 800; z-index: 50; border: 1px solid #334155; }
     </style>
 </head>
 <body>
-
-    <div id="status-pill" class="status-pill flex items-center gap-2 uppercase">
-        <span class="w-2 h-2 bg-slate-500 rounded-full"></span>
-        Çevrimdışı • Mola
+    <div id="status-pill" class="status-pill flex items-center gap-2 uppercase tracking-tighter">
+        <span class="w-2 h-2 bg-slate-500 rounded-full"></span> Çevrimdışı • Mola
     </div>
-
     <div id="map"></div>
-
     <div class="bottom-card">
         <div class="flex justify-between items-end mb-6">
             <div>
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Bugünkü Hakediş</h4>
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Bugünkü Kazanç</h4>
                 <p id="earnings" class="text-3xl font-extrabold text-slate-900">₺0,00</p>
             </div>
             <div class="text-right">
-                <div class="flex items-center justify-end gap-1 text-cyan-600 mb-1">
-                    <i data-lucide="clock" class="w-3 h-3"></i>
-                    <span class="text-[10px] font-bold uppercase tracking-widest">Süre</span>
-                </div>
                 <p id="timer" class="text-xl font-bold text-slate-800 tracking-tighter">00:00:00</p>
             </div>
         </div>
-
         <button id="main-btn" onclick="handleShift()" class="btn-action w-full py-5 rounded-2xl font-extrabold text-lg flex items-center justify-center gap-3 shadow-xl shadow-cyan-500/20 uppercase tracking-tight">
             <i data-lucide="zap" class="fill-current w-5 h-5"></i> Vardiyayı Başlat
         </button>
     </div>
-
     <nav class="nav-glass px-6">
-        <button class="flex flex-col items-center gap-1 text-cyan-400">
-            <i data-lucide="navigation" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase">Harita</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 text-slate-400 opacity-50">
-            <i data-lucide="package" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase">Paketler</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 text-slate-400 opacity-50">
-            <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase">Rapor</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 text-slate-400">
-            <i data-lucide="settings" class="w-6 h-6"></i>
-            <span class="text-[10px] font-bold uppercase">Profil</span>
-        </button>
+        <button class="flex flex-col items-center gap-1 text-cyan-400"><i data-lucide="navigation"></i><span class="text-[10px] font-bold uppercase">Harita</span></button>
+        <button class="flex flex-col items-center gap-1 text-slate-400 opacity-50"><i data-lucide="package"></i><span class="text-[10px] font-bold uppercase">Paket</span></button>
+        <button class="flex flex-col items-center gap-1 text-slate-400"><i data-lucide="settings"></i><span class="text-[10px] font-bold uppercase">Profil</span></button>
     </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         lucide.createIcons();
+        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const kuryeID = "burak_haskoy"; // Buraya kendi adını yazabilirsin
 
-        // Harita Başlatma (Light Voyager Stili - Koyu Panel ile Kontrast Sağlar)
-        var map = L.map('map', {zoomControl: false, attributionControl: false}).setView([39.9334, 32.8597], 15);
+        var map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 15);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
 
-        let isActive = false;
-        let startTime;
-        let timerInterval;
+        let isActive = false; let startTime; let timerInterval; let watchID;
 
         function handleShift() {
             const btn = document.getElementById('main-btn');
             const pill = document.getElementById('status-pill');
-            
             if (!isActive) {
-                // BAŞLAT
-                isActive = true;
-                startTime = Date.now();
-                btn.innerHTML = '<i data-lucide="square" class="fill-current w-5 h-5"></i> Vardiyayı Bitir';
-                btn.classList.replace('bg-cyan-500', 'bg-slate-800'); // Bitirince siyaha döner
-                btn.style.backgroundColor = '#1E293B';
-                
+                isActive = true; startTime = Date.now();
+                btn.innerHTML = 'Vardiyayı Bitir'; btn.style.backgroundColor = '#1E293B';
                 pill.innerHTML = '<span class="w-2 h-2 bg-cyan-400 rounded-full animate-ping"></span> Aktif • Çalışıyor';
-                pill.classList.add('border-cyan-500/50');
-                
-                startTimer();
+                db.ref('kuryeler/' + kuryeID).update({ durum: "Aktif", sonGuncelleme: new Date().toLocaleTimeString() });
+                startTracking(); startTimer();
             } else {
-                // BİTİR
-                if(confirm("Vardiyayı sonlandırmak istediğine emin misin?")) {
+                if(confirm("Vardiyayı bitirmek istiyor musun?")) {
+                    db.ref('arsiv/' + kuryeID).push({ tarih: new Date().toLocaleString(), sure: document.getElementById('timer').innerText, kazanc: document.getElementById('earnings').innerText });
+                    db.ref('kuryeler/' + kuryeID).update({ durum: "Mola" });
                     location.reload();
                 }
             }
-            lucide.createIcons();
+        }
+
+        function startTracking() {
+            watchID = navigator.geolocation.watchPosition(pos => {
+                const { latitude, longitude } = pos.coords;
+                map.setView([latitude, longitude], 17);
+                db.ref('kuryeler/' + kuryeID + '/konum').set({ lat: latitude, lng: longitude });
+            });
         }
 
         function startTimer() {
@@ -161,6 +90,7 @@
                 const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
                 const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
                 document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+                document.getElementById('earnings').innerText = '₺' + ((diff / 3600000) * 120).toFixed(2);
             }, 1000);
         }
     </script>

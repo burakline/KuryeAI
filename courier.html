@@ -2,8 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no text-size-adjust: none">
-    <title>KuryeAI Pro | Akıllı Dağıtım</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KuryeAI Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,60 +12,51 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --bg: #F8FAFC; --card: rgba(255, 255, 255, 0.98); --text: #1E293B; --accent: #06B6D4; }
+        :root { --bg: #F8FAFC; --card: rgba(255, 255, 255, 0.98); --text: #1E293B; }
         .dark-mode { --bg: #0B1120; --card: rgba(30, 41, 59, 0.98); --text: #F1F5F9; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); overflow: hidden; }
+        #map { height: 100vh; width: 100%; position: absolute; z-index: 0; }
         
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); overflow: hidden; transition: 0.3s; }
-        #map { height: 100vh; width: 100%; position: absolute; top: 0; z-index: 0; }
-        
-        /* Sidebar & Menu */
         .sidebar { position: fixed; top: 0; left: -100%; width: 85%; height: 100%; background: #0F172A; z-index: 300; transition: 0.4s; padding: 25px; color: white; }
-        .sidebar.active { left: 0; box-shadow: 20px 0 60px rgba(0,0,0,0.6); }
+        .sidebar.active { left: 0; }
         .menu-btn { position: fixed; top: 15px; left: 15px; z-index: 150; background: #1E293B; color: white; padding: 10px; border-radius: 12px; }
 
-        /* Hız Levhası (Google Style) */
-        #speedometer { position: fixed; bottom: 220px; left: 20px; z-index: 100; width: 60px; height: 60px; background: rgba(30, 41, 59, 0.9); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid white; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .speed-warning { background: white !important; border: 5px solid #E11D48 !important; color: black !important; animation: blink 0.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        /* Hız Göstergesi - Google Haritalar Stili */
+        #speed-overlay { position: fixed; bottom: 230px; left: 20px; z-index: 200; width: 65px; height: 65px; background: #1E293B; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 3px solid white; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .speed-limit-alert { background: white !important; border: 6px solid #E11D48 !important; color: black !important; animation: pulse-red 0.6s infinite; }
+        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* Bottom UI */
         .bottom-card { position: fixed; bottom: 20px; left: 12px; right: 12px; background: var(--card); border-radius: 28px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); z-index: 100; color: var(--text); }
-        .data-grid div p { font-size: 16px; font-weight: 800; }
-        .data-grid div h4 { font-size: 10px; }
-
-        /* Marker */
         .ai-marker-wrapper { display: flex; flex-direction: column; align-items: center; }
-        .ai-marker-label { background: #0F172A; color: white; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; border: 1px solid #06B6D4; }
-        .ai-marker-icon { background: #000; width: 42px; height: 42px; border: 3px solid #06B6D4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #06B6D4; font-weight: 900; font-style: italic; font-size: 16px; box-shadow: 0 0 20px rgba(6,182,212,0.6); }
+        .ai-marker-label { background: #0F172A; color: white; padding: 2px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; margin-bottom: 4px; border: 1px solid #06B6D4; white-space: nowrap; }
+        .ai-marker-circle { background: #06B6D4; width: 45px; height: 45px; border: 4px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; box-shadow: 0 0 15px rgba(6,182,212,0.5); }
 
-        /* Stats Modal */
         #stats-modal { position: fixed; inset: 0; background: #0F172A; z-index: 400; display: none; padding: 20px; overflow-y: auto; color: white; }
-        
-        input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; width: 100%; color: white; margin-bottom: 8px; font-size: 13px; }
+        input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; width: 100%; color: white; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <button class="menu-btn" onclick="toggleMenu()"><i data-lucide="menu"></i></button>
 
-    <div id="speedometer">
-        <span id="live-speed" class="text-xl font-black">0</span>
-        <span class="text-[8px] font-bold">km/s</span>
+    <div id="speed-overlay">
+        <span id="live-speed" class="text-2xl font-black">0</span>
+        <span class="text-[9px] font-bold uppercase">km/s</span>
     </div>
 
     <div id="sidebar" class="sidebar">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-black italic">KURYE<span class="text-cyan-500 italic">AI</span> <span class="text-[9px] font-normal text-slate-400">| Akıllı Teslimat</span></h2>
+            <h2 class="text-lg font-black italic">KURYE<span class="text-cyan-500">AI</span></h2>
             <button onclick="toggleMenu()"><i data-lucide="x"></i></button>
         </div>
 
         <div class="flex flex-col items-center mb-6">
-            <div id="p-img-box" class="w-20 h-20 bg-slate-800 rounded-2xl mb-2 flex items-center justify-center border-2 border-cyan-500 overflow-hidden">
+            <div id="p-img-box" class="w-24 h-24 bg-slate-800 rounded-3xl mb-3 flex items-center justify-center border-2 border-cyan-500 overflow-hidden">
                 <img id="p-preview" class="w-full h-full object-cover hidden">
-                <i id="p-icon" data-lucide="user" class="text-slate-500"></i>
+                <i id="p-icon" data-lucide="user" class="text-slate-500 w-10 h-10"></i>
             </div>
-            <input type="file" id="file-input" class="hidden" onchange="uploadPhoto()">
-            <button onclick="document.getElementById('file-input').click()" class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Fotoğraf Ekle</button>
+            <input type="file" id="file-input" class="hidden" accept="image/*" onchange="uploadPhoto()">
+            <button onclick="document.getElementById('file-input').click()" class="text-[11px] font-bold text-cyan-400 uppercase tracking-widest">Fotoğraf Ekle</button>
             <p class="text-[10px] text-slate-500 mt-2 font-mono">ID: <span id="kurye-id-display">...</span></p>
         </div>
 
@@ -73,7 +64,7 @@
             <input type="text" id="p-ad" placeholder="Ad Soyad">
             <input type="text" id="p-marka" placeholder="Araç Marka / Model">
             <input type="text" id="p-plaka" placeholder="Araç Plakası">
-            <button onclick="saveProfile()" class="w-full bg-cyan-500 py-3 rounded-xl font-bold mt-2 text-xs uppercase">Güncelle</button>
+            <button onclick="saveProfile()" class="w-full bg-cyan-500 py-3 rounded-xl font-bold mt-2 text-xs uppercase">Kaydet ve Güncelle</button>
         </div>
 
         <hr class="my-6 border-slate-800">
@@ -90,9 +81,8 @@
             <h2 class="text-2xl font-black italic uppercase">İstatistikler</h2>
             <button onclick="closeStats()"><i data-lucide="arrow-left"></i></button>
         </div>
-        <div class="grid grid-cols-2 gap-4 mb-8" id="stats-summary">
-            </div>
-        <h3 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest">Son Vardiyalar</h3>
+        <div class="grid grid-cols-2 gap-4 mb-8" id="stats-summary"></div>
+        <h3 class="text-xs font-bold text-slate-400 mb-4 uppercase">Geçmiş Vardiyalar</h3>
         <div id="history-list" class="space-y-3"></div>
     </div>
 
@@ -110,17 +100,18 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-4 gap-2 mb-5 border-y border-slate-100 py-4 text-center data-grid">
-            <div><h4 class="text-cyan-600 font-bold uppercase">Mesafe</h4><p id="distance">0.0<span class="text-[9px] ml-0.5">km</span></p></div>
-            <div><h4 class="text-cyan-600 font-bold uppercase">Ort. Hız</h4><p id="avg-speed">0<span class="text-[9px] ml-0.5">km/s</span></p></div>
-            <div><h4 class="text-rose-500 font-bold uppercase">Saat/₺</h4><p id="hourly-rate">₺0</p></div>
-            <div><h4 class="text-slate-400 font-bold uppercase">Paket</h4><p>0</p></div>
+        <div class="grid grid-cols-3 gap-2 mb-5 border-y border-slate-100 py-4 text-center">
+            <div><h4 class="text-[10px] text-cyan-600 font-bold uppercase">Mesafe</h4><p id="distance" class="text-lg font-extrabold">0.0<span class="text-[9px] ml-0.5">km</span></p></div>
+            <div><h4 class="text-[10px] text-cyan-600 font-bold uppercase">Ort. Hız</h4><p id="avg-speed" class="text-lg font-extrabold">0<span class="text-[9px] ml-0.5">km/s</span></p></div>
+            <div><h4 class="text-[10px] text-rose-500 font-bold uppercase">Saat/₺</h4><p id="hourly-rate" class="text-lg font-extrabold">₺0</p></div>
         </div>
 
         <button id="main-btn" onclick="handleShift()" class="w-full py-4 rounded-2xl bg-cyan-500 text-white font-black text-md shadow-lg shadow-cyan-500/20 uppercase italic flex items-center justify-center gap-3">
             <i data-lucide="zap" class="w-5 h-5 fill-current"></i> Vardiyayı Başlat
         </button>
     </div>
+
+    <audio id="alert-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -130,19 +121,28 @@
         const db = firebase.database();
         const storage = firebase.storage();
         
-        let kuryeID = localStorage.getItem('kuryeID') || 'KAI-' + Math.floor(1000 + Math.random() * 9000);
-        localStorage.setItem('kuryeID', kuryeID);
-        document.getElementById('kurye-id-display').innerText = kuryeID;
+        // 9: Sıralı ID Sistemi (Firebase Transaction ile)
+        let kuryeID = localStorage.getItem('kuryeID');
+        if (!kuryeID) {
+            db.ref('sistem/kuryeSayaci').transaction(current => {
+                const next = (current || 0) + 1;
+                kuryeID = 'KAI-' + next.toString().padStart(7, '0');
+                localStorage.setItem('kuryeID', kuryeID);
+                document.getElementById('kurye-id-display').innerText = kuryeID;
+                return next;
+            });
+        } else {
+            document.getElementById('kurye-id-display').innerText = kuryeID;
+        }
 
-        // Harita Katmanları
         var map = L.map('map', {zoomControl: false}).setView([39.9334, 32.8597], 15);
         let lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-        let darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png'); // Lacivert Tonu
+        let darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png');
 
         let isActive = false, startTime, timerInterval, watchID, marker, pathLine, wakeLock = null;
         let totalDistance = 0, lastCoord = null, pathCoords = [], kuryeAd = "Kurye";
 
-        // 1 & 2: Arka Plan & Ekran Kilidi (WakeLock)
+        // 2: Ekran Kilidi (WakeLock)
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
         }
@@ -154,6 +154,7 @@
             else { map.removeLayer(darkLayer); lightLayer.addTo(map); }
         }
 
+        // 8: Fotoğraf Ekleme Düzeltildi
         function uploadPhoto() {
             const file = document.getElementById('file-input').files[0];
             if(!file) return;
@@ -166,7 +167,8 @@
             }));
         }
 
-        function logout() { window.location.href = "login-kurye.html"; } // 6: Kurye Login
+        // 6: Çıkış Düzeltildi
+        function logout() { window.location.href = "login.html"; }
 
         function handleShift() {
             if (!isActive) {
@@ -175,52 +177,65 @@
                 document.getElementById('main-btn').className = "w-full py-4 rounded-2xl bg-slate-800 text-white font-black uppercase italic shadow-xl";
                 requestWakeLock();
                 startTracking(); startTimer();
-            } else { if(confirm("Vardiyayı bitirmek istiyor musun?")) location.reload(); }
+            } else { if(confirm("Vardiyayı bitirmek istiyor musun?")) finishShift(); }
+        }
+
+        // 5: Vardiya bitince Arşivleme
+        function finishShift() {
+            const kazanc = document.getElementById('earnings').innerText;
+            const data = {
+                tarih: new Date().toLocaleString('tr-TR'),
+                kazanc: kazanc,
+                gpsKM: totalDistance.toFixed(2),
+                sure: document.getElementById('timer').innerText
+            };
+            db.ref(`arsiv/${kuryeID}`).push(data).then(() => location.reload());
         }
 
         function startTracking() {
             pathLine = L.polyline([], {color: '#06B6D4', weight: 6, opacity: 0.8}).addTo(map);
+            // 2: Yüksek hassasiyet ve Arka plan zorlaması
             watchID = navigator.geolocation.watchPosition(pos => {
                 const { latitude, longitude, speed } = pos.coords;
                 const current = [latitude, longitude];
                 const s = speed ? (speed * 3.6) : 0;
 
-                // 8: Hız Göstergesi & Uyarı
-                const speedEl = document.getElementById('speedometer');
+                // 1: Hız göstergesi güncelleme
                 document.getElementById('live-speed').innerText = Math.round(s);
+                const speedOverlay = document.getElementById('speed-overlay');
                 if(s > 70) {
-                    speedEl.classList.add('speed-warning');
-                    if(s > 72) { // Toleranslı bildirim
-                        if(window.Notification && Notification.permission === "granted") {
-                            new Notification("Hız Uyarısı!", { body: "Hızınız 70 KM/S'yi geçti, lütfen yavaşlayınız!" });
-                        }
-                    }
-                } else { speedEl.classList.remove('speed-warning'); }
+                    speedOverlay.classList.add('speed-limit-alert');
+                    document.getElementById('alert-sound').play();
+                } else {
+                    speedOverlay.classList.remove('speed-limit-alert');
+                }
 
-                // 4: Büyütülmüş İsimli Marker
                 if (!marker) {
                     marker = L.marker(current, {
                         icon: L.divIcon({
-                            className: 'custom-div-icon',
-                            html: `<div class="ai-marker-wrapper"><div class="ai-marker-label">${kuryeAd}</div><div class="ai-marker-icon">AI</div></div>`,
-                            iconSize: [100, 70], iconAnchor: [50, 70]
+                            className: '',
+                            html: `<div class="ai-marker-wrapper"><div class="ai-marker-label">${kuryeAd}</div><div class="ai-marker-circle">AI</div></div>`,
+                            iconSize: [120, 80], iconAnchor: [60, 80]
                         })
                     }).addTo(map);
                 } else { marker.setLatLng(current); }
                 
                 map.panTo(current);
                 
-                // 7: Hareket Kontrolü (Hız > 2 km/s ise KM say)
-                if (lastCoord && s > 2) {
+                // 2: KM Artış algoritması (Sapma engelli)
+                if (lastCoord && s > 1.5) {
                     const dist = map.distance(lastCoord, current) / 1000;
-                    totalDistance += dist;
-                    pathCoords.push(current);
-                    pathLine.setLatLngs(pathCoords);
-                    document.getElementById('distance').innerHTML = `${totalDistance.toFixed(1)}<span class="text-[9px] ml-0.5">km</span>`;
+                    if(dist < 0.5) { // Sıçramaları engelle
+                        totalDistance += dist;
+                        pathCoords.push(current);
+                        pathLine.setLatLngs(pathCoords);
+                        document.getElementById('distance').innerHTML = `${totalDistance.toFixed(1)}<span class="text-[9px] ml-0.5">km</span>`;
+                    }
                 }
                 lastCoord = current;
+                // Cloud Sync
                 db.ref('kuryeler/' + kuryeID).update({ konum: {lat: latitude, lng: longitude}, hiz: s.toFixed(0), km: totalDistance.toFixed(2) });
-            }, null, {enableHighAccuracy: true, maximumAge: 0, timeout: 5000});
+            }, err => console.log(err), {enableHighAccuracy: true, maximumAge: 0});
         }
 
         function startTimer() {
@@ -228,52 +243,58 @@
                 const diff = Date.now() - startTime;
                 const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
                 document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                const hours = diff / 3600000;
-                const toplam = (hours * 215) + (totalDistance * 8);
-                document.getElementById('earnings').innerText = '₺' + toplam.toLocaleString('tr-TR', {minimumFractionDigits: 2});
-                document.getElementById('avg-speed').innerText = totalDistance > 0 ? (totalDistance / (hours || 1)).toFixed(0) : 0;
-                document.getElementById('hourly-rate').innerText = '₺' + (toplam / (hours || 1)).toFixed(0);
+                
+                // 4: Saatlik Kazanç Hesabı Düzeltildi
+                const totalHours = diff / 3600000;
+                const currentEarnings = (totalHours * 215) + (totalDistance * 8); // Örn: Saatlik 215TL + KM başı 8TL
+                document.getElementById('earnings').innerText = '₺' + currentEarnings.toLocaleString('tr-TR', {minimumFractionDigits: 2});
+                
+                document.getElementById('avg-speed').innerText = totalDistance > 0 ? (totalDistance / (totalHours || 0.01)).toFixed(0) : 0;
+                document.getElementById('hourly-rate').innerText = '₺' + (totalHours > 0 ? (currentEarnings / totalHours).toFixed(0) : 0);
             }, 1000);
         }
 
-        // 10: Profesyonel İstatistik Sayfası
         function openStats() {
             document.getElementById('stats-modal').style.display = 'block';
             db.ref('arsiv/' + kuryeID).once('value', snap => {
-                let listHTML = '', tKazanc = 0, tKM = 0, count = 0;
+                let listHTML = '', tKazanc = 0, count = 0;
                 snap.forEach(child => {
                     const d = child.val();
-                    const k = parseFloat(d.kazanc.replace('₺','').replace(',','.'));
-                    tKazanc += k; tKM += parseFloat(d.gpsKM); count++;
-                    listHTML += `<div class="bg-slate-800/50 p-4 rounded-2xl flex justify-between items-center border border-slate-700">
-                        <div><p class="text-[10px] text-slate-400 font-bold">${d.tarih}</p><p class="font-black text-cyan-400">₺${d.kazanc}</p></div>
-                        <div class="text-right"><p class="text-[10px] text-slate-400 font-bold">MESAFE</p><p class="font-bold">${d.gpsKM} KM</p></div>
+                    tKazanc += parseFloat(d.kazanc.replace('₺','').replace(',','.'));
+                    count++;
+                    listHTML += `<div class="bg-slate-800 p-4 rounded-2xl flex justify-between border border-slate-700">
+                        <div><p class="text-[10px] text-slate-400 font-bold">${d.tarih}</p><p class="font-black text-cyan-400">${d.kazanc}</p></div>
+                        <div class="text-right"><p class="text-[10px] text-slate-400 font-bold">KM</p><p class="font-bold">${d.gpsKM}</p></div>
                     </div>`;
                 });
                 document.getElementById('stats-summary').innerHTML = `
-                    <div class="bg-cyan-500 p-4 rounded-2xl"><h4>TOPLAM KAZANÇ</h4><p>₺${tKazanc.toFixed(0)}</p></div>
-                    <div class="bg-slate-800 p-4 rounded-2xl"><h4>ORT. GÜNLÜK</h4><p>₺${(tKazanc/(count||1)).toFixed(0)}</p></div>
+                    <div class="bg-cyan-500 p-4 rounded-2xl"><h4>TOPLAM</h4><p class="text-xl font-bold">₺${tKazanc.toFixed(0)}</p></div>
+                    <div class="bg-slate-800 p-4 rounded-2xl"><h4>VARDİYA</h4><p class="text-xl font-bold">${count}</p></div>
                 `;
-                document.getElementById('history-list').innerHTML = listHTML || '<p class="text-center text-slate-500 py-10">Henüz veri yok.</p>';
+                document.getElementById('history-list').innerHTML = listHTML || '<p class="text-center text-slate-500 py-10">Kayıt yok.</p>';
             });
         }
         function closeStats() { document.getElementById('stats-modal').style.display = 'none'; }
 
         function saveProfile() {
             kuryeAd = document.getElementById('p-ad').value;
-            db.ref(`kuryeler/${kuryeID}/profil`).update({ adSoyad: kuryeAd, marka: document.getElementById('p-marka').value, plaka: document.getElementById('p-plaka').value });
-            alert("Profil güncellendi!");
+            db.ref(`kuryeler/${kuryeID}/profil`).update({ 
+                adSoyad: kuryeAd, 
+                marka: document.getElementById('p-marka').value, 
+                plaka: document.getElementById('p-plaka').value 
+            }).then(() => alert("Profil Firebase'e kaydedildi!"));
         }
 
-        // Başlangıç Verileri
+        // Başlangıçta Cloud'dan profil çek
         db.ref(`kuryeler/${kuryeID}/profil`).on('value', snap => {
             const d = snap.val(); if(d) {
-                kuryeAd = d.adSoyad; document.getElementById('p-ad').value = d.adSoyad || '';
+                kuryeAd = d.adSoyad || "Kurye";
+                document.getElementById('p-ad').value = d.adSoyad || '';
+                document.getElementById('p-marka').value = d.marka || '';
+                document.getElementById('p-plaka').value = d.plaka || '';
                 if(d.photo) { document.getElementById('p-preview').src = d.photo; document.getElementById('p-preview').classList.remove('hidden'); document.getElementById('p-icon').classList.add('hidden'); }
             }
         });
-
-        if (Notification.permission !== "granted") Notification.requestPermission();
     </script>
 </body>
 </html>

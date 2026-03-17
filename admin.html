@@ -3,157 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KuryeAI Admin - Genel Denetim Merkezi</title>
+    <title>Admin AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <style>
-        body { background: #020617; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; }
-        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 1.5rem; transition: all 0.3s; }
-        .card:hover { border-color: #22d3ee; }
-        .status-pill { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
-        #map { height: 450px; border-radius: 1.5rem; border: 1px solid #1e293b; }
-        .table-row:hover { background: rgba(34, 211, 238, 0.05); }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-    </style>
 </head>
-<body class="flex h-screen">
+<body class="bg-[#020617] text-white flex h-screen overflow-hidden">
 
-    <aside class="w-72 sidebar p-8 flex flex-col hidden lg:flex">
-        <div class="mb-10 flex items-center gap-3">
-            <div class="w-12 h-12 bg-cyan-600 rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg shadow-cyan-600/20">A</div>
-            <h1 class="text-2xl font-black text-white italic tracking-tighter">KuryeAI</h1>
-        </div>
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col p-6">
+        <h1 class="text-2xl font-black italic text-cyan-400 mb-10">ADMIN</h1>
         <nav class="space-y-4 flex-grow">
-            <button class="w-full text-left p-4 rounded-2xl bg-cyan-600 font-bold shadow-xl">🏠 Dashboard</button>
-            <button class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 text-slate-400 font-bold transition">🛵 Kurye Dosyaları</button>
-            <button class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 text-slate-400 font-bold transition">📊 Finansal Analiz</button>
-            <button class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 text-slate-400 font-bold transition">⚙️ Sistem Ayarları</button>
+            <button class="w-full text-left p-4 rounded-xl bg-cyan-600 font-bold">🏠 Dashboard</button>
+            <button class="w-full text-left p-4 rounded-xl hover:bg-slate-800">🛵 Kurye Yönetimi</button>
         </nav>
-        <div class="pt-6 border-t border-slate-800">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span class="text-xs font-bold text-slate-500 uppercase">Veri Akışı Aktif</span>
-            </div>
-        </div>
     </aside>
 
-    <main class="flex-grow overflow-y-auto p-8">
-        
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            <div class="card p-6">
-                <p class="text-slate-500 text-[10px] font-black uppercase">Toplam Kayıtlı Kurye</p>
-                <h3 id="stat-total" class="text-3xl font-black mt-2 text-white">0</h3>
+    <main class="flex-grow p-8 overflow-y-auto">
+        <header class="flex justify-between items-center mb-10">
+            <h2 class="text-3xl font-bold">Genel Durum</h2>
+            <div class="flex items-center gap-4">
+                <button class="relative bg-slate-800 p-3 rounded-xl">🔔<span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full"></span></button>
             </div>
-            <div class="card p-6">
-                <p class="text-slate-500 text-[10px] font-black uppercase">Vardiyadaki Kuryeler</p>
-                <h3 id="stat-active" class="text-3xl font-black mt-2 text-emerald-400">0</h3>
-            </div>
-            <div class="card p-6 border-orange-500/30">
-                <p class="text-orange-500 text-[10px] font-black uppercase">Şüpheli KM Bildirimi</p>
-                <h3 id="stat-alert" class="text-3xl font-black mt-2 text-orange-400">0</h3>
-            </div>
-            <div class="card p-6 border-rose-500/30">
-                <p class="text-rose-500 text-[10px] font-black uppercase">Acil Durum (SOS)</p>
-                <h3 id="stat-sos" class="text-3xl font-black mt-2 text-rose-500 animate-pulse">0</h3>
+        </header>
+
+        <div class="grid grid-cols-3 gap-6 mb-10">
+            <div class="bg-slate-900 p-6 rounded-[32px] border border-slate-800">
+                <p class="text-slate-500 text-xs font-bold">ŞÜPHELİ KM</p>
+                <h3 id="alert-count" class="text-4xl font-black mt-2 text-orange-500">0</h3>
             </div>
         </div>
 
-        <div class="card overflow-hidden mb-10">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/30">
-                <h2 class="text-xl font-black italic">SAHA OPERASYON VE KM DENETİMİ</h2>
-                <div class="flex gap-2">
-                    <button class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold hover:bg-slate-700">Filtrele</button>
-                    <button class="px-4 py-2 bg-cyan-600 rounded-xl text-xs font-bold">Dışa Aktar (Excel)</button>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-900/50">
-                        <tr>
-                            <th class="p-4 text-[10px] font-black text-slate-500 uppercase">Kurye / Plaka</th>
-                            <th class="p-4 text-[10px] font-black text-slate-500 uppercase">Manuel / GPS Farkı</th>
-                            <th class="p-4 text-[10px] font-black text-slate-500 uppercase">Güven Skoru</th>
-                            <th class="p-4 text-[10px] font-black text-slate-500 uppercase">Kazanç</th>
-                            <th class="p-4 text-[10px] font-black text-slate-500 uppercase">Kanıt / Foto</th>
-                            <th class="p-4 text-[10px] font-black text-slate-500 uppercase">Durum</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-table-body">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card p-2">
-            <div id="map"></div>
+        <div class="bg-slate-900 rounded-[32px] border border-slate-800 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-800/50">
+                    <tr>
+                        <th class="p-4 uppercase text-[10px]">Kurye</th>
+                        <th class="p-4 uppercase text-[10px]">Mesafe (Manuel/GPS)</th>
+                        <th class="p-4 uppercase text-[10px]">Kanıt</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-table"></tbody>
+            </table>
         </div>
     </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <div id="photo-modal" class="fixed inset-0 bg-black/95 z-[50000] hidden flex-col items-center justify-center p-10">
+        <img id="modal-img" src="" class="max-w-full max-h-[80vh] rounded-2xl mb-6 shadow-2xl">
+        <button onclick="document.getElementById('photo-modal').classList.add('hidden')" class="bg-cyan-600 px-10 py-4 rounded-2xl font-black">KAPAT</button>
+    </div>
+
     <script>
-        // FIREBASE KURULUMU
         const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let map = L.map('map', { zoomControl: true }).setView([39.9334, 32.8597], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        function openPhoto(url) {
+            document.getElementById('modal-img').src = "https://via.placeholder.com/800x600?text=KM+Gosterge+Fotografi"; // Gerçek URL geldiğinde buraya atanacak
+            document.getElementById('photo-modal').classList.remove('hidden');
+        }
 
-        // KURYE LİSTESİ VE TABLO GÜNCELLEME
-        db.ref('kuryeler').on('value', (snapshot) => {
-            let total = 0;
-            snapshot.forEach(() => total++);
-            document.getElementById('stat-total').innerText = total;
-        });
-
-        // ARŞİV VE KM DOĞRULAMA VERİLERİ
-        db.ref('arsiv').on('value', (snapshot) => {
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = "";
-            let alertCount = 0;
-
-            snapshot.forEach((kuryeDocs) => {
-                kuryeDocs.forEach((doc) => {
-                    const data = doc.val();
-                    const isSupheli = data.durum === "supheli";
-                    if(isSupheli) alertCount++;
-
-                    const row = document.createElement('tr');
-                    row.className = "table-row border-b border-slate-800/50 transition";
-                    row.innerHTML = `
+        db.ref('arsiv').on('value', (snap) => {
+            const table = document.getElementById('admin-table');
+            table.innerHTML = "";
+            snap.forEach((child) => {
+                child.forEach((log) => {
+                    const data = log.val();
+                    table.innerHTML += `<tr class="border-t border-slate-800">
+                        <td class="p-4 font-bold uppercase">${child.key}</td>
+                        <td class="p-4">${data.manuelKM} / ${data.gpsKM} km</td>
                         <td class="p-4">
-                            <div class="font-black text-sm text-cyan-400 uppercase">${kuryeDocs.key.replace('_',' ')}</div>
-                            <div class="text-[9px] text-slate-500">Son İşlem: ${data.tarih}</div>
+                            <button onclick="openPhoto()" class="bg-slate-800 px-4 py-2 rounded-lg text-xs">📸 Görüntüle</button>
                         </td>
-                        <td class="p-4">
-                            <div class="text-xs font-bold">M: ${data.manuelKM} km</div>
-                            <div class="text-[10px] text-slate-500 italic">G: ${data.gpsKM} km</div>
-                        </td>
-                        <td class="p-4">
-                            <span class="status-pill ${isSupheli ? 'bg-orange-500/20 text-orange-500' : 'bg-emerald-500/20 text-emerald-500'}">
-                                ${isSupheli ? '⚠️ '+data.sapma+' SAPMA' : '✅ GÜVENLİ'}
-                            </span>
-                        </td>
-                        <td class="p-4 font-black text-white text-sm">₺${data.kazanc}</td>
-                        <td class="p-4">
-                            <button onclick="alert('KM Fotoğrafı Açılıyor...')" class="bg-slate-800 p-2 rounded-lg hover:bg-cyan-600 transition">📸 Görüntüle</button>
-                        </td>
-                        <td class="p-4 text-xs font-bold text-slate-500 italic">Vardiya Bitti</td>
-                    `;
-                    tbody.prepend(row);
+                    </tr>`;
                 });
             });
-            document.getElementById('stat-alert').innerText = alertCount;
-        });
-
-        // ACİL DURUM DİNLEYİCİ
-        db.ref('acil_durumlar').on('value', (snap) => {
-            const count = snap.exists() ? 1 : 0;
-            document.getElementById('stat-sos').innerText = count;
         });
     </script>
 </body>

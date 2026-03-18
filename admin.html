@@ -2,117 +2,133 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
 <style>
-body{margin:0;font-family:Arial;background:#0b0e14;color:white;}
-.nav{display:flex;gap:10px;padding:15px;background:#020617;}
-.nav button{padding:10px;border:none;border-radius:10px;background:#111;color:white;}
-.active{background:#00d4ff;color:black;}
-.container{padding:15px;}
-.card{background:#111827;padding:15px;border-radius:12px;margin-bottom:10px;}
-#map{height:60vh;border-radius:12px;}
+body{font-family:Arial;background:#f5f7fb;padding:20px;}
+.card{background:white;padding:15px;border-radius:10px;margin-bottom:10px;}
+button{padding:10px;margin-top:5px;border:none;border-radius:6px;cursor:pointer;}
+.ok{background:#00d4ff;color:white;}
+.no{background:red;color:white;}
 </style>
 </head>
 
 <body>
 
-<div class="nav">
-<button onclick="show('couriers')" class="active">Kuryeler</button>
-<button onclick="show('mapPage')">Harita</button>
+<h2>⚙️ Sistem Ayarları</h2>
+
+<div class="card">
+<label>Max Kurye Mesafesi (KM)</label>
+<input id="maxDistanceInput" type="number">
+<button onclick="saveSettings()">Kaydet</button>
 </div>
 
-<div class="container">
-<div id="couriers"></div>
-<div id="mapPage" style="display:none">
-<div id="map"></div>
-</div>
-</div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<h2>📩 Başvurular</h2>
+<div id="apps"></div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-const app = initializeApp({
+import {
+getFirestore,
+collection,
+getDocs,
+doc,
+setDoc,
+deleteDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+const config={
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
-});
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* 🔐 AUTH KORUMA */
-onAuthStateChanged(auth, async(user)=>{
-if(!user){ location.href="login.html"; return; }
-
-const snap = await getDoc(doc(db,"users",user.uid));
-if(!snap.exists() || snap.data().role !== "admin"){
-alert("Yetkisiz!");
-location.href="index.html";
-}
-});
-
-/* NAV */
-window.show = (id)=>{
-document.getElementById("couriers").style.display="none";
-document.getElementById("mapPage").style.display="none";
-document.getElementById(id).style.display="block";
 };
 
-/* KURYELER */
-onSnapshot(collection(db,"couriers"), snap=>{
-const div = document.getElementById("couriers");
+const app=initializeApp(config);
+const secondaryApp=initializeApp(config,"sec");
+
+const db=getFirestore(app);
+const auth=getAuth(secondaryApp);
+
+/* AYAR YÜKLE */
+async function loadSettings(){
+const snap=await getDoc(doc(db,"settings","config"));
+
+if(snap.exists()){
+document.getElementById("maxDistanceInput").value=snap.data().maxDistance;
+}else{
+document.getElementById("maxDistanceInput").value=10;
+}
+}
+
+/* KAYDET */
+window.saveSettings=async()=>{
+const val=Number(document.getElementById("maxDistanceInput").value);
+
+await setDoc(doc(db,"settings","config"),{
+maxDistance:val
+});
+
+alert("Kaydedildi");
+};
+
+loadSettings();
+
+/* BAŞVURULAR */
+async function loadApps(){
+
+const div=document.getElementById("apps");
+const snap=await getDocs(collection(db,"applications"));
+
 div.innerHTML="";
 
 snap.forEach(d=>{
-const c = d.data();
+const a=d.data();
+a.id=d.id;
 
-div.innerHTML += `
+div.innerHTML+=`
 <div class="card">
-<b>${c.name}</b><br>
-Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
+${a.name} - ${a.email}<br>
+<button class="ok" onclick='approve(${JSON.stringify(a)})'>Onayla</button>
+<button class="no" onclick='reject("${a.id}")'>Reddet</button>
 </div>`;
 });
-});
-
-/* HARİTA */
-const map = L.map('map').setView([39.92,32.85],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let markers = {};
-
-onSnapshot(collection(db,"couriers"), snap=>{
-snap.forEach(d=>{
-const c = d.data();
-const id = d.id;
-
-if(!c.lat) return;
-
-const icon = L.divIcon({
-html:`<div style="
-width:25px;height:25px;border-radius:50%;
-background:${c.online?"green":"red"};
-border:3px solid white"></div>`
-});
-
-if(markers[id]){
-markers[id].setLatLng([c.lat,c.lng]);
-markers[id].setIcon(icon);
-}else{
-markers[id] = L.marker([c.lat,c.lng],{icon}).addTo(map)
-.bindPopup(c.name);
 }
 
+window.approve=async(a)=>{
+
+const user=await createUserWithEmailAndPassword(auth,a.email,"123456");
+const uid=user.user.uid;
+
+await setDoc(doc(db,"users",uid),{
+email:a.email,
+role:"courier"
 });
+
+await setDoc(doc(db,"couriers",uid),{
+name:a.name,
+lat:0,lng:0,online:false
 });
+
+await deleteDoc(doc(db,"applications",a.id));
+
+alert("Kurye oluşturuldu");
+loadApps();
+};
+
+window.reject=async(id)=>{
+await deleteDoc(doc(db,"applications",id));
+loadApps();
+};
+
+loadApps();
 
 </script>
 </body>

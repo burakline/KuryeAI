@@ -59,6 +59,7 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -69,6 +70,20 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 let user, marker;
+
+/* 🔊 SES */
+const sound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+
+/* 🔔 NOTIFICATION */
+function showNotification(title, body){
+if(Notification.permission === "granted"){
+new Notification(title,{body});
+}
+}
+
+if(Notification.permission !== "granted"){
+Notification.requestPermission();
+}
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
@@ -85,18 +100,22 @@ onAuthStateChanged(auth,(u)=>{
 if(!u){location.href="login.html";return;}
 user=u;
 
-/* 🔥 SADECE KENDİ SİPARİŞİ */
-onSnapshot(
-collection(db,"orders"),
-snap=>{
+let lastOrderCount = 0;
+
+/* 🔥 SİPARİŞLER */
+onSnapshot(collection(db,"orders"), snap=>{
 
 const div=document.getElementById("activeOrder");
 div.innerHTML="";
 
+let currentCount = 0;
+
 snap.forEach(d=>{
 const o=d.data();
 
-if(o.courierId===user.uid){
+if(o.courierId===user.uid && o.status==="assigned"){
+
+currentCount++;
 
 div.innerHTML=`
 <div class="order">
@@ -114,7 +133,16 @@ Teslim Et
 
 });
 
+/* 🔥 YENİ SİPARİŞ */
+if(currentCount > lastOrderCount){
+sound.play();
+showNotification("Yeni sipariş!", "Yeni görev atandı 🚀");
+}
+
+lastOrderCount = currentCount;
+
 });
+
 });
 
 /* ONLINE */

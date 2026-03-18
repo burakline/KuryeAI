@@ -4,20 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KuryeAI - Akıllı Kurye Sistemi</title>
+<title>KuryeAI - Akıllı Kurye ve Teslimat Sistemi</title>
 
-<meta name="description" content="KuryeAI ile hızlı teslimat, canlı takip ve akıllı kurye yönetimi.">
-<meta name="keywords" content="kurye, moto kurye, teslimat, hızlı kurye">
+<meta name="description" content="KuryeAI ile hızlı ve akıllı kurye sistemi. Canlı takip, otomatik dağıtım ve modern teslimat altyapısı.">
+<meta name="keywords" content="kurye, moto kurye, teslimat sistemi, restoran kurye">
 <meta name="robots" content="index, follow">
-
-<!-- 🔥 PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00d4ff">
-
-<!-- 🔥 OPEN GRAPH -->
-<meta property="og:title" content="KuryeAI">
-<meta property="og:description" content="Akıllı kurye sistemi">
-<meta property="og:image" content="logo.png">
 
 <link rel="icon" href="logo.png">
 
@@ -33,15 +24,12 @@ color:#111;
 .nav{
 display:flex;
 justify-content:space-between;
-align-items:center;
 padding:15px 20px;
 background:white;
 box-shadow:0 5px 20px rgba(0,0,0,0.05);
 }
 
-.logo{
-font-weight:bold;
-}
+.logo{font-weight:bold}
 
 /* HERO */
 .hero{
@@ -53,18 +41,12 @@ padding:60px 20px;
 font-size:32px;
 }
 
-.hero p{
-color:#555;
-margin:15px 0;
-}
-
-/* BUTTON */
 .btn{
 padding:14px 20px;
 border:none;
 border-radius:12px;
-cursor:pointer;
 margin:5px;
+cursor:pointer;
 }
 
 .primary{
@@ -77,54 +59,30 @@ background:#111;
 color:white;
 }
 
-/* CARDS */
-.section{
-display:grid;
-gap:15px;
-padding:20px;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.05);
-}
-
-/* FOOTER */
 .footer{
 text-align:center;
 padding:20px;
 color:#888;
+font-size:13px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAV -->
 <div class="nav">
 <div class="logo">🚀 KuryeAI</div>
-<a href="login.html">Giriş Yap</a>
+<a href="login.html">Giriş</a>
 </div>
 
-<!-- HERO -->
 <div class="hero">
 <h1>Akıllı Kurye Sistemi</h1>
-<p>Hızlı teslimat, canlı takip ve akıllı dağıtım</p>
+<p>AI destekli otomatik dağıtım ve canlı takip</p>
 
 <button class="btn primary" onclick="goCourier()">🚴 Kurye Panel</button>
 <button class="btn dark" onclick="goAdmin()">📊 Admin Panel</button>
 </div>
 
-<!-- FEATURES -->
-<div class="section">
-<div class="card">📍 Canlı Kurye Takibi</div>
-<div class="card">⚡ Akıllı Dağıtım</div>
-<div class="card">📦 Sipariş Yönetimi</div>
-</div>
-
-<!-- FOOTER -->
 <div class="footer">
 © 2026 KuryeAI
 </div>
@@ -138,4 +96,60 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12
 /* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-auth
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser=null;
+
+/* AUTH */
+onAuthStateChanged(auth,(user)=>{
+currentUser=user;
+});
+
+/* 🚴 KURYE */
+window.goCourier = async ()=>{
+
+if(!currentUser){
+location.href="login.html";
+return;
+}
+
+const snap = await getDoc(doc(db,"users",currentUser.uid));
+
+if(!snap.exists() || snap.data().role!=="courier"){
+alert("Yetkin yok");
+return;
+}
+
+location.href="courier.html";
+};
+
+/* 📊 ADMIN */
+window.goAdmin = async ()=>{
+
+if(!currentUser){
+location.href="login.html";
+return;
+}
+
+const snap = await getDoc(doc(db,"users",currentUser.uid));
+
+if(!snap.exists() || snap.data().role!=="admin"){
+alert("Yetkin yok");
+return;
+}
+
+location.href="admin.html";
+};
+
+</script>
+
+<!-- 🔥 AI AUTO ASSIGN -->
+<script type="module" src="autoAssign.js"></script>
+
+</body>
+</html>

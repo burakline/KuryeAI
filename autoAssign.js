@@ -1,96 +1,97 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+// autoAssign.js
+
+import { db } from "./firebase.js";
 import {
-getFirestore,
 collection,
 onSnapshot,
-query,
-where,
 doc,
 updateDoc,
 getDocs,
 getDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
+/* MESAFE */
+function getDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
 
-const db = getFirestore(app);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2;
 
-/* 📏 MESAFE */
-function dist(a,b,c,d){
-return Math.sqrt((a-c)**2+(b-d)**2)*111;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-/* ⚙️ AYAR */
-let TIMEOUT = 10000;
+/* AUTO ASSIGN */
+export function startAutoAssign() {
 
-onSnapshot(doc(db,"settings","config"), snap=>{
-if(snap.exists()){
-TIMEOUT = (snap.data().timeout || 10)*1000;
+  onSnapshot(collection(db, "orders"), async (snapshot) => {
+
+    // CONFIG OKU
+    const configSnap = await getDoc(doc(db, "settings", "config"));
+    const config = configSnap.exists() ? configSnap.data() : {};
+
+    if (!config.autoAssign) {
+      console.log("⛔ Otomatik atama kapalı");
+      return;
+    }
+
+    const maxDistance = config.maxDistance || 10;
+
+    for (const change of snapshot.docChanges()) {
+
+      if (change.type !== "added") continue;
+
+      const order = change.doc.data();
+      const orderId = change.doc.id;
+
+      if (order.status !== "pending") continue;
+
+      const couriersSnap = await getDocs(collection(db, "couriers"));
+
+      let bestCourier = null;
+      let bestDistance = 9999;
+
+      couriersSnap.forEach(c => {
+
+        const courier = c.data();
+
+        if (!courier.online) return;
+        if (!courier.lat || !order.lat) return;
+
+        const dist = getDistance(
+          courier.lat,
+          courier.lng,
+          order.lat,
+          order.lng
+        );
+
+        if (dist < bestDistance && dist <= maxDistance) {
+          bestDistance = dist;
+          bestCourier = { id: c.id, ...courier };
+        }
+
+      });
+
+      if (bestCourier) {
+
+        await updateDoc(doc(db, "orders", orderId), {
+          status: "accepted",
+          courierId: bestCourier.id,
+          autoAssigned: true
+        });
+
+        console.log("🤖 Otomatik atandı:", bestCourier.id);
+
+      } else {
+        console.log("❌ Uygun kurye yok (mesafe filtresi)");
+      }
+
+    }
+
+  });
+
 }
-});
-
-/* 🚀 SİPARİŞ DİNLE */
-onSnapshot(
-query(collection(db,"orders"), where("status","==","bekliyor")),
-async snap=>{
-
-snap.forEach(async orderDoc=>{
-
-const o = orderDoc.data();
-if(o.courierId) return;
-
-/* 🚴 ONLINE */
-const couriers = await getDocs(
-query(collection(db,"couriers"), where("online","==",true))
-);
-
-let best=null, min=9999;
-
-couriers.forEach(c=>{
-const d = c.data();
-if(!d.lat) return;
-
-const m = dist(o.lat,o.lng,d.lat,d.lng);
-
-if(m<min){
-min=m;
-best=c.id;
-}
-});
-
-if(!best) return;
-
-/* ATA */
-await updateDoc(doc(db,"orders",orderDoc.id),{
-status:"pending_accept",
-courierId:best,
-assignedAt:Date.now()
-});
-
-/* ⏱️ TIMEOUT */
-setTimeout(async()=>{
-
-const ref = doc(db,"orders",orderDoc.id);
-const snap = await getDoc(ref);
-
-if(!snap.exists()) return;
-
-const data = snap.data();
-
-if(data.status==="pending_accept"){
-await updateDoc(ref,{
-status:"bekliyor",
-courierId:null
-});
-console.log("Timeout → yeniden havuz");
-}
-
-},TIMEOUT);
-
-});
-
-});

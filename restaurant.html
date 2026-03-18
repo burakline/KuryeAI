@@ -10,100 +10,36 @@
 
 <style>
 body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white}
-
-/* SIDEBAR */
-.sidebar{
-width:220px;
-background:#020617;
-padding:20px;
-height:100vh;
-}
+.sidebar{width:220px;background:#020617;padding:20px;height:100vh}
 .sidebar h2{color:#00d4ff}
-.sidebar button{
-display:block;
-width:100%;
-padding:10px;
-margin:5px 0;
-background:none;
-border:none;
-color:#94a3b8;
-cursor:pointer;
-}
+.sidebar button{display:block;width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer}
 .sidebar button:hover{color:white}
-
-/* CONTENT */
 .content{flex:1;padding:20px}
-
-.card{
-background:#0f172a;
-padding:15px;
-border-radius:12px;
-margin-bottom:15px;
-}
-
-/* INPUT */
-input,select{
-width:100%;
-padding:12px;
-margin:5px 0;
-border:none;
-border-radius:8px;
-background:#020617;
-color:white;
-}
-
-/* BUTTON */
-.btn{
-background:#00d4ff;
-color:black;
-padding:12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-}
-.btn:hover{background:white}
-
-/* MAP */
-#map{
-width:100%;
-height:300px;
-border-radius:12px;
-margin-top:10px;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-.sidebar{width:80px}
-.sidebar h2{display:none}
-}
+.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
+input,select{width:100%;padding:12px;margin:5px 0;border:none;border-radius:8px;background:#020617;color:white}
+.btn{background:#00d4ff;color:black;padding:12px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
+#map{width:100%;height:300px;border-radius:12px;margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
 <h2>Restoran</h2>
 <button onclick="show('create')">Sipariş Oluştur</button>
 <button onclick="show('orders')">Siparişlerim</button>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
 
-<!-- CREATE -->
 <div id="create">
 <h2>🍔 Sipariş Oluştur</h2>
-
 <div class="card">
-<input id="product" placeholder="Ürün (örn: 2 Pizza)">
-<input id="address" placeholder="Müşteri adresi">
-
+<input id="product" placeholder="Ürün">
+<input id="address" placeholder="Adres">
 <select id="payment">
 <option value="online">Online</option>
 <option value="cash">Nakit</option>
-<option value="card">Kredi Kartı</option>
 </select>
 
 <div id="map"></div>
@@ -112,7 +48,6 @@ margin-top:10px;
 </div>
 </div>
 
-<!-- ORDERS -->
 <div id="orders" style="display:none">
 <h2>📦 Siparişlerim</h2>
 <div id="orderList"></div>
@@ -120,123 +55,4 @@ margin-top:10px;
 
 </div>
 
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore, collection, addDoc, onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-import {
-getAuth
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-
-/* FIREBASE */
-const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
-
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-/* NAV */
-window.show=id=>{
-document.getElementById("create").style.display="none";
-document.getElementById("orders").style.display="none";
-document.getElementById(id).style.display="block";
-}
-
-/* MAP */
-const map = L.map('map').setView([39.92,32.85], 13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-.addTo(map);
-
-let selectedLat=null;
-let selectedLng=null;
-let marker;
-
-map.on('click', function(e){
-
-selectedLat=e.latlng.lat;
-selectedLng=e.latlng.lng;
-
-if(marker){
-marker.setLatLng(e.latlng);
-}else{
-marker=L.marker(e.latlng).addTo(map);
-}
-
-});
-
-/* CREATE ORDER */
-window.createOrder = async () => {
-
-const user = auth.currentUser;
-
-if(!user){
-alert("Giriş yapılmamış!");
-return;
-}
-
-const product=document.getElementById("product").value;
-const address=document.getElementById("address").value;
-const payment=document.getElementById("payment").value;
-
-if(!product || !address){
-alert("Tüm alanları doldur!");
-return;
-}
-
-if(!selectedLat){
-alert("Haritadan konum seç!");
-return;
-}
-
-await addDoc(collection(db,"orders"),{
-product,
-address,
-payment,
-lat:selectedLat,
-lng:selectedLng,
-status:"pending",
-restaurantEmail:user.email,
-createdAt:new Date()
-});
-
-alert("Sipariş oluşturuldu 🚀");
-
-};
-
-/* GET ORDERS */
-onSnapshot(collection(db,"orders"),snap=>{
-document.getElementById("orderList").innerHTML="";
-
-snap.forEach(d=>{
-const o=d.data();
-
-if(o.restaurantEmail === auth.currentUser?.email){
-
-document.getElementById("orderList").innerHTML+=`
-<div class="card">
-<b>${o.product}</b><br>
-${o.address}<br>
-Durum: ${o.status}<br>
-<button onclick="goMap(${o.lat},${o.lng})">📍 Yolu Aç</button>
-</div>`;
-}
-
-});
-});
-
-/* GOOGLE MAP */
-window.goMap=(lat,lng)=>{
-window.open(`https://www.google.com/maps?q=${lat},${lng}`);
-}
-
-</script>
-
-</body>
-</html>
+<script type="

@@ -75,7 +75,7 @@ padding: 2rem 0;
 }
 
 /* MODAL */
-#courierModal {
+#courierModal, #restaurantModal {
 display: none;
 position: fixed;
 top: 0;
@@ -132,6 +132,7 @@ font-size: 20px;
 <a href="#" class="cta-button">Hemen Kurye Çağır</a>
 
 <button onclick="openCourier()" class="cta-button">Kurye Ol</button>
+<button onclick="openRestaurant()" class="cta-button">Restoran Ol</button>
 
 <div class="login-container">
 <a href="login.html?type=restaurant" class="btn-login">Restoran Girişi</a>
@@ -150,9 +151,7 @@ font-size: 20px;
 <!-- KURYE MODAL -->
 <div id="courierModal" onclick="closeCourier()">
 <div class="modalBox" onclick="event.stopPropagation()">
-
 <div class="closeX" onclick="closeCourier()">✕</div>
-
 <h3>Kurye Başvuru</h3>
 
 <input id="name" placeholder="Ad Soyad">
@@ -185,7 +184,22 @@ font-size: 20px;
 
 <button onclick="sendCourier()">Başvur</button>
 <button onclick="closeCourier()">Kapat</button>
+</div>
+</div>
 
+<!-- RESTORAN MODAL -->
+<div id="restaurantModal" onclick="closeRestaurant()">
+<div class="modalBox" onclick="event.stopPropagation()">
+<div class="closeX" onclick="closeRestaurant()">✕</div>
+<h3>Restoran Başvuru</h3>
+
+<input id="r_name" placeholder="Restoran Adı">
+<input id="r_phone" placeholder="Telefon">
+<input id="r_email" placeholder="Email">
+<input id="r_address" placeholder="Adres">
+
+<button onclick="sendRestaurant()">Başvur</button>
+<button onclick="closeRestaurant()">Kapat</button>
 </div>
 </div>
 
@@ -208,32 +222,36 @@ projectId:"kuryeai"
 
 const db = getFirestore(app);
 
-/* MODAL */
+/* MODALS */
 window.openCourier = () => {
 document.getElementById("courierModal").style.display = "flex";
 }
-
 window.closeCourier = () => {
 document.getElementById("courierModal").style.display = "none";
 }
 
-/* BAŞVURU (FIXED) */
+window.openRestaurant = () => {
+document.getElementById("restaurantModal").style.display = "flex";
+}
+window.closeRestaurant = () => {
+document.getElementById("restaurantModal").style.display = "none";
+}
+
+/* KURYE */
 window.sendCourier = async () => {
-
 try{
-
 const data = {
-name: document.getElementById("name").value,
-birthDate: document.getElementById("birthDate").value,
-birthPlace: document.getElementById("birthPlace").value,
-blood: document.getElementById("blood").value,
-education: document.getElementById("education").value,
-license: document.getElementById("license").value,
-p1: document.getElementById("p1").value,
-src: document.getElementById("src").value,
-criminal: document.getElementById("criminal").value,
-phone: document.getElementById("phone").value,
-email: document.getElementById("email").value
+name: name.value,
+birthDate: birthDate.value,
+birthPlace: birthPlace.value,
+blood: blood.value,
+education: education.value,
+license: license.value,
+p1: p1.value,
+src: src.value,
+criminal: criminal.value,
+phone: phone.value,
+email: email.value
 };
 
 if(!data.name || !data.email){
@@ -254,7 +272,36 @@ closeCourier();
 }catch(e){
 alert("HATA: "+e.message);
 }
+};
 
+/* RESTORAN */
+window.sendRestaurant = async () => {
+try{
+const data = {
+name: r_name.value,
+phone: r_phone.value,
+email: r_email.value,
+address: r_address.value
+};
+
+if(!data.name || !data.email){
+alert("Ad ve email zorunlu!");
+return;
+}
+
+await addDoc(collection(db,"applications"),{
+...data,
+type:"restaurant",
+status:"pending",
+createdAt:new Date()
+});
+
+alert("✅ Başvuru gönderildi!");
+closeRestaurant();
+
+}catch(e){
+alert("HATA: "+e.message);
+}
 };
 
 </script>

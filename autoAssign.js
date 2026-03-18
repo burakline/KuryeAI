@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-
 import {
 getFirestore,
 collection,
@@ -8,10 +7,10 @@ query,
 where,
 doc,
 updateDoc,
-getDocs
+getDocs,
+getDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -21,69 +20,76 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 
 /* 📏 MESAFE */
-function getDistanceKm(lat1,lng1,lat2,lng2){
-const R = 6371;
-const dLat = (lat2-lat1)*Math.PI/180;
-const dLng = (lng2-lng1)*Math.PI/180;
-
-const a =
-Math.sin(dLat/2)**2 +
-Math.cos(lat1*Math.PI/180)*
-Math.cos(lat2*Math.PI/180)*
-Math.sin(dLng/2)**2;
-
-return R * (2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+function dist(a,b,c,d){
+return Math.sqrt((a-c)**2+(b-d)**2)*111;
 }
+
+/* ⚙️ AYAR */
+let TIMEOUT = 10000;
+
+onSnapshot(doc(db,"settings","config"), snap=>{
+if(snap.exists()){
+TIMEOUT = (snap.data().timeout || 10)*1000;
+}
+});
 
 /* 🚀 SİPARİŞ DİNLE */
 onSnapshot(
 query(collection(db,"orders"), where("status","==","bekliyor")),
-async (snap)=>{
+async snap=>{
 
-snap.forEach(async(orderDoc)=>{
+snap.forEach(async orderDoc=>{
 
-const order = orderDoc.data();
+const o = orderDoc.data();
+if(o.courierId) return;
 
-/* ZATEN ATANDI */
-if(order.courierId) return;
-
-/* ONLINE KURYELER */
-const couriersSnap = await getDocs(
+/* 🚴 ONLINE */
+const couriers = await getDocs(
 query(collection(db,"couriers"), where("online","==",true))
 );
 
-let bestCourier = null;
-let minDist = 9999;
+let best=null, min=9999;
 
-couriersSnap.forEach(cDoc=>{
+couriers.forEach(c=>{
+const d = c.data();
+if(!d.lat) return;
 
-const c = cDoc.data();
+const m = dist(o.lat,o.lng,d.lat,d.lng);
 
-if(!c.lat || !c.lng) return;
-
-const dist = getDistanceKm(
-order.lat, order.lng,
-c.lat, c.lng
-);
-
-if(dist < minDist){
-minDist = dist;
-bestCourier = cDoc.id;
+if(m<min){
+min=m;
+best=c.id;
 }
-
 });
+
+if(!best) return;
 
 /* ATA */
-if(bestCourier){
-
 await updateDoc(doc(db,"orders",orderDoc.id),{
-status:"assigned",
-courierId:bestCourier
+status:"pending_accept",
+courierId:best,
+assignedAt:Date.now()
 });
 
-console.log("AI atadı:",bestCourier);
+/* ⏱️ TIMEOUT */
+setTimeout(async()=>{
 
+const ref = doc(db,"orders",orderDoc.id);
+const snap = await getDoc(ref);
+
+if(!snap.exists()) return;
+
+const data = snap.data();
+
+if(data.status==="pending_accept"){
+await updateDoc(ref,{
+status:"bekliyor",
+courierId:null
+});
+console.log("Timeout → yeniden havuz");
 }
+
+},TIMEOUT);
 
 });
 

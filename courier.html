@@ -1,21 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Kurye Panel</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+body{margin:0;background:#0b0e14;color:white;font-family:Arial;}
+#map{height:60vh;}
+.btn{width:100%;padding:15px;margin-top:10px;border:none;border-radius:10px;}
+.start{background:#00d4ff;}
+.stop{background:#ff4d4d;color:white;}
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<button class="btn start" onclick="start()">Online Ol</button>
+<button class="btn stop" onclick="stop()">Offline Ol</button>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-import {
-getFirestore,
-doc,
-setDoc,
-updateDoc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-import {
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-
-/* 🔥 CONFIG (GERÇEK) */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -25,97 +39,45 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let user = null;
-let watchId = null;
+let user;
 
-/* 🔐 AUTH + ROLE */
 onAuthStateChanged(auth, async(u)=>{
-
-if(!u){
-location.href="login.html";
-return;
-}
+if(!u){ location.href="login.html"; return; }
 
 const snap = await getDoc(doc(db,"users",u.uid));
-
 if(!snap.exists() || snap.data().role !== "courier"){
-alert("Yetkisiz!");
-location.href="login.html";
-return;
+location.href="index.html";
 }
 
 user = u;
-
-console.log("Kurye giriş yaptı:", user.email);
-
 });
 
-/* 🚀 ONLINE */
-window.startTracking = ()=>{
+let map = L.map('map').setView([39.92,32.85],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-if(!user){
-alert("Henüz giriş yapılmadı");
-return;
-}
+let marker;
+let watchId;
 
-if(!navigator.geolocation){
-alert("GPS desteklenmiyor");
-return;
-}
-
-/* GPS başlat */
-watchId = navigator.geolocation.watchPosition(
-
-async(pos)=>{
-
+window.start = ()=>{
+watchId = navigator.geolocation.watchPosition(async(pos)=>{
 const lat = pos.coords.latitude;
 const lng = pos.coords.longitude;
 
-/* 🔥 SETDOC (SAĞLAM) */
-await setDoc(doc(db,"couriers",user.uid),{
-lat,
-lng,
-online:true,
-email:user.email,
-updatedAt:new Date()
-},{merge:true});
-
-},
-
-(err)=>{
-alert("Konum izni gerekli!");
-console.error(err);
-},
-
-{
-enableHighAccuracy:true,
-maximumAge:5000,
-timeout:10000
-}
-
-);
-
-alert("🟢 Online oldun");
-
-};
-
-/* 🛑 OFFLINE */
-window.stopTracking = async ()=>{
-
-if(!user) return;
-
-if(watchId){
-navigator.geolocation.clearWatch(watchId);
-watchId = null;
-}
+if(marker){ marker.setLatLng([lat,lng]); }
+else{ marker = L.marker([lat,lng]).addTo(map); }
 
 await updateDoc(doc(db,"couriers",user.uid),{
-online:false,
-updatedAt:new Date()
+lat,lng,online:true
 });
 
-alert("🔴 Offline oldun");
+});
+};
 
+window.stop = async()=>{
+navigator.geolocation.clearWatch(watchId);
+await updateDoc(doc(db,"couriers",user.uid),{online:false});
 };
 
 </script>
+</body>
+</html>

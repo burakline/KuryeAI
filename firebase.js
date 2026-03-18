@@ -1,6 +1,4 @@
-// firebase.js
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 
 import {
   getAuth,
@@ -9,30 +7,25 @@ import {
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence,
-  browserSessionPersistence,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 import {
   getFirestore,
   doc,
   setDoc,
   getDoc,
-  collection,
-  addDoc,
-  onSnapshot,
-  updateDoc,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
   getMessaging,
   getToken,
   onMessage
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
 
-/* 🔥 CONFIG */
+
+// 🔥 CONFIG (FULL DOĞRU)
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
@@ -42,59 +35,26 @@ const firebaseConfig = {
   appId: "1:562153733113:web:61d9242d0af1da6a081b28"
 };
 
-/* INIT */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const messaging = getMessaging(app);
 
-/* ========================= */
-/* 🔔 NOTIFICATION INIT (DEBUG) */
-/* ========================= */
-window.initNotifications = async function () {
 
-  try {
+// 🔄 AUTO LOGIN
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
 
-    alert("🔔 Bildirim başlatılıyor...");
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (!snap.exists()) return;
 
-    const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      alert("❌ Bildirim izni verilmedi");
-      return;
-    }
-
-    alert("✅ İzin verildi");
-
-    const token = await getToken(messaging, {
-      vapidKey: "BNWTY3G-gaXdthi2kzQIsUSBnLvMHh0YkjBcCkqsv6fpiiYSfb_WvTwqO_lQSCxFhJ4pdNYRYGuxUhIdO-oCieA"
-    });
-
-    if (!token) {
-      alert("❌ Token alınamadı!");
-      return;
-    }
-
-    alert("🔥 TOKEN ALINDI:\n\n" + token);
-
-    return token;
-
-  } catch (err) {
-    alert("❌ HATA:\n" + err.message);
-    console.error(err);
-  }
-
-};
-
-/* 🔔 FOREGROUND */
-onMessage(messaging, () => {
-  alert("📦 Yeni sipariş geldi!");
+  redirect(snap.data().role);
 });
 
-/* ========================= */
-/* 🔐 LOGIN */
-/* ========================= */
+
+// 🚀 LOGIN
 window.loginUser = async function (email, password, remember = false) {
+
   try {
 
     email = email.trim().toLowerCase();
@@ -110,21 +70,21 @@ window.loginUser = async function (email, password, remember = false) {
     const snap = await getDoc(doc(db, "users", uid));
 
     if (!snap.exists()) {
-      alert("Kullanıcı rolü yok");
+      alert("Kullanıcı rolü bulunamadı!");
       return;
     }
 
     redirect(snap.data().role);
 
   } catch (e) {
-    alert("❌ " + e.message);
+    alert("❌ Giriş başarısız: " + e.message);
   }
 };
 
-/* ========================= */
-/* 🆕 REGISTER */
-/* ========================= */
-window.registerUser = async function (email, password, role = "courier") {
+
+// 🔒 REGISTER
+window.registerUser = async function (email, password) {
+
   try {
 
     email = email.trim().toLowerCase();
@@ -134,51 +94,66 @@ window.registerUser = async function (email, password, role = "courier") {
 
     await setDoc(doc(db, "users", uid), {
       email,
-      role,
-      createdAt: Date.now()
+      role: "courier",
+      createdAt: new Date()
     });
 
-    alert("✅ Kayıt başarılı");
+    alert("✅ Kayıt başarılı!");
 
   } catch (e) {
-    alert("❌ " + e.message);
+    alert("❌ Kayıt hatası: " + e.message);
   }
 };
 
-/* ========================= */
-/* 📦 ORDER CREATE */
-/* ========================= */
-window.createOrder = async function (data) {
-  await addDoc(collection(db, "orders"), {
-    ...data,
-    status: "pending",
-    createdAt: Date.now()
-  });
+
+// 🔔 NOTIFICATION INIT (EN KRİTİK)
+window.initNotifications = async function (userId) {
+
+  try {
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("❌ Bildirim izni verilmedi");
+      return;
+    }
+
+    const token = await getToken(messaging, {
+      vapidKey: "BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ"
+    });
+
+    console.log("🔥 TOKEN:", token);
+
+    await updateDoc(doc(db, "couriers", userId), {
+      fcmToken: token
+    });
+
+    alert("✅ Bildirim aktif!");
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ HATA: " + err.message);
+  }
 };
 
-/* ========================= */
-/* 🚪 LOGOUT */
-/* ========================= */
-window.logoutUser = async function () {
-  await signOut(auth);
-  window.location.href = "index.html";
-};
 
-/* ========================= */
-/* 🔀 REDIRECT */
-/* ========================= */
+// 🔔 FOREGROUND MESSAGE
+onMessage(messaging, (payload) => {
+  alert("📦 Yeni sipariş var!");
+});
+
+
+// 🔀 REDIRECT
 function redirect(role) {
-
-  if (window.location.pathname.includes(role)) return;
 
   if (role === "admin") {
     window.location.href = "admin.html";
-  } else if (role === "restaurant") {
+  }
+  else if (role === "restaurant") {
     window.location.href = "restaurant.html";
-  } else {
+  }
+  else {
     window.location.href = "courier.html";
   }
 
 }
-
-export { db, auth };

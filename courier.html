@@ -3,59 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kurye Panel</title>
+<title>KuryeAI</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{margin:0;font-family:Arial;background:#0b0e14;color:white}
+body{
+margin:0;
+font-family: 'Inter', sans-serif;
+background:#0A0A0A;
+color:white;
+}
 
+/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
 padding:15px;
-background:#020617;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
 }
 
 .status{
-padding:6px 12px;
+padding:6px 14px;
 border-radius:20px;
 font-size:12px;
 }
 
-.online{background:#00ff9c;color:black}
+.online{background:#00C2A8;color:black}
 .offline{background:#ff4d4d}
 
-#map{height:50vh}
+/* MAP */
+#map{height:40vh}
 
+/* PANEL */
 .panel{padding:15px}
 
+/* CARD */
 .card{
-background:#111827;
+background:rgba(255,255,255,0.05);
 padding:12px;
 margin-top:10px;
-border-radius:10px;
+border-radius:12px;
+border:1px solid rgba(255,255,255,0.1);
 }
 
+/* BUTTON */
 .btn{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:5px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 font-weight:bold;
+cursor:pointer;
 }
 
-.accept{background:#00d4ff;color:black}
-.reject{background:#ff4d4d;color:white}
-.done{background:#22c55e;color:white}
+.accept{background:#00C2A8;color:black}
+.done{background:#22c55e}
+.reject{background:#ff4d4d}
+
+/* TITLE */
+h3{margin:10px 0}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<h3>🚴 Kurye</h3>
+<h3>🛵 KuryeAI</h3>
 <div id="status" class="status offline">Offline</div>
 </div>
 
@@ -74,25 +90,19 @@ font-weight:bold;
 
 </div>
 
-<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
+<script type="module">
 
-<script>
+import { db, auth } from "./firebase.js";
+import {
+collection,
+onSnapshot,
+doc,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* CONFIG */
-firebase.initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
-
-const db = firebase.firestore();
-const auth = firebase.auth();
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
@@ -101,117 +111,65 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 let marker;
 
 /* ELEMENTS */
-const orders = document.getElementById("orders");
-const activeOrder = document.getElementById("activeOrder");
-const status = document.getElementById("status");
+const ordersDiv = document.getElementById("orders");
+const activeDiv = document.getElementById("activeOrder");
+const statusDiv = document.getElementById("status");
 
-/* GLOBAL */
 let user;
-let courierData=null;
-let lastOrderCount=0;
 let watchId=null;
-let activeListener=null;
-
-/* DISTANCE */
-function getDistance(lat1,lng1,lat2,lng2){
-const R=6371;
-const dLat=(lat2-lat1)*Math.PI/180;
-const dLng=(lng2-lng1)*Math.PI/180;
-
-const a =
-Math.sin(dLat/2)**2 +
-Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
-Math.sin(dLng/2)**2;
-
-return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
 
 /* AUTH */
-auth.onAuthStateChanged(function(u){
+onAuthStateChanged(auth,(u)=>{
 
 if(!u){
-location.href="login.html";
+location.href="index.html";
 return;
 }
 
 user=u;
 
-/* COURIER */
-db.collection("couriers").doc(u.uid).onSnapshot(function(snap){
+/* ORDERS LIST */
+onSnapshot(collection(db,"orders"),(snap)=>{
 
-if(!snap.exists) return;
+ordersDiv.innerHTML="";
+activeDiv.innerHTML="";
 
-courierData = snap.data();
-
-/* STATUS */
-if(courierData.online){
-status.className="status online";
-status.innerText="Online";
-}else{
-status.className="status offline";
-status.innerText="Offline";
-}
-
-/* ACTIVE ORDER LISTENER (TEK) */
-if(!activeListener){
-activeListener = db.collection("orders")
-.where("courierId","==",user.uid)
-.onSnapshot(function(snap){
-
-activeOrder.innerHTML="";
-
-snap.forEach(function(d){
+snap.forEach(d=>{
 
 const o=d.data();
-if(o.status!=="yolda") return;
 
-activeOrder.innerHTML=`
+/* ACTIVE */
+if(o.courierId === user.uid && o.status==="accepted"){
+
+activeDiv.innerHTML=`
 <div class="card">
 <b>${o.customer}</b><br>
 ${o.address}<br>
 
-<button class="btn done" onclick="finishOrder('${d.id}')">
+<button class="btn done" onclick="completeOrder('${d.id}')">
 Teslim Edildi
 </button>
 </div>`;
-});
 
-});
 }
 
-});
+/* NEW ORDERS */
+if(o.status==="pending"){
 
-/* ORDERS */
-db.collection("orders")
-.where("status","==","bekliyor")
-.onSnapshot(function(snap){
-
-orders.innerHTML="";
-
-snap.forEach(function(d){
-
-const o=d.data();
-if(!o) return;
-
-if(o.rejectedBy && o.rejectedBy.includes(user.uid)) return;
-if(!courierData || !courierData.online) return;
-
-/* DISTANCE FILTER */
-if(o.lat && courierData.lat){
-const dist = getDistance(courierData.lat,courierData.lng,o.lat,o.lng);
-if(dist > 10) return; // 10km filtre
-}
-
-orders.innerHTML+=`
+ordersDiv.innerHTML+=`
 <div class="card">
 <b>${o.customer}</b><br>
 ${o.address}<br>
 
-💰 ${o.price}₺ 🔥x${o.surge||1}
+💰 ${o.price}₺
 
-<button class="btn accept" onclick="acceptOrder('${d.id}')">Kabul</button>
-<button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
+<button class="btn accept" onclick="acceptOrder('${d.id}')">
+Kabul Et
+</button>
 </div>`;
+
+}
+
 });
 
 });
@@ -219,16 +177,16 @@ ${o.address}<br>
 });
 
 /* SHIFT */
-function startShift(){
+window.startShift = function(){
 
-if(watchId) return;
+statusDiv.className="status online";
+statusDiv.innerText="Online";
 
-watchId = navigator.geolocation.watchPosition(function(pos){
+watchId = navigator.geolocation.watchPosition(pos=>{
 
 const lat=pos.coords.latitude;
 const lng=pos.coords.longitude;
 
-/* MARKER */
 if(marker){
 marker.setLatLng([lat,lng]);
 }else{
@@ -236,95 +194,40 @@ marker = L.marker([lat,lng]).addTo(map);
 map.setView([lat,lng],15);
 }
 
-/* UPDATE */
-db.collection("couriers").doc(user.uid).update({
-lat:lat,
-lng:lng,
-online:true,
-status:"available"
 });
 
-});
-
-}
+};
 
 /* OFFLINE */
-function endShift(){
+window.endShift = function(){
+
+statusDiv.className="status offline";
+statusDiv.innerText="Offline";
 
 if(watchId){
 navigator.geolocation.clearWatch(watchId);
-watchId=null;
 }
 
-db.collection("couriers").doc(user.uid).update({
-online:false
-});
-
-location.reload();
-}
+};
 
 /* ACCEPT */
-function acceptOrder(id){
+window.acceptOrder = async function(id){
 
-const ref = db.collection("orders").doc(id);
-
-db.runTransaction(function(t){
-return t.get(ref).then(function(snap){
-
-if(snap.data().status !== "bekliyor"){
-throw "taken";
-}
-
-t.update(ref,{
-status:"yolda",
+await updateDoc(doc(db,"orders",id),{
+status:"accepted",
 courierId:user.uid
 });
 
-});
-}).then(function(){
+};
 
-db.collection("couriers").doc(user.uid).update({
-status:"busy"
-});
+/* COMPLETE */
+window.completeOrder = async function(id){
 
-alert("🚀 Sipariş alındı!");
-
-}).catch(function(){
-alert("Başka kurye aldı!");
-});
-
-}
-
-/* FINISH */
-function finishOrder(id){
-
-db.collection("orders").doc(id).update({
+await updateDoc(doc(db,"orders",id),{
 status:"delivered"
 });
 
-db.collection("couriers").doc(user.uid).update({
-status:"available"
-});
-
-alert("Teslim edildi 🎉");
-}
-
-/* REJECT */
-function rejectOrder(id){
-
-const ref = db.collection("orders").doc(id);
-
-ref.get().then(function(snap){
-
-const prev = snap.data().rejectedBy || [];
-
-ref.update({
-rejectedBy:[...prev, user.uid]
-});
-
-});
-
-}
+};
 
 </script>
 

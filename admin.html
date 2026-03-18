@@ -3,70 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin PRO</title>
+<title>Admin Panel</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#f5f7fb;
-}
-
-/* NAV */
-.nav{
-display:flex;
-gap:10px;
-padding:15px;
-background:white;
-box-shadow:0 5px 20px rgba(0,0,0,0.05);
-}
-
-.nav button{
-padding:10px;
-border:none;
-border-radius:10px;
-background:#eee;
-cursor:pointer;
-}
-
-.active{
-background:#00d4ff;
-color:white;
-}
-
-/* CONTENT */
+body{margin:0;font-family:Arial;background:#0b0e14;color:white;}
+.nav{display:flex;gap:10px;padding:15px;background:#020617;}
+.nav button{padding:10px;border:none;border-radius:10px;background:#111;color:white;}
+.active{background:#00d4ff;color:black;}
 .container{padding:15px;}
-
-.card{
-background:white;
-padding:15px;
-border-radius:12px;
-margin-bottom:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.05);
-}
-
-.ok{background:#00d4ff;color:white;}
-.no{background:#ff4d4d;color:white;}
-
-#map{height:70vh;border-radius:12px;}
+.card{background:#111827;padding:15px;border-radius:12px;margin-bottom:10px;}
+#map{height:60vh;border-radius:12px;}
 </style>
 </head>
 
 <body>
 
 <div class="nav">
-<button onclick="showTab(event,'apps')" class="active">Başvurular</button>
-<button onclick="showTab(event,'couriers')">Kuryeler</button>
-<button onclick="showTab(event,'orders')">Siparişler</button>
-<button onclick="showTab(event,'mapPage')">Harita</button>
+<button onclick="show('couriers')" class="active">Kuryeler</button>
+<button onclick="show('mapPage')">Harita</button>
 </div>
 
 <div class="container">
-<div id="apps"></div>
-<div id="couriers" style="display:none"></div>
-<div id="orders" style="display:none"></div>
+<div id="couriers"></div>
 <div id="mapPage" style="display:none">
 <div id="map"></div>
 </div>
@@ -77,107 +37,83 @@ box-shadow:0 5px 15px rgba(0,0,0,0.05);
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore,
-collection,
-getDocs,
-doc,
-setDoc,
-deleteDoc,
-onSnapshot,
-updateDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-import {
-getAuth,
-onAuthStateChanged,
-createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-
-/* INIT */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
 
-const secondaryApp = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-},"Secondary");
-
-const db = getFirestore(app);
 const auth = getAuth(app);
-const secondaryAuth = getAuth(secondaryApp);
+const db = getFirestore(app);
 
-/* 🔐 AUTH */
+/* 🔐 AUTH KORUMA */
 onAuthStateChanged(auth, async(user)=>{
+if(!user){ location.href="login.html"; return; }
 
-if(!user) return location.href="login.html";
-
-const userDoc = await getDocs(collection(db,"users"));
-
-let isAdmin=false;
-
-userDoc.forEach(d=>{
-if(d.id===user.uid && d.data().role==="admin"){
-isAdmin=true;
+const snap = await getDoc(doc(db,"users",user.uid));
+if(!snap.exists() || snap.data().role !== "admin"){
+alert("Yetkisiz!");
+location.href="index.html";
 }
-});
-
-if(!isAdmin){
-alert("Yetkisiz");
-location.href="login.html";
-}
-
 });
 
 /* NAV */
-window.showTab=(e,id)=>{
-["apps","couriers","orders","mapPage"].forEach(x=>{
-document.getElementById(x).style.display="none";
-});
-document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-e.target.classList.add("active");
+window.show = (id)=>{
+document.getElementById("couriers").style.display="none";
+document.getElementById("mapPage").style.display="none";
 document.getElementById(id).style.display="block";
-
-if(id==="mapPage"){
-setTimeout(()=>map.invalidateSize(),300);
-}
 };
 
-/* 📩 APPLICATIONS */
-async function loadApps(){
-const div=document.getElementById("apps");
-const snap=await getDocs(collection(db,"applications"));
+/* KURYELER */
+onSnapshot(collection(db,"couriers"), snap=>{
+const div = document.getElementById("couriers");
 div.innerHTML="";
 
 snap.forEach(d=>{
-const a=d.data();
-a.id=d.id;
+const c = d.data();
 
-div.innerHTML+=`
+div.innerHTML += `
 <div class="card">
-<b>${a.name}</b><br>
-${a.email}<br>
-<button class="ok" onclick='approve(${JSON.stringify(a)})'>Onayla</button>
-<button class="no" onclick='reject("${a.id}")'>Reddet</button>
+<b>${c.name}</b><br>
+Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
 </div>`;
 });
-}
-
-window.approve=async(a)=>{
-
-const user=await createUserWithEmailAndPassword(secondaryAuth,a.email,"123456");
-const uid=user.user.uid;
-
-await setDoc(doc(db,"users",uid),{
-email:a.email,
-role:a.type==="restaurant"?"restaurant":"courier"
 });
 
-if(a.type==="restaurant"){
-await setDoc(doc(db,"restaurants",uid),{name:a.name,email:a.email});
+/* HARİTA */
+const map = L.map('map').setView([39.92,32.85],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let markers = {};
+
+onSnapshot(collection(db,"couriers"), snap=>{
+snap.forEach(d=>{
+const c = d.data();
+const id = d.id;
+
+if(!c.lat) return;
+
+const icon = L.divIcon({
+html:`<div style="
+width:25px;height:25px;border-radius:50%;
+background:${c.online?"green":"red"};
+border:3px solid white"></div>`
+});
+
+if(markers[id]){
+markers[id].setLatLng([c.lat,c.lng]);
+markers[id].setIcon(icon);
 }else{
-await set
+markers[id] = L.marker([c.lat,c.lng],{icon}).addTo(map)
+.bindPopup(c.name);
+}
+
+});
+});
+
+</script>
+</body>
+</html>

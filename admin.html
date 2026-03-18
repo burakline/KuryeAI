@@ -16,7 +16,7 @@ color:white;
 /* HEADER */
 .header{
 padding:20px;
-font-size:20px;
+font-size:22px;
 font-weight:bold;
 }
 
@@ -37,12 +37,7 @@ padding:15px;
 backdrop-filter:blur(12px);
 }
 
-/* STATUS COLORS */
-.pending{color:#facc15}
-.accepted{color:#00C2A8}
-.delivered{color:#22c55e}
-
-/* ORDER LIST */
+/* ORDER */
 .order{
 margin-top:10px;
 padding:10px;
@@ -50,37 +45,74 @@ border-radius:10px;
 background:#111;
 }
 
-/* TITLE */
-h3{
-margin:0 0 10px 0;
+/* STATUS */
+.pending{color:#facc15}
+.accepted{color:#00C2A8}
+.delivered{color:#22c55e}
+
+/* INPUT */
+input, select{
+width:100%;
+padding:10px;
+margin-top:8px;
+border:none;
+border-radius:8px;
+background:#1a1a1a;
+color:white;
 }
 
-/* METRIC */
-.metric{
-font-size:22px;
+/* BUTTON */
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+background:#00C2A8;
+color:black;
 font-weight:bold;
+cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🧠 AdminAI Dashboard</div>
+<div class="header">🧠 AdminAI</div>
 
 <div class="grid">
 
+<!-- METRICS -->
 <div class="card">
 <h3>📦 Toplam Sipariş</h3>
-<div id="total" class="metric">0</div>
+<div id="total">0</div>
 </div>
 
 <div class="card">
-<h3>🛵 Aktif Sipariş</h3>
-<div id="active" class="metric">0</div>
+<h3>🚀 Aktif Sipariş</h3>
+<div id="active">0</div>
 </div>
 
+<!-- SETTINGS -->
+<div class="card">
+<h3>⚙️ Sistem Ayarları</h3>
+
+<label>Otomatik Atama</label>
+<select id="autoAssign">
+<option value="true">Açık</option>
+<option value="false">Kapalı</option>
+</select>
+
+<label>Maks Mesafe (km)</label>
+<input id="maxDistance" type="number" value="10">
+
+<button onclick="saveSettings()">Kaydet</button>
+
+</div>
+
+<!-- ORDERS -->
 <div class="card" style="grid-column:span 2">
-<h3>📋 Tüm Siparişler</h3>
+<h3>📋 Siparişler</h3>
 <div id="orders"></div>
 </div>
 
@@ -89,15 +121,25 @@ font-weight:bold;
 <script type="module">
 
 import { db } from "./firebase.js";
+import { startAutoAssign } from "./autoAssign.js";
+
 import {
 collection,
-onSnapshot
+onSnapshot,
+doc,
+getDoc,
+setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* AUTO ASSIGN BAŞLAT */
+startAutoAssign();
+
+/* ELEMENTS */
 const ordersDiv = document.getElementById("orders");
 const totalDiv = document.getElementById("total");
 const activeDiv = document.getElementById("active");
 
+/* SİPARİŞLER */
 onSnapshot(collection(db,"orders"),(snap)=>{
 
 ordersDiv.innerHTML="";
@@ -131,6 +173,40 @@ totalDiv.innerText = total;
 activeDiv.innerText = active;
 
 });
+
+/* AYARLARI YÜKLE */
+async function loadSettings(){
+
+const snap = await getDoc(doc(db,"settings","config"));
+
+if(snap.exists()){
+const data = snap.data();
+
+document.getElementById("autoAssign").value = data.autoAssign;
+document.getElementById("maxDistance").value = data.maxDistance;
+}
+
+}
+
+loadSettings();
+
+/* KAYDET */
+window.saveSettings = async function(){
+
+const autoAssign =
+document.getElementById("autoAssign").value === "true";
+
+const maxDistance =
+parseFloat(document.getElementById("maxDistance").value);
+
+await setDoc(doc(db,"settings","config"),{
+autoAssign,
+maxDistance
+});
+
+alert("✅ Ayarlar kaydedildi");
+
+};
 
 </script>
 

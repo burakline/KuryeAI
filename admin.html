@@ -32,7 +32,7 @@ input,select{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;
 .red{background:#ef4444}
 .blue{background:#0ea5e9}
 
-/* 🔔 TOAST */
+/* TOAST */
 #toast{
 position:fixed;
 top:20px;
@@ -53,18 +53,22 @@ z-index:9999;
 <button onclick="show('dashboard')">Dashboard</button>
 <button onclick="show('orders')">Siparişler</button>
 <button onclick="show('couriers')">Kuryeler</button>
+<button onclick="show('restaurants')">Restoranlar</button>
+<button onclick="show('applications')">Başvurular</button>
 </div>
 
 <div class="content">
 
+<!-- DASHBOARD -->
 <div id="dashboard">
 <h2>Dashboard</h2>
 <div class="card">
-<h3>📦 Sipariş Havuzu (CANLI)</h3>
+<h3>📦 Canlı Sipariş Havuzu</h3>
 <div id="orderList"></div>
 </div>
 </div>
 
+<!-- ORDERS -->
 <div id="orders" style="display:none">
 <h2>Siparişler</h2>
 
@@ -77,6 +81,7 @@ z-index:9999;
 <div id="allOrders"></div>
 </div>
 
+<!-- COURIERS -->
 <div id="couriers" style="display:none">
 <h2>Kuryeler</h2>
 
@@ -87,6 +92,25 @@ z-index:9999;
 </div>
 
 <div id="courierList"></div>
+</div>
+
+<!-- RESTAURANTS -->
+<div id="restaurants" style="display:none">
+<h2>Restoranlar</h2>
+
+<div class="card">
+<input id="resName" placeholder="Restoran adı">
+<input id="resEmail" placeholder="Email">
+<button onclick="addRestaurant()" class="green">Ekle</button>
+</div>
+
+<div id="restaurantList"></div>
+</div>
+
+<!-- APPLICATIONS -->
+<div id="applications" style="display:none">
+<h2>Başvurular</h2>
+<div id="appList"></div>
 </div>
 
 </div>
@@ -108,13 +132,13 @@ const db = getFirestore(app);
 
 /* NAV */
 window.show=id=>{
-["dashboard","orders","couriers"].forEach(x=>{
+["dashboard","orders","couriers","restaurants","applications"].forEach(x=>{
 document.getElementById(x).style.display="none";
 });
 document.getElementById(id).style.display="block";
 }
 
-/* 🔔 TOAST */
+/* TOAST */
 function showToast(msg){
 const t=document.getElementById("toast");
 t.innerText=msg;
@@ -122,10 +146,9 @@ t.style.display="block";
 setTimeout(()=>t.style.display="none",3000);
 }
 
-/* ================= REALTIME ORDERS ================= */
+/* ================= ORDERS ================= */
 
 onSnapshot(collection(db,"orders"), snap=>{
-
 const list=document.getElementById("orderList");
 const all=document.getElementById("allOrders");
 
@@ -157,11 +180,9 @@ list.innerHTML+=html;
 all.innerHTML+=html;
 });
 
-showToast("Yeni veri güncellendi");
-
 });
 
-/* ADD */
+/* ADD ORDER */
 window.addOrder=async()=>{
 await addDoc(collection(db,"orders"),{
 product:orderProduct.value,
@@ -172,7 +193,7 @@ courier:""
 showToast("Sipariş eklendi");
 }
 
-/* UPDATE */
+/* UPDATE ORDER */
 window.updateOrder=async(id,status)=>{
 await updateDoc(doc(db,"orders",id),{status});
 showToast("Durum güncellendi");
@@ -193,7 +214,6 @@ showToast("Sipariş silindi");
 /* ================= COURIERS ================= */
 
 onSnapshot(collection(db,"couriers"), snap=>{
-
 const list=document.getElementById("courierList");
 list.innerHTML="";
 
@@ -207,10 +227,8 @@ ${c.name} - ${c.email}
 </div>
 `;
 });
-
 });
 
-/* ADD */
 window.addCourier=async()=>{
 await addDoc(collection(db,"couriers"),{
 name:courierName.value,
@@ -219,10 +237,74 @@ email:courierEmail.value
 showToast("Kurye eklendi");
 }
 
-/* DELETE */
 window.deleteCourier=async(id)=>{
 await deleteDoc(doc(db,"couriers",id));
 showToast("Kurye silindi");
+}
+
+/* ================= RESTAURANTS ================= */
+
+onSnapshot(collection(db,"restaurants"), snap=>{
+const list=document.getElementById("restaurantList");
+list.innerHTML="";
+
+snap.forEach(d=>{
+const r=d.data();
+
+list.innerHTML+=`
+<div class="card">
+${r.name} - ${r.email}
+<button onclick="deleteRestaurant('${d.id}')" class="red">Sil</button>
+</div>
+`;
+});
+});
+
+window.addRestaurant=async()=>{
+await addDoc(collection(db,"restaurants"),{
+name:resName.value,
+email:resEmail.value
+});
+showToast("Restoran eklendi");
+}
+
+window.deleteRestaurant=async(id)=>{
+await deleteDoc(doc(db,"restaurants",id));
+showToast("Restoran silindi");
+}
+
+/* ================= APPLICATIONS ================= */
+
+onSnapshot(collection(db,"applications"), snap=>{
+const list=document.getElementById("appList");
+list.innerHTML="";
+
+snap.forEach(d=>{
+const a=d.data();
+
+list.innerHTML+=`
+<div class="card">
+<b>${a.name}</b><br>
+${a.email}<br>
+
+<button onclick="approve('${d.id}','${a.name}','${a.email}')" class="green">Onayla</button>
+<button onclick="reject('${d.id}')" class="red">Reddet</button>
+</div>
+`;
+});
+});
+
+/* APPROVE */
+window.approve=async(id,name,email)=>{
+await addDoc(collection(db,"restaurants"),{name,email});
+await deleteDoc(doc(db,"applications",id));
+showToast("Onaylandı");
+}
+
+/* REJECT */
+window.reject=async(id)=>{
+await deleteDoc(doc(db,"applications",id));
+showToast("Reddedildi");
 }
 
 </script>

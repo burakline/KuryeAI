@@ -63,8 +63,6 @@ font-weight:bold;
 
 <div class="panel">
 
-<div id="stats"></div>
-
 <h3>📦 Siparişler</h3>
 <div id="orders"></div>
 
@@ -88,7 +86,7 @@ font-weight:bold;
 
 /* CONFIG */
 firebase.initializeApp({
-apiKey:"AIzaSy...",
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
@@ -112,8 +110,7 @@ let user;
 let courierData=null;
 let lastOrderCount=0;
 let watchId=null;
-let activeLoaded=false;
-let mapMoved=false;
+let activeListener=null;
 
 /* DISTANCE */
 function getDistance(lat1,lng1,lat2,lng2){
@@ -127,17 +124,6 @@ Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
 Math.sin(dLng/2)**2;
 
 return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
-
-/* NOTIFICATION */
-function notify(){
-try{
-new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play();
-}catch{}
-
-if(navigator.vibrate) navigator.vibrate(200);
-
-alert("🚀 Yeni sipariş geldi!");
 }
 
 /* AUTH */
@@ -158,7 +144,7 @@ if(!snap.exists) return;
 courierData = snap.data();
 
 /* STATUS */
-if(courierData && courierData.online){
+if(courierData.online){
 status.className="status online";
 status.innerText="Online";
 }else{
@@ -166,10 +152,31 @@ status.className="status offline";
 status.innerText="Offline";
 }
 
-/* ACTIVE ORDER sadece 1 kez */
-if(!activeLoaded){
-loadActiveOrder();
-activeLoaded = true;
+/* ACTIVE ORDER LISTENER (TEK) */
+if(!activeListener){
+activeListener = db.collection("orders")
+.where("courierId","==",user.uid)
+.onSnapshot(function(snap){
+
+activeOrder.innerHTML="";
+
+snap.forEach(function(d){
+
+const o=d.data();
+if(o.status!=="yolda") return;
+
+activeOrder.innerHTML=`
+<div class="card">
+<b>${o.customer}</b><br>
+${o.address}<br>
+
+<button class="btn done" onclick="finishOrder('${d.id}')">
+Teslim Edildi
+</button>
+</div>`;
+});
+
+});
 }
 
 });
@@ -181,12 +188,6 @@ db.collection("orders")
 
 orders.innerHTML="";
 
-/* notify fix */
-if(snap.size > lastOrderCount && lastOrderCount !== 0){
-notify();
-}
-lastOrderCount = snap.size;
-
 snap.forEach(function(d){
 
 const o=d.data();
@@ -195,17 +196,12 @@ if(!o) return;
 if(o.rejectedBy && o.rejectedBy.includes(user.uid)) return;
 if(!courierData || !courierData.online) return;
 
-/* AI basit score */
-let score = 100;
-
+/* DISTANCE FILTER */
 if(o.lat && courierData.lat){
 const dist = getDistance(courierData.lat,courierData.lng,o.lat,o.lng);
-score = 100 - dist;
+if(dist > 10) return; // 10km filtre
 }
 
-if(score < 50 && Math.random()>0.3) return;
-
-/* UI */
 orders.innerHTML+=`
 <div class="card">
 <b>${o.customer}</b><br>
@@ -213,7 +209,7 @@ ${o.address}<br>
 
 💰 ${o.price}₺ 🔥x${o.surge||1}
 
-<button class="btn accept" onclick="acceptOrder('${d.id}',${o.price},${o.surge||1})">Kabul</button>
+<button class="btn accept" onclick="acceptOrder('${d.id}')">Kabul</button>
 <button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
 </div>`;
 });
@@ -237,12 +233,7 @@ if(marker){
 marker.setLatLng([lat,lng]);
 }else{
 marker = L.marker([lat,lng]).addTo(map);
-}
-
-/* MAP sadece 1 kez ortala */
-if(!mapMoved){
 map.setView([lat,lng],15);
-mapMoved = true;
 }
 
 /* UPDATE */
@@ -273,23 +264,24 @@ location.reload();
 }
 
 /* ACCEPT */
-function acceptOrder(id,price,surge){
+function acceptOrder(id){
 
 const ref = db.collection("orders").doc(id);
 
-ref.get().then(function(snap){
-
-if(!snap.exists) return;
+db.runTransaction(function(t){
+return t.get(ref).then(function(snap){
 
 if(snap.data().status !== "bekliyor"){
-alert("Başka kurye aldı!");
-return;
+throw "taken";
 }
 
-ref.update({
+t.update(ref,{
 status:"yolda",
 courierId:user.uid
 });
+
+});
+}).then(function(){
 
 db.collection("couriers").doc(user.uid).update({
 status:"busy"
@@ -297,35 +289,8 @@ status:"busy"
 
 alert("🚀 Sipariş alındı!");
 
-});
-
-}
-
-/* ACTIVE */
-function loadActiveOrder(){
-
-db.collection("orders")
-.where("courierId","==",user.uid)
-.onSnapshot(function(snap){
-
-activeOrder.innerHTML="";
-
-snap.forEach(function(d){
-
-const o=d.data();
-if(!o || o.status!=="yolda") return;
-
-activeOrder.innerHTML=`
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-<button class="btn done" onclick="finishOrder('${d.id}')">
-Teslim Edildi
-</button>
-</div>`;
-});
-
+}).catch(function(){
+alert("Başka kurye aldı!");
 });
 
 }
@@ -351,8 +316,6 @@ const ref = db.collection("orders").doc(id);
 
 ref.get().then(function(snap){
 
-if(!snap.exists) return;
-
 const prev = snap.data().rejectedBy || [];
 
 ref.update({
@@ -367,160 +330,3 @@ rejectedBy:[...prev, user.uid]
 
 </body>
 </html>
-💰 ${o.price}₺ 🔥x${o.surge||1}
-
-<button class="btn accept" onclick="acceptOrder('${d.id}',${o.price},${o.surge||1})">Kabul</button>
-<button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
-</div>`;
-});
-
-});
-
-});
-
-/* SHIFT */
-function startShift(){
-
-if(watchId) return;
-
-watchId = navigator.geolocation.watchPosition(function(pos){
-
-const lat=pos.coords.latitude;
-const lng=pos.coords.longitude;
-
-/* MARKER */
-if(marker){
-marker.setLatLng([lat,lng]);
-}else{
-marker = L.marker([lat,lng]).addTo(map);
-}
-
-/* MAP sadece 1 kez ortala */
-if(!mapMoved){
-map.setView([lat,lng],15);
-mapMoved = true;
-}
-
-/* UPDATE */
-db.collection("couriers").doc(user.uid).update({
-lat:lat,
-lng:lng,
-online:true,
-status:"available"
-});
-
-});
-
-}
-
-/* OFFLINE */
-function endShift(){
-
-if(watchId){
-navigator.geolocation.clearWatch(watchId);
-watchId=null;
-}
-
-db.collection("couriers").doc(user.uid).update({
-online:false
-});
-
-location.reload();
-}
-
-/* ACCEPT */
-function acceptOrder(id,price,surge){
-
-const ref = db.collection("orders").doc(id);
-
-ref.get().then(function(snap){
-
-if(!snap.exists) return;
-
-if(snap.data().status !== "bekliyor"){
-alert("Başka kurye aldı!");
-return;
-}
-
-ref.update({
-status:"yolda",
-courierId:user.uid
-});
-
-db.collection("couriers").doc(user.uid).update({
-status:"busy"
-});
-
-alert("🚀 Sipariş alındı!");
-
-});
-
-}
-
-/* ACTIVE */
-function loadActiveOrder(){
-
-db.collection("orders")
-.where("courierId","==",user.uid)
-.onSnapshot(function(snap){
-
-activeOrder.innerHTML="";
-
-snap.forEach(function(d){
-
-const o=d.data();
-if(!o || o.status!=="yolda") return;
-
-activeOrder.innerHTML=`
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-<button class="btn done" onclick="finishOrder('${d.id}')">
-Teslim Edildi
-</button>
-</div>`;
-});
-
-});
-
-}
-
-/* FINISH */
-function finishOrder(id){
-
-db.collection("orders").doc(id).update({
-status:"delivered"
-});
-
-db.collection("couriers").doc(user.uid).update({
-status:"available"
-});
-
-alert("Teslim edildi 🎉");
-}
-
-/* REJECT */
-function rejectOrder(id){
-
-const ref = db.collection("orders").doc(id);
-
-ref.get().then(function(snap){
-
-if(!snap.exists) return;
-
-const prev = snap.data().rejectedBy || [];
-
-ref.update({
-rejectedBy:[...prev, user.uid]
-});
-
-});
-
-}
-
-</script>
-
-</body>
-</html>
-  

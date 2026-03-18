@@ -5,40 +5,90 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KuryeAI | Yapay Zeka Destekli Lojistik</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <style>
 body { font-family:'Segoe UI', sans-serif; line-height:1.6; color:#fff; margin:0; background:#0b0e14; }
 header { background:#000; padding:1.5rem 0; text-align:center; border-bottom:1px solid #333; }
 .hero { background:#1a1a1a; padding:3rem 2rem; text-align:center; }
 
-.cta-button { display:inline-block; background:#00d4ff; color:#000; padding:15px 30px; border-radius:8px; font-weight:bold; margin:10px; border:none; }
-.cta-button:hover { background:#fff; transform:scale(1.05); }
+.logo-container { margin-bottom:20px; min-height:150px; }
+.logo-container img {
+max-width:180px;
+animation: float 3s ease-in-out infinite;
+}
 
-.login-container { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:20px; }
-.btn-login { border:1px solid #00d4ff; color:#00d4ff; padding:12px 24px; border-radius:8px; background:transparent; }
+@keyframes float {
+0% { transform:translateY(0px); }
+50% { transform:translateY(-15px); }
+100% { transform:translateY(0px); }
+}
 
-.services { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; padding:2rem; max-width:1000px; margin:auto; }
-.service-card { background:#111; border:1px solid #333; padding:1.5rem; border-radius:12px; }
+.cta-button {
+display:inline-block;
+background:#00d4ff;
+color:#000;
+padding:15px 30px;
+border-radius:8px;
+font-weight:bold;
+margin-bottom:10px;
+border:none;
+cursor:pointer;
+}
 
-.footer { margin-top:60px; text-align:center; color:#888; border-top:1px solid #333; padding:2rem 0; }
+.login-container {
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+margin-top:20px;
+}
 
-/* FORM */
-#formBox,#courierOverlay {
+.btn-login {
+border:1px solid #00d4ff;
+color:#00d4ff;
+padding:12px 24px;
+border-radius:8px;
+background:transparent;
+}
+
+.services {
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:2rem;
+max-width:1000px;
+margin:auto;
+}
+
+.service-card {
+background:#111;
+border:1px solid #333;
+padding:1.5rem;
+border-radius:12px;
+}
+
+.footer {
+margin-top:60px;
+text-align:center;
+color:#888;
+border-top:1px solid #333;
+padding:2rem 0;
+}
+
+/* 🔥 MODAL (TASARIM BOZMADAN) */
+#courierModal{
 display:none;
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:#000000aa;
+background:#000000cc;
 z-index:999;
-align-items:center;
 justify-content:center;
+align-items:center;
 }
 
-.formContent {
+.modalBox{
 background:#1e293b;
 padding:20px;
 border-radius:15px;
@@ -49,8 +99,7 @@ overflow:auto;
 position:relative;
 }
 
-.formContent input,
-.formContent select{
+.modalBox input, .modalBox select{
 width:100%;
 margin:6px 0;
 padding:10px;
@@ -58,12 +107,12 @@ border-radius:8px;
 border:none;
 }
 
-.closeBtn{
+.closeX{
 position:absolute;
 top:10px;
 right:15px;
-font-size:22px;
 cursor:pointer;
+font-size:20px;
 }
 </style>
 </head>
@@ -73,20 +122,24 @@ cursor:pointer;
 <header><h1>KuryeAI</h1></header>
 
 <div class="hero">
+
+<div class="logo-container">
+<img src="logo.png" onerror="this.src='https://via.placeholder.com/180x180/00d4ff/000000?text=KuryeAI+Logo'">
+</div>
+
 <h2>Yapay Zeka Destekli Yeni Nesil Lojistik</h2>
 
 <a href="#" class="cta-button">Hemen Kurye Çağır</a>
 
-<button onclick="openForm()" class="cta-button">Restoran Başvurusu</button>
-
-<!-- ✅ EKLENDİ -->
-<button onclick="openCourierForm()" class="cta-button">Kurye Ol</button>
+<!-- ✅ EKLEDİM -->
+<button onclick="openCourier()" class="cta-button">Kurye Ol</button>
 
 <div class="login-container">
-<a href="login.html?type=restaurant" class="btn-login">Restoran</a>
-<a href="login.html?type=courier" class="btn-login">Kurye</a>
-<a href="login.html?type=admin" class="btn-login">Admin</a>
+<a href="login.html?type=restaurant" class="btn-login">Restoran Girişi</a>
+<a href="login.html?type=courier" class="btn-login">Kurye Girişi</a>
+<a href="login.html?type=admin" class="btn-login">Admin Girişi</a>
 </div>
+
 </div>
 
 <div class="services">
@@ -95,29 +148,15 @@ cursor:pointer;
 <div class="service-card"><h4>Lojistik Yazılım</h4></div>
 </div>
 
-<!-- RESTORAN -->
-<div id="formBox" onclick="closeForm()">
-<div class="formContent" onclick="event.stopPropagation()">
-<div class="closeBtn" onclick="closeForm()">✕</div>
+<!-- 🔥 KURYE FORM -->
+<div id="courierModal" onclick="closeCourier()">
+<div class="modalBox" onclick="event.stopPropagation()">
 
-<h3>Restoran Başvuru</h3>
-
-<input id="name" placeholder="Ad">
-<input id="email" placeholder="Email">
-<input id="address" placeholder="Adres">
-
-<button onclick="submitForm()">Gönder</button>
-</div>
-</div>
-
-<!-- 🚀 KURYE -->
-<div id="courierOverlay" onclick="closeCourierForm()">
-<div class="formContent" onclick="event.stopPropagation()">
-
-<div class="closeBtn" onclick="closeCourierForm()">✕</div>
+<div class="closeX" onclick="closeCourier()">✕</div>
 
 <h3>Kurye Başvuru</h3>
 
+<!-- FOTO -->
 <div style="text-align:center">
 <label for="photo">
 <div style="width:80px;height:80px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;margin:auto;cursor:pointer">
@@ -127,43 +166,46 @@ cursor:pointer;
 <input type="file" id="photo" accept="image/*" capture="environment" style="display:none">
 </div>
 
-<input id="cName" placeholder="Ad Soyad">
-<input id="cBirthDate" type="date">
-<input id="cBirthPlace" placeholder="Doğum Yeri">
-<input id="cBlood" placeholder="Kan Grubu">
-<input id="cEducation" placeholder="Eğitim Durumu">
-<input id="cLicense" placeholder="Ehliyet">
+<input id="name" placeholder="Ad Soyad">
+<input id="birthDate" type="date">
+<input id="birthPlace" placeholder="Doğum Yeri">
+<input id="blood" placeholder="Kan Grubu">
+<input id="education" placeholder="Eğitim Durumu">
+<input id="license" placeholder="Ehliyet">
 
-<select id="cP1">
+<select id="p1">
 <option value="">P1 Belgesi</option>
 <option value="var">Var</option>
 <option value="yok">Yok</option>
 </select>
 
-<select id="cSRC">
+<select id="src">
 <option value="">SRC Kurye</option>
 <option value="var">Var</option>
 <option value="yok">Yok</option>
 </select>
 
-<select id="cCriminal">
+<select id="criminal">
 <option value="">Adli Sicil</option>
 <option value="yok">Yok</option>
 <option value="var">Var</option>
 </select>
 
-<input id="cPhone" placeholder="Telefon">
-<input id="cEmail" placeholder="Mail">
+<input id="phone" placeholder="Telefon">
+<input id="email" placeholder="Mail">
 
-<button id="sendCourierBtn">Başvur</button>
+<button onclick="sendCourier()">Başvur</button>
+<button onclick="closeCourier()">Kapat</button>
 
 </div>
 </div>
 
 <div class="footer">
+<p><strong>AI Teknoloji ve Lojistik A.Ş</strong></p>
 <p>© 2026 KuryeAI</p>
 </div>
 
+<!-- 🔥 FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
@@ -182,28 +224,19 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-/* RESTORAN */
-window.openForm=()=>document.getElementById("formBox").style.display="flex";
-window.closeForm=()=>document.getElementById("formBox").style.display="none";
-
-window.submitForm=async()=>{
-await addDoc(collection(db,"applications"),{
-name:name.value,
-email:email.value,
-address:address.value,
-type:"restaurant",
-status:"pending"
-});
-alert("Başvuru alındı");
-closeForm();
+/* MODAL */
+window.openCourier=()=>{
+document.getElementById("courierModal").style.display="flex";
 }
 
-/* KURYE */
-window.openCourierForm=()=>document.getElementById("courierOverlay").style.display="flex";
-window.closeCourierForm=()=>document.getElementById("courierOverlay").style.display="none";
+window.closeCourier=()=>{
+document.getElementById("courierModal").style.display="none";
+}
 
-/* 🔥 BUTTON FIX */
-document.getElementById("sendCourierBtn").addEventListener("click", async ()=>{
+/* 🔥 BAŞVURU */
+window.sendCourier=async()=>{
+
+try{
 
 let photoURL="";
 const file=document.getElementById("photo").files[0];
@@ -220,24 +253,28 @@ type:"courier",
 status:"pending",
 
 photo:photoURL,
-name:cName.value,
-birthDate:cBirthDate.value,
-birthPlace:cBirthPlace.value,
-blood:cBlood.value,
-education:cEducation.value,
-license:cLicense.value,
-p1:cP1.value,
-src:cSRC.value,
-criminal:cCriminal.value,
-phone:cPhone.value,
-email:cEmail.value
+name:name.value,
+birthDate:birthDate.value,
+birthPlace:birthPlace.value,
+blood:blood.value,
+education:education.value,
+license:license.value,
+p1:p1.value,
+src:src.value,
+criminal:criminal.value,
+phone:phone.value,
+email:email.value
 
 });
 
-alert("Kurye başvurusu gönderildi 🚀");
-closeCourierForm();
+alert("Başvuru gönderildi 🚀");
+closeCourier();
 
-});
+}catch(e){
+alert("Hata: "+e.message);
+}
+
+}
 
 </script>
 

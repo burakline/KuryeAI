@@ -25,7 +25,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
 
 
-// 🔥 CONFIG (FULL DOĞRU)
+// 🔥 CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
@@ -41,14 +41,22 @@ const db = getFirestore(app);
 const messaging = getMessaging(app);
 
 
-// 🔄 AUTO LOGIN
+// 🔄 AUTO LOGIN (DÜZELTİLDİ)
 onAuthStateChanged(auth, async (user) => {
+
   if (!user) return;
 
-  const snap = await getDoc(doc(db, "users", user.uid));
-  if (!snap.exists()) return;
+  // 🔥 SADECE login sayfasındaysa yönlendir
+  const currentPage = window.location.pathname;
 
-  redirect(snap.data().role);
+  if (currentPage.includes("login.html")) {
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) return;
+
+    redirect(snap.data().role);
+  }
+
 });
 
 
@@ -106,7 +114,7 @@ window.registerUser = async function (email, password) {
 };
 
 
-// 🔔 NOTIFICATION INIT (EN KRİTİK)
+// 🔔 NOTIFICATION INIT
 window.initNotifications = async function (userId) {
 
   try {

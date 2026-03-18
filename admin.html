@@ -14,22 +14,11 @@ body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white
 .sidebar h2{color:#00d4ff}
 .sidebar button{display:block;width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer}
 .sidebar button:hover{color:white}
-
 .content{flex:1;padding:20px}
 .card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
-
-#map{
-width:100%;
-height:50vh;
-min-height:300px;
-border-radius:12px;
-}
-
-@media(max-width:768px){
-.sidebar{width:80px}
-.sidebar h2{display:none}
-.sidebar button{font-size:12px}
-}
+input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
+button{cursor:pointer}
+#map{width:100%;height:50vh;border-radius:12px}
 </style>
 </head>
 
@@ -53,26 +42,29 @@ border-radius:12px;
 
 <div id="orders" style="display:none">
 <h2>📦 Siparişler</h2>
+
+<input id="oProduct" placeholder="Ürün adı">
+<input id="oLat" placeholder="Enlem">
+<input id="oLng" placeholder="Boylam">
+
+<button onclick="createOrder()">Sipariş Oluştur (AI)</button>
+
 <div id="orderList"></div>
 </div>
 
 <div id="couriers" style="display:none">
 <h2>🚴 Kuryeler</h2>
-
 <input id="cName" placeholder="Ad">
 <input id="cMail" placeholder="Email">
 <button onclick="addCourier()">Ekle</button>
-
 <div id="courierList"></div>
 </div>
 
 <div id="restaurants" style="display:none">
 <h2>🍔 Restoranlar</h2>
-
 <input id="rName" placeholder="Ad">
 <input id="rMail" placeholder="Email">
 <button onclick="addRestaurant()">Ekle</button>
-
 <div id="restaurantList"></div>
 </div>
 
@@ -89,7 +81,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 
 import {
 getFirestore, collection, addDoc, onSnapshot,
-deleteDoc, doc, updateDoc, setDoc
+deleteDoc, doc, updateDoc, setDoc, getDocs
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -117,63 +109,78 @@ document.getElementById(id).style.display="block";
 const map=L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let restMarkers={};
-
-/* RESTAURANTS */
-onSnapshot(collection(db,"restaurants"),snap=>{
-document.getElementById("restaurantList").innerHTML="";
+/* 🤖 AI KURYE BUL */
+async function findBestCourier(lat,lng){
+const snap = await getDocs(collection(db,"couriers"));
+let best=null,min=999;
 
 snap.forEach(d=>{
-const r=d.data();
+const c=d.data();
+if(c.lat && c.email){
+let dist=Math.sqrt(
+Math.pow(c.lat-lat,2)+Math.pow(c.lng-lng,2)
+);
+if(dist<min){min=dist;best=c;}
+}
+});
+return best;
+}
 
-document.getElementById("restaurantList").innerHTML+=`
+/* 📦 CREATE ORDER */
+window.createOrder=async()=>{
+const product=oProduct.value;
+const lat=parseFloat(oLat.value);
+const lng=parseFloat(oLng.value);
+
+const best=await findBestCourier(lat,lng);
+
+await addDoc(collection(db,"orders"),{
+product,lat,lng,
+status: best ? "assigned":"pending",
+courierEmail: best ? best.email:null
+});
+
+alert("Sipariş oluşturuldu 🚀");
+}
+
+/* ORDERS */
+onSnapshot(collection(db,"orders"),snap=>{
+orderList.innerHTML="";
+snap.forEach(d=>{
+const o=d.data();
+
+orderList.innerHTML+=`
 <div class="card">
-${r.name} - ${r.email}
-<button onclick="setLocation('${d.id}')">Konum</button>
-<button onclick="delR('${d.id}')">Sil</button>
+${o.product} - ${o.status}<br>
+Kurye: ${o.courierEmail || "Atanmadı"}
+<br>
+<button onclick="reassign('${d.id}')">Kurye Değiştir</button>
 </div>`;
-
-if(r.lat){
-if(restMarkers[d.id]){
-restMarkers[d.id].setLatLng([r.lat,r.lng]);
-}else{
-restMarkers[d.id]=L.marker([r.lat,r.lng]).addTo(map);
-}
-}
 });
 });
 
-/* KONUM */
-window.setLocation=id=>{
-map.once('click',async e=>{
-await updateDoc(doc(db,"restaurants",id),{
-lat:e.latlng.lat,
-lng:e.latlng.lng
-});
-alert("Konum kaydedildi");
+/* 👨‍💻 OVERRIDE */
+window.reassign=async(id)=>{
+const snap=await getDocs(collection(db,"couriers"));
+let list=[];
+snap.forEach(d=>list.push(d.data().email));
+
+const selected=prompt("Kurye seç:\n"+list.join("\n"));
+if(!selected)return;
+
+await updateDoc(doc(db,"orders",id),{
+courierEmail:selected,
+status:"assigned"
 });
 }
-
-/* ADD RESTAURANT */
-window.addRestaurant=async()=>{
-await addDoc(collection(db,"restaurants"),{
-name:rName.value,
-email:rMail.value
-});
-}
-
-/* DELETE RESTAURANT */
-window.delR=id=>deleteDoc(doc(db,"restaurants",id));
 
 /* COURIERS */
 onSnapshot(collection(db,"couriers"),snap=>{
 courierList.innerHTML="";
 snap.forEach(d=>{
 const c=d.data();
-
 courierList.innerHTML+=`
-<div class="card">
-${c.name} - ${c.email}
+<div class="card">${c.name}
 <button onclick="delC('${d.id}')">Sil</button>
 </div>`;
 });
@@ -188,62 +195,54 @@ email:cMail.value
 
 window.delC=id=>deleteDoc(doc(db,"couriers",id));
 
-/* ORDERS */
-onSnapshot(collection(db,"orders"),snap=>{
-orderList.innerHTML="";
+/* RESTAURANTS */
+onSnapshot(collection(db,"restaurants"),snap=>{
+restaurantList.innerHTML="";
 snap.forEach(d=>{
-const o=d.data();
-
-orderList.innerHTML+=`
-<div class="card">
-${o.product} - ${o.status}
+const r=d.data();
+restaurantList.innerHTML+=`
+<div class="card">${r.name}
+<button onclick="delR('${d.id}')">Sil</button>
 </div>`;
 });
 });
 
-/* APPLICATIONS (🔥 GERÇEK SİSTEM) */
+window.addRestaurant=async()=>{
+await addDoc(collection(db,"restaurants"),{
+name:rName.value,
+email:rMail.value
+});
+}
+
+window.delR=id=>deleteDoc(doc(db,"restaurants",id));
+
+/* APPLICATIONS */
 onSnapshot(collection(db,"applications"),snap=>{
 appList.innerHTML="";
-
 snap.forEach(d=>{
 const a=d.data();
 
 appList.innerHTML+=`
 <div class="card">
-<b>${a.name}</b><br>
-${a.email}<br>
+${a.name}<br>${a.email}
 <button onclick="approve('${d.id}','${a.email}')">Onayla</button>
 </div>`;
 });
 });
 
-/* 🔥 APPROVE = USER OLUŞTUR */
-window.approve = async (id,email)=>{
+window.approve=async(id,email)=>{
+const password="123456";
+const user=await createUserWithEmailAndPassword(auth,email,password);
 
-try{
-
-const password = "123456";
-
-/* AUTH */
-const userCred = await createUserWithEmailAndPassword(auth,email,password);
-
-/* ROLE */
-await setDoc(doc(db,"users",userCred.user.uid),{
-email,
-role:"restaurant"
+await setDoc(doc(db,"users",user.user.uid),{
+email,role:"restaurant"
 });
 
-/* STATUS */
 await updateDoc(doc(db,"applications",id),{
 status:"approved"
 });
 
-alert("Restoran oluşturuldu!\nŞifre: 123456");
-
-}catch(e){
-alert(e.message);
-}
-
+alert("Restoran oluşturuldu!");
 }
 
 </script>

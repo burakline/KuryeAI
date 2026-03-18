@@ -11,7 +11,7 @@ updateDoc,
 getDocs
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-/* 🔥 CONFIG */
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -44,10 +44,10 @@ snap.forEach(async(orderDoc)=>{
 
 const order = orderDoc.data();
 
-/* 🔒 ZATEN ATANDI MI */
+/* ZATEN ATANDI */
 if(order.courierId) return;
 
-/* 🚴 ONLINE KURYELER */
+/* ONLINE KURYELER */
 const couriersSnap = await getDocs(
 query(collection(db,"couriers"), where("online","==",true))
 );
@@ -73,7 +73,7 @@ bestCourier = cDoc.id;
 
 });
 
-/* 🎯 ATA */
+/* ATA */
 if(bestCourier){
 
 await updateDoc(doc(db,"orders",orderDoc.id),{

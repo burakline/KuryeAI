@@ -12,48 +12,47 @@
 
 <style>
 :root{
---bg: #0b1118;
---card: rgba(255,255,255,0.05);
---border: rgba(255,255,255,0.08);
---primary: #00e0ff;
---text: #ffffff;
+--bg:#0b1118;
+--card:#121a22;
+--text:#fff;
+--primary:#00e0ff;
+--border:#1f2933;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter, sans-serif}
+body.light{
+--bg:#f5f7fb;
+--card:#ffffff;
+--text:#111;
+--primary:#00bcd4;
+--border:#ddd;
+}
 
 body{
-background: radial-gradient(circle at top, #0f1720, #020617);
+margin:0;
+background:var(--bg);
 color:var(--text);
+font-family:sans-serif;
 display:flex;
 }
 
 /* SIDEBAR */
 .sidebar{
-width:240px;
+width:220px;
 height:100vh;
-background:rgba(255,255,255,0.02);
-backdrop-filter:blur(20px);
-border-right:1px solid var(--border);
+background:var(--card);
 padding:20px;
 }
 
-.logo{
-color:var(--primary);
-font-size:22px;
-margin-bottom:30px;
-}
-
 .menu div{
-margin:12px 0;
 padding:10px;
-border-radius:10px;
+margin:8px 0;
 cursor:pointer;
-color:#aaa;
+border-radius:8px;
 }
 
 .menu div:hover{
-background:rgba(255,255,255,0.05);
-color:#fff;
+background:var(--primary);
+color:#000;
 }
 
 /* MAIN */
@@ -62,131 +61,127 @@ flex:1;
 padding:20px;
 }
 
-/* TOPBAR */
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
+/* CARD */
+.card{
+background:var(--card);
+padding:15px;
+border-radius:10px;
+margin:10px 0;
+border:1px solid var(--border);
 }
 
-.btn{
-padding:8px 14px;
-border-radius:8px;
+/* INPUT */
+input, select{
+width:100%;
+padding:8px;
+margin-top:5px;
+border-radius:6px;
+border:1px solid var(--border);
+background:transparent;
+color:var(--text);
+}
+
+button{
+margin-top:5px;
+padding:8px;
 border:none;
+border-radius:6px;
 cursor:pointer;
 }
 
-.logout{
-background:#ff4d4d;
-color:#fff;
-}
-
-/* CARDS */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-}
-
-.card{
-background:var(--card);
-border:1px solid var(--border);
-backdrop-filter:blur(20px);
-padding:20px;
-border-radius:16px;
-transition:0.3s;
-}
-
-.card:hover{
-transform:translateY(-5px);
-box-shadow:0 10px 30px rgba(0,224,255,0.2);
-}
-
-.card b{
-font-size:26px;
-}
-
-/* SECTION */
-.section{
-margin-top:25px;
-}
+.delete{background:red;color:#fff}
+.add{background:var(--primary)}
 
 /* MAP */
+.map-wrapper{position:relative;}
+
 #map{
 height:300px;
-border-radius:16px;
-margin-top:10px;
+border-radius:12px;
 }
 
-/* ORDER */
-.order{
-background:var(--card);
-border:1px solid var(--border);
-padding:15px;
-border-radius:14px;
-margin-top:10px;
-}
-
-select,input{
-width:100%;
-margin-top:8px;
-padding:10px;
+.fullscreen-btn{
+position:absolute;
+top:10px;
+right:10px;
+z-index:999;
+background:var(--primary);
+border:none;
+padding:8px;
 border-radius:8px;
-border:1px solid var(--border);
-background:transparent;
-color:#fff;
+cursor:pointer;
 }
 
-.delete{
-background:#ff4d4d;
-color:#fff;
-margin-top:8px;
+/* FULLSCREEN */
+.map-fullscreen{
+position:fixed !important;
+top:0;
+left:0;
+width:100vw !important;
+height:100vh !important;
+z-index:9999;
+border-radius:0 !important;
 }
-
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-<div class="logo">KuryeAI</div>
+<h3 style="color:var(--primary)">KuryeAI</h3>
 
 <div class="menu">
-<div>Dashboard</div>
-<div>Siparişler</div>
-<div>Kuryeler</div>
-<div>Restoranlar</div>
+<div onclick="show('dashboard')">Dashboard</div>
+<div onclick="show('orders')">Siparişler</div>
+<div onclick="show('couriers')">Kuryeler</div>
+<div onclick="show('restaurants')">Restoranlar</div>
 </div>
+
+<button onclick="toggleTheme()">🌗 Tema</button>
+<button onclick="logout()">Çıkış</button>
 </div>
 
 <div class="main">
 
-<div class="topbar">
-<h2>Admin Dashboard</h2>
-<button class="btn logout" onclick="logout()">Çıkış</button>
-</div>
+<!-- DASHBOARD -->
+<div id="dashboard">
+<h2>Dashboard</h2>
 
-<div class="grid">
-<div class="card">Toplam<br><b id="total">0</b></div>
-<div class="card">Hazırlanıyor<br><b id="prep">0</b></div>
-<div class="card">Yolda<br><b id="road">0</b></div>
-<div class="card">Teslim<br><b id="done">0</b></div>
-</div>
+<div class="card">Toplam: <b id="total">0</b></div>
 
-<div class="section">
-<h3>📊 Analiz</h3>
 <canvas id="chart"></canvas>
-</div>
 
-<div class="section">
-<h3>🗺️ Harita</h3>
+<div class="map-wrapper">
+<button class="fullscreen-btn" onclick="toggleMap()">⛶</button>
 <div id="map"></div>
 </div>
 
-<div class="section">
-<h3>📦 Siparişler</h3>
-<div id="orders"></div>
+</div>
+
+<!-- ORDERS -->
+<div id="orders" style="display:none">
+<h2>Siparişler</h2>
+<div id="ordersList"></div>
+</div>
+
+<!-- COURIERS -->
+<div id="couriers" style="display:none">
+<h2>Kuryeler</h2>
+
+<input id="courierEmail" placeholder="Kurye email">
+<button class="add" onclick="addCourier()">Ekle</button>
+
+<div id="courierList"></div>
+</div>
+
+<!-- RESTAURANTS -->
+<div id="restaurants" style="display:none">
+<h2>Restoranlar</h2>
+
+<input id="restEmail" placeholder="Restoran email">
+<button class="add" onclick="addRestaurant()">Ekle</button>
+
+<div id="restaurantList"></div>
 </div>
 
 </div>
@@ -194,7 +189,7 @@ margin-top:8px;
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, deleteDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -206,23 +201,38 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// MAP
+/* MAP */
 const map = L.map('map').setView([39.92,32.85], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// CHART
+/* FULLSCREEN MAP */
+let isFull=false;
+window.toggleMap=()=>{
+const el=document.getElementById("map");
+isFull=!isFull;
+
+if(isFull){
+el.classList.add("map-fullscreen");
+}else{
+el.classList.remove("map-fullscreen");
+}
+
+setTimeout(()=>map.invalidateSize(),300);
+};
+
+/* CHART */
 const chart = new Chart(document.getElementById("chart"), {
 type:"doughnut",
 data:{
-labels:["Hazırlanıyor","Yolda","Teslim"],
+labels:["Toplam"],
 datasets:[{
-data:[0,0,0],
-backgroundColor:["#00e0ff","#3b82f6","#10b981"]
+data:[0],
+backgroundColor:["#00e0ff"]
 }]
 }
 });
 
-// AUTH
+/* AUTH */
 onAuthStateChanged(auth, async user=>{
 if(!user) return location.href="login.html";
 
@@ -232,53 +242,85 @@ if(u.data().role!=="admin") return location.href="login.html";
 load();
 });
 
-// LOAD
+/* NAV */
+window.show=(id)=>{
+["dashboard","orders","couriers","restaurants"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
+document.getElementById(id).style.display="block";
+};
+
+/* THEME */
+window.toggleTheme=()=>{
+document.body.classList.toggle("light");
+};
+
+/* LOAD */
 function load(){
+
 onSnapshot(collection(db,"orders"), snap=>{
-
-let prep=0,road=0,done=0;
-
-orders.innerHTML="";
+ordersList.innerHTML="";
+let total=0;
 
 snap.forEach(d=>{
 const o=d.data();
+total++;
 
-if(o.status==="hazırlanıyor") prep++;
-if(o.status==="yolda") road++;
-if(o.status==="teslim edildi") done++;
-
-orders.innerHTML+=`
-<div class="order">
-<b>${o.product}</b><br>
-${o.address}<br>
-Durum: ${o.status}
-
-<select onchange="status('${d.id}',this.value)">
-<option>hazırlanıyor</option>
-<option>yolda</option>
-<option>teslim edildi</option>
-</select>
-
-<input placeholder="Kurye email" onchange="assign('${d.id}',this.value)">
-<button class="delete" onclick="del('${d.id}')">Sil</button>
+ordersList.innerHTML+=`
+<div class="card">
+${o.product}<br>${o.address}
+<button class="delete" onclick="delOrder('${d.id}')">Sil</button>
 </div>`;
-
-if(o.lat && o.lng){
-L.marker([o.lat,o.lng]).addTo(map);
-}
-
 });
 
-chart.data.datasets[0].data=[prep,road,done];
+document.getElementById("total").innerText=total;
+chart.data.datasets[0].data=[total];
 chart.update();
-
 });
+
+onSnapshot(collection(db,"couriers"), snap=>{
+courierList.innerHTML="";
+snap.forEach(d=>{
+const c=d.data();
+
+courierList.innerHTML+=`
+<div class="card">
+${c.email}
+<button class="delete" onclick="delCourier('${d.id}')">Sil</button>
+</div>`;
+});
+});
+
+onSnapshot(collection(db,"restaurants"), snap=>{
+restaurantList.innerHTML="";
+snap.forEach(d=>{
+const r=d.data();
+
+restaurantList.innerHTML+=`
+<div class="card">
+${r.email}
+<button class="delete" onclick="delRest('${d.id}')">Sil</button>
+</div>`;
+});
+});
+
 }
 
-// ACTIONS
-window.status=(id,s)=>updateDoc(doc(db,"orders",id),{status:s});
-window.assign=(id,e)=>updateDoc(doc(db,"orders",id),{courierEmail:e});
-window.del=(id)=>deleteDoc(doc(db,"orders",id));
+/* ACTIONS */
+window.addCourier=()=>addDoc(collection(db,"couriers"),{
+email:document.getElementById("courierEmail").value
+});
+
+window.delCourier=(id)=>deleteDoc(doc(db,"couriers",id));
+
+window.addRestaurant=()=>addDoc(collection(db,"restaurants"),{
+email:document.getElementById("restEmail").value
+});
+
+window.delRest=(id)=>deleteDoc(doc(db,"restaurants",id));
+
+window.delOrder=(id)=>deleteDoc(doc(db,"orders",id));
+
 window.logout=()=>signOut(auth);
 </script>
 

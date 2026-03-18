@@ -1,42 +1,68 @@
 /**
- * KuryeAI - Google Haritalar ve SEO Entegrasyon Modülü
+ * KuryeAI - Google + SEO + Tracking PRO
  */
 
 const KuryeAI_Google = {
-    settings: {
-        name: "KuryeAI",
-        phone: "+905072171295",
-        // ÖNEMLİ: Google profilin onaylanınca alacağın Place ID'yi buraya yazacağız
-        placeId: "PLACE_ID_BEKLENIYOR", 
-        mapUrl: "https://maps.app.goo.gl/Ankara_Kecioren_Merkez" 
-    },
 
-    // Müşteriyi doğrudan Google yorum sayfasına yönlendirir
-    openReviewPage: function() {
-        if(this.settings.placeId !== "PLACE_ID_BEKLENIYOR") {
-            const url = `https://search.google.com/local/writereview?placeid=${this.settings.placeId}`;
-            window.open(url, '_blank');
-        } else {
-            alert("KuryeAI profil doğrulaması devam ediyor. Yakında aktif olacak!");
-        }
-    },
+settings: {
+name: "KuryeAI",
+phone: "+905072171295",
+placeId: "PLACE_ID_BURAYA",
+mapUrl: "https://www.google.com/maps"
+},
 
-    // Yapay Zeka Rota Motoru Loglaması (Vizyoner Takip)
-    logAIRouting: function(start, end) {
-        console.log(`%c[KuryeAI-AI]%c ${start} noktasından ${end} noktasına en verimli rota hesaplandı.`, 
-            "color: #00d4ff; font-weight: bold", "color: #fff");
-    }
+/* ⭐ YORUM SAYFASI */
+openReviewPage(){
+if(this.settings.placeId === "PLACE_ID_BURAYA"){
+alert("Google profil henüz hazır değil");
+return;
+}
+
+window.open(
+`https://search.google.com/local/writereview?placeid=${this.settings.placeId}`,
+"_blank"
+);
+},
+
+/* 🧠 EVENT TRACK */
+track(event, data={}){
+console.log("📊 EVENT:", event, data);
+
+/* İleride Firebase Analytics bağlanır */
+},
+
+/* 🤖 AI ROUTE LOG */
+logAIRouting(start,end){
+this.track("ai_route", {start,end});
+},
+
+/* 📍 HARİTA AÇ */
+openMap(lat,lng){
+window.open(`https://www.google.com/maps?q=${lat},${lng}`);
+}
+
 };
 
-// Sayfa yüklendiğinde temel kurulumu yap
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("%c🚀 KuryeAI Google Entegrasyonu Hazır!", "background: #1a1a1a; color: #00d4ff; padding: 5px; border-radius: 3px;");
-    
-    // Uygulama içindeki kurye çağırma butonlarına takip ekle
-    const orderButtons = document.querySelectorAll('.cta-button');
-    orderButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            KuryeAI_Google.logAIRouting("Müşteri Konumu", "Restoran Paneli");
-        });
-    });
+/* 🚀 INIT */
+document.addEventListener("DOMContentLoaded",()=>{
+
+console.log("🚀 KuryeAI SEO Modül Aktif");
+
+/* CTA TRACK */
+document.querySelectorAll(".cta-button").forEach(btn=>{
+btn.addEventListener("click",()=>{
+KuryeAI_Google.track("cta_click");
 });
+});
+
+/* 📦 ORDER TRACK */
+document.querySelectorAll(".order-btn").forEach(btn=>{
+btn.addEventListener("click",()=>{
+KuryeAI_Google.track("order_create");
+});
+});
+
+});
+
+/* 🌍 GLOBAL */
+window.KuryeAI_Google = KuryeAI_Google;

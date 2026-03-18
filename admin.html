@@ -46,6 +46,7 @@ cursor:pointer;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
 import {
 getFirestore,
 collection,
@@ -55,16 +56,32 @@ setDoc,
 deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-const app = initializeApp({
+import {
+getAuth,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+// 🔥 Firebase config
+const config = {
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
-});
+};
+
+// ANA APP
+const app = initializeApp(config);
+
+// 🔥 SECOND APP (KRİTİK!)
+const secondaryApp = initializeApp(config, "Secondary");
 
 const db = getFirestore(app);
 
+// 🔥 AUTHLAR
+const secondaryAuth = getAuth(secondaryApp);
+
 const list = document.getElementById("list");
 
+// 🚀 BAŞVURULARI YÜKLE
 async function load(){
 list.innerHTML="Yükleniyor...";
 
@@ -73,59 +90,64 @@ const snap = await getDocs(collection(db,"applications"));
 list.innerHTML="";
 
 snap.forEach(d=>{
-const app = d.data();
-app.id = d.id;
+const appData = d.data();
+appData.id = d.id;
 
 list.innerHTML += `
 <div class="card">
-<b>${app.name}</b><br>
-${app.email}<br>
+<b>${appData.name}</b><br>
+${appData.email}<br>
 
-<button class="ok" onclick='approve(${JSON.stringify(app)})'>Onayla</button>
-<button class="no" onclick='reject("${app.id}")'>Reddet</button>
+<button class="ok" onclick='approve(${JSON.stringify(appData)})'>Onayla</button>
+<button class="no" onclick='reject("${appData.id}")'>Reddet</button>
 </div>
 `;
 });
 }
 
-window.approve = async (app)=>{
+// 🚀 ONAYLA (FULL OTOMATİK)
+window.approve = async (appData)=>{
 try{
 
-// 1️⃣ couriers
-await setDoc(doc(db,"couriers",app.id),{
-...app,
-status:"active",
-lat:0,
-lng:0
-});
+// 1️⃣ AUTH USER OLUŞTUR
+const userCred = await createUserWithEmailAndPassword(
+secondaryAuth,
+appData.email,
+"123456"
+);
 
-// 2️⃣ users
-await setDoc(doc(db,"users",app.id),{
-email:app.email,
-name:app.name,
+const uid = userCred.user.uid;
+
+// 2️⃣ USERS EKLE
+await setDoc(doc(db,"users",uid),{
+email:appData.email,
+name:appData.name,
 role:"courier"
 });
 
-// 3️⃣ applications sil
-await deleteDoc(doc(db,"applications",app.id));
+// 3️⃣ COURIERS EKLE
+await setDoc(doc(db,"couriers",uid),{
+name:appData.name,
+phone: appData.phone || "",
+lat:0,
+lng:0,
+online:false,
+createdAt:new Date()
+});
 
-// 4️⃣ ADMIN'E BİLGİ
-alert(`✅ Kurye hazır!
+// 4️⃣ APPLICATION SİL
+await deleteDoc(doc(db,"applications",appData.id));
 
-🔥 Şimdi son adım:
-
-Firebase → Authentication → Users → Add user
-
-Email: ${app.email}
-Şifre: 123456`);
+alert("✅ Kurye otomatik oluşturuldu!");
 
 load();
 
 }catch(e){
-alert("HATA: "+e.message);
+alert("❌ Hata: "+e.message);
 }
 };
 
+// ❌ REDDET
 window.reject = async (id)=>{
 await deleteDoc(doc(db,"applications",id));
 load();

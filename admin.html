@@ -16,20 +16,17 @@ background:#020617;
 color:white;
 }
 
-/* HEADER */
 .header{
 padding:16px;
 font-size:20px;
 font-weight:bold;
 }
 
-/* CONTAINER */
 .container{
 padding:15px;
 padding-bottom:90px;
 }
 
-/* CARD */
 .card{
 background:#0f172a;
 padding:15px;
@@ -38,7 +35,6 @@ margin-bottom:15px;
 box-shadow:0 10px 20px rgba(0,0,0,0.3);
 }
 
-/* MAP */
 .map-card{
 overflow:hidden;
 border-radius:16px;
@@ -50,7 +46,6 @@ height:250px;
 border-radius:16px;
 }
 
-/* BUTTON */
 .btn{
 background:#00d4ff;
 border:none;
@@ -62,13 +57,11 @@ cursor:pointer;
 font-weight:bold;
 }
 
-/* TITLE */
 .title{
 font-size:22px;
 margin-bottom:10px;
 }
 
-/* NAV */
 .nav{
 position:fixed;
 bottom:0;
@@ -135,7 +128,8 @@ getFirestore,
 collection,
 onSnapshot,
 doc,
-updateDoc,
+getDoc,
+addDoc,
 deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
@@ -172,10 +166,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 maxZoom:19
 }).addTo(map);
 
-/* KURYELER (CANLI) */
+/* CANLI KURYELER */
 let courierMarkers = [];
 
 onSnapshot(collection(db,"couriers"),snap=>{
+
 // eski markerları temizle
 courierMarkers.forEach(m=>map.removeLayer(m));
 courierMarkers=[];
@@ -212,11 +207,23 @@ ${a.email || "Mail yok"}<br>
 });
 });
 
-/* ONAYLA */
+/* ONAYLA → KURYEYE ÇEVİR */
 window.approve = async (id)=>{
-await updateDoc(doc(db,"applications",id),{
-status:"approved"
+
+const ref = doc(db,"applications",id);
+const snap = await getDoc(ref);
+const data = snap.data();
+
+/* couriers koleksiyonuna ekle */
+await addDoc(collection(db,"couriers"),{
+name: data.name || "Kurye",
+lat: 39.92,
+lng: 32.85
 });
+
+/* başvuruyu sil */
+await deleteDoc(ref);
+
 };
 
 /* REDDET */

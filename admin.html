@@ -145,26 +145,52 @@ ${a.email}<br><br>
 });
 });
 
-/* ✅ APPROVE (🔥 FIXED) */
+/* ✅ APPROVE (🔥 FINAL FIX) */
 window.approve=async(id,email,name)=>{
 try{
 
-const password="123456";
+/* 🔍 DUPLICATE KONTROL */
+const snap = await getDocs(collection(db,"couriers"));
+let exists=false;
+
+snap.forEach(d=>{
+if(d.data().email===email){
+exists=true;
+}
+});
+
+if(exists){
+alert("⚠️ Bu kurye zaten kayıtlı!");
+return;
+}
 
 /* 🔐 AUTH */
-const user=await createUserWithEmailAndPassword(auth,email,password);
+let userId=null;
 
-/* 👤 ROLE */
-await setDoc(doc(db,"users",user.user.uid),{
+try{
+const user=await createUserWithEmailAndPassword(auth,email,"123456");
+userId=user.user.uid;
+}catch(e){
+
+if(e.code==="auth/email-already-in-use"){
+userId=email;
+}else{
+throw e;
+}
+}
+
+/* 👤 USERS */
+await setDoc(doc(db,"users",userId),{
 email,
 role:"courier"
 });
 
-/* 🚴 COURIERS EKLE */
+/* 🚴 COURIERS */
 await addDoc(collection(db,"couriers"),{
 name:name || email,
 email,
-activeOrders:0
+activeOrders:0,
+createdAt:new Date()
 });
 
 /* 📩 STATUS */
@@ -172,7 +198,7 @@ await updateDoc(doc(db,"applications",id),{
 status:"approved"
 });
 
-alert("✅ Kurye oluşturuldu!\nŞifre: 123456");
+alert("✅ Kurye başarıyla eklendi!");
 
 }catch(e){
 alert("Hata: "+e.message);

@@ -48,9 +48,11 @@ border:none;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
+margin-top:5px;
 }
 
 .password-box{position:relative;}
+
 .eye{
 position:absolute;
 right:10px;
@@ -111,7 +113,7 @@ font-size:12px;
 
 <div class="box" id="box">
 
-<div class="lang" onclick="toggleLang()">TR / EN</div>
+<div class="lang" id="langBtn">TR / EN</div>
 
 <h2 id="title">Giriş Yap</h2>
 
@@ -119,7 +121,7 @@ font-size:12px;
 
 <div class="password-box">
 <input id="password" type="password" placeholder="Şifre">
-<span class="eye" onclick="togglePass()">👁</span>
+<span class="eye" id="eye">👁</span>
 </div>
 
 <div class="remember">
@@ -127,11 +129,11 @@ font-size:12px;
 <label id="rememberText">Beni hatırla</label>
 </div>
 
-<span class="link" onclick="resetPass()" id="forgot">Şifremi unuttum</span>
+<span class="link" id="forgot">Şifremi unuttum</span>
 
 <button id="loginBtn">Giriş Yap</button>
 
-<button onclick="biometricLogin()">🔐 Face / Fingerprint</button>
+<button id="bioBtn">🔐 Face / Fingerprint</button>
 
 <div class="loading" id="loading">⏳</div>
 
@@ -146,17 +148,16 @@ signInWithEmailAndPassword,
 setPersistence,
 browserLocalPersistence,
 browserSessionPersistence,
-onAuthStateChanged,
 sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 import {
 getFirestore,
 doc,
-getDoc,
-setDoc
+getDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -166,20 +167,100 @@ projectId:"kuryeai"
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* 👁 */
-window.togglePass = ()=>{
-password.type = password.type==="password"?"text":"password";
+/* ELEMENTLER */
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const eye = document.getElementById("eye");
+const remember = document.getElementById("remember");
+const forgot = document.getElementById("forgot");
+const loading = document.getElementById("loading");
+const box = document.getElementById("box");
+
+/* 👁 ŞİFRE GÖSTER */
+eye.addEventListener("click", () => {
+password.type = password.type === "password" ? "text" : "password";
+});
+
+/* 🌐 DİL */
+let lang = "tr";
+
+document.getElementById("langBtn").addEventListener("click", () => {
+lang = lang === "tr" ? "en" : "tr";
+
+document.getElementById("title").innerText = lang === "tr" ? "Giriş Yap" : "Login";
+document.getElementById("rememberText").innerText = lang === "tr" ? "Beni hatırla" : "Remember me";
+forgot.innerText = lang === "tr" ? "Şifremi unuttum" : "Forgot password";
+});
+
+/* 🔐 LOGIN */
+loginBtn.addEventListener("click", async () => {
+
+const mail = email.value;
+const pass = password.value;
+
+if(!mail || !pass){
+box.classList.add("shake");
+setTimeout(()=>box.classList.remove("shake"),300);
+return;
 }
 
-/* 🌐 LANG */
-let lang="tr";
+loading.style.display="flex";
 
-window.toggleLang=()=>{
-lang = lang==="tr"?"en":"tr";
+try{
 
-title.innerText = lang==="tr"?"Giriş Yap":"Login";
-rememberText.innerText = lang==="tr"?"Beni hatırla":"Remember me";
-forgot.innerText = lang==="tr"?"Şifremi unuttum":"Forgot password";
+await setPersistence(auth,
+remember.checked ? browserLocalPersistence : browserSessionPersistence
+);
+
+const userCred = await signInWithEmailAndPassword(auth, mail, pass);
+const uid = userCred.user.uid;
+
+/* ROLE CHECK */
+const userDoc = await getDoc(doc(db,"users",uid));
+
+if(!userDoc.exists()){
+alert("Rol bulunamadı!");
+return;
 }
 
-/* 💾 SMART EMAIL
+const role = userDoc.data().role;
+
+if(role==="admin"){
+window.location.href="admin.html";
+}
+else if(role==="restaurant"){
+window.location.href="restaurant.html";
+}
+else if(role==="courier"){
+window.location.href="courier.html";
+}
+
+}catch(e){
+alert("Hata: "+e.message);
+}
+
+loading.style.display="none";
+
+});
+
+/* 🔁 ŞİFRE RESET */
+forgot.addEventListener("click", async ()=>{
+if(!email.value){
+alert("Email gir!");
+return;
+}
+
+await sendPasswordResetEmail(auth,email.value);
+alert("Mail gönderildi 📧");
+});
+
+/* 🔐 BİOMETRİK (demo) */
+document.getElementById("bioBtn").addEventListener("click", ()=>{
+alert("Yakında aktif 🚀");
+});
+
+</script>
+
+</body>
+</html>

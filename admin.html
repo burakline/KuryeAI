@@ -3,169 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<title>AdminAI</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f5f7fb;}
-.nav{display:flex;gap:10px;padding:15px;background:white;}
-.nav button{padding:10px;border:none;border-radius:10px;background:#eee;}
-.active{background:#00d4ff;color:white;}
-.container{padding:15px;}
-.card{background:white;padding:15px;border-radius:12px;margin-bottom:10px;}
-#map{height:65vh;border-radius:12px;}
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:#0A0A0A;
+color:white;
+}
+
+/* HEADER */
+.header{
+padding:20px;
+font-size:20px;
+font-weight:bold;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+padding:15px;
+}
+
+/* CARD */
+.card{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.1);
+border-radius:15px;
+padding:15px;
+backdrop-filter:blur(12px);
+}
+
+/* STATUS COLORS */
+.pending{color:#facc15}
+.accepted{color:#00C2A8}
+.delivered{color:#22c55e}
+
+/* ORDER LIST */
+.order{
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+background:#111;
+}
+
+/* TITLE */
+h3{
+margin:0 0 10px 0;
+}
+
+/* METRIC */
+.metric{
+font-size:22px;
+font-weight:bold;
+}
 </style>
 </head>
 
 <body>
 
-<div class="nav">
-<button onclick="show('settings')" class="active">⚙️ Ayarlar</button>
-<button onclick="show('zones')">🗺️ Bölgeler</button>
-<button onclick="show('mapPage')">Harita</button>
-</div>
+<div class="header">🧠 AdminAI Dashboard</div>
 
-<div class="container">
+<div class="grid">
 
-<!-- SETTINGS -->
-<div id="settings">
 <div class="card">
-<h3>Sistem Ayarları</h3>
-<input id="km" placeholder="Max KM">
-<input id="hourly" placeholder="Saatlik">
-<input id="perkm" placeholder="KM ücret">
-
-<h3>🔥 Surge</h3>
-<select id="surgeEnabled">
-<option value="true">Aktif</option>
-<option value="false">Kapalı</option>
-</select>
-
-<input id="surgeMax" placeholder="Max Çarpan">
-<input id="surgeThreshold" placeholder="Threshold">
-
-<button onclick="saveSettings()">Kaydet</button>
-</div>
+<h3>📦 Toplam Sipariş</h3>
+<div id="total" class="metric">0</div>
 </div>
 
-<!-- ZONES -->
-<div id="zones" style="display:none">
 <div class="card">
-<h3>Bölge Oluştur</h3>
-<input id="zoneName" placeholder="Bölge adı">
-<button onclick="startDraw()">Çizim Başlat</button>
-<button onclick="saveZone()">Kaydet</button>
+<h3>🛵 Aktif Sipariş</h3>
+<div id="active" class="metric">0</div>
 </div>
 
-<div id="zoneList"></div>
-</div>
-
-<!-- MAP -->
-<div id="mapPage" style="display:none">
-<div id="map"></div>
+<div class="card" style="grid-column:span 2">
+<h3>📋 Tüm Siparişler</h3>
+<div id="orders"></div>
 </div>
 
 </div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { db } from "./firebase.js";
 import {
-getFirestore,
 collection,
-addDoc,
-onSnapshot,
-doc,
-setDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app = initializeApp({
-apiKey:"AIzaSy...",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
+const ordersDiv = document.getElementById("orders");
+const totalDiv = document.getElementById("total");
+const activeDiv = document.getElementById("active");
+
+onSnapshot(collection(db,"orders"),(snap)=>{
+
+ordersDiv.innerHTML="";
+
+let total=0;
+let active=0;
+
+snap.forEach(docSnap=>{
+
+const o = docSnap.data();
+total++;
+
+if(o.status==="accepted") active++;
+
+ordersDiv.innerHTML += `
+<div class="order">
+<b>${o.customer}</b><br>
+${o.address}<br>
+
+<span class="${o.status}">
+${o.status}
+</span>
+
+<br>💰 ${o.price}₺
+</div>
+`;
+
 });
 
-const db = getFirestore(app);
+totalDiv.innerText = total;
+activeDiv.innerText = active;
 
-/* NAV */
-window.show = (id)=>{
-["settings","zones","mapPage"].forEach(x=>{
-document.getElementById(x).style.display="none";
-});
-document.getElementById(id).style.display="block";
-};
-
-/* SETTINGS */
-window.saveSettings = async ()=>{
-await setDoc(doc(db,"settings","config"),{
-maxDistance:Number(km.value),
-hourly:Number(hourly.value),
-perKm:Number(perkm.value),
-
-surgeEnabled: surgeEnabled.value==="true",
-surgeMax:Number(surgeMax.value),
-surgeThreshold:Number(surgeThreshold.value)
-});
-alert("Kaydedildi");
-};
-
-/* MAP */
-const map = L.map('map').setView([39.92,32.85],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-/* DRAW */
-let drawing=false;
-let points=[];
-let polygon;
-
-window.startDraw=()=>{
-drawing=true;
-points=[];
-alert("Haritada çiz");
-};
-
-map.on("click",(e)=>{
-if(!drawing) return;
-
-points.push([e.latlng.lat,e.latlng.lng]);
-
-if(polygon) map.removeLayer(polygon);
-polygon=L.polygon(points).addTo(map);
-});
-
-/* SAVE ZONE */
-window.saveZone=async()=>{
-if(points.length<3) return alert("En az 3 nokta");
-
-await addDoc(collection(db,"zones"),{
-name:zoneName.value,
-polygon:points,
-couriers:[],
-pricing:{perKm:8,hourly:215},
-surge:1
-});
-
-alert("Bölge kaydedildi");
-drawing=false;
-};
-
-/* ZONE LIST */
-onSnapshot(collection(db,"zones"),snap=>{
-zoneList.innerHTML="";
-snap.forEach(d=>{
-const z=d.data();
-
-zoneList.innerHTML+=`
-<div class="card">
-<b>${z.name}</b><br>
-Kurye: ${z.couriers.length}
-</div>`;
-});
 });
 
 </script>
+
 </body>
 </html>

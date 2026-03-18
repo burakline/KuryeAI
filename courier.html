@@ -3,43 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kurye Paneli</title>
+<title>Kurye Panel</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body{margin:0;font-family:'Segoe UI';background:#000}
-#map{height:100vh}
-.panel{position:fixed;bottom:0;width:100%;background:white;padding:15px}
-.btn{background:black;color:white;padding:12px;border-radius:10px;margin-top:10px;text-align:center}
-.popup{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#00d4ff;padding:15px;border-radius:12px;display:none}
+body {
+margin:0;
+font-family: 'Segoe UI', sans-serif;
+background:#0b0e14;
+color:#fff;
+}
+
+/* HEADER */
+.header {
+padding:15px;
+background:#020617;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.status {
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+}
+
+.online { background:#00ff9c; color:#000; }
+.offline { background:#ff4d4d; }
+
+/* MAP */
+#map {
+height:60vh;
+}
+
+/* BOTTOM PANEL */
+.panel {
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#111827;
+border-top-left-radius:20px;
+border-top-right-radius:20px;
+padding:20px;
+box-shadow:0 -5px 20px rgba(0,0,0,0.5);
+}
+
+.btn {
+width:100%;
+padding:15px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+}
+
+.start { background:#00d4ff; color:#000; }
+.stop { background:#ff4d4d; color:#fff; }
 </style>
 </head>
 
 <body>
 
+<div class="header">
+<h3>🚴 Kurye Panel</h3>
+<div id="status" class="status offline">Offline</div>
+</div>
+
 <div id="map"></div>
 
-<div class="popup" id="popup">
-Yeni sipariş!
-<br><br>
-<button onclick="acceptOrder()">Kabul Et</button>
+<div class="panel">
+<p id="info">Konum bekleniyor...</p>
+
+<button class="btn start" onclick="startTracking()">Online Ol</button>
+<button class="btn stop" onclick="stopTracking()">Offline Ol</button>
 </div>
 
-<div class="panel">
-<div id="info">Hazır</div>
-<div class="btn" onclick="stopShift()">Vardiya Bitir</div>
-</div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore, collection, onSnapshot, updateDoc, doc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -50,65 +98,64 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* MAP */
-const map = L.map('map').setView([39.92,32.85],15);
+let map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let marker = L.marker([39.92,32.85]).addTo(map);
-let last=null;
+let marker;
+let watchId;
+let user;
 
-/* GPS */
-navigator.geolocation.watchPosition(async pos=>{
-let lat=pos.coords.latitude;
-let lng=pos.coords.longitude;
+onAuthStateChanged(auth,(u)=>{
+if(u){
+user = u;
+}else{
+location.href="login.html";
+}
+});
 
+window.startTracking = () => {
+
+document.getElementById("status").className="status online";
+document.getElementById("status").innerText="Online";
+
+watchId = navigator.geolocation.watchPosition(async(pos)=>{
+
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
+
+document.getElementById("info").innerText = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+if(marker){
 marker.setLatLng([lat,lng]);
-map.setView([lat,lng]);
-
-if(auth.currentUser){
-await updateDoc(doc(db,"couriers",auth.currentUser.uid),{
-lat,lng
-});
+}else{
+marker = L.marker([lat,lng]).addTo(map);
 }
 
-last={lat,lng};
+map.setView([lat,lng],15);
+
+await updateDoc(doc(db,"couriers",user.uid),{
+lat,
+lng,
+online:true,
+updatedAt:new Date()
 });
 
-/* ORDER LISTEN */
-let currentOrder=null;
-
-onSnapshot(collection(db,"orders"),snap=>{
-snap.forEach(d=>{
-let o=d.data();
-
-if(!o.courierId && last){
-
-let distance=Math.abs(o.lat-last.lat);
-
-if(distance<0.01){
-currentOrder={id:d.id,...o};
-popup.style.display="block";
-}
-}
-});
 });
 
-/* ACCEPT */
-window.acceptOrder=async()=>{
-popup.style.display="none";
+};
 
-await updateDoc(doc(db,"orders",currentOrder.id),{
-status:"accepted",
-courierId:auth.currentUser.uid
+window.stopTracking = async () => {
+
+navigator.geolocation.clearWatch(watchId);
+
+document.getElementById("status").className="status offline";
+document.getElementById("status").innerText="Offline";
+
+await updateDoc(doc(db,"couriers",user.uid),{
+online:false
 });
 
-alert("Sipariş alındı 🚀");
-}
-
-/* STOP */
-window.stopShift=()=>{
-alert("Vardiya kapandı");
-}
+};
 
 </script>
 

@@ -1,85 +1,3 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kurye Panel</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<style>
-body {
-margin:0;
-font-family: 'Segoe UI', sans-serif;
-background:#0b0e14;
-color:#fff;
-}
-
-.header {
-padding:15px;
-background:#020617;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.status {
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-}
-
-.online { background:#00ff9c; color:#000; }
-.offline { background:#ff4d4d; }
-
-#map {
-height:60vh;
-}
-
-.panel {
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-background:#111827;
-border-top-left-radius:20px;
-border-top-right-radius:20px;
-padding:20px;
-box-shadow:0 -5px 20px rgba(0,0,0,0.5);
-}
-
-.btn {
-width:100%;
-padding:15px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.start { background:#00d4ff; color:#000; }
-.stop { background:#ff4d4d; color:#fff; }
-</style>
-</head>
-
-<body>
-
-<div class="header">
-<h3>🚴 Kurye Panel</h3>
-<div id="status" class="status offline">Offline</div>
-</div>
-
-<div id="map"></div>
-
-<div class="panel">
-<p id="info">Konum bekleniyor...</p>
-
-<button class="btn start" onclick="startTracking()">Online Ol</button>
-<button class="btn stop" onclick="stopTracking()">Offline Ol</button>
-</div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
@@ -87,7 +5,7 @@ import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/fi
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+apiKey:"AIzaSy...",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
@@ -95,113 +13,42 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let marker;
-let watchId;
 let user;
 
-// 🔐 AUTH KONTROL + DATA SYNC
-onAuthStateChanged(auth, async (u)=>{
-if(u){
-user = u;
-
-// 🔥 Firestore'dan mevcut durumu çek
-const snap = await getDoc(doc(db,"couriers",user.uid));
-
-if(snap.exists()){
-const data = snap.data();
-
-// status geri yükle
-if(data.online){
-setOnlineUI();
-startTracking(true); // sessiz başlat
-}
-}
-
-}else{
+/* 🔐 AUTH + ROLE */
+onAuthStateChanged(auth, async(u)=>{
+if(!u){
 location.href="login.html";
-}
-});
-
-// 🟢 UI ONLINE
-function setOnlineUI(){
-document.getElementById("status").className="status online";
-document.getElementById("status").innerText="Online";
-}
-
-// 🔴 UI OFFLINE
-function setOfflineUI(){
-document.getElementById("status").className="status offline";
-document.getElementById("status").innerText="Offline";
-}
-
-// 🚀 ONLINE OL
-window.startTracking = (silent=false) => {
-
-if(!user){
-alert("Kullanıcı yok");
 return;
 }
 
-setOnlineUI();
+const snap = await getDoc(doc(db,"users",u.uid));
 
-watchId = navigator.geolocation.watchPosition(async(pos)=>{
-
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
-
-document.getElementById("info").innerText = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-
-if(marker){
-marker.setLatLng([lat,lng]);
-}else{
-marker = L.marker([lat,lng]).addTo(map);
+if(!snap.exists() || snap.data().role !== "courier"){
+alert("Yetkisiz!");
+location.href="login.html";
+return;
 }
 
-map.setView([lat,lng],15);
+user = u;
+});
 
-// 🔥 FIREBASE UPDATE
+/* ONLINE */
+window.startTracking = ()=>{
+navigator.geolocation.watchPosition(async(pos)=>{
 await updateDoc(doc(db,"couriers",user.uid),{
-lat,
-lng,
-online:true,
-updatedAt: new Date()
+lat:pos.coords.latitude,
+lng:pos.coords.longitude,
+online:true
 });
-
-},
-(err)=>{
-alert("Konum alınamadı!");
-},
-{
-enableHighAccuracy:true
 });
-
-if(!silent){
-alert("🟢 Online oldun");
-}
-
 };
 
-// 🔴 OFFLINE OL
-window.stopTracking = async () => {
-
-if(!user) return;
-
-navigator.geolocation.clearWatch(watchId);
-
-setOfflineUI();
-
+/* OFFLINE */
+window.stopTracking = async ()=>{
 await updateDoc(doc(db,"couriers",user.uid),{
-online:false,
-updatedAt:new Date()
+online:false
 });
-
-alert("🔴 Offline oldun");
 };
 
 </script>
-
-</body>
-</html>

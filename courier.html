@@ -2,56 +2,34 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kurye Panel</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
-.header{padding:15px;background:#020617;display:flex;justify-content:space-between;}
-.status{padding:6px 12px;border-radius:20px;font-size:12px;}
-.online{background:#00ff9c;color:#000;}
-.offline{background:#ff4d4d;}
-#map{height:35vh;}
-.panel{padding:15px;background:#111827;}
-.order{background:#1f2937;padding:12px;border-radius:10px;margin-top:8px;}
-button{padding:10px;margin-top:5px;border:none;border-radius:6px;}
+body{background:#0b0e14;color:white;font-family:Arial;}
+.card{background:#1f2937;padding:12px;margin:10px;border-radius:10px;}
+button{margin-top:5px;padding:8px;border:none;border-radius:6px;}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<h3>🚴 Kurye Panel</h3>
-<div id="status" class="status offline">Offline</div>
-</div>
+<h2>🚴 Kurye Panel</h2>
 
-<div id="map"></div>
+<div id="order"></div>
 
-<div class="panel">
-
-<button onclick="startTracking()">Online</button>
-<button onclick="stopTracking()">Offline</button>
-
-<h3>📦 Aktif Görev</h3>
-<div id="activeOrder"></div>
-
-</div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<canvas id="chart"></canvas>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-
 import {
 getFirestore,
 collection,
 onSnapshot,
 doc,
 updateDoc,
-getDoc
+addDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -59,9 +37,8 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-/* FIREBASE */
 const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+apiKey:"AIzaSy...",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
@@ -69,63 +46,35 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let user, marker;
+let user;
 
-/* 🔊 SES */
-const sound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-
-/* 🔔 NOTIFICATION */
-function showNotification(title, body){
-if(Notification.permission === "granted"){
-new Notification(title,{body});
-}
-}
-
-if(Notification.permission !== "granted"){
-Notification.requestPermission();
-}
-
-/* MAP */
-const map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-/* ICON */
-const bikeIcon = L.divIcon({
-html:`<div style="font-size:26px;color:#00d4ff;">🏍️</div>`,
-className:''
-});
-
-/* AUTH */
-onAuthStateChanged(auth,(u)=>{
-if(!u){location.href="login.html";return;}
+/* 🔔 ORDER */
+onAuthStateChanged(auth,u=>{
 user=u;
 
-let lastOrderCount = 0;
-
-/* 🔥 SİPARİŞLER */
-onSnapshot(collection(db,"orders"), snap=>{
-
-const div=document.getElementById("activeOrder");
-div.innerHTML="";
-
-let currentCount = 0;
+onSnapshot(collection(db,"orders"),snap=>{
 
 snap.forEach(d=>{
 const o=d.data();
 
-if(o.courierId===user.uid && o.status==="assigned"){
+if(o.courierId===user.uid){
 
-currentCount++;
+const div=document.getElementById("order");
 
 div.innerHTML=`
-<div class="order">
-<b>${o.customer}</b><br>
+<div class="card">
+${o.customer}<br>
 ${o.address}<br>
-💰 ${o.price}₺<br>
 
-<button onclick="finishOrder('${d.id}')">
-Teslim Et
-</button>
+${o.status==="pending_accept" ? `
+<button onclick="accept('${d.id}')">Kabul</button>
+<button onclick="reject('${d.id}')">Reddet</button>
+` : ""}
+
+${o.status==="yolda" ? `
+<button onclick="finish('${d.id}',${o.price})">Teslim</button>
+` : ""}
+
 </div>
 `;
 
@@ -133,57 +82,52 @@ Teslim Et
 
 });
 
-/* 🔥 YENİ SİPARİŞ */
-if(currentCount > lastOrderCount){
-sound.play();
-showNotification("Yeni sipariş!", "Yeni görev atandı 🚀");
-}
-
-lastOrderCount = currentCount;
-
 });
 
 });
 
-/* ONLINE */
-window.startTracking=()=>{
-document.getElementById("status").className="status online";
-
-navigator.geolocation.watchPosition(async(pos)=>{
-
-const lat=pos.coords.latitude;
-const lng=pos.coords.longitude;
-
-if(marker){
-marker.setLatLng([lat,lng]);
-}else{
-marker=L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
-}
-
-map.setView([lat,lng],15);
-
-await updateDoc(doc(db,"couriers",user.uid),{
-lat,lng,online:true
-});
-
-});
+/* KABUL */
+window.accept = async(id)=>{
+await updateDoc(doc(db,"orders",id),{status:"yolda"});
 };
 
-/* OFFLINE */
-window.stopTracking=()=>{
-document.getElementById("status").className="status offline";
+/* REDDET */
+window.reject = async(id)=>{
+await updateDoc(doc(db,"orders",id),{
+status:"bekliyor",
+courierId:null
+});
 };
 
 /* TESLİM */
-window.finishOrder=async(id)=>{
+window.finish = async(id,price)=>{
 
-const ref=doc(db,"orders",id);
-const snap=await getDoc(ref);
-const o=snap.data();
+await updateDoc(doc(db,"orders",id),{status:"delivered"});
 
-await updateDoc(ref,{status:"delivered"});
+await addDoc(collection(db,"earnings"),{
+courierId:user.uid,
+amount:price,
+date:new Date()
+});
 
 };
+
+/* 📊 CHART */
+onSnapshot(collection(db,"earnings"),snap=>{
+
+let total=0;
+
+snap.forEach(d=>total+=d.data().amount);
+
+new Chart(document.getElementById("chart"),{
+type:"bar",
+data:{
+labels:["Kazanç"],
+datasets:[{data:[total]}]
+}
+});
+
+});
 
 </script>
 </body>

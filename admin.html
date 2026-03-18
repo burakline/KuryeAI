@@ -5,116 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KuryeAI Admin</title>
 
+<!-- Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Routing -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
 <style>
-body {
-    margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background:#0b1118;
-    color:#fff;
+:root{
+--bg:#0b1118;
+--card:#121a22;
+--border:#1f2933;
+--primary:#00e0ff;
+--danger:#ff4d4d;
 }
 
-/* HEADER */
-.header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px;
-    background:#161b22;
-    border-bottom:1px solid #30363d;
+body{margin:0;background:var(--bg);color:#fff;font-family:sans-serif;display:flex}
+
+.sidebar{
+width:220px;height:100vh;background:#0f1720;padding:20px
 }
 
-.logo {
-    color:#00d4ff;
-    font-size:20px;
-    font-weight:bold;
-}
+.logo{color:var(--primary);font-size:20px;margin-bottom:20px}
 
-.logout {
-    background:#ff4d4d;
-    border:none;
-    padding:10px;
-    border-radius:8px;
-    color:#fff;
-}
+.main{flex:1;padding:20px}
 
-/* CONTAINER */
-.container {
-    padding:15px;
-}
+.card{background:var(--card);padding:15px;border-radius:10px;margin-bottom:10px}
 
-/* STATS */
-.stats {
-    display:grid;
-    grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
-    gap:10px;
-    margin-bottom:20px;
-}
+.order{background:#111;padding:10px;border-radius:10px;margin:10px 0}
 
-.card {
-    background:#161b22;
-    padding:15px;
-    border-radius:10px;
-    border:1px solid #30363d;
-}
+button{padding:8px;border:none;border-radius:6px;margin-top:5px}
+.delete{background:var(--danger)}
+.assign{background:var(--primary)}
 
-/* ORDER */
-.order {
-    background:#161b22;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:10px;
-    border:1px solid #30363d;
-}
-
-select, input {
-    width:100%;
-    margin-top:5px;
-    padding:8px;
-    background:#0d1117;
-    border:1px solid #30363d;
-    color:#fff;
-    border-radius:6px;
-}
-
-button {
-    margin-top:5px;
-    padding:8px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-.delete { background:#ff4d4d; }
-.assign { background:#00d4ff; }
-
-h3 {
-    margin-top:25px;
-}
+#map{height:250px;margin:10px 0;border-radius:10px}
 </style>
-
 </head>
 
 <body>
 
-<div class="header">
-    <div class="logo">KuryeAI Admin</div>
-    <button class="logout" onclick="logout()">Çıkış</button>
+<div class="sidebar">
+<div class="logo">KuryeAI</div>
 </div>
 
-<div class="container">
+<div class="main">
 
-    <div class="stats">
-        <div class="card">Toplam<br><b id="total">0</b></div>
-        <div class="card">Hazırlanıyor<br><b id="prep">0</b></div>
-        <div class="card">Yolda<br><b id="road">0</b></div>
-        <div class="card">Teslim<br><b id="done">0</b></div>
-    </div>
+<h2>Admin Panel</h2>
+<button onclick="toggleTheme()">Tema</button>
+<button onclick="logout()">Çıkış</button>
 
-    <h3>🟡 Sipariş Havuzu</h3>
-    <div id="pool"></div>
+<div class="card">
+Toplam: <b id="total">0</b>
+</div>
 
-    <h3>📦 Tüm Siparişler</h3>
-    <div id="orders"></div>
+<canvas id="chart"></canvas>
+
+<div id="map"></div>
+
+<h3>Sipariş Havuzu</h3>
+<div id="pool"></div>
+
+<h3>Kuryeler</h3>
+<div id="couriers"></div>
+
+<h3>Tüm Siparişler</h3>
+<div id="orders"></div>
 
 </div>
 
@@ -124,89 +84,142 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
- authDomain: "kuryeai.firebaseapp.com",
- projectId: "kuryeai"
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// MAP
+const map = L.map('map').setView([39.92,32.85], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let route;
+
+// CHART
+const chart = new Chart(document.getElementById("chart"), {
+type:"doughnut",
+data:{labels:["Hazırlanıyor","Yolda","Teslim"],datasets:[{data:[0,0,0]}]}
+});
+
 // AUTH
 onAuthStateChanged(auth, async user=>{
-    if(!user) return location.href="login.html";
+if(!user) return location.href="login.html";
 
-    const u = await getDoc(doc(db,"users",user.uid));
-    if(!u.exists() || u.data().role!=="admin"){
-        alert("Yetkisiz");
-        return location.href="login.html";
-    }
+const u = await getDoc(doc(db,"users",user.uid));
+if(u.data().role!=="admin") return location.href="login.html";
 
-    loadOrders();
+load();
 });
 
 // LOAD
-function loadOrders(){
-    onSnapshot(collection(db,"orders"), snap=>{
+function load(){
 
-        let total=0, prep=0, road=0, done=0;
+// ORDERS
+onSnapshot(collection(db,"orders"), snap=>{
 
-        document.getElementById("orders").innerHTML="";
-        document.getElementById("pool").innerHTML="";
+let prep=0,road=0,done=0;
 
-        snap.forEach(d=>{
-            const o = d.data();
-            total++;
+orders.innerHTML="";
+pool.innerHTML="";
 
-            if(o.status=="hazırlanıyor") prep++;
-            if(o.status=="yolda") road++;
-            if(o.status=="teslim edildi") done++;
+snap.docChanges().forEach(change=>{
+if(change.type==="added"){
+alert("Yeni sipariş!");
+}
+});
 
-            // HAVUZ
-            if(o.status=="hazır" && !o.courierId){
-                document.getElementById("pool").innerHTML += `
-                <div class="order">
-                    <b>${o.product}</b><br>
-                    ${o.address}
+snap.forEach(d=>{
+const o=d.data();
 
-                    <input placeholder="Kurye email" onchange="assign('${d.id}', this.value)">
-                    <button class="delete" onclick="deleteOrder('${d.id}')">İptal</button>
-                </div>`;
-            }
+if(o.status==="hazırlanıyor") prep++;
+if(o.status==="yolda") road++;
+if(o.status==="teslim edildi") done++;
 
-            // TÜM
-            document.getElementById("orders").innerHTML += `
-            <div class="order">
-                <b>${o.product}</b><br>
-                ${o.address}<br>
-                Status: ${o.status}<br>
-                Kurye: ${o.courierEmail || "-"}
+if(o.status==="hazır" && !o.courierId){
+pool.innerHTML+=`
+<div class="order" draggable="true" ondragstart="drag(event,'${d.id}')">
+${o.product}
+</div>`;
+}
 
-                <select onchange="status('${d.id}',this.value)">
-                    <option ${o.status=="hazırlanıyor"?"selected":""}>hazırlanıyor</option>
-                    <option ${o.status=="hazır"?"selected":""}>hazır</option>
-                    <option ${o.status=="yolda"?"selected":""}>yolda</option>
-                    <option ${o.status=="teslim edildi"?"selected":""}>teslim edildi</option>
-                </select>
+orders.innerHTML+=`
+<div class="order">
+${o.product}<br>${o.address}
+<select onchange="status('${d.id}',this.value)">
+<option>hazırlanıyor</option>
+<option>hazır</option>
+<option>yolda</option>
+<option>teslim edildi</option>
+</select>
 
-                <input placeholder="Kurye değiştir" onchange="assign('${d.id}', this.value)">
-                <button class="delete" onclick="deleteOrder('${d.id}')">Sil</button>
-            </div>`;
-        });
+<input placeholder="kurye email" onchange="assign('${d.id}',this.value)">
+<button class="delete" onclick="del('${d.id}')">Sil</button>
+</div>`;
 
-        document.getElementById("total").innerText=total;
-        document.getElementById("prep").innerText=prep;
-        document.getElementById("road").innerText=road;
-        document.getElementById("done").innerText=done;
-    });
+if(o.lat && o.lng){
+L.marker([o.lat,o.lng]).addTo(map);
+}
+
+});
+
+chart.data.datasets[0].data=[prep,road,done];
+chart.update();
+
+});
+
+// COURIERS
+onSnapshot(collection(db,"couriers"), snap=>{
+couriers.innerHTML="";
+
+snap.forEach(d=>{
+const c=d.data();
+
+couriers.innerHTML+=`
+<div class="order" ondrop="drop(event,'${c.email}')" ondragover="allow(event)">
+${c.email}
+</div>`;
+
+if(c.location){
+L.circle([c.location.lat,c.location.lng],{radius:50}).addTo(map);
+
+if(route) map.removeControl(route);
+
+route = L.Routing.control({
+waypoints:[
+L.latLng(c.location.lat,c.location.lng),
+L.latLng(39.92,32.85)
+]
+}).addTo(map);
+}
+});
+});
+
 }
 
 // ACTIONS
-window.status = async(id,s)=> await updateDoc(doc(db,"orders",id),{status:s});
-window.assign = async(id,email)=> await updateDoc(doc(db,"orders",id),{courierEmail:email,courierId:email});
-window.deleteOrder = async(id)=> confirm("Sil?") && await deleteDoc(doc(db,"orders",id));
-window.logout = ()=>signOut(auth);
+window.status=(id,s)=>updateDoc(doc(db,"orders",id),{status:s});
+window.assign=(id,e)=>updateDoc(doc(db,"orders",id),{courierEmail:e,courierId:e});
+window.del=(id)=>deleteDoc(doc(db,"orders",id));
+window.logout=()=>signOut(auth);
+
+// DRAG
+window.drag=(e,id)=>e.dataTransfer.setData("id",id);
+window.allow=e=>e.preventDefault();
+window.drop=(e,email)=>{
+e.preventDefault();
+const id=e.dataTransfer.getData("id");
+assign(id,email);
+};
+
+// THEME
+window.toggleTheme=()=>{
+document.body.style.background =
+document.body.style.background=="white"?"#0b1118":"white";
+};
 </script>
 
 </body>

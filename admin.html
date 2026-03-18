@@ -150,7 +150,8 @@ const o=d.data();
 orderList.innerHTML+=`
 <div class="card">
 ${o.product} - ${o.status}<br>
-Kurye: ${o.courierEmail || "Atanmadı"}
+Kurye: ${o.courierEmail || "Atanmadı"}<br>
+ETA: ${o.eta || "-"} dk
 <button onclick="reassign('${d.id}')">Kurye Değiştir</button>
 </div>`;
 
@@ -197,24 +198,55 @@ best=c;
 return best;
 }
 
-/* CREATE ORDER (🔥 TRACKING EKLİ) */
+/* 🚀 CREATE ORDER (ETA + WHATSAPP) */
 window.createOrder=async()=>{
+
 const product=oProduct.value;
 const lat=parseFloat(oLat.value);
 const lng=parseFloat(oLng.value);
 
 const best=await findBestCourier(lat,lng);
 
-const orderRef = await addDoc(collection(db,"orders"),{
+/* 📏 MESAFE */
+let distance=0;
+if(best && best.lat){
+distance=Math.sqrt(
+Math.pow(best.lat-lat,2)+Math.pow(best.lng-lng,2)
+);
+}
+
+/* ⏱ ETA */
+const eta=Math.round((distance/40)*60);
+
+/* 📦 ORDER */
+const orderRef=await addDoc(collection(db,"orders"),{
 product,lat,lng,
 status:best?"assigned":"pending",
 courierEmail:best?best.email:null,
+eta:eta,
 createdAt:new Date()
 });
 
-const link = `https://kuryeai.com/tracking.html?id=${orderRef.id}`;
+/* 🔗 LINK */
+const link=`https://kuryeai.com/tracking.html?id=${orderRef.id}`;
 
-alert("Sipariş oluşturuldu 🚀\n\nMüşteri takip linki:\n"+link);
+/* 📲 WHATSAPP */
+const phone=prompt("Müşteri telefon (5XXXXXXXXX)");
+
+if(phone){
+const msg=`🚀 Siparişiniz yolda!
+📦 Ürün: ${product}
+⏱ Tahmini süre: ${eta} dk
+
+📍 Canlı takip:
+${link}`;
+
+const url=`https://wa.me/90${phone}?text=${encodeURIComponent(msg)}`;
+window.open(url,"_blank");
+}
+
+alert("Sipariş oluşturuldu 🚀");
+
 }
 
 /* OVERRIDE */

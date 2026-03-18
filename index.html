@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KuryeAI | Yapay Zeka Destekli Lojistik</title>
+
+    <!-- LEAFLET -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <style>
         body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #fff; margin: 0; background: #0b0e14; }
         header { background: #000; padding: 1.5rem 0; text-align: center; border-bottom: 1px solid #333; }
         .hero { background: #1a1a1a; padding: 3rem 2rem; text-align: center; }
         
-        /* Animasyonlu Logo Stili */
         .logo-container { margin-bottom: 20px; min-height: 150px; }
         .logo-container img {
             max-width: 180px;
@@ -29,36 +33,163 @@
         .login-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
         .btn-login { display: inline-block; border: 1px solid #00d4ff; color: #00d4ff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-size: 14px; transition: 0.3s; background: transparent; cursor: pointer; text-align: center; min-width: 120px; }
         .btn-login:hover { background: rgba(0,212,255,0.1); border-color: #fff; color: #fff; }
-        
+
         .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 2rem; max-width: 1000px; margin: auto; }
         .service-card { background: #111; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; }
         h4 { color: #00d4ff; margin-top: 0; }
+
         .footer { margin-top: 60px; text-align: center; color: #888; border-top: 1px solid #333; padding: 2rem 0; }
+
+        /* FORM */
+        #formBox {
+            display:none;
+            position:fixed;
+            top:10%;
+            left:50%;
+            transform:translateX(-50%);
+            background:#1e293b;
+            padding:20px;
+            border-radius:10px;
+            width:320px;
+            z-index:999;
+        }
+
+        #formBox input {
+            width:100%;
+            margin:5px 0;
+            padding:10px;
+            border-radius:6px;
+            border:none;
+        }
+
+        #selectMap {
+            height:200px;
+            border-radius:10px;
+            margin:10px 0;
+        }
     </style>
 </head>
 <body>
-    <header><h1>KuryeAI</h1></header>
-    <div class="hero">
-        <div class="logo-container">
-            <img src="logo.png" alt="KuryeAI Logo" onerror="this.src='https://via.placeholder.com/180x180/00d4ff/000000?text=KuryeAI+Logo'">
-        </div>
-        <h2>Yapay Zeka Destekli Yeni Nesil Lojistik</h2>
-        <p>İstanbul ve Ankara'da restoranlara özel akıllı kurye çözümleri.</p>
-        <a href="mailto:info@kuryeai.com?subject=Kurye Talebi" class="cta-button">Hemen Kurye Çağır</a>
-        <div class="login-container">
-            <a href="login.html?type=restaurant" class="btn-login">Restoran Girişi</a>
-            <a href="login.html?type=courier" class="btn-login">Kurye Girişi</a>
-            <a href="login.html?type=admin" class="btn-login">Admin Girişi</a>
-        </div>
+
+<header><h1>KuryeAI</h1></header>
+
+<div class="hero">
+    <div class="logo-container">
+        <img src="logo.png" alt="KuryeAI Logo">
     </div>
-    <div class="services">
-        <div class="service-card"><h4>Restoran Havuz Kurye</h4><p>Maliyetleri optimize eden akıllı havuz sistemi.</p></div>
-        <div class="service-card"><h4>VIP Express Moto Kurye</h4><p>7/24 ışık hızında teslimat.</p></div>
-        <div class="service-card"><h4>Lojistik Yazılım Desteği</h4><p>Rota optimizasyonu ve takip sistemi.</p></div>
+
+    <h2>Yapay Zeka Destekli Yeni Nesil Lojistik</h2>
+    <p>İstanbul ve Ankara'da restoranlara özel akıllı kurye çözümleri.</p>
+
+    <a href="mailto:info@kuryeai.com" class="cta-button">Hemen Kurye Çağır</a>
+
+    <!-- 🔥 YENİ BUTON -->
+    <button onclick="openForm()" class="cta-button">Restoran Başvurusu Yap</button>
+
+    <div class="login-container">
+        <a href="login.html?type=restaurant" class="btn-login">Restoran Girişi</a>
+        <a href="login.html?type=courier" class="btn-login">Kurye Girişi</a>
+        <a href="login.html?type=admin" class="btn-login">Admin Girişi</a>
     </div>
-    <div class="footer">
-        <p><strong>AI Teknoloji ve Lojistik A.Ş</strong></p>
-        <p>© 2026 KuryeAI. Tüm hakları saklıdır.</p>
-    </div>
+</div>
+
+<div class="services">
+    <div class="service-card"><h4>Restoran Havuz Kurye</h4><p>Maliyetleri optimize eden akıllı havuz sistemi.</p></div>
+    <div class="service-card"><h4>VIP Express Moto Kurye</h4><p>7/24 ışık hızında teslimat.</p></div>
+    <div class="service-card"><h4>Lojistik Yazılım Desteği</h4><p>Rota optimizasyonu ve takip sistemi.</p></div>
+</div>
+
+<!-- 🔥 FORM -->
+<div id="formBox">
+    <h3>Restoran Başvuru</h3>
+
+    <input id="name" placeholder="Restoran Adı">
+    <input id="email" placeholder="Email">
+    <input id="address" placeholder="Adres">
+
+    <p style="font-size:12px;">Haritadan konum seç</p>
+    <div id="selectMap"></div>
+
+    <button onclick="submitForm()">Gönder</button>
+    <button onclick="closeForm()">Kapat</button>
+</div>
+
+<div class="footer">
+    <p><strong>AI Teknoloji ve Lojistik A.Ş</strong></p>
+    <p>© 2026 KuryeAI. Tüm hakları saklıdır.</p>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+ authDomain: "kuryeai.firebaseapp.com",
+ projectId: "kuryeai"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let selectedLat = null;
+let selectedLng = null;
+let marker;
+let map;
+
+window.openForm = function(){
+    document.getElementById("formBox").style.display="block";
+
+    setTimeout(()=>{
+        if(!map){
+            map = L.map('selectMap').setView([39.92, 32.85], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            map.on("click", function(e){
+                selectedLat = e.latlng.lat;
+                selectedLng = e.latlng.lng;
+
+                if(marker){
+                    map.removeLayer(marker);
+                }
+
+                marker = L.marker([selectedLat, selectedLng]).addTo(map);
+            });
+        }
+    },200);
+}
+
+window.closeForm = function(){
+    document.getElementById("formBox").style.display="none";
+}
+
+window.submitForm = async function(){
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const address = document.getElementById("address").value;
+
+    if(!selectedLat){
+        alert("Haritadan konum seç!");
+        return;
+    }
+
+    await addDoc(collection(db,"applications"),{
+        name,
+        email,
+        address,
+        lat:selectedLat,
+        lng:selectedLng,
+        status:"pending"
+    });
+
+    alert("Başvurunuz alındı!");
+    closeForm();
+}
+
+</script>
+
 </body>
 </html>

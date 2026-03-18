@@ -10,13 +10,7 @@
 <style>
 body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 
-.header{
-padding:15px;
-background:#020617;
-display:flex;
-justify-content:space-between;
-}
-
+.header{padding:15px;background:#020617;display:flex;justify-content:space-between;}
 .status{padding:6px 12px;border-radius:20px;font-size:12px;}
 .online{background:#00ff9c;color:#000;}
 .offline{background:#ff4d4d;}
@@ -26,25 +20,11 @@ justify-content:space-between;
 .panel{padding:15px;background:#111827;}
 
 .btn{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold;}
-
 .start{background:#00d4ff;color:#000;}
 .stop{background:#ff4d4d;color:#fff;}
 
-.order{
-background:#1f2937;
-padding:12px;
-border-radius:10px;
-margin-top:8px;
-}
-
-.order button{
-margin-top:5px;
-width:100%;
-padding:8px;
-background:#00d4ff;
-border:none;
-border-radius:6px;
-}
+.order{background:#1f2937;padding:12px;border-radius:10px;margin-top:8px;}
+.order button{margin-top:5px;width:100%;padding:8px;background:#00d4ff;border:none;border-radius:6px;}
 
 .green{background:#065f46;}
 </style>
@@ -110,17 +90,35 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* MAP */
 let map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let marker;
 let watchId;
 let user;
+let lastOrderCount = 0;
+
+/* 🔔 NOTIFICATION PERMISSION */
+async function requestNotification(){
+if(Notification.permission !== "granted"){
+await Notification.requestPermission();
+}
+}
+
+/* 🔔 SEND LOCAL NOTIFICATION */
+function sendNotification(title,body){
+if(Notification.permission === "granted"){
+new Notification(title,{body});
+}
+}
 
 /* AUTH */
-onAuthStateChanged(auth,(u)=>{
+onAuthStateChanged(auth,async(u)=>{
 if(!u){location.href="login.html";return;}
 user = u;
+
+await requestNotification();
 
 /* 🎯 AKTİF GÖREV */
 const qActive = query(
@@ -205,7 +203,7 @@ online:false
 });
 };
 
-/* 📦 HAVUZ */
+/* 📦 HAVUZ + 🔔 BİLDİRİM */
 const ordersDiv = document.getElementById("orders");
 
 const q = query(
@@ -219,6 +217,12 @@ if(!document.getElementById("status").classList.contains("online")){
 ordersDiv.innerHTML="Online olunca sipariş görürsün";
 return;
 }
+
+/* 🔔 YENİ SİPARİŞ */
+if(snap.size > lastOrderCount){
+sendNotification("Yeni Sipariş 🚀","Yeni bir sipariş geldi!");
+}
+lastOrderCount = snap.size;
 
 ordersDiv.innerHTML="";
 
@@ -245,7 +249,6 @@ btn.innerText="Alınıyor...";
 
 try{
 await runTransaction(db, async (t)=>{
-
 const ref = doc(db,"orders",orderId);
 const snap = await t.get(ref);
 
@@ -259,7 +262,6 @@ t.update(ref,{
 status:"yolda",
 courierId:user.uid
 });
-
 });
 
 alert("🚀 Sipariş alındı");
@@ -273,7 +275,6 @@ btn.innerText="Kabul Et";
 
 /* ✅ TESLİM */
 window.finishOrder = async (id)=>{
-
 await updateDoc(doc(db,"orders",id),{
 status:"delivered"
 });
@@ -285,7 +286,6 @@ date:new Date()
 });
 
 alert("💰 +50₺ kazandın!");
-
 };
 
 </script>

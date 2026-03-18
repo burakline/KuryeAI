@@ -49,25 +49,46 @@ const db = getFirestore(app);
 const messaging = getMessaging(app);
 
 /* ========================= */
-/* 🔄 AUTO LOGIN (SADECE INDEX) */
+/* 🔔 NOTIFICATION INIT (DEBUG) */
 /* ========================= */
-onAuthStateChanged(auth, async (user) => {
-
-  if (!window.location.pathname.includes("index")) return;
-
-  if (!user) return;
+window.initNotifications = async function () {
 
   try {
-    const snap = await getDoc(doc(db, "users", user.uid));
 
-    if (!snap.exists()) return;
+    alert("🔔 Bildirim başlatılıyor...");
 
-    redirect(snap.data().role);
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("❌ Bildirim izni verilmedi");
+      return;
+    }
+
+    alert("✅ İzin verildi");
+
+    const token = await getToken(messaging, {
+      vapidKey: "BNWTY3G-gaXdthi2kzQIsUSBnLvMHh0YkjBcCkqsv6fpiiYSfb_WvTwqO_lQSCxFhJ4pdNYRYGuxUhIdO-oCieA"
+    });
+
+    if (!token) {
+      alert("❌ Token alınamadı!");
+      return;
+    }
+
+    alert("🔥 TOKEN ALINDI:\n\n" + token);
+
+    return token;
 
   } catch (err) {
+    alert("❌ HATA:\n" + err.message);
     console.error(err);
   }
 
+};
+
+/* 🔔 FOREGROUND */
+onMessage(messaging, () => {
+  alert("📦 Yeni sipariş geldi!");
 });
 
 /* ========================= */
@@ -128,59 +149,10 @@ window.registerUser = async function (email, password, role = "courier") {
 /* 📦 ORDER CREATE */
 /* ========================= */
 window.createOrder = async function (data) {
-  try {
-
-    await addDoc(collection(db, "orders"), {
-      ...data,
-      status: "pending",
-      createdAt: Date.now()
-    });
-
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-/* ========================= */
-/* 📡 ORDER LISTENER */
-/* ========================= */
-window.listenOrders = function (callback) {
-
-  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-
-  return onSnapshot(q, (snapshot) => {
-
-    const orders = [];
-
-    snapshot.forEach((docSnap) => {
-      orders.push({
-        id: docSnap.id,
-        ...docSnap.data()
-      });
-    });
-
-    callback(orders);
-
-  });
-
-};
-
-/* ========================= */
-/* 🚀 ACCEPT */
-/* ========================= */
-window.acceptOrder = async function (orderId, courierId) {
-  await updateDoc(doc(db, "orders", orderId), {
-    status: "accepted",
-    courierId
-  });
-};
-
-/* ========================= */
-/* 📦 COMPLETE */
-/* ========================= */
-window.completeOrder = async function (orderId) {
-  await updateDoc(doc(db, "orders", orderId), {
-    status: "delivered"
+  await addDoc(collection(db, "orders"), {
+    ...data,
+    status: "pending",
+    createdAt: Date.now()
   });
 };
 
@@ -191,41 +163,6 @@ window.logoutUser = async function () {
   await signOut(auth);
   window.location.href = "index.html";
 };
-
-/* ========================= */
-/* 🔔 NOTIFICATION INIT */
-/* ========================= */
-window.initNotifications = async function () {
-
-  try {
-
-    const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      alert("Bildirim izni verilmedi ❌");
-      return;
-    }
-
-    const token = await getToken(messaging, {
-      vapidKey: "BNWTY3G-gaXdthi2kzQIsUSBnLvMHh0YkjBcCkqsv6fpiiYSfb_WvTwqO_lQSCxFhJ4pdNYRYGuxUhIdO-oCieA"
-    });
-
-    console.log("🔔 TOKEN:", token);
-
-    return token;
-
-  } catch (err) {
-    console.error("Notification error:", err);
-  }
-
-};
-
-/* ========================= */
-/* 🔔 FOREGROUND NOTIF */
-/* ========================= */
-onMessage(messaging, () => {
-  alert("📦 Yeni sipariş geldi!");
-});
 
 /* ========================= */
 /* 🔀 REDIRECT */
@@ -244,5 +181,4 @@ function redirect(role) {
 
 }
 
-/* EXPORT */
 export { db, auth };

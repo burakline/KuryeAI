@@ -9,12 +9,12 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body { font-family:'Segoe UI';margin:0;background:#0b0e14;color:#fff }
-header { background:#000;padding:1.5rem 0;text-align:center }
-.hero { background:#1a1a1a;padding:3rem;text-align:center }
+body { font-family:'Segoe UI', sans-serif; margin:0; background:#0b0e14; color:#fff }
+header { background:#000; padding:1.5rem 0; text-align:center }
+.hero { background:#1a1a1a; padding:3rem; text-align:center }
 
-.cta-button { background:#00d4ff;color:#000;padding:15px 30px;border-radius:8px;border:none;margin:10px }
-.btn-login { border:1px solid #00d4ff;color:#00d4ff;padding:10px;border-radius:8px }
+.cta-button { background:#00d4ff; color:#000; padding:15px 30px; border-radius:8px; border:none; margin:10px }
+.btn-login { border:1px solid #00d4ff; color:#00d4ff; padding:10px; border-radius:8px }
 
 #formBox,#courierForm {
 display:none;
@@ -25,11 +25,13 @@ transform:translateX(-50%);
 background:#1e293b;
 padding:20px;
 border-radius:10px;
-width:320px;
+width:340px;
 z-index:999;
+max-height:80vh;
+overflow:auto;
 }
 
-#formBox input,#courierForm input{
+#formBox input,#courierForm input,#courierForm select{
 width:100%;
 margin:5px 0;
 padding:10px;
@@ -53,7 +55,7 @@ border:none;
 
 <button onclick="openForm()" class="cta-button">Restoran Başvurusu</button>
 
-<!-- 🔥 EKLENDİ -->
+<!-- ✅ KURYE BUTON -->
 <button onclick="openCourierForm()" class="cta-button">Kurye Ol</button>
 
 <div>
@@ -75,13 +77,47 @@ border:none;
 <button onclick="closeForm()">Kapat</button>
 </div>
 
-<!-- 🔥 KURYE FORM -->
+<!-- 🚀 FULL KURYE FORM -->
 <div id="courierForm">
 <h3>Kurye Başvuru</h3>
 
+<div style="text-align:center">
+<label for="photo">
+<div style="width:80px;height:80px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;margin:auto;cursor:pointer">
+📷
+</div>
+</label>
+<input type="file" id="photo" accept="image/*" capture="environment" style="display:none">
+</div>
+
 <input id="cName" placeholder="Ad Soyad">
-<input id="cEmail" placeholder="Email">
+<input id="cBirthDate" type="date">
+<input id="cBirthPlace" placeholder="Doğum Yeri">
+<input id="cBlood" placeholder="Kan Grubu">
+<input id="cEducation" placeholder="Eğitim Durumu">
+
+<input id="cLicense" placeholder="Ehliyet">
+
+<select id="cP1">
+<option value="">P1 Belgesi</option>
+<option value="var">Var</option>
+<option value="yok">Yok</option>
+</select>
+
+<select id="cSRC">
+<option value="">SRC Kurye</option>
+<option value="var">Var</option>
+<option value="yok">Yok</option>
+</select>
+
+<select id="cCriminal">
+<option value="">Adli Sicil</option>
+<option value="yok">Yok</option>
+<option value="var">Var</option>
+</select>
+
 <input id="cPhone" placeholder="Telefon">
+<input id="cEmail" placeholder="Mail">
 
 <button onclick="sendCourier()">Başvur</button>
 <button onclick="closeCourierForm()">Kapat</button>
@@ -93,6 +129,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import { getFirestore, collection, addDoc }
 from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+import { getStorage, ref, uploadBytes, getDownloadURL }
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
+
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -100,6 +139,7 @@ projectId:"kuryeai"
 });
 
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 /* RESTORAN */
 window.openForm=()=>{document.getElementById("formBox").style.display="block";}
@@ -113,10 +153,11 @@ address:address.value,
 type:"restaurant",
 status:"pending"
 });
-alert("Gönderildi");
+alert("Başvurunuz alındı!");
+closeForm();
 }
 
-/* 🔥 KURYE */
+/* 🚀 KURYE */
 window.openCourierForm=()=>{
 document.getElementById("courierForm").style.display="block";
 }
@@ -126,15 +167,39 @@ document.getElementById("courierForm").style.display="none";
 }
 
 window.sendCourier=async()=>{
+
+let photoURL="";
+const file=document.getElementById("photo").files[0];
+
+if(file){
+const storageRef=ref(storage,"couriers/"+Date.now());
+await uploadBytes(storageRef,file);
+photoURL=await getDownloadURL(storageRef);
+}
+
 await addDoc(collection(db,"applications"),{
-name:cName.value,
-email:cEmail.value,
-phone:cPhone.value,
+
 type:"courier",
-status:"pending"
+status:"pending",
+
+photo:photoURL,
+name:document.getElementById("cName").value,
+birthDate:document.getElementById("cBirthDate").value,
+birthPlace:document.getElementById("cBirthPlace").value,
+blood:document.getElementById("cBlood").value,
+education:document.getElementById("cEducation").value,
+license:document.getElementById("cLicense").value,
+p1:document.getElementById("cP1").value,
+src:document.getElementById("cSRC").value,
+criminal:document.getElementById("cCriminal").value,
+phone:document.getElementById("cPhone").value,
+email:document.getElementById("cEmail").value
+
 });
-alert("Başvuru alındı 🚀");
+
+alert("Kurye başvurusu gönderildi 🚀");
 closeCourierForm();
+
 }
 
 </script>

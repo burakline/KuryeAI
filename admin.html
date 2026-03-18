@@ -96,6 +96,12 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* 🔥 FIX (BOŞ SAYFA SORUNU) */
+const orderList = document.getElementById("orderList");
+const courierList = document.getElementById("courierList");
+const restaurantList = document.getElementById("restaurantList");
+const appList = document.getElementById("appList");
+
 /* NAV */
 window.show=id=>{
 ["dashboard","orders","couriers","restaurants","applications"]
@@ -147,4 +153,107 @@ Kurye: ${o.courierEmail || "Yok"}
 </div>`;
 
 if(o.lat){
-if(!orderMarkers
+if(!orderMarkers[d.id]){
+orderMarkers[d.id]=L.marker([o.lat,o.lng])
+.addTo(map)
+.bindPopup("📦 "+o.product);
+}
+}
+});
+});
+
+/* 📍 TRACKING + ROTA */
+window.focusOrder=async(lat,lng,email)=>{
+map.setView([lat,lng],15);
+
+const courier=couriersData[email];
+if(!courier || !courier.lat) return;
+
+const res=await fetch(`https://router.project-osrm.org/route/v1/driving/${courier.lng},${courier.lat};${lng},${lat}?overview=full&geometries=geojson`);
+const data=await res.json();
+
+const coords=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+
+if(routeLine) map.removeLayer(routeLine);
+
+routeLine=L.polyline(coords,{color:"lime"}).addTo(map);
+}
+
+/* 📩 APPLICATIONS */
+onSnapshot(collection(db,"applications"),snap=>{
+appList.innerHTML="";
+
+snap.forEach(d=>{
+const a=d.data();
+
+appList.innerHTML+=`
+<div class="card">
+<b>${a.name}</b><br>
+${a.email}<br><br>
+
+<button onclick="approve('${d.id}','${a.email}','${a.name}')">✅ Onayla</button>
+<button onclick="reject('${d.id}')">❌ Reddet</button>
+</div>`;
+});
+});
+
+/* APPROVE */
+window.approve=async(id,email,name)=>{
+try{
+const snap = await getDocs(collection(db,"couriers"));
+let exists=false;
+
+snap.forEach(d=>{
+if(d.data().email===email){exists=true;}
+});
+
+if(exists){
+alert("⚠️ Bu kurye zaten kayıtlı!");
+return;
+}
+
+let userId=null;
+
+try{
+const user=await createUserWithEmailAndPassword(auth,email,"123456");
+userId=user.user.uid;
+}catch(e){
+if(e.code==="auth/email-already-in-use"){userId=email;}
+else{throw e;}
+}
+
+await setDoc(doc(db,"users",userId),{
+email,
+role:"courier"
+});
+
+await addDoc(collection(db,"couriers"),{
+name:name || email,
+email,
+activeOrders:0,
+createdAt:new Date()
+});
+
+await updateDoc(doc(db,"applications",id),{
+status:"approved"
+});
+
+alert("✅ Kurye eklendi!");
+
+}catch(e){
+alert("Hata: "+e.message);
+}
+}
+
+/* REJECT */
+window.reject=async(id)=>{
+await updateDoc(doc(db,"applications",id),{
+status:"rejected"
+});
+alert("Reddedildi");
+}
+
+</script>
+
+</body>
+</html>

@@ -1,74 +1,53 @@
+<script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword 
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-import { 
-  getFirestore, 
-  doc, 
-  getDoc 
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-/* FIREBASE */
 const app = initializeApp({
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  projectId: "kuryeai"
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
 });
 
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ELEMENTLER */
-const emailInput = document.querySelector("input[type='email'], input[placeholder*='mail']");
-const passwordInput = document.querySelector("input[type='password']");
-const loginBtn = document.querySelector(".btn, button");
-const eyeBtn = document.querySelector(".eye");
+document.getElementById("loginBtn").onclick = async () => {
 
-/* ŞİFRE GÖSTER */
-if (eyeBtn && passwordInput) {
-  eyeBtn.addEventListener("click", () => {
-    passwordInput.type = passwordInput.type === "password" ? "text" : "password";
-  });
+const email = document.getElementById("email").value.trim();
+const password = document.getElementById("password").value.trim();
+
+try{
+
+const userCred = await signInWithEmailAndPassword(auth, email, password);
+const uid = userCred.user.uid;
+
+// 🔥 ROLE ÇEK
+const snap = await getDoc(doc(db, "users", uid));
+
+if(!snap.exists()){
+alert("Rol bulunamadı!");
+return;
 }
 
-/* LOGIN */
-if (loginBtn) {
-  loginBtn.addEventListener("click", async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+const role = snap.data().role;
 
-    if (!email || !password) {
-      alert("Email ve şifre gir!");
-      return;
-    }
-
-    try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-      const uid = userCred.user.uid;
-
-      const userDoc = await getDoc(doc(db, "users", uid));
-
-      if (!userDoc.exists()) {
-        alert("Kullanıcı rolü bulunamadı!");
-        return;
-      }
-
-      const role = userDoc.data().role;
-
-      if (role === "admin") {
-        window.location.href = "admin.html";
-      } else if (role === "restaurant") {
-        window.location.href = "restaurant.html";
-      } else if (role === "courier") {
-        window.location.href = "courier.html";
-      } else {
-        alert("Rol tanımsız!");
-      }
-
-    } catch (err) {
-      alert("Hata: " + err.message);
-    }
-  });
+// 🚀 YÖNLENDİRME
+if(role === "admin"){
+location.href = "admin.html";
 }
+else if(role === "courier"){
+location.href = "courier.html";
+}
+else{
+location.href = "index.html";
+}
+
+}catch(e){
+alert("Hata: " + e.message);
+}
+
+}
+
+</script>

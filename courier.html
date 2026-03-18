@@ -3,72 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI</title>
+<title>Kurye Panel</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{
-margin:0;
-font-family:'Inter',sans-serif;
-background:#0A0A0A;
-color:white;
-}
+body{margin:0;font-family:Arial;background:#0b0e14;color:white}
 
-/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
 padding:15px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(10px);
+background:#020617;
 }
 
 .status{
-padding:6px 14px;
+padding:6px 12px;
 border-radius:20px;
 font-size:12px;
 }
 
-.online{background:#00C2A8;color:black}
+.online{background:#00ff9c;color:black}
 .offline{background:#ff4d4d}
 
-/* MAP */
-#map{height:40vh}
+#map{height:50vh}
 
-/* PANEL */
 .panel{padding:15px}
 
-/* CARD */
 .card{
-background:rgba(255,255,255,0.05);
+background:#111827;
 padding:12px;
 margin-top:10px;
-border-radius:12px;
-border:1px solid rgba(255,255,255,0.1);
+border-radius:10px;
 }
 
-/* BUTTON */
 .btn{
 width:100%;
-padding:12px;
+padding:10px;
 margin-top:5px;
 border:none;
-border-radius:10px;
+border-radius:8px;
 font-weight:bold;
-cursor:pointer;
 }
 
-.accept{background:#00C2A8;color:black}
-.done{background:#22c55e}
-.reject{background:#ff4d4d}
+.accept{background:#00d4ff;color:black}
+.reject{background:#ff4d4d;color:white}
+.done{background:#22c55e;color:white}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<h3>🛵 KuryeAI</h3>
+<h3>🚴 KuryeAI</h3>
 <div id="status" class="status offline">Offline</div>
 </div>
 
@@ -87,19 +74,78 @@ cursor:pointer;
 
 </div>
 
+<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<!-- FIREBASE COMPAT (MAP VE SİSTEM İÇİN) -->
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
+
+<!-- 🔥 BİLDİRİM (MODÜL) -->
 <script type="module">
 
-import { db, auth } from "./firebase.js";
-import {
-collection,
-onSnapshot,
-doc,
-updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
+import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+/* CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  projectId: "kuryeai",
+  storageBucket: "kuryeai.appspot.com",
+  messagingSenderId: "562153733113",
+  appId: "1:562153733113:web:61d9242d0af1da6a081b28"
+};
+
+const appMod = initializeApp(firebaseConfig);
+const messaging = getMessaging(appMod);
+const dbMod = getFirestore(appMod);
+
+/* 🔔 TOKEN AL */
+window.initNotifications = async function(userId){
+
+  try{
+
+    const permission = await Notification.requestPermission();
+
+    if(permission !== "granted"){
+      alert("❌ Bildirim izni yok");
+      return;
+    }
+
+    const token = await getToken(messaging,{
+      vapidKey:"BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ"
+    });
+
+    console.log("🔥 TOKEN:", token);
+
+    await updateDoc(doc(dbMod,"couriers",userId),{
+      fcmToken:token
+    });
+
+    alert("✅ Bildirim aktif");
+
+  }catch(e){
+    alert("❌ Bildirim hata: "+e.message);
+  }
+
+};
+
+</script>
+
+<script>
+
+/* CONFIG */
+firebase.initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
+
+const db = firebase.firestore();
+const auth = firebase.auth();
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
@@ -108,76 +154,119 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 let marker;
 
 /* ELEMENTS */
-const ordersDiv = document.getElementById("orders");
-const activeDiv = document.getElementById("activeOrder");
-const statusDiv = document.getElementById("status");
+const orders = document.getElementById("orders");
+const activeOrder = document.getElementById("activeOrder");
+const status = document.getElementById("status");
 
+/* GLOBAL */
 let user;
+let courierData=null;
 let watchId=null;
+let activeListener=null;
+
+/* DISTANCE */
+function getDistance(lat1,lng1,lat2,lng2){
+const R=6371;
+const dLat=(lat2-lat1)*Math.PI/180;
+const dLng=(lng2-lng1)*Math.PI/180;
+
+const a =
+Math.sin(dLat/2)**2 +
+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+Math.sin(dLng/2)**2;
+
+return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
 
 /* AUTH */
-onAuthStateChanged(auth,(u)=>{
+auth.onAuthStateChanged(function(u){
 
 if(!u){
-location.href="index.html";
+location.href="login.html";
 return;
 }
 
 user=u;
 
-/* 🔔 BİLDİRİM BAŞLAT */
-initNotifications().then(async(token)=>{
+/* 🔥 BİLDİRİMİ BAŞLAT */
+initNotifications(user.uid);
 
-if(!token) return;
+/* COURIER */
+db.collection("couriers").doc(u.uid).onSnapshot(function(snap){
 
-await updateDoc(doc(db,"couriers",user.uid),{
-fcmToken: token
+if(!snap.exists) return;
+
+courierData = snap.data();
+
+/* STATUS */
+if(courierData.online){
+status.className="status online";
+status.innerText="Online";
+}else{
+status.className="status offline";
+status.innerText="Offline";
+}
+
+/* ACTIVE ORDER */
+if(!activeListener){
+activeListener = db.collection("orders")
+.where("courierId","==",user.uid)
+.onSnapshot(function(snap){
+
+activeOrder.innerHTML="";
+
+snap.forEach(function(d){
+
+const o=d.data();
+if(o.status!=="yolda") return;
+
+activeOrder.innerHTML=`
+<div class="card">
+<b>${o.customer}</b><br>
+${o.address}<br>
+
+<button class="btn done" onclick="finishOrder('${d.id}')">
+Teslim Edildi
+</button>
+</div>`;
 });
+
+});
+}
 
 });
 
 /* ORDERS */
-onSnapshot(collection(db,"orders"),(snap)=>{
+db.collection("orders")
+.where("status","==","bekliyor")
+.onSnapshot(function(snap){
 
-ordersDiv.innerHTML="";
-activeDiv.innerHTML="";
+orders.innerHTML="";
 
-snap.forEach(d=>{
+snap.forEach(function(d){
 
 const o=d.data();
+if(!o) return;
 
-/* AKTİF */
-if(o.courierId === user.uid && o.status==="accepted"){
+if(o.rejectedBy && o.rejectedBy.includes(user.uid)) return;
+if(!courierData || !courierData.online) return;
 
-activeDiv.innerHTML=`
+/* DISTANCE */
+if(o.lat && courierData.lat){
+const dist = getDistance(courierData.lat,courierData.lng,o.lat,o.lng);
+if(dist > 10) return;
+}
+
+orders.innerHTML+=`
 <div class="card">
 <b>${o.customer}</b><br>
 ${o.address}<br>
 
-<button class="btn done" onclick="completeOrder('${d.id}')">
-Teslim Edildi
-</button>
+💰 ${o.price}₺ 🔥x${o.surge||1}
+
+<button class="btn accept" onclick="acceptOrder('${d.id}')">Kabul</button>
+<button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
 </div>`;
-
-}
-
-/* YENİ */
-if(o.status==="pending"){
-
-ordersDiv.innerHTML+=`
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-💰 ${o.price}₺
-
-<button class="btn accept" onclick="acceptOrder('${d.id}')">
-Kabul Et
-</button>
-</div>`;
-
-}
-
 });
 
 });
@@ -185,12 +274,11 @@ Kabul Et
 });
 
 /* SHIFT */
-window.startShift = function(){
+function startShift(){
 
-statusDiv.className="status online";
-statusDiv.innerText="Online";
+if(watchId) return;
 
-watchId = navigator.geolocation.watchPosition(pos=>{
+watchId = navigator.geolocation.watchPosition(function(pos){
 
 const lat=pos.coords.latitude;
 const lng=pos.coords.longitude;
@@ -202,49 +290,94 @@ marker = L.marker([lat,lng]).addTo(map);
 map.setView([lat,lng],15);
 }
 
-updateDoc(doc(db,"couriers",user.uid),{
-lat,lng,
-online:true
+db.collection("couriers").doc(user.uid).update({
+lat:lat,
+lng:lng,
+online:true,
+status:"available"
 });
 
 });
 
-};
+}
 
 /* OFFLINE */
-window.endShift = function(){
-
-statusDiv.className="status offline";
-statusDiv.innerText="Offline";
+function endShift(){
 
 if(watchId){
 navigator.geolocation.clearWatch(watchId);
+watchId=null;
 }
 
-updateDoc(doc(db,"couriers",user.uid),{
+db.collection("couriers").doc(user.uid).update({
 online:false
 });
 
-};
+location.reload();
+}
 
 /* ACCEPT */
-window.acceptOrder = async function(id){
+function acceptOrder(id){
 
-await updateDoc(doc(db,"orders",id),{
-status:"accepted",
+const ref = db.collection("orders").doc(id);
+
+db.runTransaction(function(t){
+return t.get(ref).then(function(snap){
+
+if(snap.data().status !== "bekliyor"){
+throw "taken";
+}
+
+t.update(ref,{
+status:"yolda",
 courierId:user.uid
 });
 
-};
+});
+}).then(function(){
 
-/* COMPLETE */
-window.completeOrder = async function(id){
+db.collection("couriers").doc(user.uid).update({
+status:"busy"
+});
 
-await updateDoc(doc(db,"orders",id),{
+alert("🚀 Sipariş alındı!");
+
+}).catch(function(){
+alert("Başka kurye aldı!");
+});
+
+}
+
+/* FINISH */
+function finishOrder(id){
+
+db.collection("orders").doc(id).update({
 status:"delivered"
 });
 
-};
+db.collection("couriers").doc(user.uid).update({
+status:"available"
+});
+
+alert("Teslim edildi 🎉");
+}
+
+/* REJECT */
+function rejectOrder(id){
+
+const ref = db.collection("orders").doc(id);
+
+ref.get().then(function(snap){
+
+const prev = snap.data().rejectedBy || [];
+
+ref.update({
+rejectedBy:[...prev, user.uid]
+});
+
+});
+
+}
 
 </script>
 

@@ -7,7 +7,6 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <style>
 body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white}
@@ -47,7 +46,7 @@ input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 <input id="oLat" placeholder="Enlem">
 <input id="oLng" placeholder="Boylam">
 
-<button onclick="createOrder()">Sipariş Oluştur (AI)</button>
+<button onclick="createOrder()">Sipariş Oluştur</button>
 
 <div id="orderList"></div>
 </div>
@@ -107,13 +106,17 @@ document.getElementById(id).style.display="block";
 /* MAP */
 const map=L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+setTimeout(()=>map.invalidateSize(),500);
 
 /* 🚴 KURYELER */
 let courierMarkers={};
+let couriersData={};
 
 onSnapshot(collection(db,"couriers"),snap=>{
 snap.forEach(d=>{
 const c=d.data();
+couriersData[c.email]=c;
+
 if(!c.lat) return;
 
 if(courierMarkers[d.id]){
@@ -126,94 +129,22 @@ courierMarkers[d.id]=L.marker([c.lat,c.lng])
 });
 });
 
-/* 📩 APPLICATIONS */
-onSnapshot(collection(db,"applications"),snap=>{
-appList.innerHTML="";
+/* 📦 SİPARİŞLER + TRACKING */
+let orderMarkers={};
+let routeLine=null;
+
+onSnapshot(collection(db,"orders"),snap=>{
+orderList.innerHTML="";
 
 snap.forEach(d=>{
-const a=d.data();
+const o=d.data();
 
-appList.innerHTML+=`
+orderList.innerHTML+=`
 <div class="card">
-<b>${a.name}</b><br>
-${a.email}<br><br>
-
-<button onclick="approve('${d.id}','${a.email}','${a.name}')">✅ Onayla</button>
-<button onclick="reject('${d.id}')">❌ Reddet</button>
-
+${o.product} - ${o.status}<br>
+Kurye: ${o.courierEmail || "Yok"}
+<button onclick="focusOrder(${o.lat},${o.lng},'${o.courierEmail}')">Haritada Göster</button>
 </div>`;
-});
-});
 
-/* ✅ APPROVE (🔥 FINAL FIX) */
-window.approve=async(id,email,name)=>{
-try{
-
-/* 🔍 DUPLICATE KONTROL */
-const snap = await getDocs(collection(db,"couriers"));
-let exists=false;
-
-snap.forEach(d=>{
-if(d.data().email===email){
-exists=true;
-}
-});
-
-if(exists){
-alert("⚠️ Bu kurye zaten kayıtlı!");
-return;
-}
-
-/* 🔐 AUTH */
-let userId=null;
-
-try{
-const user=await createUserWithEmailAndPassword(auth,email,"123456");
-userId=user.user.uid;
-}catch(e){
-
-if(e.code==="auth/email-already-in-use"){
-userId=email;
-}else{
-throw e;
-}
-}
-
-/* 👤 USERS */
-await setDoc(doc(db,"users",userId),{
-email,
-role:"courier"
-});
-
-/* 🚴 COURIERS */
-await addDoc(collection(db,"couriers"),{
-name:name || email,
-email,
-activeOrders:0,
-createdAt:new Date()
-});
-
-/* 📩 STATUS */
-await updateDoc(doc(db,"applications",id),{
-status:"approved"
-});
-
-alert("✅ Kurye başarıyla eklendi!");
-
-}catch(e){
-alert("Hata: "+e.message);
-}
-}
-
-/* ❌ REJECT */
-window.reject=async(id)=>{
-await updateDoc(doc(db,"applications",id),{
-status:"rejected"
-});
-alert("Başvuru reddedildi");
-}
-
-</script>
-
-</body>
-</html>
+if(o.lat){
+if(!orderMarkers

@@ -5,45 +5,145 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KuryeAI Admin</title>
 
-<!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Routing -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
-<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-
 <style>
 :root{
---bg:#0b1118;
---card:#121a22;
---border:#1f2933;
---primary:#00e0ff;
---danger:#ff4d4d;
+--bg: #0b1118;
+--card: rgba(255,255,255,0.05);
+--border: rgba(255,255,255,0.08);
+--primary: #00e0ff;
+--text: #ffffff;
 }
 
-body{margin:0;background:var(--bg);color:#fff;font-family:sans-serif;display:flex}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter, sans-serif}
 
+body{
+background: radial-gradient(circle at top, #0f1720, #020617);
+color:var(--text);
+display:flex;
+}
+
+/* SIDEBAR */
 .sidebar{
-width:220px;height:100vh;background:#0f1720;padding:20px
+width:240px;
+height:100vh;
+background:rgba(255,255,255,0.02);
+backdrop-filter:blur(20px);
+border-right:1px solid var(--border);
+padding:20px;
 }
 
-.logo{color:var(--primary);font-size:20px;margin-bottom:20px}
+.logo{
+color:var(--primary);
+font-size:22px;
+margin-bottom:30px;
+}
 
-.main{flex:1;padding:20px}
+.menu div{
+margin:12px 0;
+padding:10px;
+border-radius:10px;
+cursor:pointer;
+color:#aaa;
+}
 
-.card{background:var(--card);padding:15px;border-radius:10px;margin-bottom:10px}
+.menu div:hover{
+background:rgba(255,255,255,0.05);
+color:#fff;
+}
 
-.order{background:#111;padding:10px;border-radius:10px;margin:10px 0}
+/* MAIN */
+.main{
+flex:1;
+padding:20px;
+}
 
-button{padding:8px;border:none;border-radius:6px;margin-top:5px}
-.delete{background:var(--danger)}
-.assign{background:var(--primary)}
+/* TOPBAR */
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
 
-#map{height:250px;margin:10px 0;border-radius:10px}
+.btn{
+padding:8px 14px;
+border-radius:8px;
+border:none;
+cursor:pointer;
+}
+
+.logout{
+background:#ff4d4d;
+color:#fff;
+}
+
+/* CARDS */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--border);
+backdrop-filter:blur(20px);
+padding:20px;
+border-radius:16px;
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 30px rgba(0,224,255,0.2);
+}
+
+.card b{
+font-size:26px;
+}
+
+/* SECTION */
+.section{
+margin-top:25px;
+}
+
+/* MAP */
+#map{
+height:300px;
+border-radius:16px;
+margin-top:10px;
+}
+
+/* ORDER */
+.order{
+background:var(--card);
+border:1px solid var(--border);
+padding:15px;
+border-radius:14px;
+margin-top:10px;
+}
+
+select,input{
+width:100%;
+margin-top:8px;
+padding:10px;
+border-radius:8px;
+border:1px solid var(--border);
+background:transparent;
+color:#fff;
+}
+
+.delete{
+background:#ff4d4d;
+color:#fff;
+margin-top:8px;
+}
+
 </style>
 </head>
 
@@ -51,30 +151,43 @@ button{padding:8px;border:none;border-radius:6px;margin-top:5px}
 
 <div class="sidebar">
 <div class="logo">KuryeAI</div>
+
+<div class="menu">
+<div>Dashboard</div>
+<div>Siparişler</div>
+<div>Kuryeler</div>
+<div>Restoranlar</div>
+</div>
 </div>
 
 <div class="main">
 
-<h2>Admin Panel</h2>
-<button onclick="toggleTheme()">Tema</button>
-<button onclick="logout()">Çıkış</button>
-
-<div class="card">
-Toplam: <b id="total">0</b>
+<div class="topbar">
+<h2>Admin Dashboard</h2>
+<button class="btn logout" onclick="logout()">Çıkış</button>
 </div>
 
+<div class="grid">
+<div class="card">Toplam<br><b id="total">0</b></div>
+<div class="card">Hazırlanıyor<br><b id="prep">0</b></div>
+<div class="card">Yolda<br><b id="road">0</b></div>
+<div class="card">Teslim<br><b id="done">0</b></div>
+</div>
+
+<div class="section">
+<h3>📊 Analiz</h3>
 <canvas id="chart"></canvas>
+</div>
 
+<div class="section">
+<h3>🗺️ Harita</h3>
 <div id="map"></div>
+</div>
 
-<h3>Sipariş Havuzu</h3>
-<div id="pool"></div>
-
-<h3>Kuryeler</h3>
-<div id="couriers"></div>
-
-<h3>Tüm Siparişler</h3>
+<div class="section">
+<h3>📦 Siparişler</h3>
 <div id="orders"></div>
+</div>
 
 </div>
 
@@ -97,12 +210,16 @@ const db = getFirestore(app);
 const map = L.map('map').setView([39.92,32.85], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let route;
-
 // CHART
 const chart = new Chart(document.getElementById("chart"), {
 type:"doughnut",
-data:{labels:["Hazırlanıyor","Yolda","Teslim"],datasets:[{data:[0,0,0]}]}
+data:{
+labels:["Hazırlanıyor","Yolda","Teslim"],
+datasets:[{
+data:[0,0,0],
+backgroundColor:["#00e0ff","#3b82f6","#10b981"]
+}]
+}
 });
 
 // AUTH
@@ -117,20 +234,11 @@ load();
 
 // LOAD
 function load(){
-
-// ORDERS
 onSnapshot(collection(db,"orders"), snap=>{
 
 let prep=0,road=0,done=0;
 
 orders.innerHTML="";
-pool.innerHTML="";
-
-snap.docChanges().forEach(change=>{
-if(change.type==="added"){
-alert("Yeni sipariş!");
-}
-});
 
 snap.forEach(d=>{
 const o=d.data();
@@ -139,24 +247,19 @@ if(o.status==="hazırlanıyor") prep++;
 if(o.status==="yolda") road++;
 if(o.status==="teslim edildi") done++;
 
-if(o.status==="hazır" && !o.courierId){
-pool.innerHTML+=`
-<div class="order" draggable="true" ondragstart="drag(event,'${d.id}')">
-${o.product}
-</div>`;
-}
-
 orders.innerHTML+=`
 <div class="order">
-${o.product}<br>${o.address}
+<b>${o.product}</b><br>
+${o.address}<br>
+Durum: ${o.status}
+
 <select onchange="status('${d.id}',this.value)">
 <option>hazırlanıyor</option>
-<option>hazır</option>
 <option>yolda</option>
 <option>teslim edildi</option>
 </select>
 
-<input placeholder="kurye email" onchange="assign('${d.id}',this.value)">
+<input placeholder="Kurye email" onchange="assign('${d.id}',this.value)">
 <button class="delete" onclick="del('${d.id}')">Sil</button>
 </div>`;
 
@@ -170,56 +273,13 @@ chart.data.datasets[0].data=[prep,road,done];
 chart.update();
 
 });
-
-// COURIERS
-onSnapshot(collection(db,"couriers"), snap=>{
-couriers.innerHTML="";
-
-snap.forEach(d=>{
-const c=d.data();
-
-couriers.innerHTML+=`
-<div class="order" ondrop="drop(event,'${c.email}')" ondragover="allow(event)">
-${c.email}
-</div>`;
-
-if(c.location){
-L.circle([c.location.lat,c.location.lng],{radius:50}).addTo(map);
-
-if(route) map.removeControl(route);
-
-route = L.Routing.control({
-waypoints:[
-L.latLng(c.location.lat,c.location.lng),
-L.latLng(39.92,32.85)
-]
-}).addTo(map);
-}
-});
-});
-
 }
 
 // ACTIONS
 window.status=(id,s)=>updateDoc(doc(db,"orders",id),{status:s});
-window.assign=(id,e)=>updateDoc(doc(db,"orders",id),{courierEmail:e,courierId:e});
+window.assign=(id,e)=>updateDoc(doc(db,"orders",id),{courierEmail:e});
 window.del=(id)=>deleteDoc(doc(db,"orders",id));
 window.logout=()=>signOut(auth);
-
-// DRAG
-window.drag=(e,id)=>e.dataTransfer.setData("id",id);
-window.allow=e=>e.preventDefault();
-window.drop=(e,email)=>{
-e.preventDefault();
-const id=e.dataTransfer.getData("id");
-assign(id,email);
-};
-
-// THEME
-window.toggleTheme=()=>{
-document.body.style.background =
-document.body.style.background=="white"?"#0b1118":"white";
-};
 </script>
 
 </body>

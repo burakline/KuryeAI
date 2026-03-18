@@ -27,9 +27,6 @@ input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 <div class="sidebar">
 <h2>KuryeAI</h2>
 <button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('orders')">Siparişler</button>
-<button onclick="show('couriers')">Kuryeler</button>
-<button onclick="show('restaurants')">Restoranlar</button>
 <button onclick="show('applications')">Başvurular</button>
 </div>
 
@@ -40,35 +37,6 @@ input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 <div id="map"></div>
 </div>
 
-<div id="orders" style="display:none">
-<h2>📦 Siparişler</h2>
-
-<input id="oProduct" placeholder="Ürün adı">
-<input id="oLat" placeholder="Enlem">
-<input id="oLng" placeholder="Boylam">
-
-<button onclick="createOrder()">Sipariş Oluştur</button>
-
-<div id="orderList"></div>
-</div>
-
-<div id="couriers" style="display:none">
-<h2>🚴 Kuryeler</h2>
-<input id="cName" placeholder="Ad">
-<input id="cMail" placeholder="Email">
-<button onclick="addCourier()">Ekle</button>
-<div id="courierList"></div>
-</div>
-
-<div id="restaurants" style="display:none">
-<h2>🍔 Restoranlar</h2>
-<input id="rName" placeholder="Ad">
-<input id="rMail" placeholder="Email">
-<button onclick="addRestaurant()">Ekle</button>
-<div id="restaurantList"></div>
-</div>
-
-<!-- 🔥 AYRILMIŞ BAŞVURULAR -->
 <div id="applications" style="display:none">
 <h2>📩 Başvurular</h2>
 
@@ -85,9 +53,10 @@ input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
 import {
-getFirestore, collection, addDoc, onSnapshot,
-deleteDoc, doc, updateDoc, setDoc, getDocs
+getFirestore, collection, onSnapshot,
+updateDoc, doc, addDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -95,6 +64,7 @@ getAuth,
 createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
+/* 🔥 FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -104,16 +74,9 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* DOM FIX */
-const orderList = document.getElementById("orderList");
-const courierList = document.getElementById("courierList");
-const restaurantList = document.getElementById("restaurantList");
-const courierApps = document.getElementById("courierApps");
-const restaurantApps = document.getElementById("restaurantApps");
-
 /* NAV */
 window.show=id=>{
-["dashboard","orders","couriers","restaurants","applications"]
+["dashboard","applications"]
 .forEach(x=>document.getElementById(x).style.display="none");
 document.getElementById(id).style.display="block";
 }
@@ -123,7 +86,10 @@ const map=L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 setTimeout(()=>map.invalidateSize(),500);
 
-/* 📩 APPLICATIONS AYIRMA */
+/* 📩 APPLICATIONS */
+const courierApps = document.getElementById("courierApps");
+const restaurantApps = document.getElementById("restaurantApps");
+
 onSnapshot(collection(db,"applications"),snap=>{
 courierApps.innerHTML="";
 restaurantApps.innerHTML="";
@@ -136,7 +102,7 @@ const card=`
 <b>${a.name}</b><br>
 ${a.email}<br><br>
 
-<button onclick="approve('${d.id}','${a.email}','${a.name}','${a.type || "courier"}')">✅ Onayla</button>
+<button onclick="approve('${d.id}','${a.email}','${a.name}','${a.type}')">✅ Onayla</button>
 <button onclick="reject('${d.id}')">❌ Reddet</button>
 </div>
 `;
@@ -146,83 +112,66 @@ restaurantApps.innerHTML+=card;
 }else{
 courierApps.innerHTML+=card;
 }
-
 });
 });
 
-/* APPROVE (ROLE AKILLI) */
-window.approve=async(id,email,name,type)=>{
-try{
-
-const role = type==="restaurant" ? "restaurant" : "courier";
-
-/* AUTH */
-let userId=null;
+/* ✅ APPROVE (UID SYSTEM) */
+window.approve = async (id,email,name,type)=>{
 
 try{
-const user=await createUserWithEmailAndPassword(auth,email,"123456");
-userId=user.user.uid;
-}catch(e){
-if(e.code==="auth/email-already-in-use"){
-userId=email;
-}else{throw e;}
-}
 
-/* USERS */
-await setDoc(doc(db,"users",userId),{
+// 🔐 AUTH USER OLUŞTUR
+const user = await createUserWithEmailAndPassword(auth,email,"123456");
+const uid = user.user.uid;
+
+// 👤 USERS COLLECTION
+await setDoc(doc(db,"users",uid),{
 email,
-role
+role:type
 });
 
-/* COLLECTION */
-if(role==="courier"){
-
-/* duplicate kontrol */
-const snap=await getDocs(collection(db,"couriers"));
-let exists=false;
-
-snap.forEach(d=>{
-if(d.data().email===email){exists=true;}
-});
-
-if(!exists){
-await addDoc(collection(db,"couriers"),{
+// 🚴 KURYE
+if(type==="courier"){
+await setDoc(doc(db,"couriers",uid),{
 name:name || email,
 email,
+lat:0,
+lng:0,
 activeOrders:0,
+online:false,
 createdAt:new Date()
 });
 }
 
-}else{
-
-await addDoc(collection(db,"restaurants"),{
+// 🍔 RESTORAN
+if(type==="restaurant"){
+await setDoc(doc(db,"restaurants",uid),{
 name:name || email,
 email,
 createdAt:new Date()
 });
-
 }
 
-/* STATUS */
+// 📩 STATUS UPDATE
 await updateDoc(doc(db,"applications",id),{
 status:"approved"
 });
 
-alert("✅ "+role+" eklendi!");
+alert("✅ "+type+" oluşturuldu!");
 
 }catch(e){
 alert("Hata: "+e.message);
 }
-}
 
-/* REJECT */
-window.reject=async(id)=>{
+};
+
+/* ❌ REJECT */
+window.reject = async (id)=>{
 await updateDoc(doc(db,"applications",id),{
 status:"rejected"
 });
 alert("Reddedildi");
-}
+};
 
 </script>
 

@@ -2,57 +2,82 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI | Restoran Paneli</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<title>Restaurant Panel</title>
 
 <style>
-body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white}
-.sidebar{width:220px;background:#020617;padding:20px;height:100vh}
-.sidebar h2{color:#00d4ff}
-.sidebar button{display:block;width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer}
-.sidebar button:hover{color:white}
-.content{flex:1;padding:20px}
-.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
-input,select{width:100%;padding:12px;margin:5px 0;border:none;border-radius:8px;background:#020617;color:white}
-.btn{background:#00d4ff;color:black;padding:12px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
-#map{width:100%;height:300px;border-radius:12px;margin-top:10px}
+body{font-family:Arial;background:#f5f7fb;margin:0;padding:20px;}
+input,button{width:100%;padding:12px;margin-top:10px;}
+.card{background:white;padding:15px;margin-top:10px;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
-<div class="sidebar">
-<h2>Restoran</h2>
-<button onclick="show('create')">Sipariş Oluştur</button>
-<button onclick="show('orders')">Siparişlerim</button>
-</div>
+<h2>Sipariş Oluştur</h2>
 
-<div class="content">
-
-<div id="create">
-<h2>🍔 Sipariş Oluştur</h2>
-<div class="card">
-<input id="product" placeholder="Ürün">
+<input id="customer" placeholder="Müşteri Adı">
 <input id="address" placeholder="Adres">
-<select id="payment">
-<option value="online">Online</option>
-<option value="cash">Nakit</option>
-</select>
 
-<div id="map"></div>
+<button onclick="createOrder()">Sipariş Gönder</button>
 
-<button class="btn" onclick="createOrder()">🚀 Sipariş Oluştur</button>
-</div>
-</div>
+<h3>Aktif Siparişler</h3>
+<div id="orders"></div>
 
-<div id="orders" style="display:none">
-<h2>📦 Siparişlerim</h2>
-<div id="orderList"></div>
-</div>
+<script type="module">
 
-</div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-<script type="
+const app = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
+
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, async(u)=>{
+if(!u){ location.href="login.html"; return; }
+
+const snap = await getDoc(doc(db,"users",u.uid));
+if(!snap.exists() || snap.data().role !== "restaurant"){
+location.href="index.html";
+}
+});
+
+window.createOrder = async()=>{
+const customer = document.getElementById("customer").value;
+const address = document.getElementById("address").value;
+
+await addDoc(collection(db,"orders"),{
+customer,
+address,
+status:"bekliyor",
+createdAt:new Date()
+});
+
+alert("Sipariş gönderildi");
+};
+
+/* SİPARİŞ LİSTESİ */
+onSnapshot(collection(db,"orders"), snap=>{
+const div = document.getElementById("orders");
+div.innerHTML="";
+
+snap.forEach(d=>{
+const o = d.data();
+
+div.innerHTML += `
+<div class="card">
+<b>${o.customer}</b><br>
+${o.address}<br>
+Durum: ${o.status}
+</div>`;
+});
+});
+
+</script>
+</body>
+</html>

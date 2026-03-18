@@ -24,9 +24,6 @@ body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 .stop{background:#ff4d4d;color:#fff;}
 
 .order{background:#1f2937;padding:12px;border-radius:10px;margin-top:8px;}
-.order button{margin-top:5px;width:100%;padding:8px;background:#00d4ff;border:none;border-radius:6px;}
-
-.green{background:#065f46;}
 
 .stats{
 display:grid;
@@ -62,15 +59,9 @@ font-size:13px;
 <button class="btn stop" onclick="stopTracking()">Offline Ol</button>
 
 <div class="stats">
-<div class="stat">⏱️ Süre<br><b id="time">0</b></div>
 <div class="stat">📍 KM<br><b id="totalKm">0</b></div>
-<div class="stat">📊 Ortalama<br><b id="avgKm">0</b></div>
 <div class="stat">💰 Kazanç<br><b id="totalMoney">0</b></div>
-<div class="stat">⚡ Saatlik<br><b id="hourly">0</b></div>
 </div>
-
-<h3>📦 Aktif Görev</h3>
-<div id="activeOrder"></div>
 
 <h3>📦 Sipariş Havuzu</h3>
 <div id="orders"></div>
@@ -82,18 +73,14 @@ font-size:13px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-
 import {
 getFirestore,
-doc,
-updateDoc,
 collection,
 query,
 where,
 onSnapshot,
-runTransaction,
-addDoc,
-getDoc
+doc,
+updateDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -101,6 +88,10 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
+/* 🔥 AYAR */
+const MAX_DISTANCE_KM = 10;
+
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -110,76 +101,56 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let map = L.map('map').setView([39.92,32.85],13);
+let user, marker, currentPos;
+
+/* MAP */
+const map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let marker,watchId,user;
-
-let startTime=null;
-let totalDistance=0;
-let lastPos=null;
-let totalEarnings=0;
-let totalOrders=0;
-
-/* 🏍️ ICON */
+/* 🏍 ICON */
 const bikeIcon = L.divIcon({
 html:`<div style="font-size:26px;color:#00d4ff;">🏍️</div>`,
 className:''
 });
 
-/* 📏 MESAFE */
-function calcDist(a,b){
-return Math.sqrt(
-Math.pow(a.lat-b.lat,2)+
-Math.pow(a.lng-b.lng,2)
-)*111;
+/* 📏 HAVERSINE */
+function getDistanceKm(lat1, lng1, lat2, lng2){
+const R = 6371;
+const dLat = (lat2-lat1)*Math.PI/180;
+const dLng = (lng2-lng1)*Math.PI/180;
+
+const a =
+Math.sin(dLat/2)**2 +
+Math.cos(lat1*Math.PI/180)*
+Math.cos(lat2*Math.PI/180)*
+Math.sin(dLng/2)**2;
+
+return R * (2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
 }
 
 /* AUTH */
 onAuthStateChanged(auth,(u)=>{
 if(!u){location.href="login.html";return;}
-user=u;
-
-onSnapshot(query(collection(db,"earnings"),where("courierId","==",u.uid)),snap=>{
-totalEarnings=0;
-totalOrders=snap.size;
-
-snap.forEach(d=>totalEarnings+=d.data().amount);
-
-document.getElementById("totalMoney").innerText=totalEarnings+"₺";
-});
+user = u;
 });
 
 /* ONLINE */
-window.startTracking=()=>{
-startTime=new Date();
+window.startTracking = ()=>{
 
 document.getElementById("status").className="status online";
 document.getElementById("status").innerText="Online";
 
-watchId=navigator.geolocation.watchPosition(async(pos)=>{
+navigator.geolocation.watchPosition(async(pos)=>{
 
-const lat=pos.coords.latitude;
-const lng=pos.coords.longitude;
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
 
-const current={lat,lng};
-
-if(lastPos){
-totalDistance+=calcDist(lastPos,current);
-}
-
-lastPos=current;
-
-document.getElementById("totalKm").innerText=totalDistance.toFixed(2);
-
-if(totalOrders>0){
-document.getElementById("avgKm").innerText=(totalDistance/totalOrders).toFixed(2);
-}
+currentPos = {lat,lng};
 
 if(marker){
 marker.setLatLng([lat,lng]);
 }else{
-marker=L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
+marker = L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
 }
 
 map.setView([lat,lng],15);
@@ -192,80 +163,57 @@ lat,lng,online:true
 };
 
 /* OFFLINE */
-window.stopTracking=()=>{
-navigator.geolocation.clearWatch(watchId);
+window.stopTracking = ()=>{
+document.getElementById("status").className="status offline";
+document.getElementById("status").innerText="Offline";
 };
 
-/* TIMER */
-setInterval(()=>{
-if(!startTime) return;
+/* 📦 SİPARİŞLER */
+const ordersDiv = document.getElementById("orders");
 
-const diff=(new Date()-startTime)/1000/60;
-document.getElementById("time").innerText=diff.toFixed(1)+" dk";
-
-const hourly=(totalEarnings/(diff/60 || 1)).toFixed(0);
-document.getElementById("hourly").innerText=hourly+"₺";
-
-},3000);
-
-/* HAVUZ */
-const ordersDiv=document.getElementById("orders");
-
-onSnapshot(query(collection(db,"orders"),where("status","==","bekliyor")),snap=>{
-
-if(!document.getElementById("status").classList.contains("online")){
-ordersDiv.innerHTML="Online ol";
-return;
-}
+onSnapshot(query(collection(db,"orders"),where("status","==","bekliyor")), snap=>{
 
 ordersDiv.innerHTML="";
 
-snap.forEach(docSnap=>{
-const o=docSnap.data();
+if(!currentPos){
+ordersDiv.innerHTML="Konum bekleniyor...";
+return;
+}
 
-ordersDiv.innerHTML+=`
+snap.forEach(docSnap=>{
+const o = docSnap.data();
+
+if(!o.lat || !o.lng) return;
+
+/* 🔥 MESAFE */
+const dist = getDistanceKm(
+currentPos.lat,
+currentPos.lng,
+o.lat,
+o.lng
+);
+
+/* 🔥 FİLTRE */
+if(dist <= MAX_DISTANCE_KM){
+
+ordersDiv.innerHTML += `
 <div class="order">
 <b>${o.customer}</b><br>
 ${o.address}<br>
-💰 ${o.price}₺
-<button onclick="acceptOrder('${docSnap.id}',this)">Kabul</button>
-</div>`;
-});
+📏 ${dist.toFixed(2)} km<br>
+💰 ${o.price || 0}₺
+</div>
+`;
 
-});
-
-/* LOCK */
-window.acceptOrder=async(id,btn)=>{
-btn.disabled=true;
-
-try{
-await runTransaction(db,async(t)=>{
-const ref=doc(db,"orders",id);
-const snap=await t.get(ref);
-
-if(snap.data().status!=="bekliyor") throw "taken";
-
-t.update(ref,{status:"yolda",courierId:user.uid});
-});
-}catch{
-alert("Alındı");
-btn.disabled=false;
 }
-};
 
-/* TESLİM */
-window.finishOrder=async(id)=>{
-const ref=doc(db,"orders",id);
-const snap=await getDoc(ref);
-const o=snap.data();
-
-await updateDoc(ref,{status:"delivered"});
-
-await addDoc(collection(db,"earnings"),{
-courierId:user.uid,
-amount:o.price
 });
-};
+
+if(ordersDiv.innerHTML===""){
+ordersDiv.innerHTML="Yakında sipariş yok";
+}
+
+});
 
 </script>
 </body>

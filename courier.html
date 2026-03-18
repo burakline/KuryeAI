@@ -2,133 +2,58 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kurye Panel</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{background:#0b0e14;color:white;font-family:Arial;}
-.card{background:#1f2937;padding:12px;margin:10px;border-radius:10px;}
-button{margin-top:5px;padding:8px;border:none;border-radius:6px;}
+body{margin:0;font-family:Arial;background:#0b0e14;color:white;}
+
+.header{
+padding:15px;
+background:#020617;
+display:flex;
+justify-content:space-between;
+}
+
+.status{
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+}
+
+.online{background:#00ff9c;color:#000;}
+.offline{background:#ff4d4d;}
+
+#map{height:40vh;}
+
+.panel{padding:15px;}
+
+.card{
+background:#1f2937;
+padding:12px;
+border-radius:10px;
+margin-top:10px;
+}
+
+button{
+margin-top:5px;
+padding:10px;
+border:none;
+border-radius:6px;
+width:100%;
+}
+
+.toggle{background:#374151;}
+.accept{background:#00d4ff;color:black;}
+.reject{background:#ef4444;color:white;}
+.finish{background:#22c55e;color:white;}
 </style>
 </head>
 
 <body>
 
-<h2>🚴 Kurye Panel</h2>
-
-<div id="order"></div>
-
-<canvas id="chart"></canvas>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore,
-collection,
-onSnapshot,
-doc,
-updateDoc,
-addDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-import {
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-
-const app = initializeApp({
-apiKey:"AIzaSy...",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
-
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-let user;
-
-/* 🔔 ORDER */
-onAuthStateChanged(auth,u=>{
-user=u;
-
-onSnapshot(collection(db,"orders"),snap=>{
-
-snap.forEach(d=>{
-const o=d.data();
-
-if(o.courierId===user.uid){
-
-const div=document.getElementById("order");
-
-div.innerHTML=`
-<div class="card">
-${o.customer}<br>
-${o.address}<br>
-
-${o.status==="pending_accept" ? `
-<button onclick="accept('${d.id}')">Kabul</button>
-<button onclick="reject('${d.id}')">Reddet</button>
-` : ""}
-
-${o.status==="yolda" ? `
-<button onclick="finish('${d.id}',${o.price})">Teslim</button>
-` : ""}
-
-</div>
-`;
-
-}
-
-});
-
-});
-
-});
-
-/* KABUL */
-window.accept = async(id)=>{
-await updateDoc(doc(db,"orders",id),{status:"yolda"});
-};
-
-/* REDDET */
-window.reject = async(id)=>{
-await updateDoc(doc(db,"orders",id),{
-status:"bekliyor",
-courierId:null
-});
-};
-
-/* TESLİM */
-window.finish = async(id,price)=>{
-
-await updateDoc(doc(db,"orders",id),{status:"delivered"});
-
-await addDoc(collection(db,"earnings"),{
-courierId:user.uid,
-amount:price,
-date:new Date()
-});
-
-};
-
-/* 📊 CHART */
-onSnapshot(collection(db,"earnings"),snap=>{
-
-let total=0;
-
-snap.forEach(d=>total+=d.data().amount);
-
-new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{
-labels:["Kazanç"],
-datasets:[{data:[total]}]
-}
-});
-
-});
-
-</script>
-</body>
-</html>
+<div class="header">
+<h3

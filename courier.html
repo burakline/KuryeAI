@@ -76,37 +76,25 @@ font-weight:bold;
 
 </div>
 
+<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<script type="module">
+<!-- FIREBASE COMPAT -->
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore,
-collection,
-onSnapshot,
-query,
-where,
-doc,
-updateDoc,
-getDoc,
-runTransaction
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+<script>
 
-import {
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-
-/* CONFIG */
-const app = initializeApp({
+/* 🔥 CONFIG */
+firebase.initializeApp({
 apiKey:"AIzaSy...",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
+const db = firebase.firestore();
+const auth = firebase.auth();
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
@@ -114,7 +102,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let marker;
 
-/* ✅ FIX */
+/* ELEMENTS */
 const orders = document.getElementById("orders");
 const activeOrder = document.getElementById("activeOrder");
 const status = document.getElementById("status");
@@ -150,14 +138,14 @@ alert("🚀 Yeni sipariş geldi!");
 }
 
 /* AUTH */
-onAuthStateChanged(auth, async(u)=>{
+auth.onAuthStateChanged(async(u)=>{
 
 if(!u) return location.href="login.html";
 
 user=u;
 
 /* COURIER */
-onSnapshot(doc(db,"couriers",u.uid),(snap)=>{
+db.collection("couriers").doc(u.uid).onSnapshot((snap)=>{
 courierData = snap.data();
 
 if(courierData?.online){
@@ -172,9 +160,9 @@ loadActiveOrder();
 });
 
 /* ORDERS */
-const q = query(collection(db,"orders"), where("status","==","bekliyor"));
-
-onSnapshot(q,(snap)=>{
+db.collection("orders")
+.where("status","==","bekliyor")
+.onSnapshot((snap)=>{
 
 orders.innerHTML="";
 
@@ -215,7 +203,7 @@ ${o.address}<br>
 });
 
 /* SHIFT */
-window.startShift=()=>{
+function startShift(){
 navigator.geolocation.watchPosition(async(pos)=>{
 const lat=pos.coords.latitude;
 const lng=pos.coords.longitude;
@@ -228,45 +216,54 @@ marker = L.marker([lat,lng]).addTo(map);
 
 map.setView([lat,lng],15);
 
-await updateDoc(doc(db,"couriers",user.uid),{
+await db.collection("couriers").doc(user.uid).update({
 lat,lng,online:true,status:"available"
 });
 });
-};
+}
 
 /* OFFLINE */
-window.endShift=async()=>{
-await updateDoc(doc(db,"couriers",user.uid),{online:false});
+async function endShift(){
+await db.collection("couriers").doc(user.uid).update({
+online:false
+});
 location.reload();
-};
+}
 
 /* ACCEPT */
-window.acceptOrder = async(id,price,surge)=>{
-const ref = doc(db,"orders",id);
+async function acceptOrder(id,price,surge){
+
+const ref = db.collection("orders").doc(id);
 
 try{
-await runTransaction(db, async(t)=>{
+await db.runTransaction(async(t)=>{
 const snap = await t.get(ref);
 if(snap.data().status!=="bekliyor") throw "taken";
 
-t.update(ref,{status:"yolda",courierId:user.uid});
+t.update(ref,{
+status:"yolda",
+courierId:user.uid
+});
 });
 
-await updateDoc(doc(db,"couriers",user.uid),{status:"busy"});
+await db.collection("couriers").doc(user.uid).update({
+status:"busy"
+});
 
 alert("🚀 Sipariş alındı!");
 
 }catch{
 alert("Başka kurye aldı!");
 }
-};
+}
 
 /* ACTIVE */
 function loadActiveOrder(){
 
-const q = query(collection(db,"orders"), where("courierId","==",user.uid));
+db.collection("orders")
+.where("courierId","==",user.uid)
+.onSnapshot((snap)=>{
 
-onSnapshot(q,(snap)=>{
 activeOrder.innerHTML="";
 
 snap.forEach(d=>{
@@ -283,27 +280,34 @@ Teslim Edildi
 </button>
 </div>`;
 });
+
 });
 }
 
 /* FINISH */
-window.finishOrder = async(id)=>{
-await updateDoc(doc(db,"orders",id),{status:"delivered"});
-await updateDoc(doc(db,"couriers",user.uid),{status:"available"});
+async function finishOrder(id){
+await db.collection("orders").doc(id).update({
+status:"delivered"
+});
+
+await db.collection("couriers").doc(user.uid).update({
+status:"available"
+});
+
 alert("Teslim edildi 🎉");
-};
+}
 
 /* REJECT */
-window.rejectOrder = async(id)=>{
-const ref = doc(db,"orders",id);
-const snap = await getDoc(ref);
+async function rejectOrder(id){
+const ref = db.collection("orders").doc(id);
+const snap = await ref.get();
 
 const prev = snap.data().rejectedBy || [];
 
-await updateDoc(ref,{
+await ref.update({
 rejectedBy:[...prev, user.uid]
 });
-};
+}
 
 </script>
 

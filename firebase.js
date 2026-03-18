@@ -1,116 +1,179 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+// firebase.js
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
-getAuth,
-signInWithEmailAndPassword,
-createUserWithEmailAndPassword,
-onAuthStateChanged,
-setPersistence,
-browserLocalPersistence,
-browserSessionPersistence
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
-getFirestore,
-doc,
-setDoc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  addDoc,
+  onSnapshot,
+  updateDoc,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* 🔥 CONFIG */
-const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  projectId: "kuryeai",
+  storageBucket: "kuryeai.appspot.com",
+  messagingSenderId: "000000000000", // opsiyonel
+  appId: "1:000000000000:web:xxxxxx" // opsiyonel
+};
 
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* 🔄 AUTO LOGIN CHECK */
-onAuthStateChanged(auth, async(user)=>{
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
 
-if(!user) return;
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
 
-const snap = await getDoc(doc(db,"users",user.uid));
+    if (!snap.exists()) return;
 
-if(!snap.exists()) return;
+    const role = snap.data().role;
 
-const role = snap.data().role;
+    redirect(role);
 
-redirect(role);
-
+  } catch (err) {
+    console.error("Auth check error:", err);
+  }
 });
 
 /* 🚀 LOGIN */
-window.loginUser = async function(email, password, remember=false){
+window.loginUser = async function (email, password, remember = false) {
+  try {
+    email = email.trim().toLowerCase();
 
-try{
+    await setPersistence(
+      auth,
+      remember ? browserLocalPersistence : browserSessionPersistence
+    );
 
-email = email.trim().toLowerCase();
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCred.user.uid;
 
-/* 🔐 PERSISTENCE */
-await setPersistence(
-auth,
-remember ? browserLocalPersistence : browserSessionPersistence
-);
+    const snap = await getDoc(doc(db, "users", uid));
 
-const userCred = await signInWithEmailAndPassword(auth, email, password);
-const uid = userCred.user.uid;
+    if (!snap.exists()) {
+      alert("Kullanıcı rolü bulunamadı!");
+      return;
+    }
 
-/* 🔍 ROLE */
-const snap = await getDoc(doc(db,"users",uid));
+    redirect(snap.data().role);
 
-if(!snap.exists()){
-alert("Kullanıcı rolü bulunamadı!");
-return;
-}
-
-redirect(snap.data().role);
-
-}catch(e){
-alert("❌ Giriş başarısız: " + e.message);
-}
-
+  } catch (e) {
+    alert("❌ Giriş başarısız: " + e.message);
+  }
 };
 
-/* 🔒 REGISTER (KISITLI) */
-window.registerUser = async function(email, password){
+/* 🔒 REGISTER */
+window.registerUser = async function (email, password, role = "courier") {
+  try {
+    email = email.trim().toLowerCase();
 
-try{
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCred.user.uid;
 
-email = email.trim().toLowerCase();
+    await setDoc(doc(db, "users", uid), {
+      email,
+      role,
+      createdAt: Date.now()
+    });
 
-/* ❌ ROLE DIŞARIDAN ALMA */
-const userCred = await createUserWithEmailAndPassword(auth,email,password);
-const uid = userCred.user.uid;
+    alert("✅ Kayıt başarılı!");
 
-/* default role */
-await setDoc(doc(db,"users",uid),{
-email,
-role:"courier",
-createdAt:new Date()
-});
+  } catch (e) {
+    alert("❌ Kayıt hatası: " + e.message);
+  }
+};
 
-alert("✅ Kayıt başarılı!");
+/* 📦 SİPARİŞ OLUŞTUR */
+window.createOrder = async function (address, price = 0) {
+  try {
+    await addDoc(collection(db, "orders"), {
+      address,
+      price,
+      status: "pending",
+      createdAt: Date.now()
+    });
 
-}catch(e){
-alert("❌ Kayıt hatası: "+e.message);
-}
+    alert("🚀 Sipariş oluşturuldu");
 
+  } catch (e) {
+    alert("Sipariş hatası: " + e.message);
+  }
+};
+
+/* 🛵 SİPARİŞLERİ DİNLE */
+window.listenOrders = function (callback) {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+
+  return onSnapshot(q, (snapshot) => {
+    const orders = [];
+
+    snapshot.forEach((docSnap) => {
+      orders.push({
+        id: docSnap.id,
+        ...docSnap.data()
+      });
+    });
+
+    callback(orders);
+  });
+};
+
+/* ✅ KABUL */
+window.acceptOrder = async function (orderId, courierId = "kurye-1") {
+  await updateDoc(doc(db, "orders", orderId), {
+    status: "accepted",
+    courierId
+  });
+};
+
+/* 📦 TESLİM */
+window.completeOrder = async function (orderId) {
+  await updateDoc(doc(db, "orders", orderId), {
+    status: "delivered"
+  });
+};
+
+/* 🚪 LOGOUT */
+window.logoutUser = async function () {
+  await signOut(auth);
+  window.location.href = "index.html";
 };
 
 /* 🔀 REDIRECT */
-function redirect(role){
+function redirect(role) {
+  if (window.location.pathname.includes(role)) return;
 
-if(role === "admin"){
-window.location.href = "admin.html";
-}
-else if(role === "restaurant"){
-window.location.href = "restaurant.html";
-}
-else{
-window.location.href = "courier.html";
+  if (role === "admin") {
+    window.location.href = "admin.html";
+  } else if (role === "restaurant") {
+    window.location.href = "restaurant.html";
+  } else {
+    window.location.href = "courier.html";
+  }
 }
 
-}
+/* EXPORT */
+export { db, auth };

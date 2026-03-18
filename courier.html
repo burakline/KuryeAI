@@ -114,6 +114,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let marker;
 
+/* ✅ FIX */
+const orders = document.getElementById("orders");
+const activeOrder = document.getElementById("activeOrder");
+const status = document.getElementById("status");
+
 /* GLOBAL */
 let user;
 let courierData=null;
@@ -173,7 +178,6 @@ onSnapshot(q,(snap)=>{
 
 orders.innerHTML="";
 
-/* 🔔 NEW ORDER DETECT */
 if(snap.size > lastOrderCount){
 notify();
 }
@@ -182,25 +186,18 @@ lastOrderCount = snap.size;
 snap.forEach(d=>{
 const o=d.data();
 
-/* 🚫 REDDEDİLEN */
 if(o.rejectedBy?.includes(user.uid)) return;
-
-/* 🚫 ONLINE */
 if(!courierData?.online) return;
 
-/* 🧠 AI SCORE */
 let score = 0;
 
 if(o.lat && courierData?.lat){
 const dist = getDistance(courierData.lat,courierData.lng,o.lat,o.lng);
-
-score = 100 - dist; // yakınsa yüksek
+score = 100 - dist;
 }
 
-/* düşük skor → gösterme */
 if(score < 50 && Math.random()>0.3) return;
 
-/* UI */
 orders.innerHTML+=`
 <div class="card">
 <b>${o.customer}</b><br>
@@ -219,13 +216,10 @@ ${o.address}<br>
 
 /* SHIFT */
 window.startShift=()=>{
-
 navigator.geolocation.watchPosition(async(pos)=>{
-
 const lat=pos.coords.latitude;
 const lng=pos.coords.longitude;
 
-/* MAP */
 if(marker){
 marker.setLatLng([lat,lng]);
 }else{
@@ -237,22 +231,17 @@ map.setView([lat,lng],15);
 await updateDoc(doc(db,"couriers",user.uid),{
 lat,lng,online:true,status:"available"
 });
-
 });
-
 };
 
 /* OFFLINE */
 window.endShift=async()=>{
-await updateDoc(doc(db,"couriers",user.uid),{
-online:false
-});
+await updateDoc(doc(db,"couriers",user.uid),{online:false});
 location.reload();
 };
 
 /* ACCEPT */
 window.acceptOrder = async(id,price,surge)=>{
-
 const ref = doc(db,"orders",id);
 
 try{
@@ -260,22 +249,16 @@ await runTransaction(db, async(t)=>{
 const snap = await t.get(ref);
 if(snap.data().status!=="bekliyor") throw "taken";
 
-t.update(ref,{
-status:"yolda",
-courierId:user.uid
-});
+t.update(ref,{status:"yolda",courierId:user.uid});
 });
 
-await updateDoc(doc(db,"couriers",user.uid),{
-status:"busy"
-});
+await updateDoc(doc(db,"couriers",user.uid),{status:"busy"});
 
 alert("🚀 Sipariş alındı!");
 
 }catch{
 alert("Başka kurye aldı!");
 }
-
 };
 
 /* ACTIVE */
@@ -288,7 +271,6 @@ activeOrder.innerHTML="";
 
 snap.forEach(d=>{
 const o=d.data();
-
 if(o.status!=="yolda") return;
 
 activeOrder.innerHTML=`
@@ -301,29 +283,18 @@ Teslim Edildi
 </button>
 </div>`;
 });
-
 });
-
 }
 
 /* FINISH */
 window.finishOrder = async(id)=>{
-
-await updateDoc(doc(db,"orders",id),{
-status:"delivered"
-});
-
-await updateDoc(doc(db,"couriers",user.uid),{
-status:"available"
-});
-
+await updateDoc(doc(db,"orders",id),{status:"delivered"});
+await updateDoc(doc(db,"couriers",user.uid),{status:"available"});
 alert("Teslim edildi 🎉");
-
 };
 
 /* REJECT */
 window.rejectOrder = async(id)=>{
-
 const ref = doc(db,"orders",id);
 const snap = await getDoc(ref);
 
@@ -332,7 +303,6 @@ const prev = snap.data().rejectedBy || [];
 await updateDoc(ref,{
 rejectedBy:[...prev, user.uid]
 });
-
 };
 
 </script>

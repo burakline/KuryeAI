@@ -1,91 +1,43 @@
-importScripts("https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging-compat.js");
+// firebase-messaging-sw.js
 
-/* 🔥 FIREBASE */
+importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
+
+/* 🔥 FIREBASE CONFIG */
 firebase.initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai",
-messagingSenderId:"655930514402",
-appId:"1:655930514402:web:379321cbb83f48daf077bb"
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  projectId: "kuryeai",
+  messagingSenderId: "562153733113",
+  appId: "1:562153733113:web:61d9242d0af1da6a081b28"
 });
 
+/* 📩 MESSAGING */
 const messaging = firebase.messaging();
 
-/* 🔥 CACHE */
-const CACHE_NAME = "kuryeai-v2";
+/* 🔔 BACKGROUND NOTIFICATION */
+messaging.onBackgroundMessage(function (payload) {
 
-/* INSTALL */
-self.addEventListener("install", event=>{
-event.waitUntil(
-caches.open(CACHE_NAME).then(cache=>{
-return cache.addAll([
-"/index.html",
-"/courier.html",
-"/restaurant.html",
-"/admin.html"
-]);
-})
-);
-self.skipWaiting();
-});
+  console.log("📩 Background mesaj:", payload);
 
-/* ACTIVATE */
-self.addEventListener("activate", event=>{
-event.waitUntil(
-caches.keys().then(keys=>{
-return Promise.all(
-keys.map(key=>{
-if(key !== CACHE_NAME){
-return caches.delete(key);
-}
-})
-);
-})
-);
-self.clients.claim();
-});
+  const title = payload.notification?.title || "Yeni Bildirim";
+  const options = {
+    body: payload.notification?.body || "Detay yok",
+    icon: "/logo.png",
+    badge: "/logo.png"
+  };
 
-/* FETCH */
-self.addEventListener("fetch", event=>{
-
-// sadece GET cache
-if(event.request.method !== "GET") return;
-
-event.respondWith(
-caches.match(event.request).then(res=>{
-return res || fetch(event.request);
-})
-);
+  self.registration.showNotification(title, options);
 
 });
 
-/* 🔔 PUSH */
-messaging.onBackgroundMessage((payload)=>{
+/* 🔥 NOTIFICATION CLICK */
+self.addEventListener("notificationclick", function (event) {
 
-self.registration.showNotification(
-payload.notification?.title || "KuryeAI",
-{
-body: payload.notification?.body || "Yeni bildirim",
-icon: "/logo.png",
-actions:[
-{action:"open", title:"Aç"},
-{action:"accept", title:"Kabul Et"}
-]
-}
-);
+  event.notification.close();
 
-});
-
-/* 🔔 CLICK */
-self.addEventListener("notificationclick", event=>{
-
-event.notification.close();
-
-if(event.action === "accept"){
-event.waitUntil(clients.openWindow("/courier.html"));
-}else{
-event.waitUntil(clients.openWindow("/"));
-}
+  event.waitUntil(
+    clients.openWindow("/")
+  );
 
 });

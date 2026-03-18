@@ -14,7 +14,6 @@ body {
     display:flex;
     background:#0f172a;
     color:white;
-    transition:0.3s;
 }
 .light {
     background:#f1f5f9;
@@ -26,9 +25,7 @@ body {
     padding:20px;
     height:100vh;
 }
-.sidebar h2 {
-    color:#00eaff;
-}
+.sidebar h2 { color:#00eaff; }
 .sidebar button {
     width:100%;
     padding:10px;
@@ -39,9 +36,7 @@ body {
     text-align:left;
     cursor:pointer;
 }
-.sidebar button:hover {
-    background:#0ea5e9;
-}
+.sidebar button:hover { background:#0ea5e9; }
 .content {
     flex:1;
     padding:20px;
@@ -52,9 +47,7 @@ body {
     border-radius:10px;
     margin-bottom:15px;
 }
-.light .card {
-    background:white;
-}
+.light .card { background:white; }
 .btn {
     padding:8px;
     border:none;
@@ -67,11 +60,6 @@ body {
     height:300px;
     border-radius:10px;
 }
-.topbar {
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:20px;
-}
 </style>
 </head>
 
@@ -82,6 +70,8 @@ body {
     <button onclick="showPage('dashboard')">Dashboard</button>
     <button onclick="showPage('applications')">Başvurular</button>
     <button onclick="showPage('orders')">Siparişler</button>
+    <button onclick="showPage('couriers')">Kuryeler</button>
+    <button onclick="showPage('restaurants')">Restoranlar</button>
     <button onclick="toggleTheme()">Tema</button>
     <button onclick="logout()">Çıkış</button>
 </div>
@@ -90,12 +80,8 @@ body {
 
 <!-- DASHBOARD -->
 <div id="dashboardPage">
-    <div class="topbar">
-        <h1>Dashboard</h1>
-    </div>
-
-    <div class="card">Toplam Sipariş: 0</div>
-
+    <h1>Dashboard</h1>
+    <div class="card">Sistem aktif 🚀</div>
     <div id="map" class="map"></div>
 </div>
 
@@ -111,6 +97,18 @@ body {
     <div class="card">Henüz sipariş yok</div>
 </div>
 
+<!-- COURIERS -->
+<div id="couriersPage" style="display:none;">
+    <h1>Kuryeler</h1>
+    <div class="card">Henüz kurye yok</div>
+</div>
+
+<!-- RESTAURANTS -->
+<div id="restaurantsPage" style="display:none;">
+    <h1>Restoranlar</h1>
+    <div id="restaurantList"></div>
+</div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -120,7 +118,7 @@ body {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-// CONFIG
+// FIREBASE
 const firebaseConfig = {
  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
  authDomain: "kuryeai.firebaseapp.com",
@@ -135,10 +133,13 @@ window.showPage = function(page){
     document.getElementById("dashboardPage").style.display="none";
     document.getElementById("applicationsPage").style.display="none";
     document.getElementById("ordersPage").style.display="none";
+    document.getElementById("couriersPage").style.display="none";
+    document.getElementById("restaurantsPage").style.display="none";
 
     document.getElementById(page+"Page").style.display="block";
 
     if(page==="applications") loadApplications();
+    if(page==="restaurants") loadRestaurants();
 }
 
 // LOGOUT
@@ -156,7 +157,23 @@ window.toggleTheme=function(){
 const map = L.map('map').setView([39.92, 32.85], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// 🔥 BAŞVURULAR
+// RESTORAN PINLERİ
+async function loadRestaurantsOnMap() {
+    const snapshot = await getDocs(collection(db, "restaurants"));
+
+    snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+
+        if(data.lat && data.lng){
+            L.marker([data.lat, data.lng])
+                .addTo(map)
+                .bindPopup(data.name);
+        }
+    });
+}
+loadRestaurantsOnMap();
+
+// BAŞVURULAR
 async function loadApplications(){
     const list=document.getElementById("applicationsList");
     list.innerHTML="Yükleniyor...";
@@ -182,15 +199,19 @@ async function loadApplications(){
     });
 }
 
-// 🔥 APPROVE (UPDATED)
+// APPROVE (KONUM + ŞİFRE)
 window.approve = async function(id, name, email) {
 
     const password = "123456";
+    const lat = 39.92;
+    const lng = 32.85;
 
     await addDoc(collection(db,"restaurants"),{
         name:name,
         email:email,
         password:password,
+        lat:lat,
+        lng:lng,
         createdAt:new Date()
     });
 
@@ -198,13 +219,36 @@ window.approve = async function(id, name, email) {
 
     alert("Onaylandı!\nŞifre: 123456");
     loadApplications();
+    loadRestaurantsOnMap();
 }
 
-// ❌ REJECT
+// REJECT
 window.reject = async function(id){
     await deleteDoc(doc(db,"applications",id));
     alert("Reddedildi");
     loadApplications();
+}
+
+// RESTORAN LİSTESİ
+async function loadRestaurants(){
+    const list = document.getElementById("restaurantList");
+    list.innerHTML = "";
+
+    const snapshot = await getDocs(collection(db,"restaurants"));
+
+    snapshot.forEach(docSnap=>{
+        const data = docSnap.data();
+
+        const div = document.createElement("div");
+        div.className="card";
+
+        div.innerHTML = `
+            <b>${data.name}</b><br>
+            ${data.email}
+        `;
+
+        list.appendChild(div);
+    });
 }
 
 </script>

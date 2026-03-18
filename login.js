@@ -1,9 +1,22 @@
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import {
+getAuth,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+setPersistence,
+browserLocalPersistence,
+browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
+import {
+getFirestore,
+doc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+/* CONFIG */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -13,18 +26,48 @@ projectId:"kuryeai"
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-document.getElementById("loginBtn").onclick = async () => {
+/* ELEMENTLER */
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
 
-const email = document.getElementById("email").value.trim();
-const password = document.getElementById("password").value.trim();
+/* 🔐 AUTO LOGIN */
+onAuthStateChanged(auth, async(user)=>{
+if(user){
+await redirect(user.uid);
+}
+});
+
+/* 🚀 LOGIN */
+loginBtn.onclick = async ()=>{
+
+const email = emailInput.value.trim();
+const password = passwordInput.value.trim();
+
+if(!email || !password){
+alert("Email ve şifre gir!");
+return;
+}
 
 try{
 
-const userCred = await signInWithEmailAndPassword(auth, email, password);
-const uid = userCred.user.uid;
+// 🔥 SESSION (remember yoksa session)
+await setPersistence(auth, browserLocalPersistence);
 
-// 🔥 ROLE ÇEK
-const snap = await getDoc(doc(db, "users", uid));
+const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+await redirect(userCred.user.uid);
+
+}catch(e){
+alert("❌ "+e.message);
+}
+
+};
+
+/* 🎯 ROLE YÖNLENDİRME */
+async function redirect(uid){
+
+const snap = await getDoc(doc(db,"users",uid));
 
 if(!snap.exists()){
 alert("Rol bulunamadı!");
@@ -33,19 +76,23 @@ return;
 
 const role = snap.data().role;
 
-// 🚀 YÖNLENDİRME
-if(role === "admin"){
-location.href = "admin.html";
-}
-else if(role === "courier"){
-location.href = "courier.html";
-}
-else{
-location.href = "index.html";
-}
+switch(role){
 
-}catch(e){
-alert("Hata: " + e.message);
+case "admin":
+location.href="admin.html";
+break;
+
+case "courier":
+location.href="courier.html";
+break;
+
+case "restaurant":
+location.href="restaurant.html";
+break;
+
+default:
+location.href="index.html";
+
 }
 
 }

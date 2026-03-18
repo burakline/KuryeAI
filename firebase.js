@@ -41,12 +41,21 @@ const db = getFirestore(app);
 const messaging = getMessaging(app);
 
 
-// 🔄 AUTO LOGIN (DÜZELTİLDİ)
+// 🔔 SERVICE WORKER REGISTER (403 FIX)
+async function registerSW() {
+  if ("serviceWorker" in navigator) {
+    const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    console.log("✅ SW hazır:", reg);
+    return reg;
+  }
+}
+
+
+// 🔄 AUTO LOGIN (SADECE LOGIN SAYFASINDA YÖNLENDİRİR)
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) return;
 
-  // 🔥 SADECE login sayfasındaysa yönlendir
   const currentPage = window.location.pathname;
 
   if (currentPage.includes("login.html")) {
@@ -114,7 +123,7 @@ window.registerUser = async function (email, password) {
 };
 
 
-// 🔔 NOTIFICATION INIT
+// 🔔 NOTIFICATION INIT (FULL FIX)
 window.initNotifications = async function (userId) {
 
   try {
@@ -126,11 +135,20 @@ window.initNotifications = async function (userId) {
       return;
     }
 
+    // 🔥 SERVICE WORKER
+    const swReg = await registerSW();
+
     const token = await getToken(messaging, {
-      vapidKey: "BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ"
+      vapidKey: "BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ",
+      serviceWorkerRegistration: swReg
     });
 
     console.log("🔥 TOKEN:", token);
+
+    if (!token) {
+      alert("❌ Token alınamadı");
+      return;
+    }
 
     await updateDoc(doc(db, "couriers", userId), {
       fcmToken: token
@@ -147,6 +165,7 @@ window.initNotifications = async function (userId) {
 
 // 🔔 FOREGROUND MESSAGE
 onMessage(messaging, (payload) => {
+  console.log("📩 Mesaj geldi:", payload);
   alert("📦 Yeni sipariş var!");
 });
 
@@ -165,3 +184,7 @@ function redirect(role) {
   }
 
 }
+
+
+// EXPORT
+export { auth, db };

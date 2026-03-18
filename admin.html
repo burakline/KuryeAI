@@ -129,14 +129,10 @@ courierMarkers[d.id]=L.marker([c.lat,c.lng])
 let routeLine=null;
 
 async function drawRoute(fromLat,fromLng,toLat,toLng){
-
 const res=await fetch(`https://router.project-osrm.org/route/v1/driving/${fromLng},${fromLat};${toLng},${toLat}?overview=full&geometries=geojson`);
 const data=await res.json();
-
 const coords=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
-
 if(routeLine) map.removeLayer(routeLine);
-
 routeLine=L.polyline(coords,{color:"lime"}).addTo(map);
 }
 
@@ -176,11 +172,9 @@ drawRoute(c.lat,c.lng,o.lat,o.lng);
 }
 });
 
-/* 🔥 HEATMAP */
 if(window.heatLayer){
 map.removeLayer(window.heatLayer);
 }
-
 window.heatLayer=L.heatLayer(heatPoints,{radius:25}).addTo(map);
 
 });
@@ -200,11 +194,10 @@ min=dist;
 best=c;
 }
 });
-
 return best;
 }
 
-/* CREATE ORDER */
+/* CREATE ORDER (🔥 TRACKING EKLİ) */
 window.createOrder=async()=>{
 const product=oProduct.value;
 const lat=parseFloat(oLat.value);
@@ -212,13 +205,16 @@ const lng=parseFloat(oLng.value);
 
 const best=await findBestCourier(lat,lng);
 
-await addDoc(collection(db,"orders"),{
+const orderRef = await addDoc(collection(db,"orders"),{
 product,lat,lng,
 status:best?"assigned":"pending",
-courierEmail:best?best.email:null
+courierEmail:best?best.email:null,
+createdAt:new Date()
 });
 
-alert("Sipariş oluşturuldu 🚀");
+const link = `https://kuryeai.com/tracking.html?id=${orderRef.id}`;
+
+alert("Sipariş oluşturuldu 🚀\n\nMüşteri takip linki:\n"+link);
 }
 
 /* OVERRIDE */

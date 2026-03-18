@@ -15,7 +15,6 @@ background:#0b0e14;
 color:#fff;
 }
 
-/* HEADER */
 .header {
 padding:15px;
 background:#020617;
@@ -33,12 +32,10 @@ font-size:12px;
 .online { background:#00ff9c; color:#000; }
 .offline { background:#ff4d4d; }
 
-/* MAP */
 #map {
 height:60vh;
 }
 
-/* BOTTOM PANEL */
 .panel {
 position:fixed;
 bottom:0;
@@ -86,7 +83,7 @@ font-weight:bold;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const app = initializeApp({
@@ -105,18 +102,50 @@ let marker;
 let watchId;
 let user;
 
-onAuthStateChanged(auth,(u)=>{
+// 🔐 AUTH KONTROL + DATA SYNC
+onAuthStateChanged(auth, async (u)=>{
 if(u){
 user = u;
+
+// 🔥 Firestore'dan mevcut durumu çek
+const snap = await getDoc(doc(db,"couriers",user.uid));
+
+if(snap.exists()){
+const data = snap.data();
+
+// status geri yükle
+if(data.online){
+setOnlineUI();
+startTracking(true); // sessiz başlat
+}
+}
+
 }else{
 location.href="login.html";
 }
 });
 
-window.startTracking = () => {
-
+// 🟢 UI ONLINE
+function setOnlineUI(){
 document.getElementById("status").className="status online";
 document.getElementById("status").innerText="Online";
+}
+
+// 🔴 UI OFFLINE
+function setOfflineUI(){
+document.getElementById("status").className="status offline";
+document.getElementById("status").innerText="Offline";
+}
+
+// 🚀 ONLINE OL
+window.startTracking = (silent=false) => {
+
+if(!user){
+alert("Kullanıcı yok");
+return;
+}
+
+setOnlineUI();
 
 watchId = navigator.geolocation.watchPosition(async(pos)=>{
 
@@ -133,28 +162,43 @@ marker = L.marker([lat,lng]).addTo(map);
 
 map.setView([lat,lng],15);
 
+// 🔥 FIREBASE UPDATE
 await updateDoc(doc(db,"couriers",user.uid),{
 lat,
 lng,
 online:true,
-updatedAt:new Date()
+updatedAt: new Date()
 });
 
+},
+(err)=>{
+alert("Konum alınamadı!");
+},
+{
+enableHighAccuracy:true
 });
+
+if(!silent){
+alert("🟢 Online oldun");
+}
 
 };
 
+// 🔴 OFFLINE OL
 window.stopTracking = async () => {
+
+if(!user) return;
 
 navigator.geolocation.clearWatch(watchId);
 
-document.getElementById("status").className="status offline";
-document.getElementById("status").innerText="Offline";
+setOfflineUI();
 
 await updateDoc(doc(db,"couriers",user.uid),{
-online:false
+online:false,
+updatedAt:new Date()
 });
 
+alert("🔴 Offline oldun");
 };
 
 </script>

@@ -3,322 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin</title>
+<title>KuryeAI Admin PRO+</title>
 
+<!-- Libs -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- Routing -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
 <style>
-:root{
---bg:#070b10;
---card:rgba(255,255,255,0.05);
---primary:#00e0ff;
---glow:0 0 20px #00e0ff;
-}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto;background:#f6f7f9;display:flex;color:#111;}
+.sidebar{width:240px;background:#fff;padding:20px;border-right:1px solid #eee;}
+.logo{color:#00bcd4;font-weight:700;margin-bottom:20px;}
+.menu div{padding:10px;border-radius:8px;margin-bottom:6px;cursor:pointer;}
+.menu div:hover,.active{background:#e0f7fa;color:#00acc1;}
 
-body{
-margin:0;
-background:radial-gradient(circle at top,#08131f,#02050a);
-color:#fff;
-font-family:sans-serif;
-display:flex;
-}
+.main{flex:1;padding:20px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;}
+.card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
 
-/* SIDEBAR */
-.sidebar{
-width:240px;
-height:100vh;
-background:rgba(0,0,0,0.6);
-backdrop-filter:blur(20px);
-padding:20px;
-border-right:1px solid rgba(255,255,255,0.1);
-}
+#map{height:420px;border-radius:12px;margin-top:10px;}
+.order,.courier{background:#fff;padding:10px;border-radius:10px;margin:6px 0;cursor:grab;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef;color:#555;font-size:12px;margin-left:6px;}
 
-.logo{
-color:var(--primary);
-font-size:20px;
-margin-bottom:30px;
-text-shadow:var(--glow);
-}
-
-.menu div{
-padding:12px;
-margin:8px 0;
-cursor:pointer;
-border-radius:10px;
-transition:0.3s;
-}
-
-.menu div:hover{
-background:rgba(0,224,255,0.2);
-box-shadow:var(--glow);
-}
-
-/* MAIN */
-.main{
-flex:1;
-padding:20px;
-}
-
-/* CARD */
-.card{
-background:var(--card);
-padding:15px;
-border-radius:15px;
-margin:10px;
-border:1px solid rgba(255,255,255,0.1);
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:10px;
-}
-
-/* MAP */
-.map-wrapper{position:relative;}
-#map{height:300px;border-radius:15px;}
-.fullscreen{
-position:fixed !important;
-top:0;left:0;width:100vw;height:100vh;z-index:9999;
-}
-
-/* INPUT */
-input{
-width:100%;
-padding:8px;
-margin-top:5px;
-border-radius:8px;
-border:none;
-background:rgba(255,255,255,0.1);
-color:#fff;
-}
-
-button{
-margin-top:5px;
-padding:8px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.delete{background:red;color:#fff}
-.add{background:var(--primary)}
+.toast{position:fixed;top:20px;right:20px;background:#111;color:#fff;padding:10px 14px;border-radius:8px;display:none;z-index:9999;}
+button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+.small{font-size:12px;color:#666}
+.row{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-<div class="logo">KuryeAI</div>
-
-<div class="menu">
-<div onclick="show('dashboard')">Dashboard</div>
-<div onclick="show('orders')">Siparişler</div>
-<div onclick="show('history')">Geçmiş</div>
-<div onclick="show('performance')">Performans</div>
-<div onclick="show('couriers')">Kuryeler</div>
-<div onclick="show('restaurants')">Restoranlar</div>
-</div>
-
-<button onclick="logout()">Çıkış</button>
+  <div class="logo">KuryeAI</div>
+  <div class="menu">
+    <div class="active" onclick="show('dashboard',this)">Dashboard</div>
+    <div onclick="show('orders',this)">Siparişler</div>
+    <div onclick="show('couriers',this)">Kuryeler</div>
+    <div onclick="show('tracking',this)">Müşteri Tracking</div>
+  </div>
+  <button onclick="logout()">Çıkış</button>
 </div>
 
 <div class="main">
 
-<!-- DASHBOARD -->
-<div id="dashboard">
-<h2>Dashboard</h2>
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <h2>Dashboard</h2>
+    <div class="grid">
+      <div class="card">Toplam <h2 id="total">0</h2></div>
+      <div class="card">Ciro <h2 id="revenue">0 ₺</h2></div>
+    </div>
+    <canvas id="chart"></canvas>
+    <div id="map"></div>
+  </div>
 
-<div class="grid">
-<div class="card">Toplam <h2 id="totalEl">0</h2></div>
-<div class="card">Ciro <h2 id="revenueEl">0</h2></div>
-</div>
+  <!-- ORDERS -->
+  <div id="orders" style="display:none">
+    <h2>Siparişler</h2>
+    <div class="small">Kartı sürükleyip bir kuryeye bırak → atama yapılır. “AI Öner” en yakın kuryeyi seçer.</div>
+    <div id="ordersList"></div>
+  </div>
 
-<canvas id="chart"></canvas>
+  <!-- COURIERS -->
+  <div id="couriers" style="display:none">
+    <h2>Kuryeler</h2>
+    <div id="courierList"></div>
+  </div>
 
-<div class="map-wrapper">
-<button onclick="toggleMap()">⛶</button>
-<div id="map"></div>
-</div>
-</div>
-
-<!-- ORDERS -->
-<div id="orders" style="display:none">
-<h2>Siparişler</h2>
-<div id="ordersList"></div>
-</div>
-
-<!-- HISTORY -->
-<div id="history" style="display:none">
-<h2>Geçmiş</h2>
-<input type="datetime-local" id="startDate">
-<input type="datetime-local" id="endDate">
-<button onclick="filterHistory()">Filtrele</button>
-<div id="historyList"></div>
-</div>
-
-<!-- PERFORMANCE -->
-<div id="performance" style="display:none">
-<h2>Performans</h2>
-<div class="grid">
-<div class="card">🏆 Kurye <p id="topCourier"></p></div>
-<div class="card">🚀 Teslimat <p id="topDelivery"></p></div>
-<div class="card">💰 Restoran <p id="topRestaurant"></p></div>
-<div class="card">⏰ Saat <p id="peakHour"></p></div>
-</div>
-</div>
-
-<!-- COURIERS -->
-<div id="couriers" style="display:none">
-<h2>Kuryeler</h2>
-<input id="courierEmail" placeholder="email">
-<button class="add" onclick="addCourier()">Ekle</button>
-<div id="courierList"></div>
-</div>
-
-<!-- RESTAURANTS -->
-<div id="restaurants" style="display:none">
-<h2>Restoranlar</h2>
-<input id="restEmail" placeholder="email">
-<button class="add" onclick="addRestaurant()">Ekle</button>
-<div id="restaurantList"></div>
-</div>
+  <!-- CUSTOMER TRACKING (ADMIN PREVIEW) -->
+  <div id="tracking" style="display:none">
+    <h2>Müşteri Tracking (Preview)</h2>
+    <div class="card">
+      <div class="row">
+        <input id="trackOrderId" placeholder="Sipariş ID">
+        <button onclick="openTracking()">Takip Et</button>
+      </div>
+      <div id="trackInfo" class="small" style="margin-top:8px;"></div>
+      <div id="trackMap" style="height:360px;border-radius:10px;margin-top:10px;"></div>
+    </div>
+  </div>
 
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, deleteDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-/* ✅ DOĞRU FIREBASE CONFIG */
+/* Firebase */
 const firebaseConfig = {
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kuryeai",
-  storageBucket: "kuryeai.firebasestorage.app",
-  messagingSenderId: "655930514402",
-  appId: "1:655930514402:web:379321cbb83f48daf077bb",
-  measurementId: "G-JYQP30LJG3"
+  apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain:"kuryeai.firebaseapp.com",
+  projectId:"kuryeai"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 /* NAV */
-window.show=id=>{
-["dashboard","orders","history","performance","couriers","restaurants"].forEach(x=>{
-document.getElementById(x).style.display="none";
-});
-document.getElementById(id).style.display="block";
+window.show=(id,el)=>{
+  document.querySelectorAll(".menu div").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
+  ["dashboard","orders","couriers","tracking"].forEach(x=>document.getElementById(x).style.display="none");
+  document.getElementById(id).style.display="block";
 };
+
+/* TOAST + PUSH */
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg; t.style.display="block";
+  setTimeout(()=>t.style.display="none",3000);
+  if("Notification" in window && Notification.permission==="granted"){
+    new Notification("KuryeAI", { body: msg });
+  }
+}
+async function ensurePush(){
+  if("Notification" in window && Notification.permission!=="granted"){
+    try{ await Notification.requestPermission(); }catch{}
+  }
+}
 
 /* MAP */
 const map=L.map('map').setView([39.92,32.85],11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+let courierMarkers = {};
+let orderRouting = null;
 
-window.toggleMap=()=>{
-document.getElementById("map").classList.toggle("fullscreen");
-};
+/* TRACK MAP (customer preview) */
+let trackMap = L.map('trackMap').setView([39.92,32.85],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(trackMap);
+let trackRouting = null;
 
 /* CHART */
 const chart=new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{labels:[],datasets:[{data:[]}]}
+  type:"bar",
+  data:{labels:[],datasets:[{label:"Saatlik Sipariş",data:[]}]}
 });
 
 /* AUTH */
-onAuthStateChanged(auth,async user=>{
-if(!user) return location.href="login.html";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user) return location.href="login.html";
+  const u = await getDoc(doc(db,"users",user.uid));
+  if(!u.exists() || u.data().role!=="admin"){
+    return location.href="login.html";
+  }
+  ensurePush();
+  load();
+});
 
-const u=await getDoc(doc(db,"users",user.uid));
-if(!u.exists() || u.data().role!=="admin"){
-return location.href="login.html";
+/* DISTANCE (km) */
+function distanceKm(a,b){
+  const R=6371;
+  const dLat=(b.lat-a.lat)*Math.PI/180;
+  const dLng=(b.lng-a.lng)*Math.PI/180;
+  const s = Math.sin(dLat/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
 }
 
-load();
-});
+/* AI: nearest courier */
+function suggestCourier(order, couriers){
+  if(!order.pickupLat || !order.pickupLng) return null;
+  let best=null, bestD=Infinity;
+  couriers.forEach(c=>{
+    if(c.lat && c.lng){
+      const d = distanceKm({lat:order.pickupLat,lng:order.pickupLng},{lat:c.lat,lng:c.lng});
+      if(d<bestD){ bestD=d; best=c; }
+    }
+  });
+  return best;
+}
+
+/* ROUTE DRAW */
+function drawRoute(pick, drop){
+  if(orderRouting) map.removeControl(orderRouting);
+  if(!pick || !drop) return;
+  orderRouting = L.Routing.control({
+    waypoints: [ L.latLng(pick.lat,pick.lng), L.latLng(drop.lat,drop.lng) ],
+    addWaypoints:false, draggableWaypoints:false, routeWhileDragging:false
+  }).addTo(map);
+}
 
 /* LOAD */
 function load(){
-onSnapshot(collection(db,"orders"),snap=>{
 
-let total=0,revenue=0;
-let courierStats={},restaurantStats={},hourStats={};
+  /* ORDERS */
+  onSnapshot(collection(db,"orders"), snap=>{
+    let total=0, revenue=0, hours={};
+    const ordersList = document.getElementById("ordersList");
+    ordersList.innerHTML="";
 
-ordersList.innerHTML="";
-historyList.innerHTML="";
+    let ordersCache = [];
 
-snap.forEach(d=>{
-const o=d.data();
-total++;
+    snap.forEach(d=>{
+      const o=d.data();
+      ordersCache.push({id:d.id, ...o});
+      total++;
+      if(o.price) revenue+=o.price;
 
-if(o.price) revenue+=o.price;
+      if(o.createdAt){
+        let h=o.createdAt.toDate().getHours();
+        hours[h]=(hours[h]||0)+1;
+      }
 
-if(o.status==="teslim"){
-historyList.innerHTML+=`<div class="card">${o.product}</div>`;
-}else{
-ordersList.innerHTML+=`<div class="card">${o.product}</div>`;
+      const div=document.createElement("div");
+      div.className="order";
+      div.draggable=true;
+      div.ondragstart=e=>e.dataTransfer.setData("id", d.id);
+
+      div.innerHTML = `
+        <b>${o.product||"Sipariş"}</b>
+        <span class="badge">${o.status||"-"}</span>
+        <div class="small">${o.restaurantEmail||""}</div>
+        <div class="row" style="margin-top:6px;">
+          <button onclick='aiAssign("${d.id}")'>AI Öner</button>
+          <button onclick='focusRoute("${d.id}")'>Rota</button>
+        </div>
+      `;
+      ordersList.appendChild(div);
+    });
+
+    document.getElementById("total").innerText=total;
+    document.getElementById("revenue").innerText=revenue+" ₺";
+
+    // chart
+    const labels=[], data=[];
+    Object.keys(hours).sort((a,b)=>a-b).forEach(h=>{
+      labels.push(h+":00"); data.push(hours[h]);
+    });
+    chart.data.labels=labels;
+    chart.data.datasets[0].data=data;
+    chart.update();
+
+    // expose for AI / routing
+    window.__ordersCache = ordersCache;
+  });
+
+  /* COURIERS */
+  onSnapshot(collection(db,"couriers"), snap=>{
+    const courierList = document.getElementById("courierList");
+    courierList.innerHTML="";
+
+    let couriersCache = [];
+
+    snap.forEach(d=>{
+      const c=d.data();
+      const id = d.id;
+      couriersCache.push({id, ...c});
+
+      // list item (drop target)
+      const div=document.createElement("div");
+      div.className="courier";
+      div.innerHTML = `<b>${c.email||id}</b> <span class="badge">${c.status||""}</span>`;
+      div.ondragover=e=>e.preventDefault();
+      div.ondrop=async e=>{
+        const oid = e.dataTransfer.getData("id");
+        await updateDoc(doc(db,"orders",oid),{ courierEmail: c.email||id });
+        toast("Kurye atandı");
+      };
+      courierList.appendChild(div);
+
+      // map marker
+      if(c.lat && c.lng){
+        if(!courierMarkers[id]){
+          courierMarkers[id] = L.marker([c.lat,c.lng]).addTo(map).bindPopup(c.email||id);
+        }else{
+          courierMarkers[id].setLatLng([c.lat,c.lng]);
+        }
+      }
+
+      // inactivity alerts (15/30/45/60)
+      if(c.lastUpdate){
+        const diffMin = (Date.now() - c.lastUpdate.toDate())/60000;
+        if(diffMin>15 && diffMin<16) toast((c.email||id)+" 15 dk hareketsiz");
+        if(diffMin>30 && diffMin<31) toast((c.email||id)+" 30 dk hareketsiz");
+        if(diffMin>45 && diffMin<46) toast((c.email||id)+" 45 dk hareketsiz");
+        if(diffMin>60 && diffMin<61) toast((c.email||id)+" 60 dk hareketsiz");
+      }
+    });
+
+    // expose
+    window.__couriersCache = couriersCache;
+  });
+
 }
 
-if(o.courierEmail){
-courierStats[o.courierEmail]=(courierStats[o.courierEmail]||0)+1;
-}
+/* AI ASSIGN */
+window.aiAssign = async (orderId)=>{
+  const o = (window.__ordersCache||[]).find(x=>x.id===orderId);
+  const cs = window.__couriersCache||[];
+  const best = suggestCourier(o, cs);
+  if(!best) return toast("Uygun kurye yok");
+  await updateDoc(doc(db,"orders",orderId),{ courierEmail: best.email||best.id });
+  toast("AI atadı: "+(best.email||best.id));
+};
 
-if(o.restaurantEmail){
-restaurantStats[o.restaurantEmail]=(restaurantStats[o.restaurantEmail]||0)+(o.price||0);
-}
+/* FOCUS ROUTE */
+window.focusRoute = (orderId)=>{
+  const o = (window.__ordersCache||[]).find(x=>x.id===orderId);
+  if(!o) return;
+  if(o.pickupLat && o.pickupLng){
+    map.setView([o.pickupLat,o.pickupLng], 13);
+  }
+  drawRoute(
+    o.pickupLat?{lat:o.pickupLat,lng:o.pickupLng}:null,
+    o.dropLat?{lat:o.dropLat,lng:o.dropLng}:null
+  );
+};
 
-if(o.createdAt){
-let h=o.createdAt.toDate().getHours();
-hourStats[h]=(hourStats[h]||0)+1;
-}
-});
+/* CUSTOMER TRACKING (ADMIN PREVIEW) */
+window.openTracking = ()=>{
+  const id = document.getElementById("trackOrderId").value.trim();
+  const o = (window.__ordersCache||[]).find(x=>x.id===id);
+  const info = document.getElementById("trackInfo");
+  if(!o){ info.innerText="Sipariş bulunamadı"; return; }
 
-/* TOP */
-let topC="-",max=0;
-for(let k in courierStats){
-if(courierStats[k]>max){max=courierStats[k];topC=k;}
-}
+  info.innerText = `${o.product||""} | ${o.status||""} | Kurye: ${o.courierEmail||"-"}`;
 
-let topR="-",maxR=0;
-for(let k in restaurantStats){
-if(restaurantStats[k]>maxR){maxR=restaurantStats[k];topR=k;}
-}
+  if(trackRouting) trackMap.removeControl(trackRouting);
+  if(o.pickupLat && o.pickupLng && o.dropLat && o.dropLng){
+    trackRouting = L.Routing.control({
+      waypoints:[
+        L.latLng(o.pickupLat,o.pickupLng),
+        L.latLng(o.dropLat,o.dropLng)
+      ],
+      addWaypoints:false, draggableWaypoints:false
+    }).addTo(trackMap);
+    trackMap.setView([o.pickupLat,o.pickupLng], 13);
+  }
+};
 
-let peak="-",maxH=0;
-let labels=[],data=[];
-for(let h in hourStats){
-labels.push(h+":00");
-data.push(hourStats[h]);
-if(hourStats[h]>maxH){maxH=hourStats[h];peak=h+":00";}
-}
-
-/* UI */
-document.getElementById("totalEl").innerText=total;
-document.getElementById("revenueEl").innerText=revenue+" ₺";
-document.getElementById("topCourier").innerText=topC;
-document.getElementById("topDelivery").innerText=max+" teslim";
-document.getElementById("topRestaurant").innerText=topR;
-document.getElementById("peakHour").innerText=peak;
-
-/* CHART */
-chart.data.labels=labels;
-chart.data.datasets[0].data=data;
-chart.update();
-
-});
-}
-
-/* ACTIONS */
-window.addCourier=()=>addDoc(collection(db,"couriers"),{email:courierEmail.value});
-window.addRestaurant=()=>addDoc(collection(db,"restaurants"),{email:restEmail.value});
-window.delOrder=id=>deleteDoc(doc(db,"orders",id));
-window.logout=()=>signOut(auth);
+/* LOGOUT */
+window.logout = ()=>signOut(auth);
 </script>
 
 </body>

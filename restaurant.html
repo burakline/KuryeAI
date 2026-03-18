@@ -3,38 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Restoran PRO</title>
+<title>KuryeAI | Restoran Paneli</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white}
-.sidebar{width:220px;background:#020617;padding:20px;height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+width:220px;
+background:#020617;
+padding:20px;
+height:100vh;
+}
 .sidebar h2{color:#00d4ff}
-.sidebar button{display:block;width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer}
+.sidebar button{
+display:block;
+width:100%;
+padding:10px;
+margin:5px 0;
+background:none;
+border:none;
+color:#94a3b8;
+cursor:pointer;
+}
+.sidebar button:hover{color:white}
 
+/* CONTENT */
 .content{flex:1;padding:20px}
-.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
 
-input,select{padding:10px;margin:5px 0;width:100%;border-radius:8px;border:none}
+.card{
+background:#0f172a;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+}
 
-#map{height:350px;border-radius:12px;margin-top:10px}
+/* INPUT */
+input,select{
+width:100%;
+padding:12px;
+margin:5px 0;
+border:none;
+border-radius:8px;
+background:#020617;
+color:white;
+}
+
+/* BUTTON */
+.btn{
+background:#00d4ff;
+color:black;
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+.btn:hover{background:white}
+
+/* MAP */
+#map{
+width:100%;
+height:300px;
+border-radius:12px;
+margin-top:10px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.sidebar{width:80px}
+.sidebar h2{display:none}
+}
 </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
 <h2>Restoran</h2>
-<button onclick="show('dashboard')">Sipariş Oluştur</button>
+<button onclick="show('create')">Sipariş Oluştur</button>
 <button onclick="show('orders')">Siparişlerim</button>
 </div>
 
+<!-- CONTENT -->
 <div class="content">
 
 <!-- CREATE ORDER -->
-<div id="dashboard">
+<div id="create">
 <h2>🍔 Sipariş Oluştur</h2>
 
 <div class="card">
@@ -44,14 +103,13 @@ input,select{padding:10px;margin:5px 0;width:100%;border-radius:8px;border:none}
 
 <select id="payment">
 <option value="online">Online</option>
-<option value="nakit">Nakit</option>
-<option value="kart">Kredi Kartı</option>
+<option value="cash">Nakit</option>
+<option value="card">Kredi Kartı</option>
 </select>
 
-<button onclick="findAddress()">📍 Adresi Haritada Bul</button>
-<button onclick="createOrder()">🚀 Sipariş Oluştur</button>
-
 <div id="map"></div>
+
+<button class="btn" onclick="createOrder()">🚀 Sipariş Oluştur</button>
 
 </div>
 </div>
@@ -68,7 +126,7 @@ input,select{padding:10px;margin:5px 0;width:100%;border-radius:8px;border:none}
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import {
-getFirestore, collection, addDoc, onSnapshot, updateDoc, doc
+getFirestore, collection, addDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const app = initializeApp({
@@ -81,20 +139,83 @@ const db = getFirestore(app);
 
 /* NAV */
 window.show=id=>{
-document.getElementById("dashboard").style.display="none";
+document.getElementById("create").style.display="none";
 document.getElementById("orders").style.display="none";
 document.getElementById(id).style.display="block";
 }
 
 /* MAP */
-const map=L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+const map = L.map('map').setView([39.92,32.85], 13);
 
-let selectedLocation=null;
-let marker=null;
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(map);
 
-/* 📍 ADRES → PIN (NOMINATIM API) */
-window.findAddress=async()=>{
+let selectedLat=null;
+let selectedLng=null;
+let marker;
+
+map.on('click', function(e){
+
+selectedLat=e.latlng.lat;
+selectedLng=e.latlng.lng;
+
+if(marker){
+marker.setLatLng(e.latlng);
+}else{
+marker=L.marker(e.latlng).addTo(map);
+}
+
+});
+
+/* CREATE ORDER */
+window.createOrder = async () => {
+
+const product=document.getElementById("product").value;
 const address=document.getElementById("address").value;
+const payment=document.getElementById("payment").value;
 
-const res=await fetch(`https://nominatim.openstreetmap.org/search?format
+if(!product || !address){
+alert("Tüm alanları doldur!");
+return;
+}
+
+if(!selectedLat){
+alert("Haritadan konum seç!");
+return;
+}
+
+await addDoc(collection(db,"orders"),{
+product,
+address,
+payment,
+lat:selectedLat,
+lng:selectedLng,
+status:"pending",
+createdAt:new Date()
+});
+
+alert("Sipariş oluşturuldu 🚀");
+
+};
+
+/* GET ORDERS */
+onSnapshot(collection(db,"orders"),snap=>{
+document.getElementById("orderList").innerHTML="";
+
+snap.forEach(d=>{
+const o=d.data();
+
+document.getElementById("orderList").innerHTML+=`
+<div class="card">
+<b>${o.product}</b><br>
+${o.address}<br>
+Durum: ${o.status}
+</div>`;
+});
+
+});
+
+</script>
+
+</body>
+</html>

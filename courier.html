@@ -19,26 +19,7 @@ body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 
 .panel{padding:15px;background:#111827;}
 
-.btn{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold;}
-.start{background:#00d4ff;color:#000;}
-.stop{background:#ff4d4d;color:#fff;}
-
 .order{background:#1f2937;padding:12px;border-radius:10px;margin-top:8px;}
-
-.stats{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:10px;
-}
-
-.stat{
-background:#1f2937;
-padding:10px;
-border-radius:10px;
-text-align:center;
-font-size:13px;
-}
 </style>
 </head>
 
@@ -53,17 +34,10 @@ font-size:13px;
 
 <div class="panel">
 
-<p id="info">Konum bekleniyor...</p>
+<button onclick="startTracking()">Online</button>
+<button onclick="stopTracking()">Offline</button>
 
-<button class="btn start" onclick="startTracking()">Online Ol</button>
-<button class="btn stop" onclick="stopTracking()">Offline Ol</button>
-
-<div class="stats">
-<div class="stat">📍 KM<br><b id="totalKm">0</b></div>
-<div class="stat">💰 Kazanç<br><b id="totalMoney">0</b></div>
-</div>
-
-<h3>📦 Sipariş Havuzu</h3>
+<h3>📦 Siparişler</h3>
 <div id="orders"></div>
 
 </div>
@@ -73,6 +47,7 @@ font-size:13px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
 import {
 getFirestore,
 collection,
@@ -88,10 +63,7 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-/* 🔥 AYAR */
-const MAX_DISTANCE_KM = 10;
-
-/* FIREBASE */
+/* 🔥 FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -101,56 +73,64 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let user, marker, currentPos;
+/* 🔥 DİNAMİK KM */
+let MAX_DISTANCE_KM = 10;
+
+onSnapshot(doc(db,"settings","config"), snap=>{
+if(snap.exists()){
+MAX_DISTANCE_KM = snap.data().maxDistance || 10;
+}
+});
+
+let user, currentPos, marker;
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-/* 🏍 ICON */
+/* ICON */
 const bikeIcon = L.divIcon({
 html:`<div style="font-size:26px;color:#00d4ff;">🏍️</div>`,
 className:''
 });
 
-/* 📏 HAVERSINE */
-function getDistanceKm(lat1, lng1, lat2, lng2){
-const R = 6371;
-const dLat = (lat2-lat1)*Math.PI/180;
-const dLng = (lng2-lng1)*Math.PI/180;
+/* DISTANCE */
+function getDistanceKm(lat1,lng1,lat2,lng2){
+const R=6371;
+const dLat=(lat2-lat1)*Math.PI/180;
+const dLng=(lng2-lng1)*Math.PI/180;
 
-const a =
-Math.sin(dLat/2)**2 +
+const a=
+Math.sin(dLat/2)**2+
 Math.cos(lat1*Math.PI/180)*
 Math.cos(lat2*Math.PI/180)*
 Math.sin(dLng/2)**2;
 
-return R * (2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
 }
 
 /* AUTH */
 onAuthStateChanged(auth,(u)=>{
 if(!u){location.href="login.html";return;}
-user = u;
+user=u;
 });
 
 /* ONLINE */
-window.startTracking = ()=>{
-
+window.startTracking=()=>{
 document.getElementById("status").className="status online";
 document.getElementById("status").innerText="Online";
 
 navigator.geolocation.watchPosition(async(pos)=>{
 
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
+const lat=pos.coords.latitude;
+const lng=pos.coords.longitude;
 
-currentPos = {lat,lng};
+currentPos={lat,lng};
 
 if(marker){
 marker.setLatLng([lat,lng]);
 }else{
-marker = L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
+marker=L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
 }
 
 map.setView([lat,lng],15);
@@ -163,13 +143,13 @@ lat,lng,online:true
 };
 
 /* OFFLINE */
-window.stopTracking = ()=>{
+window.stopTracking=()=>{
 document.getElementById("status").className="status offline";
 document.getElementById("status").innerText="Offline";
 };
 
-/* 📦 SİPARİŞLER */
-const ordersDiv = document.getElementById("orders");
+/* ORDERS */
+const ordersDiv=document.getElementById("orders");
 
 onSnapshot(query(collection(db,"orders"),where("status","==","bekliyor")), snap=>{
 
@@ -181,27 +161,23 @@ return;
 }
 
 snap.forEach(docSnap=>{
-const o = docSnap.data();
+const o=docSnap.data();
 
-if(!o.lat || !o.lng) return;
+if(!o.lat) return;
 
-/* 🔥 MESAFE */
-const dist = getDistanceKm(
-currentPos.lat,
-currentPos.lng,
-o.lat,
-o.lng
+const dist=getDistanceKm(
+currentPos.lat,currentPos.lng,
+o.lat,o.lng
 );
 
-/* 🔥 FİLTRE */
-if(dist <= MAX_DISTANCE_KM){
+if(dist<=MAX_DISTANCE_KM){
 
-ordersDiv.innerHTML += `
+ordersDiv.innerHTML+=`
 <div class="order">
 <b>${o.customer}</b><br>
 ${o.address}<br>
 📏 ${dist.toFixed(2)} km<br>
-💰 ${o.price || 0}₺
+💰 ${o.price}₺
 </div>
 `;
 

@@ -2,57 +2,31 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kurye Panel</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body{margin:0;font-family:Arial;background:#0b0e14;color:white;}
-.header{padding:15px;background:#020617;display:flex;justify-content:space-between;}
-.status{padding:6px 12px;border-radius:20px;font-size:12px;}
-.online{background:#00ff9c;color:#000;}
-.offline{background:#ff4d4d;}
-#map{height:40vh;}
-.panel{padding:15px;}
-.card{background:#1f2937;padding:12px;border-radius:10px;margin-top:10px;}
-button{margin-top:5px;padding:10px;border:none;border-radius:6px;width:100%;}
-.accept{background:#00d4ff;color:black;}
-.reject{background:#ef4444;color:white;}
-.finish{background:#22c55e;color:white;}
-</style>
+<title>Kurye</title>
 </head>
 
 <body>
 
-<div class="header">
-<h3>🚴 Kurye Panel</h3>
-<div id="status" class="status offline">Offline</div>
-</div>
+<h2>Kurye Panel</h2>
 
-<div id="map"></div>
-
-<div class="panel">
-<button onclick="startTracking()">Online Ol</button>
-<button onclick="stopTracking()">Offline Ol</button>
-
-<div id="order"></div>
-
-<h3>📊 Kazanç</h3>
-<canvas id="chart"></canvas>
-</div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div id="orders"></div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import {
+getFirestore,
+collection,
+onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+apiKey:"AIzaSy...",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
@@ -60,132 +34,33 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let user, marker;
-
-/* MAP */
-const map = L.map('map').setView([39.92,32.85],13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-const bikeIcon = L.divIcon({
-html:`<div style="font-size:26px;color:#00d4ff;">🏍️</div>`
-});
+let user;
 
 /* AUTH */
 onAuthStateChanged(auth,u=>{
-if(!u){location.href="login.html";return;}
+if(!u) location.href="login.html";
 user=u;
 
 /* ORDERS */
 onSnapshot(collection(db,"orders"),snap=>{
-
-const div=document.getElementById("order");
-div.innerHTML="";
+orders.innerHTML="";
 
 snap.forEach(d=>{
 const o=d.data();
 
-if(o.courierId===user.uid){
+/* ZONE FILTER */
+if(o.courierId && o.courierId!==user.uid) return;
 
-if(o.status==="pending_accept"){
-div.innerHTML=`
-<div class="card">
+orders.innerHTML+=`
+<div>
 <b>${o.customer}</b><br>
 ${o.address}<br>
-💰 ${o.price}₺<br>
-🔥 x${o.surge || 1}
-
-<button class="accept" onclick="accept('${d.id}')">Kabul</button>
-<button class="reject" onclick="reject('${d.id}')">Reddet</button>
+💰 ${o.price}₺ 🔥x${o.surge}
 </div>`;
-}
-
-if(o.status==="yolda"){
-div.innerHTML=`
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-💰 ${o.price}₺
-
-<button class="finish" onclick="finish('${d.id}',${o.price})">
-Teslim Et
-</button>
-</div>`;
-}
-
-}
-
-});
-
-});
-
-/* EARNINGS */
-onSnapshot(collection(db,"earnings"),snap=>{
-let total=0;
-
-snap.forEach(d=>{
-if(d.data().courierId===user.uid){
-total+=d.data().amount;
-}
-});
-
-new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{labels:["Kazanç"],datasets:[{data:[total]}]}
 });
 });
 
 });
-
-/* TRACK */
-window.startTracking=()=>{
-document.getElementById("status").className="status online";
-
-navigator.geolocation.watchPosition(async(pos)=>{
-
-const lat=pos.coords.latitude;
-const lng=pos.coords.longitude;
-
-if(marker){
-marker.setLatLng([lat,lng]);
-}else{
-marker=L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
-}
-
-map.setView([lat,lng],15);
-
-await updateDoc(doc(db,"couriers",user.uid),{
-lat,lng,online:true
-});
-
-});
-};
-
-window.stopTracking=()=>{
-document.getElementById("status").className="status offline";
-};
-
-/* ACTIONS */
-window.accept=async(id)=>{
-await updateDoc(doc(db,"orders",id),{status:"yolda"});
-};
-
-window.reject=async(id)=>{
-await updateDoc(doc(db,"orders",id),{
-status:"bekliyor",
-courierId:null
-});
-};
-
-window.finish=async(id,price)=>{
-await updateDoc(doc(db,"orders",id),{status:"delivered"});
-
-await addDoc(collection(db,"earnings"),{
-courierId:user.uid,
-amount:price,
-date:new Date()
-});
-};
 
 </script>
 </body>

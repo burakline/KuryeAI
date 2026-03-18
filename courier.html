@@ -10,7 +10,7 @@
 <style>
 body{
 margin:0;
-font-family: 'Inter', sans-serif;
+font-family:'Inter',sans-serif;
 background:#0A0A0A;
 color:white;
 }
@@ -62,9 +62,6 @@ cursor:pointer;
 .accept{background:#00C2A8;color:black}
 .done{background:#22c55e}
 .reject{background:#ff4d4d}
-
-/* TITLE */
-h3{margin:10px 0}
 </style>
 </head>
 
@@ -128,7 +125,18 @@ return;
 
 user=u;
 
-/* ORDERS LIST */
+/* 🔔 BİLDİRİM BAŞLAT */
+initNotifications().then(async(token)=>{
+
+if(!token) return;
+
+await updateDoc(doc(db,"couriers",user.uid),{
+fcmToken: token
+});
+
+});
+
+/* ORDERS */
 onSnapshot(collection(db,"orders"),(snap)=>{
 
 ordersDiv.innerHTML="";
@@ -138,7 +146,7 @@ snap.forEach(d=>{
 
 const o=d.data();
 
-/* ACTIVE */
+/* AKTİF */
 if(o.courierId === user.uid && o.status==="accepted"){
 
 activeDiv.innerHTML=`
@@ -153,7 +161,7 @@ Teslim Edildi
 
 }
 
-/* NEW ORDERS */
+/* YENİ */
 if(o.status==="pending"){
 
 ordersDiv.innerHTML+=`
@@ -194,6 +202,11 @@ marker = L.marker([lat,lng]).addTo(map);
 map.setView([lat,lng],15);
 }
 
+updateDoc(doc(db,"couriers",user.uid),{
+lat,lng,
+online:true
+});
+
 });
 
 };
@@ -207,6 +220,10 @@ statusDiv.innerText="Offline";
 if(watchId){
 navigator.geolocation.clearWatch(watchId);
 }
+
+updateDoc(doc(db,"couriers",user.uid),{
+online:false
+});
 
 };
 

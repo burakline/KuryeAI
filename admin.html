@@ -36,4 +36,148 @@ body {
 button {
     padding:12px;
     width:100%;
-    background:#00
+    background:#00d4ff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+button:hover {
+    background:#fff;
+}
+
+input {
+    width:100%;
+    padding:12px;
+    margin:5px 0;
+    background:#0d1117;
+    border:1px solid #30363d;
+    border-radius:8px;
+    color:#fff;
+}
+
+.logout {
+    background:#ff4d4d;
+}
+</style>
+
+<!-- DEBUG (hata varsa ekranda gösterir) -->
+<script>
+window.onerror = function(msg, url, line) {
+    alert("HATA: " + msg + " (Satır: " + line + ")");
+};
+</script>
+
+</head>
+
+<body>
+
+<div class="header">
+    Admin Panel - KuryeAI
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h3>Yeni Sipariş Oluştur</h3>
+
+        <input id="restaurant" placeholder="Restoran Email">
+        <input id="address" placeholder="Adres">
+        <input id="product" placeholder="Ürün">
+
+        <button onclick="createOrder()">Sipariş Oluştur</button>
+    </div>
+
+    <div class="card">
+        <h3>Çıkış</h3>
+        <button class="logout" onclick="logout()">Çıkış Yap</button>
+    </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kuryeai",
+  storageBucket: "kuryeai.firebasestorage.app",
+  messagingSenderId: "655930514402",
+  appId: "1:655930514402:web:379321cbb83f48daf077bb",
+  measurementId: "G-JYQP30LJG3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// AUTH KONTROL
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists() || docSnap.data().role !== "admin") {
+            alert("Yetkisiz erişim!");
+            window.location.href = "login.html";
+            return;
+        }
+
+    } catch (e) {
+        alert("Firestore hata: " + e.message);
+    }
+});
+
+// SİPARİŞ EKLE
+window.createOrder = async function() {
+
+    const restaurant = document.getElementById("restaurant").value;
+    const address = document.getElementById("address").value;
+    const product = document.getElementById("product").value;
+
+    if (!restaurant || !address || !product) {
+        alert("Tüm alanları doldur!");
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, "orders"), {
+            restaurant: restaurant,
+            address: address,
+            product: product,
+            status: "hazırlanıyor",
+            createdAt: new Date()
+        });
+
+        alert("Sipariş oluşturuldu!");
+
+        document.getElementById("restaurant").value = "";
+        document.getElementById("address").value = "";
+        document.getElementById("product").value = "";
+
+    } catch (e) {
+        alert("Sipariş hatası: " + e.message);
+    }
+};
+
+// LOGOUT
+window.logout = function() {
+    signOut(auth);
+};
+</script>
+
+</body>
+</html>

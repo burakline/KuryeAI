@@ -18,24 +18,36 @@
 </head>
 <body>
     <div class="login-box">
-        <h1 id="panelTitle">KuryeAI</h1>
-        <p id="subTitle">Lojistik yönetim paneli</p>
-        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <h1>KuryeAI</h1>
+        <p id="subTitle">Panel</p>
+
+        <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Şifre">
+
         <button onclick="performLogin()">Giriş Yap</button>
+
         <div class="footer-text">Developed by BURAKLINE 2026</div>
     </div>
-    <script src="firebase.js"></script>
-    <script>
+
+    <script type="module">
+        import { login } from "./login.js";
+
         const urlParams = new URLSearchParams(window.location.search);
         const type = urlParams.get('type') || 'restaurant';
-        const titles = { 'admin': 'Admin Paneli', 'restaurant': 'Restoran Paneli', 'courier': 'Kurye Paneli' };
-        document.getElementById('subTitle').innerText = titles[type] || "Lojistik yönetim paneli";
 
-        function performLogin() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            handleSecureLogin(type, user, pass);
+        const titles = {
+            'admin': 'Admin Paneli',
+            'restaurant': 'Restoran Paneli',
+            'courier': 'Kurye Paneli'
+        };
+
+        document.getElementById('subTitle').innerText = titles[type];
+
+        window.performLogin = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            login(email, password);
         }
     </script>
 </body>

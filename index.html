@@ -55,4 +55,119 @@ padding:14px 20px;
 border:none;
 border-radius:10px;
 font-weight:600;
-cursor:pointer
+cursor:pointer;
+margin:5px;
+}
+
+.primary{
+background:#00d4ff;
+color:black;
+}
+
+.dark{
+background:#111827;
+color:white;
+}
+
+/* CARD */
+.section{
+padding:20px;
+}
+
+.card{
+background:#111827;
+padding:15px;
+border-radius:12px;
+margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<div class="nav">
+<div class="logo">🚀 KuryeAI</div>
+<div>
+<a href="login.html">Giriş</a>
+</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+<h1>Akıllı Kurye Sistemi</h1>
+<p>Canlı takip, hızlı teslimat, modern altyapı</p>
+
+<button class="btn primary" onclick="goCourier()">🚴 Kurye Panel</button>
+<button class="btn dark" onclick="goAdmin()">📊 Admin Panel</button>
+</div>
+
+<!-- FEATURES -->
+<div class="section">
+<div class="card">📍 Canlı konum takibi</div>
+<div class="card">⚡ Hızlı teslimat sistemi</div>
+<div class="card">📦 Sipariş yönetimi</div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+/* 🔥 CONFIG */
+const app = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* 🚴 KURYE */
+window.goCourier = async () => {
+
+const user = auth.currentUser;
+
+if(!user){
+alert("Önce giriş yap");
+location.href="login.html";
+return;
+}
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(!snap.exists() || snap.data().role !== "courier"){
+alert("Kurye yetkin yok!");
+return;
+}
+
+location.href="courier.html";
+};
+
+/* 🧑‍💻 ADMIN */
+window.goAdmin = async () => {
+
+const user = auth.currentUser;
+
+if(!user){
+alert("Önce giriş yap");
+location.href="login.html";
+return;
+}
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(!snap.exists() || snap.data().role !== "admin"){
+alert("Admin yetkin yok!");
+return;
+}
+
+location.href="admin.html";
+};
+
+</script>
+
+</body>
+</html>

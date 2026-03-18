@@ -2,21 +2,81 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kurye Panel</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+body{margin:0;font-family:Arial;background:#0b0e14;color:white}
+
+.header{
+display:flex;
+justify-content:space-between;
+padding:15px;
+background:#020617;
+}
+
+.status{
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+}
+
+.online{background:#00ff9c;color:black}
+.offline{background:#ff4d4d}
+
+#map{height:50vh}
+
+.panel{padding:15px}
+
+.card{
+background:#111827;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+}
+
+.btn{
+width:100%;
+padding:10px;
+margin-top:5px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+}
+
+.accept{background:#00d4ff;color:black}
+.reject{background:#ff4d4d;color:white}
+.done{background:#22c55e;color:white}
+</style>
 </head>
 
 <body>
 
-<h2>Kurye Panel</h2>
+<div class="header">
+<h3>🚴 Kurye</h3>
+<div id="status" class="status offline">Offline</div>
+</div>
 
-<button onclick="startShift()">🟢 Vardiya Başlat</button>
-<button onclick="endShift()">🔴 Vardiya Bitir</button>
+<div id="map"></div>
 
-<h3>📊 Kazanç</h3>
+<div class="panel">
+
 <div id="stats"></div>
 
 <h3>📦 Siparişler</h3>
 <div id="orders"></div>
+
+<h3>🚀 Aktif Sipariş</h3>
+<div id="activeOrder"></div>
+
+<button onclick="startShift()" class="btn accept">Online Ol</button>
+<button onclick="endShift()" class="btn reject">Offline Ol</button>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
@@ -48,19 +108,18 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* MAP */
+const map = L.map('map').setView([39.92,32.85],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let marker;
+
+/* GLOBAL */
 let user;
-let userZone=null;
 let courierData=null;
+let lastOrderCount=0;
 
-let startTime=null;
-let totalKm=0;
-let earnings=0;
-
-let lastPos=null;
-let watchId=null;
-let unsubscribeOrders=null;
-
-/* 📏 DISTANCE */
+/* DISTANCE */
 function getDistance(lat1,lng1,lat2,lng2){
 const R=6371;
 const dLat=(lat2-lat1)*Math.PI/180;
@@ -74,75 +133,83 @@ Math.sin(dLng/2)**2;
 return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
 }
 
+/* 🔔 NOTIFICATION */
+function notify(){
+try{
+new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play();
+}catch{}
+
+if(navigator.vibrate) navigator.vibrate(200);
+
+alert("🚀 Yeni sipariş geldi!");
+}
+
 /* AUTH */
 onAuthStateChanged(auth, async(u)=>{
 
 if(!u) return location.href="login.html";
 
-const roleSnap = await getDoc(doc(db,"users",u.uid));
-
-if(roleSnap.data().role!=="courier"){
-alert("Yetkisiz");
-location.href="login.html";
-return;
-}
-
 user=u;
 
-/* 🔄 REALTIME COURIER DATA */
+/* COURIER */
 onSnapshot(doc(db,"couriers",u.uid),(snap)=>{
 courierData = snap.data();
-userZone = courierData?.zoneId;
-});
 
-/* SETTINGS */
-let maxDistance = 10;
-try{
-const s = await getDoc(doc(db,"settings","main"));
-if(s.exists()) maxDistance = s.data().maxDistance || 10;
-}catch{}
+if(courierData?.online){
+status.className="status online";
+status.innerText="Online";
+}else{
+status.className="status offline";
+status.innerText="Offline";
+}
+
+loadActiveOrder();
+});
 
 /* ORDERS */
 const q = query(collection(db,"orders"), where("status","==","bekliyor"));
 
-unsubscribeOrders = onSnapshot(q,(snap)=>{
+onSnapshot(q,(snap)=>{
+
 orders.innerHTML="";
+
+/* 🔔 NEW ORDER DETECT */
+if(snap.size > lastOrderCount){
+notify();
+}
+lastOrderCount = snap.size;
 
 snap.forEach(d=>{
 const o=d.data();
 
-if(userZone && o.zoneId!==userZone) return;
+/* 🚫 REDDEDİLEN */
+if(o.rejectedBy?.includes(user.uid)) return;
+
+/* 🚫 ONLINE */
 if(!courierData?.online) return;
 
-/* DISTANCE */
+/* 🧠 AI SCORE */
+let score = 0;
+
 if(o.lat && courierData?.lat){
-const dist = getDistance(
-courierData.lat,
-courierData.lng,
-o.lat,
-o.lng
-);
-if(dist > maxDistance) return;
+const dist = getDistance(courierData.lat,courierData.lng,o.lat,o.lng);
+
+score = 100 - dist; // yakınsa yüksek
 }
 
+/* düşük skor → gösterme */
+if(score < 50 && Math.random()>0.3) return;
+
+/* UI */
 orders.innerHTML+=`
-<div style="border:1px solid #ccc;margin:10px;padding:10px;">
+<div class="card">
 <b>${o.customer}</b><br>
 ${o.address}<br>
 
-💰 ${o.price}₺  
-🔥 x${o.surge || 1}
+💰 ${o.price}₺ 🔥x${o.surge||1}
 
-<br><br>
-
-<button onclick="acceptOrder('${d.id}',${o.price},${o.surge || 1})">
-Kabul Et
-</button>
-
-<button onclick="rejectOrder('${d.id}')">
-Reddet
-</button>
-
+<button class="btn accept" onclick="acceptOrder('${d.id}',${o.price},${o.surge||1})">Kabul</button>
+<button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
 </div>`;
 });
 
@@ -150,105 +217,122 @@ Reddet
 
 });
 
-/* SHIFT START */
+/* SHIFT */
 window.startShift=()=>{
 
-if(watchId) return;
-
-startTime=Date.now();
-
-watchId = navigator.geolocation.watchPosition(async(pos)=>{
+navigator.geolocation.watchPosition(async(pos)=>{
 
 const lat=pos.coords.latitude;
 const lng=pos.coords.longitude;
 
-/* KM */
-if(lastPos){
-totalKm+=getDistance(lastPos.lat,lastPos.lng,lat,lng);
+/* MAP */
+if(marker){
+marker.setLatLng([lat,lng]);
+}else{
+marker = L.marker([lat,lng]).addTo(map);
 }
-lastPos={lat,lng};
 
-/* 🔥 THROTTLE (her 5 sn yaz) */
-if(Date.now()%5000 < 1000){
+map.setView([lat,lng],15);
+
 await updateDoc(doc(db,"couriers",user.uid),{
-lat,lng,
-online:true,
-status:"available"
+lat,lng,online:true,status:"available"
 });
-}
-
-/* 💰 */
-const hours = (Date.now()-startTime)/3600000;
-earnings = (totalKm*8)+(hours*215);
-
-stats.innerHTML=`
-⏱ ${hours.toFixed(2)} saat<br>
-📍 ${totalKm.toFixed(2)} km<br>
-💰 ${earnings.toFixed(0)}₺
-`;
 
 });
 
 };
 
-/* SHIFT END */
+/* OFFLINE */
 window.endShift=async()=>{
-
-if(watchId){
-navigator.geolocation.clearWatch(watchId);
-watchId=null;
-}
-
 await updateDoc(doc(db,"couriers",user.uid),{
-online:false,
-status:"offline"
+online:false
 });
-
-if(unsubscribeOrders) unsubscribeOrders();
-
 location.reload();
 };
 
-/* 🔒 SAFE ACCEPT (TRANSACTION) */
+/* ACCEPT */
 window.acceptOrder = async(id,price,surge)=>{
 
 const ref = doc(db,"orders",id);
 
 try{
-await runTransaction(db, async(transaction)=>{
+await runTransaction(db, async(t)=>{
+const snap = await t.get(ref);
+if(snap.data().status!=="bekliyor") throw "taken";
 
-const snap = await transaction.get(ref);
-
-if(snap.data().status!=="bekliyor"){
-throw "Alındı";
-}
-
-transaction.update(ref,{
+t.update(ref,{
 status:"yolda",
 courierId:user.uid
 });
-
 });
 
 await updateDoc(doc(db,"couriers",user.uid),{
 status:"busy"
 });
 
-/* 💰 */
-earnings += price * surge;
+alert("🚀 Sipariş alındı!");
 
-alert("Sipariş alındı 🚀");
-
-}catch(e){
+}catch{
 alert("Başka kurye aldı!");
 }
 
 };
 
+/* ACTIVE */
+function loadActiveOrder(){
+
+const q = query(collection(db,"orders"), where("courierId","==",user.uid));
+
+onSnapshot(q,(snap)=>{
+activeOrder.innerHTML="";
+
+snap.forEach(d=>{
+const o=d.data();
+
+if(o.status!=="yolda") return;
+
+activeOrder.innerHTML=`
+<div class="card">
+<b>${o.customer}</b><br>
+${o.address}<br>
+
+<button class="btn done" onclick="finishOrder('${d.id}')">
+Teslim Edildi
+</button>
+</div>`;
+});
+
+});
+
+}
+
+/* FINISH */
+window.finishOrder = async(id)=>{
+
+await updateDoc(doc(db,"orders",id),{
+status:"delivered"
+});
+
+await updateDoc(doc(db,"couriers",user.uid),{
+status:"available"
+});
+
+alert("Teslim edildi 🎉");
+
+};
+
 /* REJECT */
 window.rejectOrder = async(id)=>{
-// future: AI reassign
-alert("Reddedildi → AI yeniden atayacak");
+
+const ref = doc(db,"orders",id);
+const snap = await getDoc(ref);
+
+const prev = snap.data().rejectedBy || [];
+
+await updateDoc(ref,{
+rejectedBy:[...prev, user.uid]
+});
+
 };
 
 </script>

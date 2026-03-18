@@ -18,7 +18,6 @@ body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white
 .content{flex:1;padding:20px}
 .card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
 
-/* 🚀 FIX: RESPONSIVE MAP */
 #map{
 width:100%;
 height:50vh;
@@ -26,7 +25,6 @@ min-height:300px;
 border-radius:12px;
 }
 
-/* 📱 MOBILE FIX */
 @media(max-width:768px){
 .sidebar{width:80px}
 .sidebar h2{display:none}
@@ -48,19 +46,16 @@ border-radius:12px;
 
 <div class="content">
 
-<!-- DASHBOARD -->
 <div id="dashboard">
 <h2>🚀 Canlı Sistem</h2>
 <div id="map"></div>
 </div>
 
-<!-- ORDERS -->
 <div id="orders" style="display:none">
 <h2>📦 Siparişler</h2>
 <div id="orderList"></div>
 </div>
 
-<!-- COURIERS -->
 <div id="couriers" style="display:none">
 <h2>🚴 Kuryeler</h2>
 
@@ -71,7 +66,6 @@ border-radius:12px;
 <div id="courierList"></div>
 </div>
 
-<!-- RESTAURANTS -->
 <div id="restaurants" style="display:none">
 <h2>🍔 Restoranlar</h2>
 
@@ -82,7 +76,6 @@ border-radius:12px;
 <div id="restaurantList"></div>
 </div>
 
-<!-- APPLICATIONS -->
 <div id="applications" style="display:none">
 <h2>📩 Başvurular</h2>
 <div id="appList"></div>
@@ -93,10 +86,16 @@ border-radius:12px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
 import {
 getFirestore, collection, addDoc, onSnapshot,
-deleteDoc, doc, updateDoc
+deleteDoc, doc, updateDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -105,6 +104,7 @@ projectId:"kuryeai"
 });
 
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 /* NAV */
 window.show=id=>{
@@ -117,11 +117,12 @@ document.getElementById(id).style.display="block";
 const map=L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-/* 📍 RESTAURANTS MAP */
 let restMarkers={};
 
+/* RESTAURANTS */
 onSnapshot(collection(db,"restaurants"),snap=>{
 document.getElementById("restaurantList").innerHTML="";
+
 snap.forEach(d=>{
 const r=d.data();
 
@@ -142,9 +143,9 @@ restMarkers[d.id]=L.marker([r.lat,r.lng]).addTo(map);
 });
 });
 
-/* 📍 LOCATION PICK */
+/* KONUM */
 window.setLocation=id=>{
-map.on('click',async e=>{
+map.once('click',async e=>{
 await updateDoc(doc(db,"restaurants",id),{
 lat:e.latlng.lat,
 lng:e.latlng.lng
@@ -153,25 +154,26 @@ alert("Konum kaydedildi");
 });
 }
 
-/* ➕ RESTAURANT */
+/* ADD RESTAURANT */
 window.addRestaurant=async()=>{
 await addDoc(collection(db,"restaurants"),{
-name:document.getElementById("rName").value,
-email:document.getElementById("rMail").value
+name:rName.value,
+email:rMail.value
 });
 }
 
-/* ❌ DELETE RESTAURANT */
+/* DELETE RESTAURANT */
 window.delR=id=>deleteDoc(doc(db,"restaurants",id));
 
-/* 🚴 COURIERS */
+/* COURIERS */
 onSnapshot(collection(db,"couriers"),snap=>{
-document.getElementById("courierList").innerHTML="";
+courierList.innerHTML="";
 snap.forEach(d=>{
 const c=d.data();
-document.getElementById("courierList").innerHTML+=`
+
+courierList.innerHTML+=`
 <div class="card">
-${c.name}
+${c.name} - ${c.email}
 <button onclick="delC('${d.id}')">Sil</button>
 </div>`;
 });
@@ -179,46 +181,69 @@ ${c.name}
 
 window.addCourier=async()=>{
 await addDoc(collection(db,"couriers"),{
-name:document.getElementById("cName").value,
-email:document.getElementById("cMail").value
+name:cName.value,
+email:cMail.value
 });
 }
 
 window.delC=id=>deleteDoc(doc(db,"couriers",id));
 
-/* 📦 ORDERS */
+/* ORDERS */
 onSnapshot(collection(db,"orders"),snap=>{
-document.getElementById("orderList").innerHTML="";
+orderList.innerHTML="";
 snap.forEach(d=>{
 const o=d.data();
-document.getElementById("orderList").innerHTML+=`
+
+orderList.innerHTML+=`
 <div class="card">
-${o.product}
-<button onclick="assign('${d.id}')">Kurye Ata</button>
+${o.product} - ${o.status}
 </div>`;
 });
 });
 
-window.assign=id=>{
-alert("Drag-drop yakında 😎");
-}
-
-/* 📩 APPLICATIONS */
+/* APPLICATIONS (🔥 GERÇEK SİSTEM) */
 onSnapshot(collection(db,"applications"),snap=>{
-document.getElementById("appList").innerHTML="";
+appList.innerHTML="";
+
 snap.forEach(d=>{
 const a=d.data();
-document.getElementById("appList").innerHTML+=`
+
+appList.innerHTML+=`
 <div class="card">
-${a.name}
-<button onclick="approve('${d.id}')">Onayla</button>
+<b>${a.name}</b><br>
+${a.email}<br>
+<button onclick="approve('${d.id}','${a.email}')">Onayla</button>
 </div>`;
 });
 });
 
-window.approve=async id=>{
-await updateDoc(doc(db,"applications",id),{status:"approved"});
-alert("Onaylandı");
+/* 🔥 APPROVE = USER OLUŞTUR */
+window.approve = async (id,email)=>{
+
+try{
+
+const password = "123456";
+
+/* AUTH */
+const userCred = await createUserWithEmailAndPassword(auth,email,password);
+
+/* ROLE */
+await setDoc(doc(db,"users",userCred.user.uid),{
+email,
+role:"restaurant"
+});
+
+/* STATUS */
+await updateDoc(doc(db,"applications",id),{
+status:"approved"
+});
+
+alert("Restoran oluşturuldu!\nŞifre: 123456");
+
+}catch(e){
+alert(e.message);
+}
+
 }
 
 </script>

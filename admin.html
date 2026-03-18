@@ -2,49 +2,171 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KuryeAI Admin</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;display:flex}
-.sidebar{width:220px;background:#020617;padding:20px;height:100vh}
-.sidebar button{width:100%;padding:10px;margin:5px 0;background:none;border:none;color:white;cursor:pointer}
-.content{flex:1;padding:20px}
-.card{background:#1e293b;padding:15px;border-radius:10px;margin-bottom:10px}
-.map{height:300px;border-radius:10px}
-input{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:none}
-.btn{padding:6px 10px;border:none;border-radius:6px;cursor:pointer}
-.red{background:red;color:white}
-.green{background:green;color:white}
+body{
+margin:0;
+font-family:'Segoe UI';
+background:#020617;
+color:white;
+display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:240px;
+background:linear-gradient(180deg,#020617,#0f172a);
+padding:20px;
+height:100vh;
+}
+
+.sidebar h2{
+color:#00d4ff;
+}
+
+.sidebar button{
+width:100%;
+padding:12px;
+margin:6px 0;
+background:none;
+border:none;
+color:#94a3b8;
+text-align:left;
+cursor:pointer;
+border-radius:8px;
+}
+
+.sidebar button:hover,
+.active{
+background:#0ea5e9;
+color:white;
+}
+
+/* CONTENT */
+.content{
+flex:1;
+padding:20px;
+}
+
+/* CARDS */
+.card{
+background:#0f172a;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+border:1px solid #1e293b;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+}
+
+/* MAP */
+#map{
+height:300px;
+border-radius:12px;
+}
+
+/* INPUT */
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+border-radius:8px;
+border:none;
+background:#020617;
+color:white;
+}
+
+/* BUTTONS */
+.btn{
+padding:8px 12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.green{background:#22c55e;}
+.red{background:#ef4444;}
+.blue{background:#0ea5e9;}
+
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-<button onclick="show('dashboard')">Dashboard</button>
+<h2>KuryeAI</h2>
+
+<button onclick="show('dashboard')" class="active">Dashboard</button>
+<button onclick="show('orders')">Siparişler</button>
 <button onclick="show('restaurants')">Restoranlar</button>
+<button onclick="show('couriers')">Kuryeler</button>
+<button onclick="show('applications')">Başvurular</button>
+
+<button onclick="logout()">Çıkış</button>
 </div>
 
 <div class="content">
 
+<!-- DASHBOARD -->
 <div id="dashboard">
-<h2>Harita</h2>
-<div id="map" class="map"></div>
+<h2>Dashboard</h2>
+
+<div class="grid">
+<div class="card">Toplam Sipariş: <span id="total">0</span></div>
+<div class="card">Restoran: <span id="restCount">0</span></div>
 </div>
 
+<div class="card">
+<h3>Harita</h3>
+<div id="map"></div>
+</div>
+</div>
+
+<!-- RESTAURANTS -->
 <div id="restaurants" style="display:none">
+
 <h2>Restoran Yönetimi</h2>
 
 <div class="card">
+<h3>Yeni Restoran</h3>
+
 <input id="newName" placeholder="Restoran adı">
 <input id="newEmail" placeholder="Email">
-<button onclick="addRestaurant()" class="green">Ekle</button>
+
+<p>Haritadan konum seç</p>
+
+<button class="btn blue" onclick="enableAddLocation()">Konum Seç</button>
+<button class="btn green" onclick="addRestaurant()">Ekle</button>
 </div>
 
-<div id="list"></div>
+<div id="restaurantList"></div>
+
+</div>
+
+<!-- APPLICATIONS -->
+<div id="applications" style="display:none">
+<h2>Başvurular</h2>
+<div id="appList"></div>
+</div>
+
+<!-- ORDERS -->
+<div id="orders" style="display:none">
+<h2>Siparişler (yakında)</h2>
+</div>
+
+<!-- COURIERS -->
+<div id="couriers" style="display:none">
+<h2>Kuryeler (yakında)</h2>
 </div>
 
 </div>
@@ -62,11 +184,12 @@ projectId:"kuryeai"
 
 const db = getFirestore(app);
 
-window.show = id=>{
-document.getElementById("dashboard").style.display="none";
-document.getElementById("restaurants").style.display="none";
+/* NAV */
+window.show=id=>{
+["dashboard","restaurants","orders","couriers","applications"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
 document.getElementById(id).style.display="block";
-if(id==="restaurants") load();
 }
 
 /* MAP */
@@ -76,11 +199,14 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 let markers={};
 
 /* LOAD RESTAURANTS */
-async function load(){
-const list=document.getElementById("list");
+async function loadRestaurants(){
+
+const list=document.getElementById("restaurantList");
 list.innerHTML="";
 
 const snap=await getDocs(collection(db,"restaurants"));
+
+document.getElementById("restCount").innerText=snap.size;
 
 snap.forEach(d=>{
 const r=d.data();
@@ -101,38 +227,68 @@ div.className="card";
 div.innerHTML=`
 <input value="${r.name}" id="name-${d.id}">
 <input value="${r.email}" id="email-${d.id}">
-<button onclick="updateRestaurant('${d.id}')" class="green">Kaydet</button>
-<button onclick="deleteRestaurant('${d.id}')" class="red">Sil</button>
-<button onclick="selectLocation('${d.id}')">Konum Seç</button>
+
+<button class="btn green" onclick="updateRestaurant('${d.id}')">Kaydet</button>
+<button class="btn red" onclick="deleteRestaurant('${d.id}')">Sil</button>
+<button class="btn blue" onclick="selectLocation('${d.id}')">Konum</button>
 `;
 
 list.appendChild(div);
 });
+
 }
+
+/* ADD LOCATION MODE */
+let addMode=false;
+let newLat,newLng;
+
+window.enableAddLocation=()=>{
+addMode=true;
+alert("Haritadan konum seç");
+}
+
+map.on("click", e=>{
+
+if(addMode){
+newLat=e.latlng.lat;
+newLng=e.latlng.lng;
+alert("Konum seçildi");
+addMode=false;
+return;
+}
+
+if(currentId){
+updateLocation(currentId,e.latlng);
+}
+
+});
 
 /* ADD */
 window.addRestaurant=async()=>{
+
+if(!newLat){
+alert("Konum seç!");
+return;
+}
+
 await addDoc(collection(db,"restaurants"),{
 name:newName.value,
 email:newEmail.value,
-lat:39.92,
-lng:32.85
+lat:newLat,
+lng:newLng
 });
-load();
+
+loadRestaurants();
 }
 
 /* DELETE */
-window.deleteRestaurant=async(id)=>{
+window.deleteRestaurant=async id=>{
 await deleteDoc(doc(db,"restaurants",id));
-if(markers[id]){
-map.removeLayer(markers[id]);
-delete markers[id];
-}
-load();
+loadRestaurants();
 }
 
 /* UPDATE */
-window.updateRestaurant=async(id)=>{
+window.updateRestaurant=async id=>{
 await updateDoc(doc(db,"restaurants",id),{
 name:document.getElementById("name-"+id).value,
 email:document.getElementById("email-"+id).value
@@ -140,25 +296,80 @@ email:document.getElementById("email-"+id).value
 alert("Güncellendi");
 }
 
-/* LOCATION PICK */
+/* LOCATION UPDATE */
 let currentId=null;
-map.on("click",async e=>{
-if(!currentId) return;
-
-await updateDoc(doc(db,"restaurants",currentId),{
-lat:e.latlng.lat,
-lng:e.latlng.lng
-});
-
-alert("Konum güncellendi");
-currentId=null;
-load();
-});
 
 window.selectLocation=id=>{
 currentId=id;
-alert("Haritadan konum seç");
+alert("Haritadan yeni konum seç");
 }
+
+async function updateLocation(id,latlng){
+
+await updateDoc(doc(db,"restaurants",id),{
+lat:latlng.lat,
+lng:latlng.lng
+});
+
+currentId=null;
+loadRestaurants();
+}
+
+/* APPLICATIONS */
+async function loadApplications(){
+
+const list=document.getElementById("appList");
+list.innerHTML="";
+
+const snap=await getDocs(collection(db,"applications"));
+
+snap.forEach(d=>{
+const a=d.data();
+
+const div=document.createElement("div");
+div.className="card";
+
+div.innerHTML=`
+<h4>${a.name}</h4>
+<p>${a.email}</p>
+
+<button class="btn green" onclick="approve('${d.id}')">Onayla</button>
+<button class="btn red" onclick="deleteApp('${d.id}')">Sil</button>
+`;
+
+list.appendChild(div);
+});
+
+}
+
+/* APPROVE */
+window.approve=async id=>{
+
+const snap=await getDocs(collection(db,"applications"));
+
+snap.forEach(async d=>{
+if(d.id===id){
+const a=d.data();
+
+await addDoc(collection(db,"restaurants"),a);
+await deleteDoc(doc(db,"applications",id));
+
+loadApplications();
+loadRestaurants();
+}
+});
+
+}
+
+/* DELETE APP */
+window.deleteApp=async id=>{
+await deleteDoc(doc(db,"applications",id));
+loadApplications();
+}
+
+/* INIT */
+loadRestaurants();
+loadApplications();
 
 </script>
 

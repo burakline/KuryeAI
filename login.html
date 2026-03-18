@@ -133,8 +133,6 @@ font-size:12px;
 
 <button id="loginBtn">Giriş Yap</button>
 
-<button id="bioBtn">🔐 Face / Fingerprint</button>
-
 <div class="loading" id="loading">⏳</div>
 
 </div>
@@ -148,7 +146,8 @@ signInWithEmailAndPassword,
 setPersistence,
 browserLocalPersistence,
 browserSessionPersistence,
-sendPasswordResetEmail
+sendPasswordResetEmail,
+onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 import {
@@ -157,7 +156,7 @@ doc,
 getDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-/* FIREBASE */
+/* CONFIG */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -167,7 +166,7 @@ projectId:"kuryeai"
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ELEMENTLER */
+/* ELEMENTS */
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
@@ -177,31 +176,26 @@ const forgot = document.getElementById("forgot");
 const loading = document.getElementById("loading");
 const box = document.getElementById("box");
 
-/* 👁 ŞİFRE GÖSTER */
-eye.addEventListener("click", () => {
+/* 👁 SHOW PASSWORD */
+eye.onclick = ()=>{
 password.type = password.type === "password" ? "text" : "password";
+};
+
+/* 🔐 AUTO LOGIN */
+onAuthStateChanged(auth, async(user)=>{
+if(user){
+redirectByRole(user.uid);
+}
 });
 
-/* 🌐 DİL */
-let lang = "tr";
+/* 🚀 LOGIN */
+loginBtn.onclick = async ()=>{
 
-document.getElementById("langBtn").addEventListener("click", () => {
-lang = lang === "tr" ? "en" : "tr";
-
-document.getElementById("title").innerText = lang === "tr" ? "Giriş Yap" : "Login";
-document.getElementById("rememberText").innerText = lang === "tr" ? "Beni hatırla" : "Remember me";
-forgot.innerText = lang === "tr" ? "Şifremi unuttum" : "Forgot password";
-});
-
-/* 🔐 LOGIN */
-loginBtn.addEventListener("click", async () => {
-
-const mail = email.value;
-const pass = password.value;
+const mail = email.value.trim();
+const pass = password.value.trim();
 
 if(!mail || !pass){
-box.classList.add("shake");
-setTimeout(()=>box.classList.remove("shake"),300);
+shake();
 return;
 }
 
@@ -214,38 +208,37 @@ remember.checked ? browserLocalPersistence : browserSessionPersistence
 );
 
 const userCred = await signInWithEmailAndPassword(auth, mail, pass);
-const uid = userCred.user.uid;
 
-/* ROLE CHECK */
-const userDoc = await getDoc(doc(db,"users",uid));
-
-if(!userDoc.exists()){
-alert("Rol bulunamadı!");
-return;
-}
-
-const role = userDoc.data().role;
-
-if(role==="admin"){
-window.location.href="admin.html";
-}
-else if(role==="restaurant"){
-window.location.href="restaurant.html";
-}
-else if(role==="courier"){
-window.location.href="courier.html";
-}
+await redirectByRole(userCred.user.uid);
 
 }catch(e){
-alert("Hata: "+e.message);
+alert("❌ "+e.message);
+shake();
 }
 
 loading.style.display="none";
+};
 
-});
+/* 🎯 ROLE REDIRECT */
+async function redirectByRole(uid){
 
-/* 🔁 ŞİFRE RESET */
-forgot.addEventListener("click", async ()=>{
+const snap = await getDoc(doc(db,"users",uid));
+
+if(!snap.exists()){
+alert("Rol yok!");
+return;
+}
+
+const role = snap.data().role;
+
+if(role==="admin") location.href="admin.html";
+else if(role==="restaurant") location.href="restaurant.html";
+else if(role==="courier") location.href="courier.html";
+else location.href="index.html";
+}
+
+/* 🔁 RESET */
+forgot.onclick = async ()=>{
 if(!email.value){
 alert("Email gir!");
 return;
@@ -253,12 +246,13 @@ return;
 
 await sendPasswordResetEmail(auth,email.value);
 alert("Mail gönderildi 📧");
-});
+};
 
-/* 🔐 BİOMETRİK (demo) */
-document.getElementById("bioBtn").addEventListener("click", ()=>{
-alert("Yakında aktif 🚀");
-});
+/* 💥 SHAKE */
+function shake(){
+box.classList.add("shake");
+setTimeout(()=>box.classList.remove("shake"),300);
+}
 
 </script>
 

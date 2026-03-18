@@ -367,3 +367,159 @@ rejectedBy:[...prev, user.uid]
 
 </body>
 </html>
+💰 ${o.price}₺ 🔥x${o.surge||1}
+
+<button class="btn accept" onclick="acceptOrder('${d.id}',${o.price},${o.surge||1})">Kabul</button>
+<button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
+</div>`;
+});
+
+});
+
+});
+
+/* SHIFT */
+function startShift(){
+
+if(watchId) return;
+
+watchId = navigator.geolocation.watchPosition(function(pos){
+
+const lat=pos.coords.latitude;
+const lng=pos.coords.longitude;
+
+/* MARKER */
+if(marker){
+marker.setLatLng([lat,lng]);
+}else{
+marker = L.marker([lat,lng]).addTo(map);
+}
+
+/* MAP sadece 1 kez ortala */
+if(!mapMoved){
+map.setView([lat,lng],15);
+mapMoved = true;
+}
+
+/* UPDATE */
+db.collection("couriers").doc(user.uid).update({
+lat:lat,
+lng:lng,
+online:true,
+status:"available"
+});
+
+});
+
+}
+
+/* OFFLINE */
+function endShift(){
+
+if(watchId){
+navigator.geolocation.clearWatch(watchId);
+watchId=null;
+}
+
+db.collection("couriers").doc(user.uid).update({
+online:false
+});
+
+location.reload();
+}
+
+/* ACCEPT */
+function acceptOrder(id,price,surge){
+
+const ref = db.collection("orders").doc(id);
+
+ref.get().then(function(snap){
+
+if(!snap.exists) return;
+
+if(snap.data().status !== "bekliyor"){
+alert("Başka kurye aldı!");
+return;
+}
+
+ref.update({
+status:"yolda",
+courierId:user.uid
+});
+
+db.collection("couriers").doc(user.uid).update({
+status:"busy"
+});
+
+alert("🚀 Sipariş alındı!");
+
+});
+
+}
+
+/* ACTIVE */
+function loadActiveOrder(){
+
+db.collection("orders")
+.where("courierId","==",user.uid)
+.onSnapshot(function(snap){
+
+activeOrder.innerHTML="";
+
+snap.forEach(function(d){
+
+const o=d.data();
+if(!o || o.status!=="yolda") return;
+
+activeOrder.innerHTML=`
+<div class="card">
+<b>${o.customer}</b><br>
+${o.address}<br>
+
+<button class="btn done" onclick="finishOrder('${d.id}')">
+Teslim Edildi
+</button>
+</div>`;
+});
+
+});
+
+}
+
+/* FINISH */
+function finishOrder(id){
+
+db.collection("orders").doc(id).update({
+status:"delivered"
+});
+
+db.collection("couriers").doc(user.uid).update({
+status:"available"
+});
+
+alert("Teslim edildi 🎉");
+}
+
+/* REJECT */
+function rejectOrder(id){
+
+const ref = db.collection("orders").doc(id);
+
+ref.get().then(function(snap){
+
+if(!snap.exists) return;
+
+const prev = snap.data().rejectedBy || [];
+
+ref.update({
+rejectedBy:[...prev, user.uid]
+});
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

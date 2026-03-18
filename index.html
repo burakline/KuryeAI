@@ -217,33 +217,34 @@ window.closeCourier = () => {
 document.getElementById("courierModal").style.display = "none";
 }
 
-/* BAŞVURU */
+/* BAŞVURU (FIXED) */
 window.sendCourier = async () => {
 
 try{
 
-const nameVal = document.getElementById("name").value;
-const emailVal = document.getElementById("email").value;
+const data = {
+name: document.getElementById("name").value,
+birthDate: document.getElementById("birthDate").value,
+birthPlace: document.getElementById("birthPlace").value,
+blood: document.getElementById("blood").value,
+education: document.getElementById("education").value,
+license: document.getElementById("license").value,
+p1: document.getElementById("p1").value,
+src: document.getElementById("src").value,
+criminal: document.getElementById("criminal").value,
+phone: document.getElementById("phone").value,
+email: document.getElementById("email").value
+};
 
-if(!nameVal || !emailVal){
+if(!data.name || !data.email){
 alert("Ad ve email zorunlu!");
 return;
 }
 
 await addDoc(collection(db,"applications"),{
+...data,
 type:"courier",
 status:"pending",
-name:nameVal,
-birthDate:birthDate.value,
-birthPlace:birthPlace.value,
-blood:blood.value,
-education:education.value,
-license:license.value,
-p1:p1.value,
-src:src.value,
-criminal:criminal.value,
-phone:phone.value,
-email:emailVal,
 createdAt:new Date()
 });
 

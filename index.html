@@ -3,306 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI | Yapay Zeka Destekli Lojistik</title>
+<title>KuryeAI - Hızlı Kurye Sistemi</title>
 
-<!-- FIREBASE CDN (STABLE) -->
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<meta name="description" content="KuryeAI ile restoranlar için hızlı ve akıllı kurye sistemi. Canlı takip, anlık sipariş ve profesyonel teslimat.">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #fff; margin: 0; background: #0b0e14; }
-header { background: #000; padding: 1.5rem 0; text-align: center; border-bottom: 1px solid #333; }
-.hero { background: #1a1a1a; padding: 3rem 2rem; text-align: center; }
-
-.logo-container { margin-bottom: 20px; min-height: 150px; }
-.logo-container img {
-max-width: 180px;
-animation: float 3s ease-in-out infinite;
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+background:#0b0e14;
+color:white;
 }
 
-@keyframes float {
-0% { transform: translateY(0px); }
-50% { transform: translateY(-15px); }
-100% { transform: translateY(0px); }
+/* NAV */
+.nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 20px;
+background:#020617;
 }
 
-.cta-button {
-display: inline-block;
-background: #00d4ff;
-color: #000;
-padding: 15px 30px;
-border-radius: 8px;
-font-weight: bold;
-margin-bottom: 10px;
-border: none;
-cursor: pointer;
+.logo{
+font-weight:700;
+font-size:18px;
 }
 
-.login-container {
-display: flex;
-justify-content: center;
-gap: 15px;
-flex-wrap: wrap;
-margin-top: 20px;
+.nav a{
+color:white;
+text-decoration:none;
+margin-left:15px;
+font-size:14px;
 }
 
-.btn-login {
-border: 1px solid #00d4ff;
-color: #00d4ff;
-padding: 12px 24px;
-border-radius: 8px;
-background: transparent;
+/* HERO */
+.hero{
+padding:60px 20px;
+text-align:center;
 }
 
-.services {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-gap: 20px;
-padding: 2rem;
-max-width: 1000px;
-margin: auto;
+.hero h1{
+font-size:32px;
+margin-bottom:15px;
 }
 
-.service-card {
-background: #111;
-border: 1px solid #333;
-padding: 1.5rem;
-border-radius: 12px;
+.hero p{
+opacity:0.8;
+margin-bottom:25px;
 }
 
-.footer {
-margin-top: 60px;
-text-align: center;
-color: #888;
-border-top: 1px solid #333;
-padding: 2rem 0;
+.btn{
+padding:14px 20px;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
 }
 
-/* MODAL */
-#courierModal, #restaurantModal {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: rgba(0,0,0,0.8);
-z-index: 999;
-justify-content: center;
-align-items: center;
+.primary{
+background:#00d4ff;
+color:black;
 }
 
-.modalBox {
-background: #1e293b;
-padding: 20px;
-border-radius: 15px;
-width: 90%;
-max-width: 400px;
-max-height: 90vh;
-overflow: auto;
-position: relative;
+.secondary{
+background:#111827;
+color:white;
+margin-left:10px;
 }
 
-.modalBox input, .modalBox select {
-width: 100%;
-margin: 6px 0;
-padding: 10px;
-border-radius: 8px;
-border: none;
+/* SECTION */
+.section{
+padding:40px 20px;
 }
 
-.closeX {
-position: absolute;
-top: 10px;
-right: 15px;
-cursor: pointer;
-font-size: 20px;
+.card{
+background:#111827;
+padding:20px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+/* FOOTER */
+.footer{
+padding:20px;
+text-align:center;
+opacity:0.6;
+font-size:13px;
 }
 </style>
 </head>
 
 <body>
 
-<header><h1>KuryeAI</h1></header>
+<!-- NAV -->
+<div class="nav">
+<div class="logo">🚀 KuryeAI</div>
+<div>
+<a href="login.html">Giriş</a>
+<a href="courier.html">Kurye Panel</a>
+</div>
+</div>
 
+<!-- HERO -->
 <div class="hero">
+<h1>Yeni Nesil Kurye Sistemi</h1>
+<p>Restoranlar için hızlı, akıllı ve canlı takipli teslimat çözümü</p>
 
-<div class="logo-container">
-<img src="logo.png" onerror="this.src='https://via.placeholder.com/180x180/00d4ff/000000?text=KuryeAI+Logo'">
+<button class="btn primary" onclick="window.location.href='login.html'">
+🚀 Hemen Başla
+</button>
+
+<button class="btn secondary" onclick="window.location.href='admin.html'">
+📊 Admin Panel
+</button>
 </div>
 
-<h2>Yapay Zeka Destekli Yeni Nesil Lojistik</h2>
-
-<a href="#" class="cta-button">Hemen Kurye Çağır</a>
-
-<button onclick="openCourier()" class="cta-button">Kurye Ol</button>
-<button onclick="openRestaurant()" class="cta-button">Restoran Ol</button>
-
-<div class="login-container">
-<a href="login.html?type=restaurant" class="btn-login">Restoran Girişi</a>
-<a href="login.html?type=courier" class="btn-login">Kurye Girişi</a>
-<a href="login.html?type=admin" class="btn-login">Admin Girişi</a>
+<!-- FEATURES -->
+<div class="section">
+<h2>🚴 Kurye Takibi</h2>
+<div class="card">
+Canlı harita üzerinden kuryeleri anlık takip et
 </div>
 
+<h2>📦 Sipariş Yönetimi</h2>
+<div class="card">
+Siparişleri havuzda topla ve kuryelere ata
 </div>
 
-<div class="services">
-<div class="service-card"><h4>Restoran Havuz Kurye</h4></div>
-<div class="service-card"><h4>VIP Express Moto Kurye</h4></div>
-<div class="service-card"><h4>Lojistik Yazılım</h4></div>
-</div>
-
-<!-- KURYE MODAL -->
-<div id="courierModal" onclick="closeCourier()">
-<div class="modalBox" onclick="event.stopPropagation()">
-<div class="closeX" onclick="closeCourier()">✕</div>
-<h3>Kurye Başvuru</h3>
-
-<input id="name" placeholder="Ad Soyad">
-<input id="birthDate" type="date">
-<input id="birthPlace" placeholder="Doğum Yeri">
-<input id="blood" placeholder="Kan Grubu">
-<input id="education" placeholder="Eğitim Durumu">
-<input id="license" placeholder="Ehliyet">
-
-<select id="p1">
-<option value="">P1 Belgesi</option>
-<option value="var">Var</option>
-<option value="yok">Yok</option>
-</select>
-
-<select id="src">
-<option value="">SRC Kurye</option>
-<option value="var">Var</option>
-<option value="yok">Yok</option>
-</select>
-
-<select id="criminal">
-<option value="">Adli Sicil</option>
-<option value="yok">Yok</option>
-<option value="var">Var</option>
-</select>
-
-<input id="phone" placeholder="Telefon">
-<input id="email" placeholder="Mail">
-
-<button onclick="sendCourier()">Başvur</button>
-<button onclick="closeCourier()">Kapat</button>
+<h2>⚡ Hızlı Teslimat</h2>
+<div class="card">
+Akıllı sistem ile en yakın kuryeye yönlendirme
 </div>
 </div>
 
-<!-- RESTORAN MODAL -->
-<div id="restaurantModal" onclick="closeRestaurant()">
-<div class="modalBox" onclick="event.stopPropagation()">
-<div class="closeX" onclick="closeRestaurant()">✕</div>
-<h3>Restoran Başvuru</h3>
-
-<input id="r_name" placeholder="Restoran Adı">
-<input id="r_phone" placeholder="Telefon">
-<input id="r_email" placeholder="Email">
-<input id="r_address" placeholder="Adres">
-
-<button onclick="sendRestaurant()">Başvur</button>
-<button onclick="closeRestaurant()">Kapat</button>
-</div>
+<!-- CTA -->
+<div class="section" style="text-align:center;">
+<h2>Restoranın için kurye mi lazım?</h2>
+<button class="btn primary" onclick="window.location.href='login.html'">
+Hemen Kurye Çağır
+</button>
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
-<p><strong>AI Teknoloji ve Lojistik A.Ş</strong></p>
-<p>© 2026 KuryeAI</p>
+© 2026 KuryeAI - Tüm hakları saklıdır
 </div>
-
-<script>
-
-/* FIREBASE INIT */
-const firebaseConfig = {
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-/* MODALS */
-function openCourier(){ document.getElementById("courierModal").style.display="flex"; }
-function closeCourier(){ document.getElementById("courierModal").style.display="none"; }
-
-function openRestaurant(){ document.getElementById("restaurantModal").style.display="flex"; }
-function closeRestaurant(){ document.getElementById("restaurantModal").style.display="none"; }
-
-/* KURYE */
-async function sendCourier(){
-try{
-
-const data = {
-name: document.getElementById("name").value.trim(),
-birthDate: document.getElementById("birthDate").value,
-birthPlace: document.getElementById("birthPlace").value.trim(),
-blood: document.getElementById("blood").value.trim(),
-education: document.getElementById("education").value.trim(),
-license: document.getElementById("license").value.trim(),
-p1: document.getElementById("p1").value,
-src: document.getElementById("src").value,
-criminal: document.getElementById("criminal").value,
-phone: document.getElementById("phone").value.trim(),
-email: document.getElementById("email").value.trim()
-};
-
-if(!data.name || !data.email){
-alert("Ad ve email zorunlu!");
-return;
-}
-
-await db.collection("applications").add({
-...data,
-type:"courier",
-status:"pending",
-createdAt:new Date()
-});
-
-alert("✅ Başvuru gönderildi!");
-closeCourier();
-
-}catch(e){
-alert("HATA: "+e.message);
-console.error(e);
-}
-}
-
-/* RESTORAN */
-async function sendRestaurant(){
-try{
-
-const data = {
-name: document.getElementById("r_name").value.trim(),
-phone: document.getElementById("r_phone").value.trim(),
-email: document.getElementById("r_email").value.trim(),
-address: document.getElementById("r_address").value.trim()
-};
-
-if(!data.name || !data.email){
-alert("Ad ve email zorunlu!");
-return;
-}
-
-await db.collection("applications").add({
-...data,
-type:"restaurant",
-status:"pending",
-createdAt:new Date()
-});
-
-alert("✅ Başvuru gönderildi!");
-closeRestaurant();
-
-}catch(e){
-alert("HATA: "+e.message);
-console.error(e);
-}
-}
-
-</script>
 
 </body>
 </html>

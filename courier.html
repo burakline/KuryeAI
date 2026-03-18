@@ -1,11 +1,23 @@
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
+import {
+getFirestore,
+doc,
+setDoc,
+updateDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+/* 🔥 CONFIG (GERÇEK) */
 const app = initializeApp({
-apiKey:"AIzaSy...",
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
@@ -13,10 +25,12 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let user;
+let user = null;
+let watchId = null;
 
 /* 🔐 AUTH + ROLE */
 onAuthStateChanged(auth, async(u)=>{
+
 if(!u){
 location.href="login.html";
 return;
@@ -31,24 +45,77 @@ return;
 }
 
 user = u;
+
+console.log("Kurye giriş yaptı:", user.email);
+
 });
 
-/* ONLINE */
+/* 🚀 ONLINE */
 window.startTracking = ()=>{
-navigator.geolocation.watchPosition(async(pos)=>{
-await updateDoc(doc(db,"couriers",user.uid),{
-lat:pos.coords.latitude,
-lng:pos.coords.longitude,
-online:true
-});
-});
+
+if(!user){
+alert("Henüz giriş yapılmadı");
+return;
+}
+
+if(!navigator.geolocation){
+alert("GPS desteklenmiyor");
+return;
+}
+
+/* GPS başlat */
+watchId = navigator.geolocation.watchPosition(
+
+async(pos)=>{
+
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
+
+/* 🔥 SETDOC (SAĞLAM) */
+await setDoc(doc(db,"couriers",user.uid),{
+lat,
+lng,
+online:true,
+email:user.email,
+updatedAt:new Date()
+},{merge:true});
+
+},
+
+(err)=>{
+alert("Konum izni gerekli!");
+console.error(err);
+},
+
+{
+enableHighAccuracy:true,
+maximumAge:5000,
+timeout:10000
+}
+
+);
+
+alert("🟢 Online oldun");
+
 };
 
-/* OFFLINE */
+/* 🛑 OFFLINE */
 window.stopTracking = async ()=>{
+
+if(!user) return;
+
+if(watchId){
+navigator.geolocation.clearWatch(watchId);
+watchId = null;
+}
+
 await updateDoc(doc(db,"couriers",user.uid),{
-online:false
+online:false,
+updatedAt:new Date()
 });
+
+alert("🔴 Offline oldun");
+
 };
 
 </script>

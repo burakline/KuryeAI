@@ -9,17 +9,14 @@
 
 <style>
 body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
-
 .header{padding:15px;background:#020617;display:flex;justify-content:space-between;}
 .status{padding:6px 12px;border-radius:20px;font-size:12px;}
 .online{background:#00ff9c;color:#000;}
 .offline{background:#ff4d4d;}
-
 #map{height:35vh;}
-
 .panel{padding:15px;background:#111827;}
-
 .order{background:#1f2937;padding:12px;border-radius:10px;margin-top:8px;}
+button{padding:10px;margin-top:5px;border:none;border-radius:6px;}
 </style>
 </head>
 
@@ -37,8 +34,8 @@ body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 <button onclick="startTracking()">Online</button>
 <button onclick="stopTracking()">Offline</button>
 
-<h3>📦 Siparişler</h3>
-<div id="orders"></div>
+<h3>📦 Aktif Görev</h3>
+<div id="activeOrder"></div>
 
 </div>
 
@@ -51,11 +48,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import {
 getFirestore,
 collection,
-query,
-where,
 onSnapshot,
 doc,
-updateDoc
+updateDoc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -63,7 +59,6 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-/* 🔥 FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -73,16 +68,7 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔥 DİNAMİK KM */
-let MAX_DISTANCE_KM = 10;
-
-onSnapshot(doc(db,"settings","config"), snap=>{
-if(snap.exists()){
-MAX_DISTANCE_KM = snap.data().maxDistance || 10;
-}
-});
-
-let user, currentPos, marker;
+let user, marker;
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
@@ -94,38 +80,51 @@ html:`<div style="font-size:26px;color:#00d4ff;">🏍️</div>`,
 className:''
 });
 
-/* DISTANCE */
-function getDistanceKm(lat1,lng1,lat2,lng2){
-const R=6371;
-const dLat=(lat2-lat1)*Math.PI/180;
-const dLng=(lng2-lng1)*Math.PI/180;
-
-const a=
-Math.sin(dLat/2)**2+
-Math.cos(lat1*Math.PI/180)*
-Math.cos(lat2*Math.PI/180)*
-Math.sin(dLng/2)**2;
-
-return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
-
 /* AUTH */
 onAuthStateChanged(auth,(u)=>{
 if(!u){location.href="login.html";return;}
 user=u;
+
+/* 🔥 SADECE KENDİ SİPARİŞİ */
+onSnapshot(
+collection(db,"orders"),
+snap=>{
+
+const div=document.getElementById("activeOrder");
+div.innerHTML="";
+
+snap.forEach(d=>{
+const o=d.data();
+
+if(o.courierId===user.uid){
+
+div.innerHTML=`
+<div class="order">
+<b>${o.customer}</b><br>
+${o.address}<br>
+💰 ${o.price}₺<br>
+
+<button onclick="finishOrder('${d.id}')">
+Teslim Et
+</button>
+</div>
+`;
+
+}
+
+});
+
+});
 });
 
 /* ONLINE */
 window.startTracking=()=>{
 document.getElementById("status").className="status online";
-document.getElementById("status").innerText="Online";
 
 navigator.geolocation.watchPosition(async(pos)=>{
 
 const lat=pos.coords.latitude;
 const lng=pos.coords.longitude;
-
-currentPos={lat,lng};
 
 if(marker){
 marker.setLatLng([lat,lng]);
@@ -145,51 +144,18 @@ lat,lng,online:true
 /* OFFLINE */
 window.stopTracking=()=>{
 document.getElementById("status").className="status offline";
-document.getElementById("status").innerText="Offline";
 };
 
-/* ORDERS */
-const ordersDiv=document.getElementById("orders");
+/* TESLİM */
+window.finishOrder=async(id)=>{
 
-onSnapshot(query(collection(db,"orders"),where("status","==","bekliyor")), snap=>{
+const ref=doc(db,"orders",id);
+const snap=await getDoc(ref);
+const o=snap.data();
 
-ordersDiv.innerHTML="";
+await updateDoc(ref,{status:"delivered"});
 
-if(!currentPos){
-ordersDiv.innerHTML="Konum bekleniyor...";
-return;
-}
-
-snap.forEach(docSnap=>{
-const o=docSnap.data();
-
-if(!o.lat) return;
-
-const dist=getDistanceKm(
-currentPos.lat,currentPos.lng,
-o.lat,o.lng
-);
-
-if(dist<=MAX_DISTANCE_KM){
-
-ordersDiv.innerHTML+=`
-<div class="order">
-<b>${o.customer}</b><br>
-${o.address}<br>
-📏 ${dist.toFixed(2)} km<br>
-💰 ${o.price}₺
-</div>
-`;
-
-}
-
-});
-
-if(ordersDiv.innerHTML===""){
-ordersDiv.innerHTML="Yakında sipariş yok";
-}
-
-});
+};
 
 </script>
 </body>

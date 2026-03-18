@@ -3,122 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<title>Admin Panel</title>
 
 <style>
 body{
-margin:0;
-font-family:'Segoe UI';
 background:#020617;
 color:white;
+font-family:Arial;
+margin:0;
+padding:20px;
 }
 
-.header{
-padding:16px;
-font-size:20px;
-font-weight:bold;
-}
-
-.container{
-padding:15px;
-padding-bottom:90px;
-}
+h1{margin-bottom:20px;}
 
 .card{
 background:#0f172a;
 padding:15px;
-border-radius:16px;
+border-radius:12px;
 margin-bottom:15px;
-box-shadow:0 10px 20px rgba(0,0,0,0.3);
 }
 
-.map-card{
-overflow:hidden;
-border-radius:16px;
-}
-
-#map{
-width:100%;
-height:250px;
-border-radius:16px;
-}
-
-.btn{
-background:#00d4ff;
-border:none;
-padding:10px 14px;
-border-radius:10px;
-margin-right:5px;
+button{
 margin-top:10px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.title{
-font-size:22px;
-margin-bottom:10px;
-}
-
-.nav{
-position:fixed;
-bottom:0;
-width:100%;
-background:#020617;
-display:flex;
-justify-content:space-around;
-padding:10px 0;
-border-top:1px solid #1e293b;
-}
-
-.nav button{
-background:none;
+padding:10px 15px;
 border:none;
-color:#94a3b8;
-font-size:14px;
+border-radius:8px;
+cursor:pointer;
 }
 
-.nav button.active{
-color:#00d4ff;
-}
+.ok{background:#00d4ff;}
+.no{background:#ef4444;}
+
 </style>
 </head>
 
 <body>
 
-<div class="header">KuryeAI 🚀</div>
+<h1>Başvurular</h1>
 
-<div class="container">
-
-<!-- DASHBOARD -->
-<div id="dashboard">
-
-<div class="title">Canlı Sistem</div>
-
-<div class="card map-card">
-<div id="map"></div>
-</div>
-
-</div>
-
-<!-- APPLICATIONS -->
-<div id="apps" style="display:none">
-
-<div class="title">Başvurular</div>
-
-<div id="appList"></div>
-
-</div>
-
-</div>
-
-<!-- NAV -->
-<div class="nav">
-<button id="navDash" class="active" onclick="showPage('dashboard')">Dashboard</button>
-<button id="navApps" onclick="showPage('apps')">Başvurular</button>
-</div>
+<div id="list"></div>
 
 <script type="module">
 
@@ -126,14 +49,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import {
 getFirestore,
 collection,
-onSnapshot,
+getDocs,
 doc,
-getDoc,
-addDoc,
+setDoc,
 deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -142,94 +63,75 @@ projectId:"kuryeai"
 
 const db = getFirestore(app);
 
-/* NAV */
-window.showPage = (id)=>{
-document.getElementById("dashboard").style.display="none";
-document.getElementById("apps").style.display="none";
+const list = document.getElementById("list");
 
-navDash.classList.remove("active");
-navApps.classList.remove("active");
+async function load(){
+list.innerHTML="Yükleniyor...";
 
-if(id==="dashboard"){
-navDash.classList.add("active");
-}else{
-navApps.classList.add("active");
-}
+const snap = await getDocs(collection(db,"applications"));
 
-document.getElementById(id).style.display="block";
-};
-
-/* MAP */
-const map = L.map('map').setView([39.92,32.85],13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-maxZoom:19
-}).addTo(map);
-
-/* CANLI KURYELER */
-let courierMarkers = [];
-
-onSnapshot(collection(db,"couriers"),snap=>{
-
-// eski markerları temizle
-courierMarkers.forEach(m=>map.removeLayer(m));
-courierMarkers=[];
-
-snap.forEach(docSnap=>{
-const c = docSnap.data();
-
-if(c.lat && c.lng){
-const marker = L.marker([c.lat, c.lng])
-.addTo(map)
-.bindPopup("🚴 "+(c.name || "Kurye"));
-
-courierMarkers.push(marker);
-}
-});
-});
-
-/* BAŞVURULAR */
-onSnapshot(collection(db,"applications"),snap=>{
-appList.innerHTML="";
+list.innerHTML="";
 
 snap.forEach(d=>{
-const a=d.data();
+const app = d.data();
+app.id = d.id;
 
-appList.innerHTML+=`
+list.innerHTML += `
 <div class="card">
-<b>${a.name || "İsimsiz"}</b><br>
-${a.email || "Mail yok"}<br>
+<b>${app.name}</b><br>
+${app.email}<br>
 
-<button class="btn" onclick="approve('${d.id}')">Onayla</button>
-<button class="btn" onclick="reject('${d.id}')">Reddet</button>
+<button class="ok" onclick='approve(${JSON.stringify(app)})'>Onayla</button>
+<button class="no" onclick='reject("${app.id}")'>Reddet</button>
 </div>
 `;
 });
+}
+
+window.approve = async (app)=>{
+try{
+
+// 1️⃣ couriers
+await setDoc(doc(db,"couriers",app.id),{
+...app,
+status:"active",
+lat:0,
+lng:0
 });
 
-/* ONAYLA → KURYEYE ÇEVİR */
-window.approve = async (id)=>{
-
-const ref = doc(db,"applications",id);
-const snap = await getDoc(ref);
-const data = snap.data();
-
-/* couriers koleksiyonuna ekle */
-await addDoc(collection(db,"couriers"),{
-name: data.name || "Kurye",
-lat: 39.92,
-lng: 32.85
+// 2️⃣ users
+await setDoc(doc(db,"users",app.id),{
+email:app.email,
+name:app.name,
+role:"courier"
 });
 
-/* başvuruyu sil */
-await deleteDoc(ref);
+// 3️⃣ applications sil
+await deleteDoc(doc(db,"applications",app.id));
 
+// 4️⃣ ADMIN'E BİLGİ
+alert(`✅ Kurye hazır!
+
+🔥 Şimdi son adım:
+
+Firebase → Authentication → Users → Add user
+
+Email: ${app.email}
+Şifre: 123456`);
+
+load();
+
+}catch(e){
+alert("HATA: "+e.message);
+}
 };
 
-/* REDDET */
 window.reject = async (id)=>{
 await deleteDoc(doc(db,"applications",id));
+load();
 };
+
+load();
 
 </script>
 

@@ -9,37 +9,62 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body { font-family:'Segoe UI', sans-serif; margin:0; background:#0b0e14; color:#fff }
-header { background:#000; padding:1.5rem 0; text-align:center }
-.hero { background:#1a1a1a; padding:3rem; text-align:center }
+body { font-family:'Segoe UI', sans-serif; line-height:1.6; color:#fff; margin:0; background:#0b0e14; }
+header { background:#000; padding:1.5rem 0; text-align:center; border-bottom:1px solid #333; }
+.hero { background:#1a1a1a; padding:3rem 2rem; text-align:center; }
 
-.cta-button { background:#00d4ff; color:#000; padding:15px 30px; border-radius:8px; border:none; margin:10px }
-.btn-login { border:1px solid #00d4ff; color:#00d4ff; padding:10px; border-radius:8px }
+.cta-button { display:inline-block; background:#00d4ff; color:#000; padding:15px 30px; border-radius:8px; font-weight:bold; margin:10px; border:none; }
+.cta-button:hover { background:#fff; transform:scale(1.05); }
 
-#formBox,#courierForm {
+.login-container { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:20px; }
+.btn-login { border:1px solid #00d4ff; color:#00d4ff; padding:12px 24px; border-radius:8px; background:transparent; }
+
+.services { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; padding:2rem; max-width:1000px; margin:auto; }
+.service-card { background:#111; border:1px solid #333; padding:1.5rem; border-radius:12px; }
+
+.footer { margin-top:60px; text-align:center; color:#888; border-top:1px solid #333; padding:2rem 0; }
+
+/* FORM */
+#formBox,#courierOverlay {
 display:none;
 position:fixed;
-top:10%;
-left:50%;
-transform:translateX(-50%);
-background:#1e293b;
-padding:20px;
-border-radius:10px;
-width:340px;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000000aa;
 z-index:999;
-max-height:80vh;
-overflow:auto;
+align-items:center;
+justify-content:center;
 }
 
-#formBox input,#courierForm input,#courierForm select{
+.formContent {
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+width:90%;
+max-width:400px;
+max-height:90vh;
+overflow:auto;
+position:relative;
+}
+
+.formContent input,
+.formContent select{
 width:100%;
-margin:5px 0;
+margin:6px 0;
 padding:10px;
-border-radius:6px;
+border-radius:8px;
 border:none;
 }
 
-#selectMap { height:200px;margin:10px 0 }
+.closeBtn{
+position:absolute;
+top:10px;
+right:15px;
+font-size:22px;
+cursor:pointer;
+}
 </style>
 </head>
 
@@ -48,37 +73,49 @@ border:none;
 <header><h1>KuryeAI</h1></header>
 
 <div class="hero">
-
 <h2>Yapay Zeka Destekli Yeni Nesil Lojistik</h2>
 
 <a href="#" class="cta-button">Hemen Kurye Çağır</a>
 
 <button onclick="openForm()" class="cta-button">Restoran Başvurusu</button>
 
-<!-- ✅ KURYE BUTON -->
+<!-- ✅ EKLENDİ -->
 <button onclick="openCourierForm()" class="cta-button">Kurye Ol</button>
 
-<div>
+<div class="login-container">
 <a href="login.html?type=restaurant" class="btn-login">Restoran</a>
 <a href="login.html?type=courier" class="btn-login">Kurye</a>
 <a href="login.html?type=admin" class="btn-login">Admin</a>
 </div>
-
 </div>
 
-<!-- RESTORAN FORM -->
-<div id="formBox">
+<div class="services">
+<div class="service-card"><h4>Restoran Havuz Kurye</h4></div>
+<div class="service-card"><h4>VIP Express Moto Kurye</h4></div>
+<div class="service-card"><h4>Lojistik Yazılım</h4></div>
+</div>
+
+<!-- RESTORAN -->
+<div id="formBox" onclick="closeForm()">
+<div class="formContent" onclick="event.stopPropagation()">
+<div class="closeBtn" onclick="closeForm()">✕</div>
+
 <h3>Restoran Başvuru</h3>
+
 <input id="name" placeholder="Ad">
 <input id="email" placeholder="Email">
 <input id="address" placeholder="Adres">
-<div id="selectMap"></div>
+
 <button onclick="submitForm()">Gönder</button>
-<button onclick="closeForm()">Kapat</button>
+</div>
 </div>
 
-<!-- 🚀 FULL KURYE FORM -->
-<div id="courierForm">
+<!-- 🚀 KURYE -->
+<div id="courierOverlay" onclick="closeCourierForm()">
+<div class="formContent" onclick="event.stopPropagation()">
+
+<div class="closeBtn" onclick="closeCourierForm()">✕</div>
+
 <h3>Kurye Başvuru</h3>
 
 <div style="text-align:center">
@@ -95,7 +132,6 @@ border:none;
 <input id="cBirthPlace" placeholder="Doğum Yeri">
 <input id="cBlood" placeholder="Kan Grubu">
 <input id="cEducation" placeholder="Eğitim Durumu">
-
 <input id="cLicense" placeholder="Ehliyet">
 
 <select id="cP1">
@@ -119,8 +155,13 @@ border:none;
 <input id="cPhone" placeholder="Telefon">
 <input id="cEmail" placeholder="Mail">
 
-<button onclick="sendCourier()">Başvur</button>
-<button onclick="closeCourierForm()">Kapat</button>
+<button id="sendCourierBtn">Başvur</button>
+
+</div>
+</div>
+
+<div class="footer">
+<p>© 2026 KuryeAI</p>
 </div>
 
 <script type="module">
@@ -142,8 +183,8 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 /* RESTORAN */
-window.openForm=()=>{document.getElementById("formBox").style.display="block";}
-window.closeForm=()=>{document.getElementById("formBox").style.display="none";}
+window.openForm=()=>document.getElementById("formBox").style.display="flex";
+window.closeForm=()=>document.getElementById("formBox").style.display="none";
 
 window.submitForm=async()=>{
 await addDoc(collection(db,"applications"),{
@@ -153,20 +194,16 @@ address:address.value,
 type:"restaurant",
 status:"pending"
 });
-alert("Başvurunuz alındı!");
+alert("Başvuru alındı");
 closeForm();
 }
 
-/* 🚀 KURYE */
-window.openCourierForm=()=>{
-document.getElementById("courierForm").style.display="block";
-}
+/* KURYE */
+window.openCourierForm=()=>document.getElementById("courierOverlay").style.display="flex";
+window.closeCourierForm=()=>document.getElementById("courierOverlay").style.display="none";
 
-window.closeCourierForm=()=>{
-document.getElementById("courierForm").style.display="none";
-}
-
-window.sendCourier=async()=>{
+/* 🔥 BUTTON FIX */
+document.getElementById("sendCourierBtn").addEventListener("click", async ()=>{
 
 let photoURL="";
 const file=document.getElementById("photo").files[0];
@@ -183,24 +220,24 @@ type:"courier",
 status:"pending",
 
 photo:photoURL,
-name:document.getElementById("cName").value,
-birthDate:document.getElementById("cBirthDate").value,
-birthPlace:document.getElementById("cBirthPlace").value,
-blood:document.getElementById("cBlood").value,
-education:document.getElementById("cEducation").value,
-license:document.getElementById("cLicense").value,
-p1:document.getElementById("cP1").value,
-src:document.getElementById("cSRC").value,
-criminal:document.getElementById("cCriminal").value,
-phone:document.getElementById("cPhone").value,
-email:document.getElementById("cEmail").value
+name:cName.value,
+birthDate:cBirthDate.value,
+birthPlace:cBirthPlace.value,
+blood:cBlood.value,
+education:cEducation.value,
+license:cLicense.value,
+p1:cP1.value,
+src:cSRC.value,
+criminal:cCriminal.value,
+phone:cPhone.value,
+email:cEmail.value
 
 });
 
 alert("Kurye başvurusu gönderildi 🚀");
 closeCourierForm();
 
-}
+});
 
 </script>
 

@@ -3,108 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>KuryeAI PRO</title>
+<title>Kurye Paneli</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body{margin:0;font-family:'Segoe UI';}
-
-#map{position:fixed;width:100%;height:100%;z-index:1}
-
-/* MENU */
-.menu{
-position:fixed;
-top:15px;left:15px;
-background:#0f172a;color:white;
-padding:12px;border-radius:12px;
-z-index:3;
-}
-
-/* TARGET */
-.target{
-position:fixed;
-right:15px;
-bottom:150px;
-background:white;
-padding:12px;
-border-radius:50%;
-z-index:3;
-}
-
-/* SPEED */
-.speed{
-position:fixed;
-left:15px;
-bottom:180px;
-background:#0f172a;
-color:white;
-padding:15px;
-border-radius:50%;
-z-index:3;
-}
-
-/* PANEL */
-.panel{
-position:fixed;
-bottom:0;
-width:100%;
-background:white;
-border-radius:25px 25px 0 0;
-padding:15px;
-z-index:2;
-}
-
-.btn{
-background:#0f172a;
-color:white;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-text-align:center;
-}
-
-/* POPUP */
-.popup{
-position:fixed;
-top:80px;
-left:50%;
-transform:translateX(-50%);
-background:#00d4ff;
-padding:15px;
-border-radius:12px;
-z-index:5;
-display:none;
-}
+body{margin:0;font-family:'Segoe UI';background:#000}
+#map{height:100vh}
+.panel{position:fixed;bottom:0;width:100%;background:white;padding:15px}
+.btn{background:black;color:white;padding:12px;border-radius:10px;margin-top:10px;text-align:center}
+.popup{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#00d4ff;padding:15px;border-radius:12px;display:none}
 </style>
 </head>
 
 <body>
 
-<div class="menu">☰</div>
-<div class="target" onclick="centerMap()">🎯</div>
-
-<div class="speed">
-<div id="speed">0</div>
-<small>KM/S</small>
-</div>
-
 <div id="map"></div>
 
 <div class="popup" id="popup">
-📦 Yeni Sipariş!
+Yeni sipariş!
 <br><br>
-<button onclick="acceptOrder()">KABUL ET</button>
+<button onclick="acceptOrder()">Kabul Et</button>
 </div>
 
 <div class="panel">
-<div>💰 <span id="earn">0</span> ₺</div>
-<div>📍 <span id="km">0</span> km</div>
-<div>⏱ <span id="time">00:00</span></div>
-
-<div class="btn" onclick="stopShift()">VARDİYAYI BİTİR</div>
+<div id="info">Hazır</div>
+<div class="btn" onclick="stopShift()">Vardiya Bitir</div>
 </div>
 
 <script type="module">
@@ -116,10 +41,6 @@ getFirestore, collection, onSnapshot, updateDoc, doc
 
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-import { getMessaging, getToken, onMessage }
-from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
-
-/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -129,63 +50,19 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔥 SERVICE WORKER REGISTER (EKLENDİ) */
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("/firebase-messaging-sw.js")
-.then(()=>console.log("SW ready"));
-}
-
-/* 🔔 PUSH INIT */
-const messaging = getMessaging(app);
-
-/* 🔔 İZİN + TOKEN */
-Notification.requestPermission().then(async permission=>{
-if(permission==="granted"){
-
-const token = await getToken(messaging,{
-vapidKey:"BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ"
-});
-
-console.log("FCM TOKEN:",token);
-
-if(auth.currentUser){
-await updateDoc(doc(db,"couriers",auth.currentUser.uid),{
-fcmToken:token
-});
-}
-
-}
-});
-
-/* 🔔 APP AÇIKKEN */
-onMessage(messaging,(payload)=>{
-alert("📦 "+payload.notification.title);
-});
-
-/* 🔋 SCREEN ON */
-let wakeLock=null;
-async function keepAwake(){
-try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
-}
-keepAwake();
-
-/* 🔊 SOUND */
-const sound = new Audio("https://www.soundjay.com/buttons/sounds/beep-01a.mp3");
-
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let courier = L.marker([39.92,32.85]).addTo(map);
-
-let last=null,totalKm=0,start=Date.now();
+let marker = L.marker([39.92,32.85]).addTo(map);
+let last=null;
 
 /* GPS */
 navigator.geolocation.watchPosition(async pos=>{
 let lat=pos.coords.latitude;
 let lng=pos.coords.longitude;
 
-courier.setLatLng([lat,lng]);
+marker.setLatLng([lat,lng]);
 map.setView([lat,lng]);
 
 if(auth.currentUser){
@@ -194,59 +71,23 @@ lat,lng
 });
 }
 
-if(last){
-let d=dist(last.lat,last.lng,lat,lng);
-totalKm+=d;
-
-document.getElementById("km").innerText=totalKm.toFixed(2);
-
-let speed=d*3600;
-document.getElementById("speed").innerText=speed.toFixed(1);
-
-let earn=totalKm*8;
-document.getElementById("earn").innerText=earn.toFixed(2);
-}
-
 last={lat,lng};
 });
 
-/* DIST */
-function dist(a,b,c,d){
-let R=6371;
-let dLat=(c-a)*Math.PI/180;
-let dLon=(d-b)*Math.PI/180;
-let x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;
-return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-}
-
-/* TIME */
-setInterval(()=>{
-let t=(Date.now()-start)/1000;
-let m=Math.floor(t/60);
-let s=Math.floor(t%60);
-document.getElementById("time").innerText=
-String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
-},1000);
-
-/* 📦 REALTIME ORDER */
+/* ORDER LISTEN */
 let currentOrder=null;
 
 onSnapshot(collection(db,"orders"),snap=>{
 snap.forEach(d=>{
 let o=d.data();
 
-if(!o.courierEmail && last){
+if(!o.courierId && last){
 
-let distance = Math.abs(o.lat-last.lat);
+let distance=Math.abs(o.lat-last.lat);
 
-if(distance < 0.01){
-
+if(distance<0.01){
 currentOrder={id:d.id,...o};
-
-document.getElementById("popup").style.display="block";
-sound.play();
-navigator.vibrate([300,100,300]);
-
+popup.style.display="block";
 }
 }
 });
@@ -254,24 +95,19 @@ navigator.vibrate([300,100,300]);
 
 /* ACCEPT */
 window.acceptOrder=async()=>{
-document.getElementById("popup").style.display="none";
+popup.style.display="none";
 
 await updateDoc(doc(db,"orders",currentOrder.id),{
-courierEmail:auth.currentUser.email,
-status:"accepted"
+status:"accepted",
+courierId:auth.currentUser.uid
 });
 
-window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentOrder.lat},${currentOrder.lng}`);
-}
-
-/* CENTER */
-window.centerMap=()=>{
-if(last) map.setView([last.lat,last.lng],18);
+alert("Sipariş alındı 🚀");
 }
 
 /* STOP */
 window.stopShift=()=>{
-alert("Vardiya bitti");
+alert("Vardiya kapandı");
 }
 
 </script>

@@ -3,230 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>KuryeAI - Akıllı Kurye Sistemi</title>
-
-<meta name="description" content="KuryeAI ile hızlı, akıllı ve canlı takipli kurye sistemi">
-<meta name="keywords" content="kurye, teslimat, moto kurye, lojistik">
-<meta name="robots" content="index, follow">
-
-<link rel="manifest" href="manifest.json">
+<title>KuryeAI</title>
 
 <style>
 body{
 margin:0;
-font-family:'Segoe UI';
-background:linear-gradient(135deg,#f5f7fb,#e6f0ff); bu
-color:#111;
-}
-
-.nav{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px 20px;
-background:white;
-box-shadow:0 5px 20px rgba(0,0,0,0.05);
-}
-
-.logo{
-font-weight:700;
-font-size:18px;
-}
-
-.hero{
-text-align:center;
-padding:80px 20px;
-}
-
-.hero h1{
-font-size:34px;
-margin-bottom:10px;
-}
-
-.hero p{
-color:#555;
-margin-bottom:25px;
-}
-
-.btn{
-padding:14px 20px;
-border:none;
-border-radius:12px;
-font-weight:600;
-cursor:pointer;
-margin:5px;
-transition:0.3s;
-}
-
-.primary{
-background:linear-gradient(135deg,#00d4ff,#0099ff);
-color:white;
-box-shadow:0 10px 25px rgba(0,212,255,0.3);
-}
-
-.primary:hover{
-transform:translateY(-2px);
-}
-
-.dark{
-background:#111;
-color:white;
-}
-
-#loading{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:white;
+font-family:'Inter',sans-serif;
+background:#0A0A0A;
 display:flex;
 justify-content:center;
 align-items:center;
-z-index:999;
-font-size:18px;
+height:100vh;
+color:white;
 }
 
-#msg{
-position:fixed;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-background:#111;
-color:white;
-padding:10px 20px;
+/* CARD */
+.container{
+width:90%;
+max-width:350px;
+padding:25px;
+
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border-radius:20px;
+border:1px solid rgba(255,255,255,0.1);
+
+box-shadow:0 0 40px rgba(0,194,168,0.15);
+}
+
+/* TITLE */
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+/* INPUT */
+input{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border:none;
 border-radius:10px;
-display:none;
+background:#1a1a1a;
+color:white;
+}
+
+/* BUTTON */
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#00C2A8;
+color:black;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+box-shadow:0 0 20px #00C2A8;
+}
+
+/* SWITCH */
+.switch{
+text-align:center;
+margin-top:10px;
+font-size:14px;
+cursor:pointer;
+color:#aaa;
 }
 </style>
 </head>
 
 <body>
 
-<div id="loading">⏳ Yükleniyor...</div>
-<div id="msg"></div>
+<div class="container">
 
-<div class="nav">
-<div class="logo">🚀 KuryeAI</div>
-<a href="login.html">Giriş</a>
+<h1>🚀 KuryeAI</h1>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Şifre">
+
+<button onclick="login()">Giriş Yap</button>
+
+<div class="switch" onclick="toggleMode()" id="modeText">
+Hesabın yok mu? Kayıt ol
 </div>
 
-<div class="hero">
-<h1>Akıllı Kurye Sistemi</h1>
-<p>Gerçek zamanlı takip ve yapay zeka destekli dağıtım</p>
-
-<button class="btn primary" onclick="goCourier()">🚴 Kurye Panel</button>
-<button class="btn dark" onclick="goAdmin()">📊 Admin Panel</button>
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore-compat.js"></script>
+<script type="module">
 
-<script>
+import "./firebase.js";
 
-/* CONFIG */
-firebase.initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
+let isLogin = true;
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+/* LOGIN */
+window.login = function(){
 
-let currentUser = null;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
 
-/* MESSAGE */
-function showMsg(text){
-var m = document.getElementById("msg");
-m.innerText = text;
-m.style.display = "block";
-setTimeout(function(){
-m.style.display = "none";
-},2000);
-}
-
-/* AUTH */
-auth.onAuthStateChanged(function(user){
-
-currentUser = user;
-
-document.getElementById("loading").style.display="none";
-
-if(!user) return;
-
-/* ROLE */
-db.collection("users").doc(user.uid).get().then(function(snap){
-
-if(!snap.exists) return;
-
-var role = snap.data().role;
-
-/* AUTO REDIRECT */
-if(role === "admin") location.href="admin.html";
-if(role === "courier") location.href="courier.html";
-
-});
-
-});
-
-/* KURYE */
-function goCourier(){
-
-if(!currentUser){
-location.href="login.html";
-return;
-}
-
-db.collection("users").doc(currentUser.uid).get().then(function(snap){
-
-if(!snap.exists){
-showMsg("Kullanıcı bulunamadı");
-return;
-}
-
-if(snap.data().role === "courier"){
-location.href="courier.html";
+if(isLogin){
+window.loginUser(email,password,true);
 }else{
-showMsg("Yetkin yok!");
+window.registerUser(email,password);
 }
 
-});
+};
 
-}
+/* TOGGLE */
+window.toggleMode = function(){
 
-/* ADMIN */
-function goAdmin(){
+isLogin = !isLogin;
 
-if(!currentUser){
-location.href="login.html";
-return;
-}
+document.querySelector("button").innerText =
+isLogin ? "Giriş Yap" : "Kayıt Ol";
 
-db.collection("users").doc(currentUser.uid).get().then(function(snap){
+document.getElementById("modeText").innerText =
+isLogin ? "Hesabın yok mu? Kayıt ol" : "Zaten hesabın var mı? Giriş yap";
 
-if(!snap.exists){
-showMsg("Kullanıcı bulunamadı");
-return;
-}
-
-if(snap.data().role === "admin"){
-location.href="admin.html";
-}else{
-showMsg("Yetkin yok!");
-}
-
-});
-
-}
-
-/* PWA */
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("sw.js");
-}
+};
 
 </script>
 

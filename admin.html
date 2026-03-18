@@ -8,7 +8,12 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{background:#020617;color:white;font-family:Arial;margin:0;}
+body{
+background:#020617;
+color:white;
+font-family:Arial;
+margin:0;
+}
 
 .menu{
 display:flex;
@@ -29,9 +34,14 @@ color:white;
 cursor:pointer;
 }
 
-.active{background:#00d4ff!important;color:black!important;}
+.active{
+background:#00d4ff !important;
+color:black !important;
+}
 
-.container{padding:15px;}
+.container{
+padding:15px;
+}
 
 .card{
 background:#0f172a;
@@ -43,24 +53,30 @@ margin-bottom:10px;
 .ok{background:#00d4ff;}
 .no{background:#ef4444;}
 
-#map{height:70vh;border-radius:10px;}
+#map{
+height:70vh;
+border-radius:10px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="menu">
-<button onclick="show('apps')" id="btn-apps" class="active">Başvurular</button>
-<button onclick="show('orders')" id="btn-orders">Sipariş Havuzu</button>
-<button onclick="show('couriers')" id="btn-couriers">Kuryeler</button>
-<button onclick="show('map')" id="btn-map">Harita</button>
+<button onclick="showPage('apps')" id="btn-apps" class="active">Başvurular</button>
+<button onclick="showPage('orders')" id="btn-orders">Sipariş Havuzu</button>
+<button onclick="showPage('couriers')" id="btn-couriers">Kuryeler</button>
+<button onclick="showPage('map')" id="btn-map">Harita</button>
 </div>
 
 <div class="container">
 
 <div id="apps"></div>
+
 <div id="orders" style="display:none"></div>
+
 <div id="couriers" style="display:none"></div>
+
 <div id="mapPage" style="display:none">
 <div id="map"></div>
 </div>
@@ -101,46 +117,69 @@ const secondaryApp = initializeApp(config,"Secondary");
 const db = getFirestore(app);
 const secondaryAuth = getAuth(secondaryApp);
 
-/* NAV */
-window.show = (page)=>{
+let map;
+let markers = {};
 
-["apps","orders","couriers","mapPage"].forEach(x=>{
-document.getElementById(x).style.display="none";
-});
+////////////////////////////
+// SAYFA GEÇİŞ (FIXED)
+////////////////////////////
+window.showPage = (page)=>{
+
+const apps = document.getElementById("apps");
+const orders = document.getElementById("orders");
+const couriers = document.getElementById("couriers");
+const mapPage = document.getElementById("mapPage");
+
+const btnApps = document.getElementById("btn-apps");
+const btnOrders = document.getElementById("btn-orders");
+const btnCouriers = document.getElementById("btn-couriers");
+const btnMap = document.getElementById("btn-map");
+
+// hepsini kapat
+apps.style.display="none";
+orders.style.display="none";
+couriers.style.display="none";
+mapPage.style.display="none";
 
 document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
 
+// aç
 if(page==="apps"){
 apps.style.display="block";
-btn_apps.classList.add("active");
+btnApps.classList.add("active");
 loadApps();
 }
 
 if(page==="orders"){
 orders.style.display="block";
-btn_orders.classList.add("active");
+btnOrders.classList.add("active");
 loadOrders();
 }
 
 if(page==="couriers"){
 couriers.style.display="block";
-btn_couriers.classList.add("active");
+btnCouriers.classList.add("active");
 loadCouriers();
 }
 
 if(page==="map"){
 mapPage.style.display="block";
-btn_map.classList.add("active");
+btnMap.classList.add("active");
 initMap();
 }
 
 };
 
-/* 📄 BAŞVURULAR */
+////////////////////////////
+// BAŞVURULAR
+////////////////////////////
 async function loadApps(){
+const apps = document.getElementById("apps");
+
 apps.innerHTML="Yükleniyor...";
 
 const snap = await getDocs(collection(db,"applications"));
+
 apps.innerHTML="";
 
 snap.forEach(d=>{
@@ -186,10 +225,11 @@ online:false
 await deleteDoc(doc(db,"applications",a.id));
 
 alert("✅ Kurye oluşturuldu");
+
 loadApps();
 
 }catch(e){
-alert(e.message);
+alert("Hata: "+e.message);
 }
 };
 
@@ -198,8 +238,12 @@ await deleteDoc(doc(db,"applications",id));
 loadApps();
 };
 
-/* 📦 SİPARİŞ HAVUZU */
+////////////////////////////
+// SİPARİŞ HAVUZU
+////////////////////////////
 function loadOrders(){
+
+const orders = document.getElementById("orders");
 
 onSnapshot(collection(db,"orders"),(snap)=>{
 
@@ -227,7 +271,7 @@ Durum: 🟡 Bekliyor
 
 window.assignCourier = async (orderId)=>{
 
-const email = prompt("Kurye email:");
+const email = prompt("Kurye email gir:");
 
 if(!email) return;
 
@@ -254,10 +298,15 @@ status:"assigned"
 alert("🚀 Kurye atandı");
 };
 
-/* 🚴 KURYELER */
+////////////////////////////
+// KURYELER
+////////////////////////////
 function loadCouriers(){
 
+const couriers = document.getElementById("couriers");
+
 onSnapshot(collection(db,"couriers"),(snap)=>{
+
 couriers.innerHTML="";
 
 snap.forEach(d=>{
@@ -272,11 +321,11 @@ Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
 });
 }
 
-/* 🗺️ HARİTA */
-let map;
-let markers = {};
-
+////////////////////////////
+// HARİTA
+////////////////////////////
 function initMap(){
+
 if(map) return;
 
 map = L.map('map').setView([39.92,32.85],12);
@@ -299,9 +348,12 @@ markers[id] = L.marker([c.lat,c.lng])
 }
 });
 });
+
 }
 
-/* INIT */
+////////////////////////////
+// INIT
+////////////////////////////
 loadApps();
 
 </script>

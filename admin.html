@@ -9,95 +9,20 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body{
-margin:0;
-font-family:'Segoe UI';
-background:#020617;
-color:white;
-display:flex;
-}
-
-/* SIDEBAR */
-.sidebar{
-width:240px;
-background:linear-gradient(180deg,#020617,#0f172a);
-padding:20px;
-height:100vh;
-}
-
-.sidebar h2{
-color:#00d4ff;
-}
-
-.sidebar button{
-width:100%;
-padding:12px;
-margin:6px 0;
-background:none;
-border:none;
-color:#94a3b8;
-text-align:left;
-cursor:pointer;
-border-radius:8px;
-}
-
-.sidebar button:hover,
-.active{
-background:#0ea5e9;
-color:white;
-}
-
-/* CONTENT */
-.content{
-flex:1;
-padding:20px;
-}
-
-/* CARDS */
-.card{
-background:#0f172a;
-padding:15px;
-border-radius:12px;
-margin-bottom:15px;
-border:1px solid #1e293b;
-}
-
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-}
-
-/* MAP */
-#map{
-height:300px;
-border-radius:12px;
-}
-
-/* INPUT */
-input{
-width:100%;
-padding:10px;
-margin:5px 0;
-border-radius:8px;
-border:none;
-background:#020617;
-color:white;
-}
-
-/* BUTTONS */
-.btn{
-padding:8px 12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.green{background:#22c55e;}
-.red{background:#ef4444;}
-.blue{background:#0ea5e9;}
-
+body{margin:0;font-family:'Segoe UI';background:#020617;color:white;display:flex}
+.sidebar{width:240px;background:#020617;padding:20px;height:100vh}
+.sidebar h2{color:#00d4ff}
+.sidebar button{width:100%;padding:12px;margin:6px 0;background:none;border:none;color:#94a3b8;text-align:left;cursor:pointer;border-radius:8px}
+.sidebar button:hover,.active{background:#0ea5e9;color:white}
+.content{flex:1;padding:20px}
+.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #1e293b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
+#map{height:300px;border-radius:12px}
+input{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;background:#020617;color:white}
+.btn{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+.green{background:#22c55e}
+.red{background:#ef4444}
+.blue{background:#0ea5e9}
 </style>
 </head>
 
@@ -105,68 +30,65 @@ cursor:pointer;
 
 <div class="sidebar">
 <h2>KuryeAI</h2>
-
 <button onclick="show('dashboard')" class="active">Dashboard</button>
-<button onclick="show('orders')">Siparişler</button>
 <button onclick="show('restaurants')">Restoranlar</button>
-<button onclick="show('couriers')">Kuryeler</button>
 <button onclick="show('applications')">Başvurular</button>
-
 <button onclick="logout()">Çıkış</button>
 </div>
 
 <div class="content">
 
-<!-- DASHBOARD -->
 <div id="dashboard">
 <h2>Dashboard</h2>
-
 <div class="grid">
-<div class="card">Toplam Sipariş: <span id="total">0</span></div>
 <div class="card">Restoran: <span id="restCount">0</span></div>
 </div>
-
 <div class="card">
 <h3>Harita</h3>
 <div id="map"></div>
 </div>
 </div>
 
-<!-- RESTAURANTS -->
 <div id="restaurants" style="display:none">
-
 <h2>Restoran Yönetimi</h2>
 
 <div class="card">
-<h3>Yeni Restoran</h3>
-
 <input id="newName" placeholder="Restoran adı">
 <input id="newEmail" placeholder="Email">
-
-<p>Haritadan konum seç</p>
-
 <button class="btn blue" onclick="enableAddLocation()">Konum Seç</button>
 <button class="btn green" onclick="addRestaurant()">Ekle</button>
 </div>
 
 <div id="restaurantList"></div>
-
 </div>
 
-<!-- APPLICATIONS -->
 <div id="applications" style="display:none">
 <h2>Başvurular</h2>
 <div id="appList"></div>
 </div>
 
-<!-- ORDERS -->
-<div id="orders" style="display:none">
-<h2>Siparişler (yakında)</h2>
 </div>
 
-<!-- COURIERS -->
-<div id="couriers" style="display:none">
-<h2>Kuryeler (yakında)</h2>
+<!-- 🔥 MODAL -->
+<div id="mapModal" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+z-index:999;
+justify-content:center;
+align-items:center;
+">
+
+<div style="width:90%;max-width:500px;background:#0f172a;padding:15px;border-radius:12px;">
+<h3>Konum Seç</h3>
+<div id="modalMap" style="height:300px;border-radius:10px;"></div>
+<br>
+<button onclick="saveLocation()" class="btn green">Kaydet</button>
+<button onclick="closeMapModal()" class="btn red">İptal</button>
 </div>
 
 </div>
@@ -186,7 +108,7 @@ const db = getFirestore(app);
 
 /* NAV */
 window.show=id=>{
-["dashboard","restaurants","orders","couriers","applications"].forEach(x=>{
+["dashboard","restaurants","applications"].forEach(x=>{
 document.getElementById(x).style.display="none";
 });
 document.getElementById(id).style.display="block";
@@ -205,7 +127,6 @@ const list=document.getElementById("restaurantList");
 list.innerHTML="";
 
 const snap=await getDocs(collection(db,"restaurants"));
-
 document.getElementById("restCount").innerText=snap.size;
 
 snap.forEach(d=>{
@@ -238,38 +159,20 @@ list.appendChild(div);
 
 }
 
-/* ADD LOCATION MODE */
-let addMode=false;
+/* ADD */
 let newLat,newLng;
 
 window.enableAddLocation=()=>{
-addMode=true;
 alert("Haritadan konum seç");
-}
-
-map.on("click", e=>{
-
-if(addMode){
+map.once("click", e=>{
 newLat=e.latlng.lat;
 newLng=e.latlng.lng;
 alert("Konum seçildi");
-addMode=false;
-return;
-}
-
-if(currentId){
-updateLocation(currentId,e.latlng);
-}
-
 });
-
-/* ADD */
-window.addRestaurant=async()=>{
-
-if(!newLat){
-alert("Konum seç!");
-return;
 }
+
+window.addRestaurant=async()=>{
+if(!newLat){alert("Konum seç!");return;}
 
 await addDoc(collection(db,"restaurants"),{
 name:newName.value,
@@ -296,24 +199,66 @@ email:document.getElementById("email-"+id).value
 alert("Güncellendi");
 }
 
-/* LOCATION UPDATE */
-let currentId=null;
+/* 🔥 MODAL MAP */
+let modalMap;
+let modalMarker;
+let selectedLatLng;
+let selectedRestaurantId;
 
-window.selectLocation=id=>{
-currentId=id;
-alert("Haritadan yeni konum seç");
-}
+window.selectLocation = (id) => {
 
-async function updateLocation(id,latlng){
+selectedRestaurantId = id;
+document.getElementById("mapModal").style.display = "flex";
 
-await updateDoc(doc(db,"restaurants",id),{
-lat:latlng.lat,
-lng:latlng.lng
+setTimeout(() => {
+
+if (!modalMap) {
+
+modalMap = L.map('modalMap').setView([39.92, 32.85], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(modalMap);
+
+modalMap.on("click", (e) => {
+
+selectedLatLng = e.latlng;
+
+if (modalMarker) modalMap.removeLayer(modalMarker);
+
+modalMarker = L.marker(e.latlng).addTo(modalMap);
+
 });
 
-currentId=null;
-loadRestaurants();
+} else {
+modalMap.invalidateSize();
 }
+
+}, 200);
+};
+
+/* SAVE */
+window.saveLocation = async () => {
+
+if (!selectedLatLng) {
+alert("Konum seç!");
+return;
+}
+
+await updateDoc(doc(db, "restaurants", selectedRestaurantId), {
+lat: selectedLatLng.lat,
+lng: selectedLatLng.lng
+});
+
+alert("Konum güncellendi");
+
+closeMapModal();
+loadRestaurants();
+};
+
+/* CLOSE */
+window.closeMapModal = () => {
+document.getElementById("mapModal").style.display = "none";
+};
 
 /* APPLICATIONS */
 async function loadApplications(){
@@ -342,26 +287,20 @@ list.appendChild(div);
 
 }
 
-/* APPROVE */
 window.approve=async id=>{
-
 const snap=await getDocs(collection(db,"applications"));
 
 snap.forEach(async d=>{
 if(d.id===id){
 const a=d.data();
-
 await addDoc(collection(db,"restaurants"),a);
 await deleteDoc(doc(db,"applications",id));
-
 loadApplications();
 loadRestaurants();
 }
 });
-
 }
 
-/* DELETE APP */
 window.deleteApp=async id=>{
 await deleteDoc(doc(db,"applications",id));
 loadApplications();

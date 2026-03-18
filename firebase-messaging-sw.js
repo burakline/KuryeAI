@@ -1,8 +1,7 @@
-/* 🔥 IMPORTS */
 importScripts("https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging-compat.js");
 
-/* 🔥 FIREBASE INIT */
+/* 🔥 FIREBASE */
 firebase.initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -14,104 +13,79 @@ appId:"1:655930514402:web:379321cbb83f48daf077bb"
 const messaging = firebase.messaging();
 
 /* 🔥 CACHE */
-const CACHE_NAME = "kuryeai-v1";
+const CACHE_NAME = "kuryeai-v2";
 
 /* INSTALL */
-self.addEventListener("install", e=>{
-e.waitUntil(
+self.addEventListener("install", event=>{
+event.waitUntil(
 caches.open(CACHE_NAME).then(cache=>{
 return cache.addAll([
-"/",
 "/index.html",
 "/courier.html",
-"/restaurant.html"
+"/restaurant.html",
+"/admin.html"
 ]);
 })
 );
 self.skipWaiting();
 });
 
-/* ACTIVATE (AUTO UPDATE) */
-self.addEventListener("activate", e=>{
+/* ACTIVATE */
+self.addEventListener("activate", event=>{
+event.waitUntil(
+caches.keys().then(keys=>{
+return Promise.all(
+keys.map(key=>{
+if(key !== CACHE_NAME){
+return caches.delete(key);
+}
+})
+);
+})
+);
 self.clients.claim();
 });
 
-/* 🔥 FETCH (SMART CACHE) */
-self.addEventListener("fetch", e=>{
+/* FETCH */
+self.addEventListener("fetch", event=>{
 
-// 🔐 BASIC TOKEN CHECK (example)
-if(e.request.headers.get("Authorization") === "invalid"){
-return;
-}
+// sadece GET cache
+if(event.request.method !== "GET") return;
 
-// HARİTA TILE CACHE
-if(e.request.url.includes("tile")){
-e.respondWith(
-caches.match(e.request).then(res=>{
-return res || fetch(e.request);
-})
-);
-return;
-}
-
-// GENEL CACHE
-e.respondWith(
-caches.match(e.request).then(res=>{
-return res || fetch(e.request);
+event.respondWith(
+caches.match(event.request).then(res=>{
+return res || fetch(event.request);
 })
 );
 
 });
 
-/* 🔥 BACKGROUND SYNC */
-self.addEventListener("sync", e=>{
-if(e.tag === "sync-data"){
-e.waitUntil(
-fetch("/sync-endpoint")
-);
-}
-});
+/* 🔔 PUSH */
+messaging.onBackgroundMessage((payload)=>{
 
-/* 🔔 PUSH (ADVANCED) */
-messaging.onBackgroundMessage(function(payload){
-
-self.registration.showNotification(payload.notification.title, {
-body: payload.notification.body,
+self.registration.showNotification(
+payload.notification?.title || "KuryeAI",
+{
+body: payload.notification?.body || "Yeni bildirim",
 icon: "/logo.png",
 actions:[
-{action:"accept", title:"Kabul Et"},
-{action:"open", title:"Aç"}
+{action:"open", title:"Aç"},
+{action:"accept", title:"Kabul Et"}
 ]
-});
-
-});
-
-/* 🔥 NOTIFICATION CLICK */
-self.addEventListener("notificationclick", function(e){
-
-e.notification.close();
-
-if(e.action === "accept"){
-e.waitUntil(
-clients.openWindow("/courier.html")
+}
 );
-}
-
-if(e.action === "open"){
-e.waitUntil(
-clients.openWindow("/")
-);
-}
 
 });
 
-/* 🔥 BACKGROUND GPS (LIMITED WEB SUPPORT) */
-self.addEventListener("message", e=>{
-if(e.data.type === "LOCATION"){
-// backend’e gönderilebilir
-fetch("/location-update",{
-method:"POST",
-body:JSON.stringify(e.data)
-});
+/* 🔔 CLICK */
+self.addEventListener("notificationclick", event=>{
+
+event.notification.close();
+
+if(event.action === "accept"){
+event.waitUntil(clients.openWindow("/courier.html"));
+}else{
+event.waitUntil(clients.openWindow("/"));
 }
+
 });

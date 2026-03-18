@@ -13,34 +13,25 @@ background:#020617;
 color:white;
 font-family:Arial;
 margin:0;
+padding:20px;
 }
 
-.menu{
+.tabs{
 display:flex;
 gap:10px;
-padding:15px;
-background:#020617;
-position:sticky;
-top:0;
-z-index:10;
+margin-bottom:20px;
 }
 
-.menu button{
-padding:10px;
-border:none;
-border-radius:8px;
+.tab{
+padding:10px 15px;
 background:#0f172a;
-color:white;
+border-radius:10px;
 cursor:pointer;
 }
 
 .active{
-background:#00d4ff !important;
-color:black !important;
-}
-
-.container{
-padding:15px;
+background:#00d4ff;
+color:black;
 }
 
 .card{
@@ -50,35 +41,36 @@ border-radius:12px;
 margin-bottom:10px;
 }
 
+button{
+margin-top:10px;
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
 .ok{background:#00d4ff;}
 .no{background:#ef4444;}
 
 #map{
-height:70vh;
-border-radius:10px;
+height:400px;
+border-radius:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="menu">
-<button onclick="showPage('apps')" id="btn-apps" class="active">Başvurular</button>
-<button onclick="showPage('orders')" id="btn-orders">Sipariş Havuzu</button>
-<button onclick="showPage('couriers')" id="btn-couriers">Kuryeler</button>
-<button onclick="showPage('map')" id="btn-map">Harita</button>
+<div class="tabs">
+<div class="tab active" onclick="show('apps')">Başvurular</div>
+<div class="tab" onclick="show('couriers')">Kuryeler</div>
+<div class="tab" onclick="show('mapTab')">Harita</div>
 </div>
-
-<div class="container">
 
 <div id="apps"></div>
-<div id="orders" style="display:none"></div>
 <div id="couriers" style="display:none"></div>
-
-<div id="mapPage" style="display:none">
+<div id="mapTab" style="display:none">
 <div id="map"></div>
-</div>
-
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -93,12 +85,12 @@ getDocs,
 doc,
 setDoc,
 deleteDoc,
-onSnapshot,
-updateDoc
+onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
 getAuth,
+onAuthStateChanged,
 createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
@@ -109,79 +101,59 @@ projectId:"kuryeai"
 };
 
 const app = initializeApp(config);
-const secondaryApp = initializeApp(config,"Secondary");
+const secondaryApp = initializeApp(config, "Secondary");
 
 const db = getFirestore(app);
+const auth = getAuth(app);
 const secondaryAuth = getAuth(secondaryApp);
 
-let map;
-let markers = {};
-
-////////////////////////////
-// NAV
-////////////////////////////
-window.showPage = (page)=>{
-
-const apps = document.getElementById("apps");
-const orders = document.getElementById("orders");
-const couriers = document.getElementById("couriers");
-const mapPage = document.getElementById("mapPage");
-
-const btnApps = document.getElementById("btn-apps");
-const btnOrders = document.getElementById("btn-orders");
-const btnCouriers = document.getElementById("btn-couriers");
-const btnMap = document.getElementById("btn-map");
-
-apps.style.display="none";
-orders.style.display="none";
-couriers.style.display="none";
-mapPage.style.display="none";
-
-document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
-
-if(page==="apps"){
-apps.style.display="block";
-btnApps.classList.add("active");
-loadApps();
+/* 🔐 AUTH KORUMA */
+onAuthStateChanged(auth, async(user)=>{
+if(!user){
+location.href="login.html";
+return;
 }
 
-if(page==="orders"){
-orders.style.display="block";
-btnOrders.classList.add("active");
-loadOrders();
-}
+const snap = await getDocs(collection(db,"users"));
+let isAdmin = false;
 
-if(page==="couriers"){
-couriers.style.display="block";
-btnCouriers.classList.add("active");
-loadCouriers();
+snap.forEach(d=>{
+if(d.id === user.uid && d.data().role==="admin"){
+isAdmin = true;
 }
+});
 
-if(page==="map"){
-mapPage.style.display="block";
-btnMap.classList.add("active");
-initMap();
+if(!isAdmin){
+alert("Yetkisiz!");
+location.href="login.html";
 }
+});
 
+/* TAB SWITCH */
+window.show = (id)=>{
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+event.target.classList.add("active");
+
+["apps","couriers","mapTab"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
+
+document.getElementById(id).style.display="block";
 };
 
-////////////////////////////
-// BAŞVURULAR
-////////////////////////////
+/* BAŞVURULAR */
 async function loadApps(){
-const apps = document.getElementById("apps");
-
-apps.innerHTML="Yükleniyor...";
+const list = document.getElementById("apps");
+list.innerHTML="Yükleniyor...";
 
 const snap = await getDocs(collection(db,"applications"));
-
-apps.innerHTML="";
+list.innerHTML="";
 
 snap.forEach(d=>{
 const a = d.data();
 a.id = d.id;
 
-apps.innerHTML += `
+list.innerHTML += `
 <div class="card">
 <b>${a.name}</b><br>
 ${a.email}<br>
@@ -193,15 +165,8 @@ ${a.email}<br>
 }
 
 window.approve = async (a)=>{
-try{
-
-const user = await createUserWithEmailAndPassword(
-secondaryAuth,
-a.email,
-"123456"
-);
-
-const uid = user.user.uid;
+const cred = await createUserWithEmailAndPassword(secondaryAuth,a.email,"123456");
+const uid = cred.user.uid;
 
 await setDoc(doc(db,"users",uid),{
 email:a.email,
@@ -211,7 +176,6 @@ role:"courier"
 
 await setDoc(doc(db,"couriers",uid),{
 name:a.name,
-email:a.email,
 lat:0,
 lng:0,
 online:false
@@ -219,148 +183,59 @@ online:false
 
 await deleteDoc(doc(db,"applications",a.id));
 
-alert("✅ Kurye oluşturuldu");
-
+alert("Kurye oluşturuldu");
 loadApps();
-
-}catch(e){
-alert("Hata: "+e.message);
-}
 };
 
-window.reject = async (id)=>{
+window.reject = async(id)=>{
 await deleteDoc(doc(db,"applications",id));
 loadApps();
 };
 
-////////////////////////////
-// SİPARİŞ HAVUZU
-////////////////////////////
-function loadOrders(){
-
-const orders = document.getElementById("orders");
-
-onSnapshot(collection(db,"orders"),(snap)=>{
-
-orders.innerHTML="";
-
-snap.forEach(d=>{
-const o = d.data();
-
-if(o.status !== "pending") return;
-
-orders.innerHTML += `
-<div class="card">
-<b>${o.product || "Sipariş"}</b><br>
-${o.address || ""}<br>
-Durum: 🟡 Bekliyor
-
-<button onclick="assignCourier('${d.id}')">Kurye Ata</button>
-</div>
-`;
-
-});
-
-});
-}
-
-window.assignCourier = async (orderId)=>{
-
-const email = prompt("Kurye email:");
-
-if(!email) return;
-
-const snap = await getDocs(collection(db,"couriers"));
-
-let found = null;
-
-snap.forEach(d=>{
-if(d.data().email === email){
-found = d.id;
-}
-});
-
-if(!found){
-alert("Kurye bulunamadı");
-return;
-}
-
-await updateDoc(doc(db,"orders",orderId),{
-courierId:found,
-status:"assigned"
-});
-
-alert("🚀 Kurye atandı");
-};
-
-////////////////////////////
-// KURYELER
-////////////////////////////
+/* KURYELER */
 function loadCouriers(){
+const list = document.getElementById("couriers");
 
-const couriers = document.getElementById("couriers");
-
-onSnapshot(collection(db,"couriers"),(snap)=>{
-
-couriers.innerHTML="";
+onSnapshot(collection(db,"couriers"),snap=>{
+list.innerHTML="";
 
 snap.forEach(d=>{
 const c = d.data();
 
-couriers.innerHTML += `
+list.innerHTML += `
 <div class="card">
 <b>${c.name}</b><br>
-Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
+Durum: ${c.online ? "🟢 Online":"🔴 Offline"}
 </div>`;
 });
 });
 }
 
-////////////////////////////
-// HARİTA (BÜYÜK MARKER)
-////////////////////////////
-function initMap(){
-
-if(map) return;
-
-map = L.map('map').setView([39.92,32.85],12);
+/* HARİTA */
+let map = L.map('map').setView([39.92,32.85],12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-onSnapshot(collection(db,"couriers"),(snap)=>{
+function loadMap(){
+onSnapshot(collection(db,"couriers"),snap=>{
 snap.forEach(d=>{
 const c = d.data();
-const id = d.id;
 
-if(!c.lat) return;
-
-const icon = L.divIcon({
-className: "custom-marker",
-html: c.online 
-? '<div style="background:#22c55e;width:24px;height:24px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px #22c55e;"></div>'
-: '<div style="background:#ef4444;width:24px;height:24px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px #ef4444;"></div>',
-iconSize: [24,24],
-iconAnchor: [12,12]
-});
-
-if(markers[id]){
-markers[id].setLatLng([c.lat,c.lng]);
-markers[id].setIcon(icon);
-}else{
-markers[id] = L.marker([c.lat,c.lng],{icon})
-.addTo(map)
+if(c.lat && c.lng){
+L.circleMarker([c.lat,c.lng],{
+radius:12,
+color:c.online ? "green":"red"
+}).addTo(map)
 .bindPopup(c.name);
 }
-
 });
 });
-
 }
 
-////////////////////////////
-// INIT
-////////////////////////////
+/* INIT */
 loadApps();
+loadCouriers();
+loadMap();
 
 </script>
 

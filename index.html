@@ -20,7 +20,6 @@ background:linear-gradient(135deg,#f5f7fb,#e6f0ff);
 color:#111;
 }
 
-/* NAV */
 .nav{
 display:flex;
 justify-content:space-between;
@@ -28,9 +27,6 @@ align-items:center;
 padding:15px 20px;
 background:white;
 box-shadow:0 5px 20px rgba(0,0,0,0.05);
-position:sticky;
-top:0;
-z-index:10;
 }
 
 .logo{
@@ -38,7 +34,6 @@ font-weight:700;
 font-size:18px;
 }
 
-/* HERO */
 .hero{
 text-align:center;
 padding:80px 20px;
@@ -54,7 +49,6 @@ color:#555;
 margin-bottom:25px;
 }
 
-/* BUTTON */
 .btn{
 padding:14px 20px;
 border:none;
@@ -80,7 +74,6 @@ background:#111;
 color:white;
 }
 
-/* LOADING */
 #loading{
 position:fixed;
 top:0;
@@ -95,7 +88,6 @@ z-index:999;
 font-size:18px;
 }
 
-/* MESSAGE */
 #msg{
 position:fixed;
 bottom:20px;
@@ -115,13 +107,11 @@ display:none;
 <div id="loading">⏳ Yükleniyor...</div>
 <div id="msg"></div>
 
-<!-- NAV -->
 <div class="nav">
 <div class="logo">🚀 KuryeAI</div>
 <a href="login.html">Giriş</a>
 </div>
 
-<!-- HERO -->
 <div class="hero">
 <h1>Akıllı Kurye Sistemi</h1>
 <p>Gerçek zamanlı takip ve yapay zeka destekli dağıtım</p>
@@ -147,81 +137,90 @@ projectId:"kuryeai"
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser=null;
+let currentUser = null;
 
 /* MESSAGE */
 function showMsg(text){
-const m = document.getElementById("msg");
-m.innerText=text;
-m.style.display="block";
-setTimeout(()=>m.style.display="none",2000);
+var m = document.getElementById("msg");
+m.innerText = text;
+m.style.display = "block";
+setTimeout(function(){
+m.style.display = "none";
+},2000);
 }
 
-/* AUTH + AUTO REDIRECT */
-auth.onAuthStateChanged(async(user)=>{
+/* AUTH */
+auth.onAuthStateChanged(function(user){
 
-currentUser=user;
+currentUser = user;
 
 document.getElementById("loading").style.display="none";
 
 if(!user) return;
 
-try{
-const snap = await db.collection("users").doc(user.uid).get();
+/* ROLE */
+db.collection("users").doc(user.uid).get().then(function(snap){
 
 if(!snap.exists) return;
 
-const role = snap.data().role;
+var role = snap.data().role;
 
 /* AUTO REDIRECT */
-if(role==="admin") location.href="admin.html";
-if(role==="courier") location.href="courier.html";
+if(role === "admin") location.href="admin.html";
+if(role === "courier") location.href="courier.html";
 
-}catch{}
+});
+
 });
 
 /* KURYE */
-async function goCourier(){
+function goCourier(){
 
 if(!currentUser){
 location.href="login.html";
 return;
 }
 
-const snap = await db.collection("users").doc(currentUser.uid).get();
+db.collection("users").doc(currentUser.uid).get().then(function(snap){
 
 if(!snap.exists){
 showMsg("Kullanıcı bulunamadı");
 return;
 }
 
-if(snap.data().role==="courier"){
+if(snap.data().role === "courier"){
 location.href="courier.html";
 }else{
 showMsg("Yetkin yok!");
 }
+
+});
+
 }
 
 /* ADMIN */
-async function goAdmin(){
+function goAdmin(){
 
 if(!currentUser){
 location.href="login.html";
 return;
 }
 
-const snap = await db.collection("users").doc(currentUser.uid).get();
+db.collection("users").doc(currentUser.uid).get().then(function(snap){
 
 if(!snap.exists){
 showMsg("Kullanıcı bulunamadı");
 return;
 }
 
-if(snap.data().role==="admin"){
+if(snap.data().role === "admin"){
 location.href="admin.html";
 }else{
 showMsg("Yetkin yok!");
 }
+
+});
+
 }
 
 /* PWA */

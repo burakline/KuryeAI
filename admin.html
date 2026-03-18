@@ -5,43 +5,69 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel</title>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
 <style>
-body{
+body{background:#020617;color:white;font-family:Arial;margin:0;}
+
+.menu{
+display:flex;
+gap:10px;
+padding:15px;
 background:#020617;
-color:white;
-font-family:Arial;
-margin:0;
-padding:20px;
+position:sticky;
+top:0;
+z-index:10;
 }
 
-h1{margin-bottom:20px;}
+.menu button{
+padding:10px;
+border:none;
+border-radius:8px;
+background:#0f172a;
+color:white;
+cursor:pointer;
+}
+
+.active{background:#00d4ff!important;color:black!important;}
+
+.container{padding:15px;}
 
 .card{
 background:#0f172a;
 padding:15px;
 border-radius:12px;
-margin-bottom:15px;
-}
-
-button{
-margin-top:10px;
-padding:10px 15px;
-border:none;
-border-radius:8px;
-cursor:pointer;
+margin-bottom:10px;
 }
 
 .ok{background:#00d4ff;}
 .no{background:#ef4444;}
 
+#map{height:70vh;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
-<h1>Başvurular</h1>
+<div class="menu">
+<button onclick="show('apps')" id="btn-apps" class="active">Başvurular</button>
+<button onclick="show('orders')" id="btn-orders">Sipariş Havuzu</button>
+<button onclick="show('couriers')" id="btn-couriers">Kuryeler</button>
+<button onclick="show('map')" id="btn-map">Harita</button>
+</div>
 
-<div id="list"></div>
+<div class="container">
+
+<div id="apps"></div>
+<div id="orders" style="display:none"></div>
+<div id="couriers" style="display:none"></div>
+<div id="mapPage" style="display:none">
+<div id="map"></div>
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
@@ -53,7 +79,9 @@ collection,
 getDocs,
 doc,
 setDoc,
-deleteDoc
+deleteDoc,
+onSnapshot,
+updateDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -61,99 +89,220 @@ getAuth,
 createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-// 🔥 Firebase config
 const config = {
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 };
 
-// ANA APP
 const app = initializeApp(config);
-
-// 🔥 SECOND APP (KRİTİK!)
-const secondaryApp = initializeApp(config, "Secondary");
+const secondaryApp = initializeApp(config,"Secondary");
 
 const db = getFirestore(app);
-
-// 🔥 AUTHLAR
 const secondaryAuth = getAuth(secondaryApp);
 
-const list = document.getElementById("list");
+/* NAV */
+window.show = (page)=>{
 
-// 🚀 BAŞVURULARI YÜKLE
-async function load(){
-list.innerHTML="Yükleniyor...";
+["apps","orders","couriers","mapPage"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
+
+document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
+
+if(page==="apps"){
+apps.style.display="block";
+btn_apps.classList.add("active");
+loadApps();
+}
+
+if(page==="orders"){
+orders.style.display="block";
+btn_orders.classList.add("active");
+loadOrders();
+}
+
+if(page==="couriers"){
+couriers.style.display="block";
+btn_couriers.classList.add("active");
+loadCouriers();
+}
+
+if(page==="map"){
+mapPage.style.display="block";
+btn_map.classList.add("active");
+initMap();
+}
+
+};
+
+/* 📄 BAŞVURULAR */
+async function loadApps(){
+apps.innerHTML="Yükleniyor...";
 
 const snap = await getDocs(collection(db,"applications"));
-
-list.innerHTML="";
+apps.innerHTML="";
 
 snap.forEach(d=>{
-const appData = d.data();
-appData.id = d.id;
+const a = d.data();
+a.id = d.id;
 
-list.innerHTML += `
+apps.innerHTML += `
 <div class="card">
-<b>${appData.name}</b><br>
-${appData.email}<br>
+<b>${a.name}</b><br>
+${a.email}<br>
 
-<button class="ok" onclick='approve(${JSON.stringify(appData)})'>Onayla</button>
-<button class="no" onclick='reject("${appData.id}")'>Reddet</button>
-</div>
-`;
+<button class="ok" onclick='approve(${JSON.stringify(a)})'>Onayla</button>
+<button class="no" onclick='reject("${a.id}")'>Reddet</button>
+</div>`;
 });
 }
 
-// 🚀 ONAYLA (FULL OTOMATİK)
-window.approve = async (appData)=>{
+window.approve = async (a)=>{
 try{
 
-// 1️⃣ AUTH USER OLUŞTUR
-const userCred = await createUserWithEmailAndPassword(
+const user = await createUserWithEmailAndPassword(
 secondaryAuth,
-appData.email,
+a.email,
 "123456"
 );
 
-const uid = userCred.user.uid;
+const uid = user.user.uid;
 
-// 2️⃣ USERS EKLE
 await setDoc(doc(db,"users",uid),{
-email:appData.email,
-name:appData.name,
+email:a.email,
+name:a.name,
 role:"courier"
 });
 
-// 3️⃣ COURIERS EKLE
 await setDoc(doc(db,"couriers",uid),{
-name:appData.name,
-phone: appData.phone || "",
+name:a.name,
+email:a.email,
 lat:0,
 lng:0,
-online:false,
-createdAt:new Date()
+online:false
 });
 
-// 4️⃣ APPLICATION SİL
-await deleteDoc(doc(db,"applications",appData.id));
+await deleteDoc(doc(db,"applications",a.id));
 
-alert("✅ Kurye otomatik oluşturuldu!");
-
-load();
+alert("✅ Kurye oluşturuldu");
+loadApps();
 
 }catch(e){
-alert("❌ Hata: "+e.message);
+alert(e.message);
 }
 };
 
-// ❌ REDDET
 window.reject = async (id)=>{
 await deleteDoc(doc(db,"applications",id));
-load();
+loadApps();
 };
 
-load();
+/* 📦 SİPARİŞ HAVUZU */
+function loadOrders(){
+
+onSnapshot(collection(db,"orders"),(snap)=>{
+
+orders.innerHTML="";
+
+snap.forEach(d=>{
+const o = d.data();
+
+if(o.status !== "pending") return;
+
+orders.innerHTML += `
+<div class="card">
+<b>${o.product || "Sipariş"}</b><br>
+${o.address || ""}<br>
+Durum: 🟡 Bekliyor
+
+<button onclick="assignCourier('${d.id}')">Kurye Ata</button>
+</div>
+`;
+
+});
+
+});
+}
+
+window.assignCourier = async (orderId)=>{
+
+const email = prompt("Kurye email:");
+
+if(!email) return;
+
+const snap = await getDocs(collection(db,"couriers"));
+
+let found = null;
+
+snap.forEach(d=>{
+if(d.data().email === email){
+found = d.id;
+}
+});
+
+if(!found){
+alert("Kurye bulunamadı");
+return;
+}
+
+await updateDoc(doc(db,"orders",orderId),{
+courierId:found,
+status:"assigned"
+});
+
+alert("🚀 Kurye atandı");
+};
+
+/* 🚴 KURYELER */
+function loadCouriers(){
+
+onSnapshot(collection(db,"couriers"),(snap)=>{
+couriers.innerHTML="";
+
+snap.forEach(d=>{
+const c = d.data();
+
+couriers.innerHTML += `
+<div class="card">
+<b>${c.name}</b><br>
+Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
+</div>`;
+});
+});
+}
+
+/* 🗺️ HARİTA */
+let map;
+let markers = {};
+
+function initMap(){
+if(map) return;
+
+map = L.map('map').setView([39.92,32.85],12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+onSnapshot(collection(db,"couriers"),(snap)=>{
+snap.forEach(d=>{
+const c = d.data();
+const id = d.id;
+
+if(!c.lat) return;
+
+if(markers[id]){
+markers[id].setLatLng([c.lat,c.lng]);
+}else{
+markers[id] = L.marker([c.lat,c.lng])
+.addTo(map)
+.bindPopup(c.name);
+}
+});
+});
+}
+
+/* INIT */
+loadApps();
 
 </script>
 

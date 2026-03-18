@@ -1,97 +1,67 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Restaurant Panel</title>
-
-<style>
-body{font-family:Arial;background:#f5f7fb;margin:0;padding:20px;}
-input,button{width:100%;padding:12px;margin-top:10px;}
-.card{background:white;padding:15px;margin-top:10px;border-radius:10px;}
-</style>
-</head>
-
-<body>
-
-<h2>Sipariş Oluştur</h2>
-
-<input id="customer" placeholder="Müşteri">
-<input id="address" placeholder="Adres">
-
-<button onclick="createOrder()">Sipariş Gönder</button>
-
-<h3>📊 Kurye Performans</h3>
-<div id="stats"></div>
-
-<h3>📦 Siparişler</h3>
-<div id="orders"></div>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore,
-collection,
-addDoc,
-onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+apiKey:"AIzaSy...",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
 
 const db = getFirestore(app);
 
-/* MESAFE */
-function calcDistance(lat1,lng1,lat2,lng2){
-return Math.sqrt(
-Math.pow(lat1-lat2,2)+
-Math.pow(lng1-lng2,2)
-)*111;
+/* SURGE */
+async function calculateSurge(){
+
+const settings = (await getDoc(doc(db,"settings","config"))).data();
+
+if(!settings.surgeEnabled) return 1;
+
+const orders = (await getDocs(collection(db,"orders"))).size;
+const couriersSnap = await getDocs(collection(db,"couriers"));
+
+let active=0;
+couriersSnap.forEach(d=>{
+if(d.data().online) active++;
+});
+
+if(active===0) return 1;
+
+let ratio = orders/active;
+
+if(ratio < settings.surgeThreshold) return 1;
+
+return Math.min(settings.surgeMax, ratio/settings.surgeThreshold);
 }
 
-/* FİYAT */
-function calcPrice(km){
-return Math.round(km*8);
-}
+/* CREATE */
+window.createOrder = async()=>{
 
-window.createOrder=async()=>{
+const customer = customer.value;
+const address = address.value;
 
-const lat=39.92+Math.random()*0.01;
-const lng=32.85+Math.random()*0.01;
+const settings = (await getDoc(doc(db,"settings","config"))).data();
 
-const km=calcDistance(39.92,32.85,lat,lng);
-const price=calcPrice(km);
+const surge = await calculateSurge();
+
+const distance = 5;
+
+const base = (settings.hourly/60*15)+(distance*settings.perKm);
+
+const price = Math.round(base * surge);
 
 await addDoc(collection(db,"orders"),{
-customer:customer.value,
-address:address.value,
-lat,lng,
+customer,
+address,
+status:"bekliyor",
 price,
-status:"bekliyor"
+surge,
+createdAt:new Date()
 });
 
-alert(price+"₺ sipariş");
+alert("Sipariş oluşturuldu 💰 "+price+"₺");
+
 };
 
-/* ORDERS */
-onSnapshot(collection(db,"orders"),snap=>{
-orders.innerHTML="";
-snap.forEach(d=>{
-const o=d.data();
-orders.innerHTML+=`<div class="card">${o.customer} - ${o.price}₺</div>`;
-});
-});
-
-/* STATS */
-onSnapshot(collection(db,"earnings"),snap=>{
-let total=0;
-snap.forEach(d=>total+=d.data().amount);
-stats.innerText="Toplam Kazanç: "+total+"₺";
-});
-
 </script>
-</body>
-</html>

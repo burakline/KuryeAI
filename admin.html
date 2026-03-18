@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KuryeAI Admin</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -10,11 +11,11 @@
 <style>
 body{margin:0;font-family:Arial;background:#f5f7fb;}
 .nav{display:flex;gap:10px;padding:15px;background:white;}
-.nav button{padding:10px;border:none;border-radius:10px;background:#eee;}
+.nav button{padding:10px;border:none;border-radius:10px;background:#eee;cursor:pointer;}
 .active{background:#00d4ff;color:white;}
 .container{padding:15px;}
 .card{background:white;padding:15px;border-radius:12px;margin-bottom:10px;}
-#map{height:70vh;border-radius:12px;}
+#map{height:65vh;border-radius:12px;}
 </style>
 </head>
 
@@ -23,24 +24,45 @@ body{margin:0;font-family:Arial;background:#f5f7fb;}
 <div class="nav">
 <button onclick="show('settings')" class="active">⚙️ Ayarlar</button>
 <button onclick="show('apps')">📩 Başvurular</button>
+<button onclick="show('couriers')">🚴 Kuryeler</button>
 <button onclick="show('analytics')">📊 Analiz</button>
 <button onclick="show('mapPage')">🗺️ Harita</button>
 </div>
 
 <div class="container">
 
+<!-- ⚙️ SETTINGS -->
 <div id="settings">
+
 <div class="card">
 <h3>Sistem Ayarları</h3>
 <input id="km" placeholder="Max KM">
-<input id="timeout" placeholder="Timeout">
-<input id="hourly" placeholder="Saatlik">
+<input id="timeout" placeholder="Timeout (sn)">
+<input id="hourly" placeholder="Saatlik ücret">
 <input id="perkm" placeholder="KM ücret">
-<button onclick="saveSettings()">Kaydet</button>
-</div>
 </div>
 
+<div class="card">
+<h3>🔥 Surge Pricing</h3>
+
+<select id="surgeEnabled">
+<option value="true">Aktif</option>
+<option value="false">Kapalı</option>
+</select>
+
+<input id="surgeMax" placeholder="Max Çarpan (örn: 2)">
+<input id="surgeThreshold" placeholder="Yoğunluk eşiği (örn: 5)">
+</div>
+
+<button onclick="saveSettings()">Kaydet</button>
+
+</div>
+
+<!-- 📩 APPLICATIONS -->
 <div id="apps" style="display:none"></div>
+
+<!-- 🚴 COURIERS -->
+<div id="couriers" style="display:none"></div>
 
 <!-- 📊 ANALYTICS -->
 <div id="analytics" style="display:none">
@@ -51,15 +73,16 @@ body{margin:0;font-family:Arial;background:#f5f7fb;}
 </div>
 
 <div class="card">
-<h3>🧠 AI Performans</h3>
+<h3>🧠 Sistem Durumu</h3>
 <p>Aktif Kurye: <b id="activeCourier">0</b></p>
 <p>Toplam Sipariş: <b id="totalOrders">0</b></p>
 <p>Toplam Kazanç: <b id="totalIncome">0₺</b></p>
-<p>Verimlilik: <b id="efficiency">0%</b></p>
+<p>🔥 Ortalama Surge: <b id="avgSurge">1x</b></p>
 </div>
 
 </div>
 
+<!-- 🗺️ MAP -->
 <div id="mapPage" style="display:none">
 <div id="map"></div>
 </div>
@@ -82,74 +105,181 @@ getDoc,
 onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+import {
+getAuth,
+onAuthStateChanged,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
 
+const secondaryApp = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+},"Secondary");
+
 const db = getFirestore(app);
+const auth = getAuth(app);
+const secondaryAuth = getAuth(secondaryApp);
+
+/* 🔐 AUTH */
+onAuthStateChanged(auth, async(user)=>{
+if(!user){location.href="login.html";return;}
+
+const snap = await getDoc(doc(db,"users",user.uid));
+
+if(!snap.exists() || snap.data().role !== "admin"){
+alert("Yetkisiz!");
+location.href="login.html";
+}
+});
 
 /* NAV */
 window.show = (id)=>{
-["settings","apps","analytics","mapPage"].forEach(x=>{
+["settings","apps","couriers","analytics","mapPage"].forEach(x=>{
 document.getElementById(x).style.display="none";
 });
 document.getElementById(id).style.display="block";
+
+document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+event.target.classList.add("active");
 };
 
-/* ⚙️ SETTINGS */
+/* ⚙️ SETTINGS SAVE */
 window.saveSettings = async ()=>{
 await setDoc(doc(db,"settings","config"),{
 maxDistance:Number(km.value),
 timeout:Number(timeout.value),
 hourly:Number(hourly.value),
-perKm:Number(perkm.value)
+perKm:Number(perkm.value),
+
+surgeEnabled: surgeEnabled.value==="true",
+surgeMax:Number(surgeMax.value),
+surgeThreshold:Number(surgeThreshold.value)
 });
 alert("Kaydedildi");
 };
 
-/* 📊 GELİR */
-onSnapshot(collection(db,"earnings"), snap=>{
+/* 📩 APPLICATIONS */
+async function loadApps(){
+
+const div = document.getElementById("apps");
+const snap = await getDocs(collection(db,"applications"));
+
+div.innerHTML="";
+
+snap.forEach(d=>{
+const a=d.data(); a.id=d.id;
+
+div.innerHTML+=`
+<div class="card">
+<b>${a.name}</b><br>
+${a.email}<br>
+
+<button onclick='approve(${JSON.stringify(a)})'>Onayla</button>
+<button onclick='reject("${a.id}")'>Reddet</button>
+</div>`;
+});
+
+}
+
+window.approve = async(a)=>{
+
+const user = await createUserWithEmailAndPassword(
+secondaryAuth,
+a.email,
+"123456"
+);
+
+const uid = user.user.uid;
+
+await setDoc(doc(db,"users",uid),{
+email:a.email,
+name:a.name,
+role:"courier"
+});
+
+await setDoc(doc(db,"couriers",uid),{
+name:a.name,
+email:a.email,
+lat:0,
+lng:0,
+online:false
+});
+
+await deleteDoc(doc(db,"applications",a.id));
+
+alert("Kurye oluşturuldu");
+loadApps();
+};
+
+window.reject = async(id)=>{
+await deleteDoc(doc(db,"applications",id));
+loadApps();
+};
+
+/* 🚴 COURIERS */
+onSnapshot(collection(db,"couriers"),snap=>{
+const div = document.getElementById("couriers");
+div.innerHTML="";
+
+snap.forEach(d=>{
+const c=d.data();
+
+div.innerHTML+=`
+<div class="card">
+<b>${c.name}</b><br>
+Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
+</div>`;
+});
+});
+
+/* 📊 ANALYTICS */
+onSnapshot(collection(db,"earnings"),snap=>{
 
 let total=0;
 let data=[];
 
 snap.forEach(d=>{
-const val=d.data().amount;
-total+=val;
-data.push(val);
+total+=d.data().amount;
+data.push(d.data().amount);
 });
 
 document.getElementById("totalIncome").innerText=total+"₺";
 
-/* CHART */
 new Chart(document.getElementById("incomeChart"),{
 type:"line",
-data:{
-labels:data.map((_,i)=>i+1),
-datasets:[{data}]
-}
+data:{labels:data.map((_,i)=>i+1),datasets:[{data}]}
 });
 
 });
 
-/* 🚴 AKTİF */
-onSnapshot(collection(db,"couriers"), snap=>{
+onSnapshot(collection(db,"orders"),snap=>{
+document.getElementById("totalOrders").innerText=snap.size;
+
+let totalSurge=0,count=0;
+
+snap.forEach(d=>{
+totalSurge+=(d.data().surge||1);
+count++;
+});
+
+document.getElementById("avgSurge").innerText=
+(count ? (totalSurge/count).toFixed(2) : 1)+"x";
+});
+
+onSnapshot(collection(db,"couriers"),snap=>{
 let active=0;
 snap.forEach(d=>{
 if(d.data().online) active++;
 });
 document.getElementById("activeCourier").innerText=active;
-});
-
-/* 📦 SİPARİŞ */
-onSnapshot(collection(db,"orders"), snap=>{
-document.getElementById("totalOrders").innerText=snap.size;
-
-/* basit verimlilik */
-const eff = Math.min(100, snap.size*10);
-document.getElementById("efficiency").innerText=eff+"%";
 });
 
 /* 🗺️ MAP */
@@ -158,25 +288,25 @@ const map = L.map('map').setView([39.92,32.85],12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 .addTo(map);
 
-/* 🔥 HEATMAP */
-let heatPoints=[];
+let markers={};
 
-onSnapshot(collection(db,"orders"), snap=>{
-heatPoints=[];
-
+onSnapshot(collection(db,"couriers"),snap=>{
 snap.forEach(d=>{
-const o=d.data();
-if(o.lat){
-heatPoints.push([o.lat,o.lng]);
+const c=d.data();
+if(!c.lat) return;
+
+if(markers[d.id]){
+markers[d.id].setLatLng([c.lat,c.lng]);
+}else{
+markers[d.id]=L.marker([c.lat,c.lng])
+.addTo(map)
+.bindPopup(c.name);
 }
 });
-
-/* basit heat simülasyon */
-heatPoints.forEach(p=>{
-L.circle(p,{radius:200,color:"red"}).addTo(map);
 });
 
-});
+/* INIT */
+loadApps();
 
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI</title>
+<title>KuryeAI Admin</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -18,15 +18,15 @@ color:white;
 
 /* HEADER */
 .header{
-padding:15px;
+padding:16px;
 font-size:20px;
 font-weight:bold;
 }
 
-/* CONTENT */
+/* CONTAINER */
 .container{
 padding:15px;
-padding-bottom:80px;
+padding-bottom:90px;
 }
 
 /* CARD */
@@ -47,6 +47,7 @@ border-radius:16px;
 #map{
 width:100%;
 height:250px;
+border-radius:16px;
 }
 
 /* BUTTON */
@@ -54,10 +55,11 @@ height:250px;
 background:#00d4ff;
 border:none;
 padding:10px 14px;
-border-radius:8px;
+border-radius:10px;
 margin-right:5px;
 margin-top:10px;
 cursor:pointer;
+font-weight:bold;
 }
 
 /* TITLE */
@@ -66,7 +68,7 @@ font-size:22px;
 margin-bottom:10px;
 }
 
-/* BOTTOM NAV */
+/* NAV */
 .nav{
 position:fixed;
 bottom:0;
@@ -121,8 +123,8 @@ color:#00d4ff;
 
 <!-- NAV -->
 <div class="nav">
-<button id="navDash" class="active" onclick="show('dashboard')">Dashboard</button>
-<button id="navApps" onclick="show('apps')">Başvurular</button>
+<button id="navDash" class="active" onclick="showPage('dashboard')">Dashboard</button>
+<button id="navApps" onclick="showPage('apps')">Başvurular</button>
 </div>
 
 <script type="module">
@@ -131,7 +133,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import {
 getFirestore,
 collection,
-onSnapshot
+onSnapshot,
+doc,
+updateDoc,
+deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 /* FIREBASE */
@@ -144,9 +149,9 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 
 /* NAV */
-window.show=id=>{
-dashboard.style.display="none";
-apps.style.display="none";
+window.showPage = (id)=>{
+document.getElementById("dashboard").style.display="none";
+document.getElementById("apps").style.display="none";
 
 navDash.classList.remove("active");
 navApps.classList.remove("active");
@@ -158,13 +163,37 @@ navApps.classList.add("active");
 }
 
 document.getElementById(id).style.display="block";
-}
+};
 
 /* MAP */
 const map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-/* APPLICATIONS */
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
+}).addTo(map);
+
+/* KURYELER (CANLI) */
+let courierMarkers = [];
+
+onSnapshot(collection(db,"couriers"),snap=>{
+// eski markerları temizle
+courierMarkers.forEach(m=>map.removeLayer(m));
+courierMarkers=[];
+
+snap.forEach(docSnap=>{
+const c = docSnap.data();
+
+if(c.lat && c.lng){
+const marker = L.marker([c.lat, c.lng])
+.addTo(map)
+.bindPopup("🚴 "+(c.name || "Kurye"));
+
+courierMarkers.push(marker);
+}
+});
+});
+
+/* BAŞVURULAR */
 onSnapshot(collection(db,"applications"),snap=>{
 appList.innerHTML="";
 
@@ -176,12 +205,24 @@ appList.innerHTML+=`
 <b>${a.name || "İsimsiz"}</b><br>
 ${a.email || "Mail yok"}<br>
 
-<button class="btn">Onayla</button>
-<button class="btn">Reddet</button>
-</div>`;
+<button class="btn" onclick="approve('${d.id}')">Onayla</button>
+<button class="btn" onclick="reject('${d.id}')">Reddet</button>
+</div>
+`;
+});
 });
 
+/* ONAYLA */
+window.approve = async (id)=>{
+await updateDoc(doc(db,"applications",id),{
+status:"approved"
 });
+};
+
+/* REDDET */
+window.reject = async (id)=>{
+await deleteDoc(doc(db,"applications",id));
+};
 
 </script>
 

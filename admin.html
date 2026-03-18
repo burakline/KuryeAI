@@ -18,6 +18,7 @@ body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white
 .card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
 input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 #map{width:100%;height:60vh;border-radius:12px}
+.section-title{color:#00d4ff;margin-top:20px}
 </style>
 </head>
 
@@ -67,9 +68,16 @@ input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 <div id="restaurantList"></div>
 </div>
 
+<!-- 🔥 AYRILMIŞ BAŞVURULAR -->
 <div id="applications" style="display:none">
 <h2>📩 Başvurular</h2>
-<div id="appList"></div>
+
+<h3 class="section-title">🚴 Kurye Başvuruları</h3>
+<div id="courierApps"></div>
+
+<h3 class="section-title">🍔 Restoran Başvuruları</h3>
+<div id="restaurantApps"></div>
+
 </div>
 
 </div>
@@ -96,11 +104,12 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔥 FIX (BOŞ SAYFA SORUNU) */
+/* DOM FIX */
 const orderList = document.getElementById("orderList");
 const courierList = document.getElementById("courierList");
 const restaurantList = document.getElementById("restaurantList");
-const appList = document.getElementById("appList");
+const courierApps = document.getElementById("courierApps");
+const restaurantApps = document.getElementById("restaurantApps");
 
 /* NAV */
 window.show=id=>{
@@ -114,131 +123,93 @@ const map=L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 setTimeout(()=>map.invalidateSize(),500);
 
-/* 🚴 KURYELER */
-let courierMarkers={};
-let couriersData={};
-
-onSnapshot(collection(db,"couriers"),snap=>{
-snap.forEach(d=>{
-const c=d.data();
-couriersData[c.email]=c;
-
-if(!c.lat) return;
-
-if(courierMarkers[d.id]){
-courierMarkers[d.id].setLatLng([c.lat,c.lng]);
-}else{
-courierMarkers[d.id]=L.marker([c.lat,c.lng])
-.addTo(map)
-.bindPopup("🚴 "+(c.name||"Kurye"));
-}
-});
-});
-
-/* 📦 SİPARİŞLER + TRACKING */
-let orderMarkers={};
-let routeLine=null;
-
-onSnapshot(collection(db,"orders"),snap=>{
-orderList.innerHTML="";
-
-snap.forEach(d=>{
-const o=d.data();
-
-orderList.innerHTML+=`
-<div class="card">
-${o.product} - ${o.status}<br>
-Kurye: ${o.courierEmail || "Yok"}
-<button onclick="focusOrder(${o.lat},${o.lng},'${o.courierEmail}')">Haritada Göster</button>
-</div>`;
-
-if(o.lat){
-if(!orderMarkers[d.id]){
-orderMarkers[d.id]=L.marker([o.lat,o.lng])
-.addTo(map)
-.bindPopup("📦 "+o.product);
-}
-}
-});
-});
-
-/* 📍 TRACKING + ROTA */
-window.focusOrder=async(lat,lng,email)=>{
-map.setView([lat,lng],15);
-
-const courier=couriersData[email];
-if(!courier || !courier.lat) return;
-
-const res=await fetch(`https://router.project-osrm.org/route/v1/driving/${courier.lng},${courier.lat};${lng},${lat}?overview=full&geometries=geojson`);
-const data=await res.json();
-
-const coords=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
-
-if(routeLine) map.removeLayer(routeLine);
-
-routeLine=L.polyline(coords,{color:"lime"}).addTo(map);
-}
-
-/* 📩 APPLICATIONS */
+/* 📩 APPLICATIONS AYIRMA */
 onSnapshot(collection(db,"applications"),snap=>{
-appList.innerHTML="";
+courierApps.innerHTML="";
+restaurantApps.innerHTML="";
 
 snap.forEach(d=>{
 const a=d.data();
 
-appList.innerHTML+=`
+const card=`
 <div class="card">
 <b>${a.name}</b><br>
 ${a.email}<br><br>
 
-<button onclick="approve('${d.id}','${a.email}','${a.name}')">✅ Onayla</button>
+<button onclick="approve('${d.id}','${a.email}','${a.name}','${a.type || "courier"}')">✅ Onayla</button>
 <button onclick="reject('${d.id}')">❌ Reddet</button>
-</div>`;
-});
-});
+</div>
+`;
 
-/* APPROVE */
-window.approve=async(id,email,name)=>{
-try{
-const snap = await getDocs(collection(db,"couriers"));
-let exists=false;
-
-snap.forEach(d=>{
-if(d.data().email===email){exists=true;}
-});
-
-if(exists){
-alert("⚠️ Bu kurye zaten kayıtlı!");
-return;
+if(a.type==="restaurant"){
+restaurantApps.innerHTML+=card;
+}else{
+courierApps.innerHTML+=card;
 }
 
+});
+});
+
+/* APPROVE (ROLE AKILLI) */
+window.approve=async(id,email,name,type)=>{
+try{
+
+const role = type==="restaurant" ? "restaurant" : "courier";
+
+/* AUTH */
 let userId=null;
 
 try{
 const user=await createUserWithEmailAndPassword(auth,email,"123456");
 userId=user.user.uid;
 }catch(e){
-if(e.code==="auth/email-already-in-use"){userId=email;}
-else{throw e;}
+if(e.code==="auth/email-already-in-use"){
+userId=email;
+}else{throw e;}
 }
 
+/* USERS */
 await setDoc(doc(db,"users",userId),{
 email,
-role:"courier"
+role
 });
 
+/* COLLECTION */
+if(role==="courier"){
+
+/* duplicate kontrol */
+const snap=await getDocs(collection(db,"couriers"));
+let exists=false;
+
+snap.forEach(d=>{
+if(d.data().email===email){exists=true;}
+});
+
+if(!exists){
 await addDoc(collection(db,"couriers"),{
 name:name || email,
 email,
 activeOrders:0,
 createdAt:new Date()
 });
+}
 
+}else{
+
+await addDoc(collection(db,"restaurants"),{
+name:name || email,
+email,
+createdAt:new Date()
+});
+
+}
+
+/* STATUS */
 await updateDoc(doc(db,"applications",id),{
 status:"approved"
 });
 
-alert("✅ Kurye eklendi!");
+alert("✅ "+role+" eklendi!");
 
 }catch(e){
 alert("Hata: "+e.message);

@@ -1,59 +1,116 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  projectId: "kuryeai",
-  storageBucket: "kuryeai.firebasestorage.app",
-  messagingSenderId: "655930514402",
-  appId: "1:655930514402:web:379321cbb83f48daf077bb"
-};
+import {
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+onAuthStateChanged,
+setPersistence,
+browserLocalPersistence,
+browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-const app = initializeApp(firebaseConfig);
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+/* 🔥 CONFIG */
+const app = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// LOGIN
-window.loginUser = async function(email, password) {
-    try {
-        const userCred = await signInWithEmailAndPassword(auth, email, password);
-        const uid = userCred.user.uid;
+/* 🔄 AUTO LOGIN CHECK */
+onAuthStateChanged(auth, async(user)=>{
 
-        const docRef = doc(db, "users", uid);
-        const docSnap = await getDoc(docRef);
+if(!user) return;
 
-        if (!docSnap.exists()) {
-            alert("Kullanıcı rolü bulunamadı!");
-            return;
-        }
+const snap = await getDoc(doc(db,"users",user.uid));
 
-        const role = docSnap.data().role;
+if(!snap.exists()) return;
 
-        if (role === "admin") window.location.href = "admin.html";
-        else if (role === "restaurant") window.location.href = "restaurant.html";
-        else if (role === "courier") window.location.href = "courier.html";
+const role = snap.data().role;
 
-    } catch (error) {
-        alert("Giriş hatası: " + error.message);
-    }
+redirect(role);
+
+});
+
+/* 🚀 LOGIN */
+window.loginUser = async function(email, password, remember=false){
+
+try{
+
+email = email.trim().toLowerCase();
+
+/* 🔐 PERSISTENCE */
+await setPersistence(
+auth,
+remember ? browserLocalPersistence : browserSessionPersistence
+);
+
+const userCred = await signInWithEmailAndPassword(auth, email, password);
+const uid = userCred.user.uid;
+
+/* 🔍 ROLE */
+const snap = await getDoc(doc(db,"users",uid));
+
+if(!snap.exists()){
+alert("Kullanıcı rolü bulunamadı!");
+return;
+}
+
+redirect(snap.data().role);
+
+}catch(e){
+alert("❌ Giriş başarısız: " + e.message);
+}
+
 };
 
-// REGISTER
-window.registerUser = async function(email, password, role) {
-    try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCred.user.uid;
+/* 🔒 REGISTER (KISITLI) */
+window.registerUser = async function(email, password){
 
-        await setDoc(doc(db, "users", uid), {
-            role: role
-        });
+try{
 
-        alert("Kayıt başarılı!");
-        window.location.reload();
+email = email.trim().toLowerCase();
 
-    } catch (error) {
-        alert("Kayıt hatası: " + error.message);
-    }
+/* ❌ ROLE DIŞARIDAN ALMA */
+const userCred = await createUserWithEmailAndPassword(auth,email,password);
+const uid = userCred.user.uid;
+
+/* default role */
+await setDoc(doc(db,"users",uid),{
+email,
+role:"courier",
+createdAt:new Date()
+});
+
+alert("✅ Kayıt başarılı!");
+
+}catch(e){
+alert("❌ Kayıt hatası: "+e.message);
+}
+
 };
+
+/* 🔀 REDIRECT */
+function redirect(role){
+
+if(role === "admin"){
+window.location.href = "admin.html";
+}
+else if(role === "restaurant"){
+window.location.href = "restaurant.html";
+}
+else{
+window.location.href = "courier.html";
+}
+
+}

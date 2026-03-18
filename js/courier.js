@@ -1,77 +1,154 @@
 import { db } from "../firebase.js";
-import { collection, addDoc, doc, setDoc, onSnapshot, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-// HARİTA KURULUMU
+import {
+collection,
+addDoc,
+doc,
+setDoc,
+onSnapshot,
+query,
+where,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+/* AUTH */
+const auth = getAuth();
+
+let currentUser = null;
+let watchId = null;
+
+/* MAP */
 const map = L.map('map').setView([39.92, 32.85], 13);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
 let marker = L.marker([39.92, 32.85]).addTo(map);
 
-// 1. VARDİYA BAŞLAT FONKSİYONU
-window.startShift = async function() {
-    document.getElementById("statusBadge").innerText = "VARDİYA AÇIK";
-    document.getElementById("statusBadge").classList.replace("bg-rose-500/20", "bg-emerald-500/20");
-    document.getElementById("statusBadge").classList.replace("text-rose-400", "text-emerald-400");
-    
-    // Konum takibini başlat
-    navigator.geolocation.watchPosition(async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        marker.setLatLng([latitude, longitude]);
-        map.panTo([latitude, longitude]);
+/* AUTH STATE */
+onAuthStateChanged(auth, (user)=>{
+if(!user){
+location.href="login.html";
+return;
+}
+currentUser = user;
+});
 
-        await setDoc(doc(db, "activeLocations", "kurye_burak"), {
-            lat: latitude, lng: longitude, name: "Burak (Kurye)", lastUpdate: new Date()
-        });
-    });
-    alert("Vardiya başlatıldı ve konumunuz paylaşılıyor!");
+/* 🚀 START SHIFT */
+window.startShift = async function(){
+
+if(!currentUser){
+alert("Giriş yok");
+return;
+}
+
+document.getElementById("statusBadge").innerText = "VARDİYA AÇIK";
+
+watchId = navigator.geolocation.watchPosition(async (pos)=>{
+
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
+
+marker.setLatLng([lat,lng]);
+map.setView([lat,lng],15);
+
+/* 🔥 SADECE COURIERS */
+await setDoc(doc(db,"couriers",currentUser.uid),{
+lat,
+lng,
+online:true,
+email: currentUser.email,
+updatedAt:new Date()
+},{merge:true});
+
+});
+
+alert("Online oldun 🚀");
 };
 
-// 2. VARDİYA BİTİR FONKSİYONU
-window.endShift = function() {
-    document.getElementById("statusBadge").innerText = "VARDİYA KAPALI";
-    alert("Vardiya sona erdi.");
-    location.reload(); // Takibi durdurmak için sayfayı yeniler
+/* 🛑 STOP SHIFT */
+window.endShift = async function(){
+
+if(watchId){
+navigator.geolocation.clearWatch(watchId);
+}
+
+document.getElementById("statusBadge").innerText = "VARDİYA KAPALI";
+
+await updateDoc(doc(db,"couriers",currentUser.uid),{
+online:false
+});
+
 };
 
-// 3. RAPOR KAYDET FONKSİYONU
-window.saveDayEnd = async function() {
-    const p = document.getElementById("packages").value;
-    const h = document.getElementById("hours").value;
-    const k = document.getElementById("km").value;
-    const r = document.getElementById("revenue").value;
+/* 📊 RAPOR */
+window.saveDayEnd = async function(){
 
-    if(!p || !h) return alert("Lütfen en az paket ve saat bilgisini girin!");
+const p = packages.value;
+const h = hours.value;
+const k = km.value;
+const r = revenue.value;
 
-    await addDoc(collection(db, "reports"), {
-        courier: "Burak",
-        packages: p,
-        hours: h,
-        km: k,
-        revenue: r,
-        date: new Date()
-    });
-    alert("Rapor başarıyla kaydedildi!");
+if(!p || !h){
+alert("Eksik veri");
+return;
+}
+
+await addDoc(collection(db,"reports"),{
+courierId: currentUser.uid,
+packages:p,
+hours:h,
+km:k,
+revenue:r,
+date:new Date()
+});
+
+alert("Rapor kaydedildi");
 };
 
-// 4. SİPARİŞ KABUL ET FONKSİYONU
-window.acceptOrder = async function(id) {
-    await updateDoc(doc(db, "orders", id), { status: "yolda", courierName: "Burak" });
-    alert("Siparişi aldınız, bol kazançlar!");
+/* 📦 ORDER ACCEPT */
+window.acceptOrder = async function(id){
+
+await updateDoc(doc(db,"orders",id),{
+status:"accepted",
+courierId: currentUser.uid,
+courierEmail: currentUser.email
+});
+
+alert("Sipariş alındı 🚀");
 };
 
-// SİPARİŞ HAVUZUNU DİNLE
-const q = query(collection(db, "orders"), where("status", "==", "bekliyor"));
-onSnapshot(q, (snapshot) => {
-    const pool = document.getElementById("orderPool");
-    if(pool) {
-        pool.innerHTML = ""; 
-        snapshot.forEach((docSnap) => {
-            const order = docSnap.data();
-            pool.innerHTML += `
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                    <p class="text-cyan-400 font-bold">${order.customer}</p>
-                    <p class="text-xs text-slate-400">${order.address}</p>
-                    <button onclick="acceptOrder('${docSnap.id}')" class="mt-2 w-full bg-cyan-600 py-2 rounded-lg text-xs font-bold transition active:scale-95">Siparişi Kabul Et</button>
-                </div>`;
-        });
-    }
+/* 📦 ORDER POOL */
+const q = query(
+collection(db,"orders"),
+where("status","==","pending")
+);
+
+onSnapshot(q,(snapshot)=>{
+
+const pool = document.getElementById("orderPool");
+
+if(!pool) return;
+
+pool.innerHTML="";
+
+snapshot.forEach(docSnap=>{
+const o = docSnap.data();
+
+pool.innerHTML += `
+<div style="background:#0f172a;padding:12px;border-radius:10px;margin-bottom:10px">
+<b>${o.product || "Sipariş"}</b><br>
+${o.address || ""}<br>
+
+<button onclick="acceptOrder('${docSnap.id}')"
+style="margin-top:8px;padding:10px;background:#00d4ff;border:none;border-radius:8px;">
+Kabul Et
+</button>
+</div>
+`;
+});
+
 });

@@ -1,37 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Kurye Takip</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<style>
-body{margin:0}
-#map{width:100%;height:100vh}
-.info{
-position:absolute;
-top:10px;left:10px;
-background:white;padding:10px;
-border-radius:10px;
-}
-</style>
-</head>
-
-<body>
-
-<div id="map"></div>
-<div class="info">
-📦 Siparişiniz yolda...
-</div>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getFirestore, doc, onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot } 
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -44,20 +15,20 @@ const db = getFirestore(app);
 const map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-const url = new URLSearchParams(window.location.search);
-const orderId = url.get("id");
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get("id");
 
-let courierMarker = null;
+let courierMarker;
 
-/* 📡 CANLI TAKİP */
-onSnapshot(doc(db,"orders",orderId), async d=>{
-const o = d.data();
+/* 📦 ORDER */
+onSnapshot(doc(db,"orders",orderId), orderSnap=>{
+const o = orderSnap.data();
 
-if(!o.courierEmail) return;
+if(!o || !o.courierEmail) return;
 
-/* courier bul */
-onSnapshot(doc(db,"couriers",o.courierEmail), cSnap=>{
-const c = cSnap.data();
+/* 🚴 COURIER */
+onSnapshot(doc(db,"couriers",o.courierEmail), courierSnap=>{
+const c = courierSnap.data();
 
 if(!c) return;
 
@@ -67,11 +38,10 @@ courierMarker.setLatLng([c.lat,c.lng]);
 courierMarker = L.marker([c.lat,c.lng]).addTo(map);
 }
 
+map.setView([c.lat,c.lng],15);
+
 });
 
 });
 
 </script>
-
-</body>
-</html>

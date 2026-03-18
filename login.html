@@ -259,7 +259,28 @@ function shake(){
 box.classList.add("shake");
 setTimeout(()=>box.classList.remove("shake"),300);
 }
+/* 🌙 DARK MODE */
+window.toggleMode = ()=>{
+document.body.classList.toggle("light");
+};
 
+/* 🔐 FACE ID (demo) */
+window.biometricLogin = async ()=>{
+if(window.PublicKeyCredential){
+alert("FaceID hazır (backend bağlanınca aktif)");
+}else{
+alert("Tarayıcı desteklemiyor");
+}
+};
+
+/* 🔄 LOADING CONTROL */
+function showLoading(){
+document.getElementById("loading").style.display="flex";
+}
+
+function hideLoading(){
+document.getElementById("loading").style.display="none";
+}
 </script>
 
 </body>

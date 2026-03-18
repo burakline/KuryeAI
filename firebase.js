@@ -1,20 +1,23 @@
-/**
- * KuryeAI - Güvenli Giriş Sistemi
- */
-function handleSecureLogin(type, user, pass) {
-    const accounts = {
-        admin: { u: "burakline", p: "burakline123", url: "admin.html" },
-        restaurant: { u: "tava", p: "tava123", url: "restaurant.html" },
-        courier: { u: "harunkaya", p: "harun123", url: "courier.html" }
-    };
+// firebase.js
 
-    const target = accounts[type];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-    if (user === target.u && pass === target.p) {
-        sessionStorage.setItem("isLoggedIn", "true");
-        sessionStorage.setItem("userRole", type);
-        window.location.href = target.url;
-    } else {
-        alert("Hatalı kullanıcı adı veya şifre!");
-    }
-}
+// senin config
+const firebaseConfig = {
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  projectId: "kuryeai",
+  storageBucket: "kuryeai.firebasestorage.app",
+  messagingSenderId: "655930514402",
+  appId: "1:655930514402:web:379321cbb83f48daf077bb",
+  measurementId: "G-JYQP30LJG3"
+};
+
+// initialize
+const app = initializeApp(firebaseConfig);
+
+// servisler
+export const auth = getAuth(app);
+export const db = getFirestore(app);

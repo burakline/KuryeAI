@@ -1,308 +1,283 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KuryeAI - Profesyonel Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        :root { --bg: #0B1120; --cyan: #06B6D4; --card: #1E293B; --text-main: white; }
-        
-        /* Aydınlık Mod Değişkenleri */
-        body.light-mode { --bg: #F8FAFC; --card: white; --text-main: #0F172A; }
-        body.light-mode .glass-card { background: rgba(255, 255, 255, 0.98); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        body.light-mode #earnings, body.light-mode #timer, body.light-mode .font-bold.text-sm.text-slate-800 { color: #0F172A !important; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); overflow: hidden; margin: 0; color: var(--text-main); transition: background-color 0.3s; }
-        
-        /* Harita Filtreleri Temizlendi - Doğrudan Aydınlık Harita */
-        #map { height: 100vh; width: 100%; position: absolute; z-index: 0; transition: 0.3s; }
-        
-        /* Sidebar Tasarımı */
-        .sidebar { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #0F172A; z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; overflow-y: auto; border-right: 1px solid rgba(6, 182, 212, 0.2); color: white; }
-        .sidebar.active { left: 0; }
-        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; transition: 0.2s; cursor: pointer; color: #94A3B8; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-        .menu-item:hover { background: rgba(6, 182, 212, 0.1); color: white; }
-        .menu-active { background: var(--cyan); color: white !important; }
+<title>KuryeAI PRO</title>
 
-        /* UI Bileşenleri (Yükseklik: 260px) */
-        .glass-card { background: rgba(255, 255, 255, 0.95); border-radius: 24px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); transition: 0.3s; }
-        .speed-badge { position: fixed; bottom: 260px; left: 20px; z-index: 200; width: 60px; height: 60px; background: #1E293B; border-radius: 50%; border: 3px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: white; }
-        .target-badge { position: fixed; bottom: 260px; right: 20px; z-index: 200; width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #0F172A; cursor: pointer; border: none; }
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-        /* Marker */
-        .kurye-marker { display: flex; flex-direction: column; align-items: center; }
-        .kurye-label { background: #000; color: white; padding: 2px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; border: 1px solid var(--cyan); margin-bottom: 4px; white-space: nowrap; }
-        .kurye-icon { width: 32px; height: 32px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--cyan); font-weight: 900; font-style: italic; border: 2px solid var(--cyan); box-shadow: 0 0 15px var(--cyan); }
+<style>
+body{margin:0;font-family:'Segoe UI';}
 
-        /* Modal */
-        #soon-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .soon-content { background: #1E293B; border-radius: 24px; padding: 30px; text-align: center; max-width: 300px; border: 1px solid var(--cyan); color: white; }
-    </style>
+#map{position:fixed;width:100%;height:100%;z-index:1}
+
+/* MENU */
+.menu{
+position:fixed;
+top:15px;left:15px;
+background:#0f172a;color:white;
+padding:12px;border-radius:12px;
+z-index:3;
+}
+
+/* TARGET */
+.target{
+position:fixed;
+right:15px;
+bottom:150px;
+background:white;
+padding:12px;
+border-radius:50%;
+z-index:3;
+}
+
+/* SPEED */
+.speed{
+position:fixed;
+left:15px;
+bottom:180px;
+background:#0f172a;
+color:white;
+padding:15px;
+border-radius:50%;
+z-index:3;
+}
+
+/* PANEL */
+.panel{
+position:fixed;
+bottom:0;
+width:100%;
+background:white;
+border-radius:25px 25px 0 0;
+padding:15px;
+z-index:2;
+}
+
+.btn{
+background:#0f172a;
+color:white;
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+text-align:center;
+}
+
+/* POPUP */
+.popup{
+position:fixed;
+top:80px;
+left:50%;
+transform:translateX(-50%);
+background:#00d4ff;
+padding:15px;
+border-radius:12px;
+z-index:5;
+display:none;
+}
+</style>
 </head>
-<body class="light-mode"> <button onclick="toggleMenu()" class="fixed top-4 left-4 z-[500] bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-xl">
-        <i data-lucide="menu" class="text-white"></i>
-    </button>
 
-    <button onclick="toggleTheme()" class="fixed top-4 right-4 z-[500] bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-xl">
-        <i data-lucide="moon" id="theme-icon" class="text-yellow-400"></i>
-    </button>
+<body>
 
-    <div class="speed-badge">
-        <span id="live-speed" class="text-xl font-black leading-none">0</span>
-        <span class="text-[8px] font-bold text-cyan-400 uppercase">km/s</span>
-    </div>
+<div class="menu">☰</div>
+<div class="target" onclick="centerMap()">🎯</div>
 
-    <button class="target-badge" onclick="locateUser()">
-        <i data-lucide="crosshair"></i>
-    </button>
+<div class="speed">
+<div id="speed">0</div>
+<small>KM/S</small>
+</div>
 
-    <div id="sidebar" class="sidebar">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-black italic">KURYE<span class="text-cyan-500 text-xs">AI</span></h2>
-            <button onclick="toggleMenu()"><i data-lucide="x" class="text-slate-500"></i></button>
-        </div>
+<div id="map"></div>
 
-        <div class="bg-slate-800/50 p-4 rounded-2xl mb-6 border border-slate-700">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center font-bold text-lg border border-cyan-500 overflow-hidden relative">
-                    <img id="sb-photo" class="w-full h-full object-cover hidden">
-                    <span id="sb-initials" class="text-cyan-400">AI</span>
-                </div>
-                <div>
-                    <p id="display-name" class="font-bold text-sm">İsimsiz Kurye</p>
-                    <p id="display-plaka" class="text-xs text-slate-400">Plaka Yok</p>
-                </div>
-            </div>
-        </div>
+<div class="popup" id="popup">
+📦 Yeni Sipariş!
+<br><br>
+<button onclick="acceptOrder()">KABUL ET</button>
+</div>
 
-        <nav id="menu-list" class="space-y-1">
-            <div class="menu-item menu-active" onclick="toggleMenu()"><i data-lucide="map"></i> Harita Paneli</div>
-            
-            <div class="menu-item text-cyan-400 border-b border-slate-800 pb-2 mb-2" onclick="switchSidebarView('profile')"><i data-lucide="user-circle"></i> Profilim & Bilgiler</div>
-            
-            <div class="menu-item" onclick="showSoon('Geçmiş Kazançlarım')"><i data-lucide="history"></i> Geçmiş Kazançlarım</div>
-            
-            <p class="text-[10px] font-bold text-slate-500 uppercase px-3 mt-4 mb-2">Hizmetler</p>
-            <div class="menu-item" onclick="showSoon('Online Platformlar')"><i data-lucide="globe"></i> Online Platformlar</div>
-            <div class="menu-item" onclick="showSoon('AI Arıza Tespit')"><i data-lucide="cpu"></i> AI Arıza Tespit</div>
-            <div class="menu-item" onclick="showSoon('Kurye Kazanç Defteri')"><i data-lucide="book-open"></i> Kazanç Defteri</div>
-            <div class="menu-item" onclick="showSoon('KM / Yakıt Hesaplama')"><i data-lucide="fuel"></i> KM / Yakıt Hesabı</div>
-            <div class="menu-item" onclick="showSoon('Pusula')"><i data-lucide="compass"></i> Pusula</div>
-            <div class="menu-item" onclick="showSoon('PDF Rapor')"><i data-lucide="file-text"></i> PDF Rapor Al</div>
-            <div class="menu-item" onclick="showSoon('KuryeAI Chat')"><i data-lucide="message-square"></i> KuryeAI Chat</div>
-            
-            <p class="text-[10px] font-bold text-slate-500 uppercase px-3 mt-4 mb-2">Yönetim</p>
-            <div class="menu-item" onclick="showSoon('Bakım Takip')"><i data-lucide="settings"></i> Bakım Takip</div>
-            <div class="menu-item" onclick="showSoon('Performans')"><i data-lucide="bar-chart"></i> Performans</div>
-            <div class="menu-item" onclick="showSoon('Günlük Menü')"><i data-lucide="utensils"></i> Günlük Menü</div>
-            <div class="menu-item" onclick="showSoon('Vardiya Planı')"><i data-lucide="calendar"></i> Vardiya Planı</div>
-            
-            <div class="mt-8 pt-4 border-t border-slate-800">
-                <button onclick="location.reload()" class="menu-item text-rose-500 w-full"><i data-lucide="log-out"></i> Güvenli Çıkış</button>
-            </div>
-        </nav>
+<div class="panel">
+<div>💰 <span id="earn">0</span> ₺</div>
+<div>📍 <span id="km">0</span> km</div>
+<div>⏱ <span id="time">00:00</span></div>
 
-        <div id="profile-form" class="hidden mt-2">
-            <button onclick="switchSidebarView('menu')" class="text-xs text-slate-400 mb-6 flex items-center gap-1 hover:text-white"><i data-lucide="arrow-left" class="w-3"></i> Menüye Dön</button>
-            
-            <div class="flex flex-col items-center mb-6">
-                <div class="w-20 h-20 bg-slate-800 border-2 border-dashed border-cyan-500 rounded-2xl flex items-center justify-center cursor-pointer overflow-hidden relative" onclick="document.getElementById('file-upload').click()">
-                    <img id="form-photo" class="w-full h-full object-cover hidden">
-                    <i id="form-icon" data-lucide="camera" class="text-cyan-500"></i>
-                </div>
-                <input type="file" id="file-upload" class="hidden" accept="image/*">
-                <p class="text-[10px] text-slate-400 mt-2 uppercase">Fotoğraf Seç</p>
-            </div>
+<div class="btn" onclick="stopShift()">VARDİYAYI BİTİR</div>
+</div>
 
-            <div class="space-y-3">
-                <input type="text" id="input-name" class="w-full bg-slate-800 p-4 rounded-xl text-sm border-none text-white focus:ring-1 focus:ring-cyan-500" placeholder="Ad Soyad">
-                <input type="text" id="input-plaka" class="w-full bg-slate-800 p-4 rounded-xl text-sm border-none text-white focus:ring-1 focus:ring-cyan-500" placeholder="Araç Plakası">
-                <button onclick="saveProfile()" class="w-full bg-cyan-500 text-slate-900 font-bold py-4 rounded-xl text-xs uppercase mt-4">Değişiklikleri Kaydet</button>
-            </div>
-        </div>
-    </div>
+<script type="module">
 
-    <div id="map"></div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import {
+getFirestore, collection, onSnapshot, updateDoc, doc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-    <div class="fixed bottom-6 left-4 right-4 z-[100] glass-card">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Anlık Kazanç</p>
-                <p id="earnings" class="text-3xl font-black italic text-slate-900">₺0,00</p>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Vardiya Süresi</p>
-                <p id="timer" class="text-xl font-bold font-mono text-slate-800">00:00:00</p>
-            </div>
-        </div>
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-        <div class="grid grid-cols-3 gap-2 mb-6 border-t border-slate-200 pt-4 text-center">
-            <div><p class="text-[9px] font-bold text-cyan-600 uppercase">Mesafe</p><p id="distance" class="font-bold text-sm text-slate-800">0.0 km</p></div>
-            <div><p class="text-[9px] font-bold text-cyan-600 uppercase">Ort. Hız</p><p id="avg-speed" class="font-bold text-sm text-slate-800">0</p></div>
-            <div><p class="text-[9px] font-bold text-rose-500 uppercase">Saat/₺</p><p id="hourly-rate" class="font-bold text-sm text-slate-800">₺0</p></div>
-        </div>
+/* ✅ PUSH EKLENDİ */
+import { getMessaging, getToken, onMessage }
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
 
-        <button id="main-btn" onclick="toggleShift()" class="w-full h-16 bg-[#0F172A] text-white rounded-2xl font-black uppercase text-lg tracking-wider flex items-center justify-center gap-3 active:scale-95 transition-all">
-            <i data-lucide="zap" class="fill-cyan-400 text-cyan-400"></i> Vardiyayı Başlat
-        </button>
-    </div>
+/* FIREBASE */
+const app = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
 
-    <div id="soon-modal" onclick="closeSoon()">
-        <div class="soon-content" onclick="event.stopPropagation()">
-            <div class="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="construction" class="text-cyan-400 w-8 h-8"></i>
-            </div>
-            <h3 id="soon-title" class="text-xl font-bold mb-2">Çok Yakında</h3>
-            <p class="text-slate-400 text-sm mb-6">Bu özellik üzerinde kuryelerimiz için titizlikle çalışıyoruz. Yakında burada olacak!</p>
-            <button onclick="closeSoon()" class="w-full py-3 bg-cyan-500 rounded-xl font-bold uppercase text-slate-900">Anladım</button>
-        </div>
-    </div>
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        lucide.createIcons();
-        
-        // Firebase Konfigürasyonu
-        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const storage = firebase.storage();
+/* 🔔 PUSH INIT */
+const messaging = getMessaging(app);
 
-        const kuryeID = "KAI-BURAK";
-        let kuryeName = "İsimsiz Kurye";
+/* 🔔 İZİN + TOKEN */
+Notification.requestPermission().then(async permission=>{
+if(permission==="granted"){
 
-        // Harita Başlatma - AYDINLIK HARİTA (Voyager Stili)
-        var map = L.map('map', { zoomControl: false }).setView([39.9334, 32.8597], 15);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+const token = await getToken(messaging,{
+vapidKey:"BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ"
+});
 
-        let isShiftActive = false, startTime, timerInterval, marker, polyline;
-        let totalDistance = 0, lastPos = null, speedSum = 0, speedCount = 0;
+console.log("FCM TOKEN:",token);
 
-        // Firebase'den Veri Çekme
-        db.ref(`kuryeler/${kuryeID}/profil`).on('value', snap => {
-            const data = snap.val();
-            if(data) {
-                kuryeName = data.adSoyad || "İsimsiz Kurye";
-                document.getElementById('display-name').innerText = kuryeName;
-                document.getElementById('display-plaka').innerText = data.plaka || "Plaka Yok";
-                document.getElementById('input-name').value = data.adSoyad || "";
-                document.getElementById('input-plaka').value = data.plaka || "";
-                
-                if(marker) {
-                    const iconHTML = `<div class="kurye-marker"><div class="kurye-label">${kuryeName}</div><div class="kurye-icon">AI</div></div>`;
-                    marker.setIcon(L.divIcon({className: '', html: iconHTML, iconSize: [80, 50], iconAnchor: [40, 50]}));
-                }
+/* DB kaydet */
+if(auth.currentUser){
+await updateDoc(doc(db,"couriers",auth.currentUser.uid),{
+fcmToken:token
+});
+}
 
-                if(data.photo) {
-                    document.getElementById('sb-photo').src = data.photo;
-                    document.getElementById('sb-photo').classList.remove('hidden');
-                    document.getElementById('sb-initials').classList.add('hidden');
-                    
-                    document.getElementById('form-photo').src = data.photo;
-                    document.getElementById('form-photo').classList.remove('hidden');
-                    document.getElementById('form-icon').classList.add('hidden');
-                }
-            }
-        });
+}
+});
 
-        // Fonksiyonlar
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-        function switchSidebarView(view) {
-            document.getElementById('menu-list').classList.toggle('hidden', view !== 'menu');
-            document.getElementById('profile-form').classList.toggle('hidden', view !== 'profile');
-        }
-        function showSoon(title) { document.getElementById('soon-title').innerText = title; document.getElementById('soon-modal').style.display = 'flex'; }
-        function closeSoon() { document.getElementById('soon-modal').style.display = 'none'; }
-        function locateUser() { if(lastPos) map.flyTo(lastPos, 16); }
+/* 🔔 APP AÇIKKEN BİLDİRİM */
+onMessage(messaging,(payload)=>{
+alert("📦 "+payload.notification.title);
+});
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('theme-icon').setAttribute('data-lucide', isLight ? 'moon' : 'sun');
-            lucide.createIcons();
-        }
+/* 🔋 SCREEN ON */
+let wakeLock=null;
+async function keepAwake(){
+try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+}
+keepAwake();
 
-        // Profil Kayıt İşlemleri
-        function saveProfile() {
-            const ad = document.getElementById('input-name').value;
-            const plaka = document.getElementById('input-plaka').value;
-            db.ref(`kuryeler/${kuryeID}/profil`).update({ adSoyad: ad, plaka: plaka })
-              .then(() => alert("Profil verileri güncellendi!"));
-        }
+/* 🔊 SOUND */
+const sound = new Audio("https://www.soundjay.com/buttons/sounds/beep-01a.mp3");
 
-        document.getElementById('file-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const ref = storage.ref(`avatars/${kuryeID}.jpg`);
-            ref.put(file).then(() => ref.getDownloadURL()).then(url => {
-                db.ref(`kuryeler/${kuryeID}/profil`).update({ photo: url });
-            });
-        });
+/* MAP */
+const map = L.map('map').setView([39.92,32.85],15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // Vardiya ve Takip
-        function toggleShift() {
-            const btn = document.getElementById('main-btn');
-            if(!isShiftActive) {
-                isShiftActive = true;
-                startTime = Date.now();
-                btn.innerHTML = '<i data-lucide="square" class="fill-white"></i> Vardiyayı Bitir';
-                btn.classList.replace('bg-[#0F172A]', 'bg-rose-600');
-                timerInterval = setInterval(updateUI, 1000);
-                startTracking();
-            } else { location.reload(); }
-            lucide.createIcons();
-        }
+let courier = L.marker([39.92,32.85]).addTo(map);
 
-        function updateUI() {
-            const diff = Date.now() - startTime;
-            const hours = Math.floor(diff/3600000);
-            const mins = Math.floor((diff%3600000)/60000);
-            const secs = Math.floor((diff%60000)/1000);
-            document.getElementById('timer').innerText = `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+let last=null,totalKm=0,start=Date.now();
 
-            // Saatlik Ortalama Kazanç Formülü
-            const totalHoursDec = diff / 3600000;
-            const kazanc = (totalDistance * 18) + (totalHoursDec * 150); // KM başı 18₺ + Saatlik 150₺
-            document.getElementById('earnings').innerText = "₺" + kazanc.toFixed(2);
-            document.getElementById('hourly-rate').innerText = "₺" + (totalHoursDec > 0 ? (kazanc / totalHoursDec).toFixed(0) : 0);
-        }
+/* GPS */
+navigator.geolocation.watchPosition(async pos=>{
+let lat=pos.coords.latitude;
+let lng=pos.coords.longitude;
 
-        function startTracking() {
-            navigator.geolocation.watchPosition(p => {
-                const pos = [p.coords.latitude, p.coords.longitude];
-                const speed = p.coords.speed ? Math.round(p.coords.speed * 3.6) : 0;
-                document.getElementById('live-speed').innerText = speed;
+courier.setLatLng([lat,lng]);
+map.setView([lat,lng]);
 
-                if(!marker) {
-                    const iconHTML = `<div class="kurye-marker"><div class="kurye-label">${kuryeName}</div><div class="kurye-icon">AI</div></div>`;
-                    marker = L.marker(pos, { icon: L.divIcon({ className: '', html: iconHTML, iconSize: [80, 50], iconAnchor: [40, 50] }) }).addTo(map);
-                    polyline = L.polyline([], {color: '#06B6D4', weight: 4, opacity: 0.8}).addTo(map);
-                } else {
-                    marker.setLatLng(pos);
-                }
-                
-                if(isShiftActive) {
-                    polyline.addLatLng(pos);
-                    map.panTo(pos);
+/* ADMIN TRACK */
+if(auth.currentUser){
+await updateDoc(doc(db,"couriers",auth.currentUser.uid),{
+lat,lng
+});
+}
 
-                    if(speed > 2) { speedSum += speed; speedCount++; document.getElementById('avg-speed').innerText = Math.round(speedSum/speedCount); }
-                    if(lastPos) {
-                        const dist = map.distance(lastPos, pos) / 1000;
-                        if(dist > 0.005) { totalDistance += dist; document.getElementById('distance').innerText = totalDistance.toFixed(1) + " km"; }
-                    }
-                }
-                lastPos = pos;
-            }, null, { enableHighAccuracy: true });
-        }
-    </script>
+if(last){
+let d=dist(last.lat,last.lng,lat,lng);
+totalKm+=d;
+
+document.getElementById("km").innerText=totalKm.toFixed(2);
+
+let speed=d*3600;
+document.getElementById("speed").innerText=speed.toFixed(1);
+
+let earn=totalKm*8;
+document.getElementById("earn").innerText=earn.toFixed(2);
+}
+
+last={lat,lng};
+});
+
+/* DIST */
+function dist(a,b,c,d){
+let R=6371;
+let dLat=(c-a)*Math.PI/180;
+let dLon=(d-b)*Math.PI/180;
+let x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;
+return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+/* TIME */
+setInterval(()=>{
+let t=(Date.now()-start)/1000;
+let m=Math.floor(t/60);
+let s=Math.floor(t%60);
+document.getElementById("time").innerText=
+String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+},1000);
+
+/* 📦 REALTIME ORDER */
+let currentOrder=null;
+
+onSnapshot(collection(db,"orders"),snap=>{
+snap.forEach(d=>{
+let o=d.data();
+
+if(!o.courierEmail && last){
+
+let distance = Math.abs(o.lat-last.lat);
+
+if(distance < 0.01){
+
+currentOrder={id:d.id,...o};
+
+/* 🔔 UI */
+document.getElementById("popup").style.display="block";
+
+/* 🔊 SES */
+sound.play();
+
+/* 📳 TİTREŞİM */
+navigator.vibrate([300,100,300]);
+
+}
+}
+});
+});
+
+/* ACCEPT */
+window.acceptOrder=async()=>{
+document.getElementById("popup").style.display="none";
+
+await updateDoc(doc(db,"orders",currentOrder.id),{
+courierEmail:auth.currentUser.email,
+status:"accepted"
+});
+
+/* NAV */
+window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentOrder.lat},${currentOrder.lng}`);
+}
+
+/* CENTER */
+window.centerMap=()=>{
+if(last) map.setView([last.lat,last.lng],18);
+}
+
+/* STOP */
+window.stopShift=()=>{
+alert("Vardiya bitti");
+}
+
+</script>
+
 </body>
 </html>

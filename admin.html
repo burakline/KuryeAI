@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin</title>
+<title>KuryeAI Admin PRO</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -21,8 +21,6 @@ gap:10px;
 padding:15px;
 background:white;
 box-shadow:0 5px 20px rgba(0,0,0,0.05);
-position:sticky;
-top:0;
 }
 
 .nav button{
@@ -34,13 +32,12 @@ cursor:pointer;
 }
 
 .active{
-background:#00d4ff !important;
+background:#00d4ff;
 color:white;
 }
 
-.container{
-padding:15px;
-}
+/* CONTENT */
+.container{padding:15px;}
 
 .card{
 background:white;
@@ -53,29 +50,26 @@ box-shadow:0 5px 15px rgba(0,0,0,0.05);
 .ok{background:#00d4ff;color:white;}
 .no{background:#ff4d4d;color:white;}
 
-#map{
-height:70vh;
-border-radius:12px;
-}
+#map{height:70vh;border-radius:12px;}
 </style>
 </head>
 
 <body>
 
 <div class="nav">
-<button onclick="show('apps')" class="active" id="btnApps">Başvurular</button>
-<button onclick="show('couriers')" id="btnCouriers">Kuryeler</button>
-<button onclick="show('mapPage')" id="btnMap">Harita</button>
+<button onclick="showTab(event,'apps')" class="active">Başvurular</button>
+<button onclick="showTab(event,'couriers')">Kuryeler</button>
+<button onclick="showTab(event,'orders')">Siparişler</button>
+<button onclick="showTab(event,'mapPage')">Harita</button>
 </div>
 
 <div class="container">
-
 <div id="apps"></div>
 <div id="couriers" style="display:none"></div>
+<div id="orders" style="display:none"></div>
 <div id="mapPage" style="display:none">
 <div id="map"></div>
 </div>
-
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -90,7 +84,8 @@ getDocs,
 doc,
 setDoc,
 deleteDoc,
-onSnapshot
+onSnapshot,
+updateDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -99,7 +94,7 @@ onAuthStateChanged,
 createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-/* CONFIG */
+/* INIT */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -116,112 +111,73 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const secondaryAuth = getAuth(secondaryApp);
 
-/* 🔐 AUTH KORUMA (EN KRİTİK) */
+/* 🔐 AUTH */
 onAuthStateChanged(auth, async(user)=>{
 
-if(!user){
-location.href="login.html";
-return;
-}
+if(!user) return location.href="login.html";
 
-const snap = await getDocs(collection(db,"users"));
+const userDoc = await getDocs(collection(db,"users"));
 
-let isAdmin = false;
+let isAdmin=false;
 
-snap.forEach(d=>{
-if(d.id === user.uid && d.data().role === "admin"){
-isAdmin = true;
+userDoc.forEach(d=>{
+if(d.id===user.uid && d.data().role==="admin"){
+isAdmin=true;
 }
 });
 
 if(!isAdmin){
-alert("Yetkisiz!");
+alert("Yetkisiz");
 location.href="login.html";
 }
 
 });
 
 /* NAV */
-window.show = (id)=>{
-["apps","couriers","mapPage"].forEach(x=>{
+window.showTab=(e,id)=>{
+["apps","couriers","orders","mapPage"].forEach(x=>{
 document.getElementById(x).style.display="none";
 });
-
 document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-event.target.classList.add("active");
-
+e.target.classList.add("active");
 document.getElementById(id).style.display="block";
+
+if(id==="mapPage"){
+setTimeout(()=>map.invalidateSize(),300);
+}
 };
 
-/* 📩 BAŞVURULAR */
+/* 📩 APPLICATIONS */
 async function loadApps(){
-const div = document.getElementById("apps");
-
-const snap = await getDocs(collection(db,"applications"));
-
+const div=document.getElementById("apps");
+const snap=await getDocs(collection(db,"applications"));
 div.innerHTML="";
 
 snap.forEach(d=>{
-const a = d.data();
-a.id = d.id;
+const a=d.data();
+a.id=d.id;
 
-div.innerHTML += `
+div.innerHTML+=`
 <div class="card">
 <b>${a.name}</b><br>
 ${a.email}<br>
-
 <button class="ok" onclick='approve(${JSON.stringify(a)})'>Onayla</button>
 <button class="no" onclick='reject("${a.id}")'>Reddet</button>
 </div>`;
 });
 }
 
-window.approve = async (a)=>{
+window.approve=async(a)=>{
 
-const user = await createUserWithEmailAndPassword(
-secondaryAuth,
-a.email,
-"123456"
-);
-
-const uid = user.user.uid;
+const user=await createUserWithEmailAndPassword(secondaryAuth,a.email,"123456");
+const uid=user.user.uid;
 
 await setDoc(doc(db,"users",uid),{
 email:a.email,
-name:a.name,
-role:"courier"
+role:a.type==="restaurant"?"restaurant":"courier"
 });
 
-await setDoc(doc(db,"couriers",uid),{
-name:a.name,
-email:a.email,
-lat:0,
-lng:0,
-online:false
-});
-
-await deleteDoc(doc(db,"applications",a.id));
-
-alert("Kurye oluşturuldu");
-loadApps();
-};
-
-window.reject = async (id)=>{
-await deleteDoc(doc(db,"applications",id));
-loadApps();
-};
-
-/* 🚴 KURYELER */
-function loadCouriers(){
-const div = document.getElementById("couriers");
-
-onSnapshot(collection(db,"couriers"),snap=>{
-div.innerHTML="";
-
-snap.forEach(d=>{
-const c = d.data();
-
-div.innerHTML += `
-<div class="card">
-<b>${c.name}</b><br>
-Durum: ${
+if(a.type==="restaurant"){
+await setDoc(doc(db,"restaurants",uid),{name:a.name,email:a.email});
+}else{
+await set

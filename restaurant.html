@@ -4,31 +4,51 @@
 <meta charset="UTF-8">
 <title>Restaurant Panel</title>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
 <style>
 body{font-family:Arial;background:#f5f7fb;margin:0;padding:20px;}
 input,button{width:100%;padding:12px;margin-top:10px;}
 .card{background:white;padding:15px;margin-top:10px;border-radius:10px;}
+#map{height:250px;border-radius:10px;margin-top:10px;}
 </style>
 </head>
 
 <body>
 
-<h2>Sipariş Oluştur</h2>
+<h2>🍔 Sipariş Oluştur</h2>
 
 <input id="customer" placeholder="Müşteri Adı">
 <input id="address" placeholder="Adres">
 
-<button onclick="createOrder()">Sipariş Gönder</button>
+<div id="map"></div>
 
-<h3>Aktif Siparişler</h3>
+<button onclick="createOrder()">🚀 Sipariş Gönder</button>
+
+<h3>📦 Siparişlerim</h3>
 <div id="orders"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import {
+getFirestore,
+collection,
+addDoc,
+onSnapshot,
+doc,
+getDoc,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+/* CONFIG */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -38,46 +58,88 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+let user;
+
+/* 🔐 AUTH */
 onAuthStateChanged(auth, async(u)=>{
 if(!u){ location.href="login.html"; return; }
 
 const snap = await getDoc(doc(db,"users",u.uid));
+
 if(!snap.exists() || snap.data().role !== "restaurant"){
 location.href="index.html";
 }
+
+user = u;
 });
 
+/* 🗺 MAP */
+const map = L.map('map').setView([39.92,32.85],13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(map);
+
+let selectedLat = null;
+let selectedLng = null;
+let marker;
+
+map.on('click', (e)=>{
+selectedLat = e.latlng.lat;
+selectedLng = e.latlng.lng;
+
+if(marker){
+marker.setLatLng(e.latlng);
+}else{
+marker = L.marker(e.latlng).addTo(map);
+}
+});
+
+/* 🚀 SİPARİŞ + OTOMATİK KURYE ATA */
 window.createOrder = async()=>{
+
 const customer = document.getElementById("customer").value;
 const address = document.getElementById("address").value;
 
+if(!customer || !address || !selectedLat){
+alert("Tüm alanları doldur ve konum seç!");
+return;
+}
+
+/* 🔥 EN YAKIN KURYE BUL */
+let nearestCourier = null;
+let minDistance = 999;
+
+const courierSnap = await onSnapshot(collection(db,"couriers"), ()=>{});
+
+const couriers = await (await fetchCouriers());
+
+couriers.forEach(c=>{
+if(!c.lat) return;
+
+const d = distance(selectedLat,selectedLng,c.lat,c.lng);
+
+if(d < minDistance){
+minDistance = d;
+nearestCourier = c;
+}
+});
+
+/* 📦 ORDER */
 await addDoc(collection(db,"orders"),{
 customer,
 address,
+lat:selectedLat,
+lng:selectedLng,
+restaurantId:user.uid,
 status:"bekliyor",
+courierId: nearestCourier ? nearestCourier.id : null,
 createdAt:new Date()
 });
 
-alert("Sipariş gönderildi");
+alert("Sipariş gönderildi 🚀");
 };
 
-/* SİPARİŞ LİSTESİ */
-onSnapshot(collection(db,"orders"), snap=>{
-const div = document.getElementById("orders");
-div.innerHTML="";
-
-snap.forEach(d=>{
-const o = d.data();
-
-div.innerHTML += `
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-Durum: ${o.status}
-</div>`;
-});
-});
-
-</script>
-</body>
-</html>
+/* 🔥 COURIER GET */
+async function fetchCouriers(){
+const snap = await import("https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js")
+.then

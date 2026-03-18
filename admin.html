@@ -3,45 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin</title>
+<title>KuryeAI Admin PRO</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body{margin:0;font-family:'Segoe UI';background:#020617;color:white;display:flex}
+body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white;transition:.3s}
+.light{background:#f1f5f9;color:#000}
 
-/* SIDEBAR */
 .sidebar{width:240px;background:#020617;padding:20px;height:100vh}
-.sidebar h2{color:#00d4ff}
-.sidebar button{width:100%;padding:12px;margin:6px 0;background:none;border:none;color:#94a3b8;text-align:left;cursor:pointer;border-radius:8px}
-.sidebar button:hover,.active{background:#0ea5e9;color:white}
+.sidebar button{width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer;border-radius:8px}
+.sidebar button:hover{background:#0ea5e9;color:white}
 
-/* CONTENT */
 .content{flex:1;padding:20px}
+.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
+.light .card{background:#fff}
 
-/* CARD */
-.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #1e293b}
+#map{height:400px;border-radius:12px}
 
-/* INPUT */
-input,select{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;background:#020617;color:white}
-
-/* BUTTON */
-.btn{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
-.green{background:#22c55e}
-.red{background:#ef4444}
-.blue{background:#0ea5e9}
-
-/* TOAST */
-#toast{
+.toast{
 position:fixed;
 top:20px;
 right:20px;
 background:#0ea5e9;
-padding:12px 20px;
+padding:12px;
 border-radius:10px;
 display:none;
-z-index:9999;
 }
 </style>
 </head>
@@ -49,78 +37,33 @@ z-index:9999;
 <body>
 
 <div class="sidebar">
-<h2>KuryeAI</h2>
+<h2 style="color:#00d4ff">KuryeAI</h2>
 <button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('orders')">Siparişler</button>
-<button onclick="show('couriers')">Kuryeler</button>
-<button onclick="show('restaurants')">Restoranlar</button>
-<button onclick="show('applications')">Başvurular</button>
+<button onclick="show('performance')">Performans</button>
+<button onclick="toggleTheme()">🌗 Tema</button>
 </div>
 
 <div class="content">
 
-<!-- DASHBOARD -->
 <div id="dashboard">
-<h2>Dashboard</h2>
-<div class="card">
-<h3>📦 Canlı Sipariş Havuzu</h3>
-<div id="orderList"></div>
-</div>
+<h2>🚀 Canlı Sistem</h2>
+<div id="map"></div>
+<div id="orders"></div>
 </div>
 
-<!-- ORDERS -->
-<div id="orders" style="display:none">
-<h2>Siparişler</h2>
-
-<div class="card">
-<input id="orderProduct" placeholder="Ürün">
-<input id="orderAddress" placeholder="Adres">
-<button onclick="addOrder()" class="green">Ekle</button>
-</div>
-
-<div id="allOrders"></div>
-</div>
-
-<!-- COURIERS -->
-<div id="couriers" style="display:none">
-<h2>Kuryeler</h2>
-
-<div class="card">
-<input id="courierName" placeholder="Ad">
-<input id="courierEmail" placeholder="Email">
-<button onclick="addCourier()" class="green">Ekle</button>
-</div>
-
-<div id="courierList"></div>
-</div>
-
-<!-- RESTAURANTS -->
-<div id="restaurants" style="display:none">
-<h2>Restoranlar</h2>
-
-<div class="card">
-<input id="resName" placeholder="Restoran adı">
-<input id="resEmail" placeholder="Email">
-<button onclick="addRestaurant()" class="green">Ekle</button>
-</div>
-
-<div id="restaurantList"></div>
-</div>
-
-<!-- APPLICATIONS -->
-<div id="applications" style="display:none">
-<h2>Başvurular</h2>
-<div id="appList"></div>
+<div id="performance" style="display:none">
+<h2>📊 Performans</h2>
+<div id="stats"></div>
 </div>
 
 </div>
 
-<div id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -132,179 +75,102 @@ const db = getFirestore(app);
 
 /* NAV */
 window.show=id=>{
-["dashboard","orders","couriers","restaurants","applications"].forEach(x=>{
-document.getElementById(x).style.display="none";
-});
+document.getElementById("dashboard").style.display="none";
+document.getElementById("performance").style.display="none";
 document.getElementById(id).style.display="block";
 }
 
+/* THEME */
+window.toggleTheme=()=>{
+document.body.classList.toggle("light");
+}
+
 /* TOAST */
-function showToast(msg){
+function toast(msg){
 const t=document.getElementById("toast");
 t.innerText=msg;
 t.style.display="block";
-setTimeout(()=>t.style.display="none",3000);
+setTimeout(()=>t.style.display="none",2000);
 }
 
-/* ================= ORDERS ================= */
+/* MAP */
+const map = L.map('map').setView([39.92,32.85], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+let couriers={};
+let lastMove={};
+
+/* 🚗 COURIER TRACK */
+onSnapshot(collection(db,"couriers"), snap=>{
+snap.forEach(d=>{
+const c=d.data();
+if(!c.lat) return;
+
+if(couriers[d.id]){
+couriers[d.id].setLatLng([c.lat,c.lng]);
+}else{
+couriers[d.id]=L.circleMarker([c.lat,c.lng],{color:"cyan"})
+.addTo(map)
+.bindPopup(c.name);
+}
+
+const now=Date.now();
+if(lastMove[d.id] && now-lastMove[d.id]>15000){
+couriers[d.id].setStyle({color:"red"});
+toast(c.name+" hareketsiz!");
+}
+lastMove[d.id]=now;
+});
+});
+
+/* 🍔 RESTAURANTS */
+onSnapshot(collection(db,"restaurants"), snap=>{
+snap.forEach(d=>{
+const r=d.data();
+if(!r.lat) return;
+
+L.marker([r.lat,r.lng]).addTo(map).bindPopup(r.name);
+});
+});
+
+/* 📦 ORDERS */
 onSnapshot(collection(db,"orders"), snap=>{
-const list=document.getElementById("orderList");
-const all=document.getElementById("allOrders");
+const div=document.getElementById("orders");
+div.innerHTML="";
 
-list.innerHTML="";
-all.innerHTML="";
+let count=0;
 
 snap.forEach(d=>{
 const o=d.data();
+count++;
 
-const html=`
+div.innerHTML+=`
 <div class="card">
-<b>${o.product}</b><br>
-${o.address}<br>
-
-<select onchange="updateOrder('${d.id}',this.value)">
-<option ${o.status=="hazırlanıyor"?"selected":""}>hazırlanıyor</option>
-<option ${o.status=="yolda"?"selected":""}>yolda</option>
-<option ${o.status=="teslim edildi"?"selected":""}>teslim edildi</option>
-</select>
-
-<input placeholder="Kurye email" value="${o.courier||""}" 
-onchange="assignCourier('${d.id}',this.value)">
-
-<button onclick="deleteOrder('${d.id}')" class="red">Sil</button>
-</div>
-`;
-
-list.innerHTML+=html;
-all.innerHTML+=html;
-});
-
-});
-
-/* ADD ORDER */
-window.addOrder=async()=>{
-await addDoc(collection(db,"orders"),{
-product:orderProduct.value,
-address:orderAddress.value,
-status:"hazırlanıyor",
-courier:""
-});
-showToast("Sipariş eklendi");
-}
-
-/* UPDATE ORDER */
-window.updateOrder=async(id,status)=>{
-await updateDoc(doc(db,"orders",id),{status});
-showToast("Durum güncellendi");
-}
-
-/* ASSIGN */
-window.assignCourier=async(id,email)=>{
-await updateDoc(doc(db,"orders",id),{courier:email});
-showToast("Kurye atandı");
-}
-
-/* DELETE */
-window.deleteOrder=async(id)=>{
-await deleteDoc(doc(db,"orders",id));
-showToast("Sipariş silindi");
-}
-
-/* ================= COURIERS ================= */
-
-onSnapshot(collection(db,"couriers"), snap=>{
-const list=document.getElementById("courierList");
-list.innerHTML="";
-
-snap.forEach(d=>{
-const c=d.data();
-
-list.innerHTML+=`
-<div class="card">
-${c.name} - ${c.email}
-<button onclick="deleteCourier('${d.id}')" class="red">Sil</button>
+${o.product}<br>
+<button onclick="ai(${o.lat},${o.lng},'${d.id}')">AI Atama</button>
 </div>
 `;
 });
-});
 
-window.addCourier=async()=>{
-await addDoc(collection(db,"couriers"),{
-name:courierName.value,
-email:courierEmail.value
-});
-showToast("Kurye eklendi");
-}
-
-window.deleteCourier=async(id)=>{
-await deleteDoc(doc(db,"couriers",id));
-showToast("Kurye silindi");
-}
-
-/* ================= RESTAURANTS ================= */
-
-onSnapshot(collection(db,"restaurants"), snap=>{
-const list=document.getElementById("restaurantList");
-list.innerHTML="";
-
-snap.forEach(d=>{
-const r=d.data();
-
-list.innerHTML+=`
-<div class="card">
-${r.name} - ${r.email}
-<button onclick="deleteRestaurant('${d.id}')" class="red">Sil</button>
-</div>
+document.getElementById("stats").innerHTML=`
+Toplam sipariş: ${count}
 `;
 });
-});
 
-window.addRestaurant=async()=>{
-await addDoc(collection(db,"restaurants"),{
-name:resName.value,
-email:resEmail.value
-});
-showToast("Restoran eklendi");
+/* 🤖 AI */
+window.ai=(lat,lng,id)=>{
+let best=null,min=999;
+
+for(const c in couriers){
+const p=couriers[c]._latlng;
+const dist=Math.hypot(p.lat-lat,p.lng-lng);
+if(dist<min){min=dist;best=c;}
 }
 
-window.deleteRestaurant=async(id)=>{
-await deleteDoc(doc(db,"restaurants",id));
-showToast("Restoran silindi");
+if(best){
+updateDoc(doc(db,"orders",id),{courier:best});
+toast("AI kurye atadı");
 }
-
-/* ================= APPLICATIONS ================= */
-
-onSnapshot(collection(db,"applications"), snap=>{
-const list=document.getElementById("appList");
-list.innerHTML="";
-
-snap.forEach(d=>{
-const a=d.data();
-
-list.innerHTML+=`
-<div class="card">
-<b>${a.name}</b><br>
-${a.email}<br>
-
-<button onclick="approve('${d.id}','${a.name}','${a.email}')" class="green">Onayla</button>
-<button onclick="reject('${d.id}')" class="red">Reddet</button>
-</div>
-`;
-});
-});
-
-/* APPROVE */
-window.approve=async(id,name,email)=>{
-await addDoc(collection(db,"restaurants"),{name,email});
-await deleteDoc(doc(db,"applications",id));
-showToast("Onaylandı");
-}
-
-/* REJECT */
-window.reject=async(id)=>{
-await deleteDoc(doc(db,"applications",id));
-showToast("Reddedildi");
 }
 
 </script>

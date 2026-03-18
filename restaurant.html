@@ -92,12 +92,11 @@ margin-top:10px;
 <!-- CONTENT -->
 <div class="content">
 
-<!-- CREATE ORDER -->
+<!-- CREATE -->
 <div id="create">
 <h2>🍔 Sipariş Oluştur</h2>
 
 <div class="card">
-
 <input id="product" placeholder="Ürün (örn: 2 Pizza)">
 <input id="address" placeholder="Müşteri adresi">
 
@@ -110,7 +109,6 @@ margin-top:10px;
 <div id="map"></div>
 
 <button class="btn" onclick="createOrder()">🚀 Sipariş Oluştur</button>
-
 </div>
 </div>
 
@@ -129,6 +127,11 @@ import {
 getFirestore, collection, addDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+import {
+getAuth
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -136,6 +139,7 @@ projectId:"kuryeai"
 });
 
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 /* NAV */
 window.show=id=>{
@@ -170,6 +174,13 @@ marker=L.marker(e.latlng).addTo(map);
 /* CREATE ORDER */
 window.createOrder = async () => {
 
+const user = auth.currentUser;
+
+if(!user){
+alert("Giriş yapılmamış!");
+return;
+}
+
 const product=document.getElementById("product").value;
 const address=document.getElementById("address").value;
 const payment=document.getElementById("payment").value;
@@ -191,6 +202,7 @@ payment,
 lat:selectedLat,
 lng:selectedLng,
 status:"pending",
+restaurantEmail:user.email,
 createdAt:new Date()
 });
 
@@ -205,15 +217,24 @@ document.getElementById("orderList").innerHTML="";
 snap.forEach(d=>{
 const o=d.data();
 
+if(o.restaurantEmail === auth.currentUser?.email){
+
 document.getElementById("orderList").innerHTML+=`
 <div class="card">
 <b>${o.product}</b><br>
 ${o.address}<br>
-Durum: ${o.status}
+Durum: ${o.status}<br>
+<button onclick="goMap(${o.lat},${o.lng})">📍 Yolu Aç</button>
 </div>`;
-});
+}
 
 });
+});
+
+/* GOOGLE MAP */
+window.goMap=(lat,lng)=>{
+window.open(`https://www.google.com/maps?q=${lat},${lng}`);
+}
 
 </script>
 

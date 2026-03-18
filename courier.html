@@ -2,34 +2,126 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kurye Panel</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{margin:0;background:#0b0e14;color:white;font-family:Arial;}
-#map{height:60vh;}
-.btn{width:100%;padding:15px;margin-top:10px;border:none;border-radius:10px;}
-.start{background:#00d4ff;}
-.stop{background:#ff4d4d;color:white;}
+body {
+margin:0;
+font-family:'Segoe UI';
+background:#0b0e14;
+color:#fff;
+}
+
+/* HEADER */
+.header {
+padding:15px;
+background:#020617;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.status {
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+}
+
+.online { background:#00ff9c; color:#000; }
+.offline { background:#ff4d4d; }
+
+/* MAP */
+#map {
+height:50vh;
+}
+
+/* PANEL */
+.panel {
+padding:15px;
+background:#111827;
+}
+
+/* BUTTON */
+.btn {
+width:100%;
+padding:14px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.start { background:#00d4ff; color:#000; }
+.stop { background:#ff4d4d; color:#fff; }
+
+/* ORDERS */
+.order {
+background:#1f2937;
+padding:12px;
+border-radius:10px;
+margin-top:8px;
+}
+
+.order button{
+margin-top:5px;
+width:100%;
+padding:8px;
+background:#00d4ff;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
+<div class="header">
+<h3>🚴 Kurye Panel</h3>
+<div id="status" class="status offline">Offline</div>
+</div>
+
 <div id="map"></div>
 
-<button class="btn start" onclick="start()">Online Ol</button>
-<button class="btn stop" onclick="stop()">Offline Ol</button>
+<div class="panel">
+
+<p id="info">Konum bekleniyor...</p>
+
+<button class="btn start" onclick="startTracking()">Online Ol</button>
+<button class="btn stop" onclick="stopTracking()">Offline Ol</button>
+
+<h3>📦 Sipariş Havuzu</h3>
+<div id="orders"></div>
+
+</div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
+import {
+getFirestore,
+doc,
+updateDoc,
+collection,
+query,
+where,
+onSnapshot,
+runTransaction
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -39,45 +131,156 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let user;
-
-onAuthStateChanged(auth, async(u)=>{
-if(!u){ location.href="login.html"; return; }
-
-const snap = await getDoc(doc(db,"users",u.uid));
-if(!snap.exists() || snap.data().role !== "courier"){
-location.href="index.html";
-}
-
-user = u;
-});
-
+/* MAP */
 let map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(map);
 
 let marker;
 let watchId;
+let user;
 
-window.start = ()=>{
+/* AUTH */
+onAuthStateChanged(auth,(u)=>{
+if(u){
+user = u;
+}else{
+location.href="login.html";
+}
+});
+
+/* ONLINE */
+window.startTracking = ()=>{
+
+document.getElementById("status").className="status online";
+document.getElementById("status").innerText="Online";
+
 watchId = navigator.geolocation.watchPosition(async(pos)=>{
+
 const lat = pos.coords.latitude;
 const lng = pos.coords.longitude;
 
-if(marker){ marker.setLatLng([lat,lng]); }
-else{ marker = L.marker([lat,lng]).addTo(map); }
+document.getElementById("info").innerText = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+if(marker){
+marker.setLatLng([lat,lng]);
+}else{
+marker = L.marker([lat,lng]).addTo(map);
+}
+
+map.setView([lat,lng],15);
 
 await updateDoc(doc(db,"couriers",user.uid),{
-lat,lng,online:true
+lat,
+lng,
+online:true,
+updatedAt:new Date()
 });
 
 });
+
 };
 
-window.stop = async()=>{
+/* OFFLINE */
+window.stopTracking = async ()=>{
+
 navigator.geolocation.clearWatch(watchId);
-await updateDoc(doc(db,"couriers",user.uid),{online:false});
+
+document.getElementById("status").className="status offline";
+document.getElementById("status").innerText="Offline";
+
+await updateDoc(doc(db,"couriers",user.uid),{
+online:false
+});
+
+};
+
+/* 📦 HAVUZ */
+const ordersDiv = document.getElementById("orders");
+
+const q = query(
+collection(db,"orders"),
+where("status","==","bekliyor")
+);
+
+onSnapshot(q,(snap)=>{
+
+if(!document.getElementById("status").classList.contains("online")){
+ordersDiv.innerHTML = "Online olunca sipariş göreceksin";
+return;
+}
+
+ordersDiv.innerHTML = "";
+
+snap.forEach(docSnap=>{
+
+const o = docSnap.data();
+
+ordersDiv.innerHTML += `
+<div class="order">
+<b>${o.customer || "Müşteri"}</b><br>
+${o.address || ""}
+
+<button onclick="acceptOrder('${docSnap.id}', this)">
+Kabul Et
+</button>
+</div>
+`;
+
+});
+
+});
+
+/* 🔒 TRANSACTION */
+window.acceptOrder = async (orderId, btn)=>{
+
+btn.disabled = true;
+btn.innerText = "Alınıyor...";
+
+try{
+
+await runTransaction(db, async (transaction)=>{
+
+const orderRef = doc(db,"orders",orderId);
+const orderSnap = await transaction.get(orderRef);
+
+if(!orderSnap.exists()){
+throw "Sipariş bulunamadı";
+}
+
+const data = orderSnap.data();
+
+if(data.status !== "bekliyor"){
+throw "Bu sipariş zaten alındı!";
+}
+
+transaction.update(orderRef,{
+status:"yolda",
+courierId:user.uid,
+acceptedAt:new Date()
+});
+
+});
+
+alert("🚀 Sipariş alındı!");
+
+}catch(e){
+
+if(e === "Bu sipariş zaten alındı!"){
+alert("⚠️ Geç kaldın, başka kurye aldı");
+}else{
+alert("❌ " + e);
+}
+
+btn.disabled = false;
+btn.innerText = "Kabul Et";
+
+}
+
 };
 
 </script>
+
 </body>
 </html>

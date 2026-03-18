@@ -15,7 +15,7 @@ body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 .online{background:#00ff9c;color:#000;}
 .offline{background:#ff4d4d;}
 
-#map{height:40vh;}
+#map{height:35vh;}
 
 .panel{padding:15px;background:#111827;}
 
@@ -27,6 +27,21 @@ body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 .order button{margin-top:5px;width:100%;padding:8px;background:#00d4ff;border:none;border-radius:6px;}
 
 .green{background:#065f46;}
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:10px;
+}
+
+.stat{
+background:#1f2937;
+padding:10px;
+border-radius:10px;
+text-align:center;
+font-size:13px;
+}
 </style>
 </head>
 
@@ -46,14 +61,19 @@ body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 <button class="btn start" onclick="startTracking()">Online Ol</button>
 <button class="btn stop" onclick="stopTracking()">Offline Ol</button>
 
-<h3>📦 Aktif Görevim</h3>
+<div class="stats">
+<div class="stat">⏱️ Süre<br><b id="time">0</b></div>
+<div class="stat">📍 KM<br><b id="totalKm">0</b></div>
+<div class="stat">📊 Ortalama<br><b id="avgKm">0</b></div>
+<div class="stat">💰 Kazanç<br><b id="totalMoney">0</b></div>
+<div class="stat">⚡ Saatlik<br><b id="hourly">0</b></div>
+</div>
+
+<h3>📦 Aktif Görev</h3>
 <div id="activeOrder"></div>
 
 <h3>📦 Sipariş Havuzu</h3>
 <div id="orders"></div>
-
-<h3>💰 Kazanç</h3>
-<div id="earnings"></div>
 
 </div>
 
@@ -72,7 +92,8 @@ query,
 where,
 onSnapshot,
 runTransaction,
-addDoc
+addDoc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -80,7 +101,6 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -90,96 +110,76 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* MAP */
 let map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let marker;
-let watchId;
-let user;
-let lastOrderCount = 0;
+let marker,watchId,user;
 
-/* 🔔 NOTIFICATION PERMISSION */
-async function requestNotification(){
-if(Notification.permission !== "granted"){
-await Notification.requestPermission();
-}
-}
+let startTime=null;
+let totalDistance=0;
+let lastPos=null;
+let totalEarnings=0;
+let totalOrders=0;
 
-/* 🔔 SEND LOCAL NOTIFICATION */
-function sendNotification(title,body){
-if(Notification.permission === "granted"){
-new Notification(title,{body});
-}
+/* 🏍️ ICON */
+const bikeIcon = L.divIcon({
+html:`<div style="font-size:26px;color:#00d4ff;">🏍️</div>`,
+className:''
+});
+
+/* 📏 MESAFE */
+function calcDist(a,b){
+return Math.sqrt(
+Math.pow(a.lat-b.lat,2)+
+Math.pow(a.lng-b.lng,2)
+)*111;
 }
 
 /* AUTH */
-onAuthStateChanged(auth,async(u)=>{
+onAuthStateChanged(auth,(u)=>{
 if(!u){location.href="login.html";return;}
-user = u;
+user=u;
 
-await requestNotification();
+onSnapshot(query(collection(db,"earnings"),where("courierId","==",u.uid)),snap=>{
+totalEarnings=0;
+totalOrders=snap.size;
 
-/* 🎯 AKTİF GÖREV */
-const qActive = query(
-collection(db,"orders"),
-where("courierId","==",u.uid),
-where("status","==","yolda")
-);
+snap.forEach(d=>totalEarnings+=d.data().amount);
 
-onSnapshot(qActive,(snap)=>{
-const div = document.getElementById("activeOrder");
-div.innerHTML="";
-
-if(snap.empty){
-div.innerHTML="Aktif görev yok";
-return;
-}
-
-snap.forEach(docSnap=>{
-const o = docSnap.data();
-
-div.innerHTML=`
-<div class="order green">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-<button onclick="finishOrder('${docSnap.id}')">
-Teslim Edildi ✅
-</button>
-</div>`;
+document.getElementById("totalMoney").innerText=totalEarnings+"₺";
 });
-});
-
-/* 💰 KAZANÇ */
-const qEarn = query(
-collection(db,"earnings"),
-where("courierId","==",u.uid)
-);
-
-onSnapshot(qEarn,(snap)=>{
-let total=0;
-snap.forEach(d=>total+=d.data().amount);
-document.getElementById("earnings").innerText="Toplam: "+total+"₺";
-});
-
 });
 
 /* ONLINE */
-window.startTracking = ()=>{
+window.startTracking=()=>{
+startTime=new Date();
+
 document.getElementById("status").className="status online";
 document.getElementById("status").innerText="Online";
 
-watchId = navigator.geolocation.watchPosition(async(pos)=>{
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
+watchId=navigator.geolocation.watchPosition(async(pos)=>{
 
-document.getElementById("info").innerText = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+const lat=pos.coords.latitude;
+const lng=pos.coords.longitude;
+
+const current={lat,lng};
+
+if(lastPos){
+totalDistance+=calcDist(lastPos,current);
+}
+
+lastPos=current;
+
+document.getElementById("totalKm").innerText=totalDistance.toFixed(2);
+
+if(totalOrders>0){
+document.getElementById("avgKm").innerText=(totalDistance/totalOrders).toFixed(2);
+}
 
 if(marker){
 marker.setLatLng([lat,lng]);
 }else{
-marker = L.marker([lat,lng]).addTo(map);
+marker=L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
 }
 
 map.setView([lat,lng],15);
@@ -192,103 +192,81 @@ lat,lng,online:true
 };
 
 /* OFFLINE */
-window.stopTracking = async ()=>{
+window.stopTracking=()=>{
 navigator.geolocation.clearWatch(watchId);
-
-document.getElementById("status").className="status offline";
-document.getElementById("status").innerText="Offline";
-
-await updateDoc(doc(db,"couriers",user.uid),{
-online:false
-});
 };
 
-/* 📦 HAVUZ + 🔔 BİLDİRİM */
-const ordersDiv = document.getElementById("orders");
+/* TIMER */
+setInterval(()=>{
+if(!startTime) return;
 
-const q = query(
-collection(db,"orders"),
-where("status","==","bekliyor")
-);
+const diff=(new Date()-startTime)/1000/60;
+document.getElementById("time").innerText=diff.toFixed(1)+" dk";
 
-onSnapshot(q,(snap)=>{
+const hourly=(totalEarnings/(diff/60 || 1)).toFixed(0);
+document.getElementById("hourly").innerText=hourly+"₺";
+
+},3000);
+
+/* HAVUZ */
+const ordersDiv=document.getElementById("orders");
+
+onSnapshot(query(collection(db,"orders"),where("status","==","bekliyor")),snap=>{
 
 if(!document.getElementById("status").classList.contains("online")){
-ordersDiv.innerHTML="Online olunca sipariş görürsün";
+ordersDiv.innerHTML="Online ol";
 return;
 }
-
-/* 🔔 YENİ SİPARİŞ */
-if(snap.size > lastOrderCount){
-sendNotification("Yeni Sipariş 🚀","Yeni bir sipariş geldi!");
-}
-lastOrderCount = snap.size;
 
 ordersDiv.innerHTML="";
 
 snap.forEach(docSnap=>{
-const o = docSnap.data();
+const o=docSnap.data();
 
 ordersDiv.innerHTML+=`
 <div class="order">
 <b>${o.customer}</b><br>
-${o.address}
-
-<button onclick="acceptOrder('${docSnap.id}',this)">
-Kabul Et
-</button>
+${o.address}<br>
+💰 ${o.price}₺
+<button onclick="acceptOrder('${docSnap.id}',this)">Kabul</button>
 </div>`;
 });
 
 });
 
-/* 🔒 LOCK */
-window.acceptOrder = async (orderId,btn)=>{
+/* LOCK */
+window.acceptOrder=async(id,btn)=>{
 btn.disabled=true;
-btn.innerText="Alınıyor...";
 
 try{
-await runTransaction(db, async (t)=>{
-const ref = doc(db,"orders",orderId);
-const snap = await t.get(ref);
+await runTransaction(db,async(t)=>{
+const ref=doc(db,"orders",id);
+const snap=await t.get(ref);
 
-if(!snap.exists()) throw "Yok";
+if(snap.data().status!=="bekliyor") throw "taken";
 
-if(snap.data().status!=="bekliyor"){
-throw "Alındı";
-}
-
-t.update(ref,{
-status:"yolda",
-courierId:user.uid
+t.update(ref,{status:"yolda",courierId:user.uid});
 });
-});
-
-alert("🚀 Sipariş alındı");
-
-}catch(e){
-alert("⚠️ Başka kurye aldı");
+}catch{
+alert("Alındı");
 btn.disabled=false;
-btn.innerText="Kabul Et";
 }
 };
 
-/* ✅ TESLİM */
-window.finishOrder = async (id)=>{
-await updateDoc(doc(db,"orders",id),{
-status:"delivered"
-});
+/* TESLİM */
+window.finishOrder=async(id)=>{
+const ref=doc(db,"orders",id);
+const snap=await getDoc(ref);
+const o=snap.data();
+
+await updateDoc(ref,{status:"delivered"});
 
 await addDoc(collection(db,"earnings"),{
 courierId:user.uid,
-amount:50,
-date:new Date()
+amount:o.price
 });
-
-alert("💰 +50₺ kazandın!");
 };
 
 </script>
-
 </body>
 </html>

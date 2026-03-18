@@ -3,48 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI PRO</title>
+<title>KuryeAI Admin</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white}
-.sidebar{width:240px;background:#020617;padding:20px;height:100vh}
-.sidebar h2{color:#00d4ff}
-.sidebar button{display:block;width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer}
-.sidebar button:hover{color:white}
-.content{flex:1;padding:20px}
-.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
-input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
-#map{width:100%;height:60vh;border-radius:12px}
-.section-title{color:#00d4ff;margin-top:20px}
+body{
+margin:0;
+font-family:'Segoe UI';
+background:#020617;
+color:white;
+}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px;
+background:#020617;
+border-bottom:1px solid #1e293b;
+}
+
+.menu-btn{
+font-size:22px;
+cursor:pointer;
+}
+
+/* SIDEBAR */
+.sidebar{
+position:fixed;
+left:-220px;
+top:0;
+width:220px;
+height:100%;
+background:#020617;
+padding:20px;
+transition:0.3s;
+z-index:10;
+}
+
+.sidebar.active{
+left:0;
+}
+
+.sidebar button{
+display:block;
+width:100%;
+padding:12px;
+background:none;
+border:none;
+color:#94a3b8;
+text-align:left;
+cursor:pointer;
+}
+
+.sidebar button:hover{
+color:white;
+}
+
+/* CONTENT */
+.content{
+padding:15px;
+}
+
+/* CARD */
+.card{
+background:#0f172a;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:1fr;
+gap:15px;
+}
+
+/* MAP */
+#map{
+width:100%;
+height:300px;
+border-radius:12px;
+}
+
+/* BUTTON */
+.btn{
+background:#00d4ff;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* RESPONSIVE */
+@media(min-width:768px){
+.grid{
+grid-template-columns:1fr 1fr;
+}
+}
+
+@media(min-width:1024px){
+.grid{
+grid-template-columns:1fr 1fr 1fr;
+}
+}
 </style>
 </head>
 
 <body>
 
-<div class="sidebar">
-<h2>KuryeAI</h2>
-<button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('applications')">Başvurular</button>
+<!-- HEADER -->
+<div class="header">
+<div>KuryeAI</div>
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
 </div>
 
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+<button onclick="show('dashboard')">Dashboard</button>
+<button onclick="show('apps')">Başvurular</button>
+</div>
+
+<!-- CONTENT -->
 <div class="content">
 
+<!-- DASHBOARD -->
 <div id="dashboard">
 <h2>🚀 Canlı Sistem</h2>
 <div id="map"></div>
 </div>
 
-<div id="applications" style="display:none">
+<!-- APPLICATIONS -->
+<div id="apps" style="display:none">
 <h2>📩 Başvurular</h2>
 
-<h3 class="section-title">🚴 Kurye Başvuruları</h3>
-<div id="courierApps"></div>
-
-<h3 class="section-title">🍔 Restoran Başvuruları</h3>
-<div id="restaurantApps"></div>
+<div id="appList" class="grid"></div>
 
 </div>
 
@@ -53,18 +150,13 @@ input{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-
 import {
-getFirestore, collection, onSnapshot,
-updateDoc, doc, addDoc, setDoc
+getFirestore,
+collection,
+onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-import {
-getAuth,
-createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-
-/* 🔥 FIREBASE */
+/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -72,106 +164,40 @@ projectId:"kuryeai"
 });
 
 const db = getFirestore(app);
-const auth = getAuth(app);
+
+/* MENU */
+window.toggleMenu=()=>{
+document.getElementById("sidebar").classList.toggle("active");
+}
 
 /* NAV */
 window.show=id=>{
-["dashboard","applications"]
-.forEach(x=>document.getElementById(x).style.display="none");
+dashboard.style.display="none";
+apps.style.display="none";
 document.getElementById(id).style.display="block";
 }
 
 /* MAP */
-const map=L.map('map').setView([39.92,32.85],13);
+const map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-setTimeout(()=>map.invalidateSize(),500);
 
-/* 📩 APPLICATIONS */
-const courierApps = document.getElementById("courierApps");
-const restaurantApps = document.getElementById("restaurantApps");
-
+/* APPLICATIONS */
 onSnapshot(collection(db,"applications"),snap=>{
-courierApps.innerHTML="";
-restaurantApps.innerHTML="";
+appList.innerHTML="";
 
 snap.forEach(d=>{
 const a=d.data();
 
-const card=`
+appList.innerHTML+=`
 <div class="card">
-<b>${a.name}</b><br>
-${a.email}<br><br>
-
-<button onclick="approve('${d.id}','${a.email}','${a.name}','${a.type}')">✅ Onayla</button>
-<button onclick="reject('${d.id}')">❌ Reddet</button>
-</div>
-`;
-
-if(a.type==="restaurant"){
-restaurantApps.innerHTML+=card;
-}else{
-courierApps.innerHTML+=card;
-}
-});
+<b>${a.name || "İsimsiz"}</b><br>
+${a.email || "Email yok"}<br><br>
+<button class="btn">Onayla</button>
+<button class="btn">Reddet</button>
+</div>`;
 });
 
-/* ✅ APPROVE (UID SYSTEM) */
-window.approve = async (id,email,name,type)=>{
-
-try{
-
-// 🔐 AUTH USER OLUŞTUR
-const user = await createUserWithEmailAndPassword(auth,email,"123456");
-const uid = user.user.uid;
-
-// 👤 USERS COLLECTION
-await setDoc(doc(db,"users",uid),{
-email,
-role:type
 });
-
-// 🚴 KURYE
-if(type==="courier"){
-await setDoc(doc(db,"couriers",uid),{
-name:name || email,
-email,
-lat:0,
-lng:0,
-activeOrders:0,
-online:false,
-createdAt:new Date()
-});
-}
-
-// 🍔 RESTORAN
-if(type==="restaurant"){
-await setDoc(doc(db,"restaurants",uid),{
-name:name || email,
-email,
-createdAt:new Date()
-});
-}
-
-// 📩 STATUS UPDATE
-await updateDoc(doc(db,"applications",id),{
-status:"approved"
-});
-
-alert("✅ "+type+" oluşturuldu!");
-
-}catch(e){
-alert("Hata: "+e.message);
-}
-
-};
-
-/* ❌ REJECT */
-window.reject = async (id)=>{
-await updateDoc(doc(db,"applications",id),{
-status:"rejected"
-});
-alert("Reddedildi");
-};
 
 </script>
 

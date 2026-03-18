@@ -4,87 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KuryeAI - Akıllı Kurye ve Teslimat Sistemi</title>
-
-<meta name="description" content="KuryeAI ile hızlı ve akıllı kurye sistemi. Canlı takip, otomatik dağıtım ve modern teslimat altyapısı.">
-<meta name="keywords" content="kurye, moto kurye, teslimat sistemi, restoran kurye">
-<meta name="robots" content="index, follow">
-
-<link rel="icon" href="logo.png">
+<title>KuryeAI - Akıllı Kurye Sistemi</title>
 
 <style>
-body{
-margin:0;
-font-family:'Segoe UI';
-background:#f5f7fb;
-color:#111;
-}
-
-/* NAV */
-.nav{
-display:flex;
-justify-content:space-between;
-padding:15px 20px;
-background:white;
-box-shadow:0 5px 20px rgba(0,0,0,0.05);
-}
-
-.logo{font-weight:bold}
-
-/* HERO */
-.hero{
-text-align:center;
-padding:60px 20px;
-}
-
-.hero h1{
-font-size:32px;
-}
-
-.btn{
-padding:14px 20px;
-border:none;
-border-radius:12px;
-margin:5px;
-cursor:pointer;
-}
-
-.primary{
-background:#00d4ff;
-color:white;
-}
-
-.dark{
-background:#111;
-color:white;
-}
-
-.footer{
-text-align:center;
-padding:20px;
-color:#888;
-font-size:13px;
-}
+body{margin:0;font-family:'Segoe UI';background:#f5f7fb;}
+.nav{display:flex;justify-content:space-between;padding:15px;background:white;}
+.hero{text-align:center;padding:60px;}
+button{padding:12px 20px;margin:5px;border:none;border-radius:10px;}
+.primary{background:#00d4ff;color:white;}
+.dark{background:#111;color:white;}
 </style>
 </head>
 
 <body>
 
 <div class="nav">
-<div class="logo">🚀 KuryeAI</div>
+<div>🚀 KuryeAI</div>
 <a href="login.html">Giriş</a>
 </div>
 
 <div class="hero">
 <h1>Akıllı Kurye Sistemi</h1>
-<p>AI destekli otomatik dağıtım ve canlı takip</p>
 
-<button class="btn primary" onclick="goCourier()">🚴 Kurye Panel</button>
-<button class="btn dark" onclick="goAdmin()">📊 Admin Panel</button>
-</div>
-
-<div class="footer">
-© 2026 KuryeAI
+<button class="primary" onclick="goCourier()">Kurye</button>
+<button class="dark" onclick="goAdmin()">Admin</button>
 </div>
 
 <script type="module">
@@ -93,7 +36,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-/* FIREBASE */
 const app = initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
@@ -105,50 +47,31 @@ const db = getFirestore(app);
 
 let currentUser=null;
 
-/* AUTH */
 onAuthStateChanged(auth,(user)=>{
 currentUser=user;
 });
 
-/* 🚴 KURYE */
 window.goCourier = async ()=>{
-
-if(!currentUser){
-location.href="login.html";
-return;
-}
+if(!currentUser){location.href="login.html";return;}
 
 const snap = await getDoc(doc(db,"users",currentUser.uid));
-
-if(!snap.exists() || snap.data().role!=="courier"){
-alert("Yetkin yok");
-return;
-}
-
+if(snap.data().role==="courier"){
 location.href="courier.html";
+}
 };
 
-/* 📊 ADMIN */
 window.goAdmin = async ()=>{
-
-if(!currentUser){
-location.href="login.html";
-return;
-}
+if(!currentUser){location.href="login.html";return;}
 
 const snap = await getDoc(doc(db,"users",currentUser.uid));
-
-if(!snap.exists() || snap.data().role!=="admin"){
-alert("Yetkin yok");
-return;
-}
-
+if(snap.data().role==="admin"){
 location.href="admin.html";
+}
 };
 
 </script>
 
-<!-- 🔥 AI AUTO ASSIGN -->
+<!-- 🤖 AI AUTO ASSIGN -->
 <script type="module" src="autoAssign.js"></script>
 
 </body>

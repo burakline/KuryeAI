@@ -2,38 +2,93 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>KuryeAI Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KuryeAI Admin</title>
 
 <style>
-body { margin:0; font-family:Segoe UI; background:#0b1118; color:#fff; }
-
-.sidebar {
-    width:240px; height:100vh; position:fixed;
-    background:#11161d; padding:20px;
-    border-right:1px solid #30363d;
+body {
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background:#0b1118;
+    color:#fff;
 }
-.logo { color:#00d4ff; font-size:20px; margin-bottom:30px; }
 
-.main { margin-left:240px; padding:20px; }
+/* HEADER */
+.header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    background:#161b22;
+    border-bottom:1px solid #30363d;
+}
 
-.header { display:flex; justify-content:space-between; }
+.logo {
+    color:#00d4ff;
+    font-size:20px;
+    font-weight:bold;
+}
 
-.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:20px 0; }
-.card { background:#161b22; padding:15px; border-radius:10px; border:1px solid #30363d; }
+.logout {
+    background:#ff4d4d;
+    border:none;
+    padding:10px;
+    border-radius:8px;
+    color:#fff;
+}
 
-.orders { margin-top:20px; }
-.order { background:#161b22; padding:15px; border-radius:10px; margin-bottom:10px; }
+/* CONTAINER */
+.container {
+    padding:15px;
+}
 
-button { padding:6px 10px; border:none; border-radius:6px; cursor:pointer; margin-top:5px; }
-.delete { background:#ff4d4d; }
-.assign { background:#00d4ff; }
-.logout { background:#ff4d4d; padding:10px; }
+/* STATS */
+.stats {
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.card {
+    background:#161b22;
+    padding:15px;
+    border-radius:10px;
+    border:1px solid #30363d;
+}
+
+/* ORDER */
+.order {
+    background:#161b22;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:10px;
+    border:1px solid #30363d;
+}
 
 select, input {
-    background:#0d1117; color:#fff;
+    width:100%;
+    margin-top:5px;
+    padding:8px;
+    background:#0d1117;
     border:1px solid #30363d;
-    padding:6px; border-radius:6px;
+    color:#fff;
+    border-radius:6px;
+}
+
+button {
+    margin-top:5px;
+    padding:8px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.delete { background:#ff4d4d; }
+.assign { background:#00d4ff; }
+
+h3 {
+    margin-top:25px;
 }
 </style>
 
@@ -41,29 +96,25 @@ select, input {
 
 <body>
 
-<div class="sidebar">
-    <div class="logo">KuryeAI Admin</div>
-</div>
-
-<div class="main">
-
 <div class="header">
-    <h2>Dashboard</h2>
+    <div class="logo">KuryeAI Admin</div>
     <button class="logout" onclick="logout()">Çıkış</button>
 </div>
 
-<div class="stats">
-    <div class="card">Toplam<br><b id="total">0</b></div>
-    <div class="card">Hazırlanıyor<br><b id="prep">0</b></div>
-    <div class="card">Yolda<br><b id="road">0</b></div>
-    <div class="card">Teslim<br><b id="done">0</b></div>
-</div>
+<div class="container">
 
-<h3>🟡 Sipariş Havuzu</h3>
-<div id="pool"></div>
+    <div class="stats">
+        <div class="card">Toplam<br><b id="total">0</b></div>
+        <div class="card">Hazırlanıyor<br><b id="prep">0</b></div>
+        <div class="card">Yolda<br><b id="road">0</b></div>
+        <div class="card">Teslim<br><b id="done">0</b></div>
+    </div>
 
-<h3>📦 Tüm Siparişler</h3>
-<div id="orders"></div>
+    <h3>🟡 Sipariş Havuzu</h3>
+    <div id="pool"></div>
+
+    <h3>📦 Tüm Siparişler</h3>
+    <div id="orders"></div>
 
 </div>
 
@@ -117,23 +168,20 @@ function loadOrders(){
                 document.getElementById("pool").innerHTML += `
                 <div class="order">
                     <b>${o.product}</b><br>
-                    ${o.address}<br>
+                    ${o.address}
 
-                    <input placeholder="Kurye Email" onchange="assign('${d.id}', this.value)">
-                    <br>
-                    <button class="assign" onclick="deleteOrder('${d.id}')">İptal</button>
+                    <input placeholder="Kurye email" onchange="assign('${d.id}', this.value)">
+                    <button class="delete" onclick="deleteOrder('${d.id}')">İptal</button>
                 </div>`;
             }
 
-            // TÜM SİPARİŞLER
+            // TÜM
             document.getElementById("orders").innerHTML += `
             <div class="order">
                 <b>${o.product}</b><br>
                 ${o.address}<br>
                 Status: ${o.status}<br>
                 Kurye: ${o.courierEmail || "-"}
-
-                <br>
 
                 <select onchange="status('${d.id}',this.value)">
                     <option ${o.status=="hazırlanıyor"?"selected":""}>hazırlanıyor</option>
@@ -142,10 +190,7 @@ function loadOrders(){
                     <option ${o.status=="teslim edildi"?"selected":""}>teslim edildi</option>
                 </select>
 
-                <br>
                 <input placeholder="Kurye değiştir" onchange="assign('${d.id}', this.value)">
-
-                <br>
                 <button class="delete" onclick="deleteOrder('${d.id}')">Sil</button>
             </div>`;
         });
@@ -157,29 +202,11 @@ function loadOrders(){
     });
 }
 
-// STATUS
-window.status = async(id,s)=>{
-    await updateDoc(doc(db,"orders",id),{status:s});
-};
-
-// KURYE ATA
-window.assign = async(id,email)=>{
-    await updateDoc(doc(db,"orders",id),{
-        courierEmail: email,
-        courierId: email
-    });
-};
-
-// SİL
-window.deleteOrder = async(id)=>{
-    if(confirm("İptal edilsin mi?")){
-        await deleteDoc(doc(db,"orders",id));
-    }
-};
-
-// LOGOUT
+// ACTIONS
+window.status = async(id,s)=> await updateDoc(doc(db,"orders",id),{status:s});
+window.assign = async(id,email)=> await updateDoc(doc(db,"orders",id),{courierEmail:email,courierId:email});
+window.deleteOrder = async(id)=> confirm("Sil?") && await deleteDoc(doc(db,"orders",id));
 window.logout = ()=>signOut(auth);
-
 </script>
 
 </body>

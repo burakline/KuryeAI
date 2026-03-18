@@ -8,58 +8,29 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body {
-margin:0;
-font-family:'Segoe UI';
-background:#0b0e14;
-color:#fff;
-}
+body{margin:0;font-family:'Segoe UI';background:#0b0e14;color:#fff;}
 
-/* HEADER */
-.header {
+.header{
 padding:15px;
 background:#020617;
 display:flex;
 justify-content:space-between;
-align-items:center;
 }
 
-.status {
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-}
+.status{padding:6px 12px;border-radius:20px;font-size:12px;}
+.online{background:#00ff9c;color:#000;}
+.offline{background:#ff4d4d;}
 
-.online { background:#00ff9c; color:#000; }
-.offline { background:#ff4d4d; }
+#map{height:40vh;}
 
-/* MAP */
-#map {
-height:50vh;
-}
+.panel{padding:15px;background:#111827;}
 
-/* PANEL */
-.panel {
-padding:15px;
-background:#111827;
-}
+.btn{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold;}
 
-/* BUTTON */
-.btn {
-width:100%;
-padding:14px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-font-weight:bold;
-cursor:pointer;
-}
+.start{background:#00d4ff;color:#000;}
+.stop{background:#ff4d4d;color:#fff;}
 
-.start { background:#00d4ff; color:#000; }
-.stop { background:#ff4d4d; color:#fff; }
-
-/* ORDERS */
-.order {
+.order{
 background:#1f2937;
 padding:12px;
 border-radius:10px;
@@ -73,8 +44,9 @@ padding:8px;
 background:#00d4ff;
 border:none;
 border-radius:6px;
-cursor:pointer;
 }
+
+.green{background:#065f46;}
 </style>
 </head>
 
@@ -94,8 +66,14 @@ cursor:pointer;
 <button class="btn start" onclick="startTracking()">Online Ol</button>
 <button class="btn stop" onclick="stopTracking()">Offline Ol</button>
 
+<h3>📦 Aktif Görevim</h3>
+<div id="activeOrder"></div>
+
 <h3>📦 Sipariş Havuzu</h3>
 <div id="orders"></div>
+
+<h3>💰 Kazanç</h3>
+<div id="earnings"></div>
 
 </div>
 
@@ -113,7 +91,8 @@ collection,
 query,
 where,
 onSnapshot,
-runTransaction
+runTransaction,
+addDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 import {
@@ -131,11 +110,8 @@ projectId:"kuryeai"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* MAP */
 let map = L.map('map').setView([39.92,32.85],13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-.addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let marker;
 let watchId;
@@ -143,21 +119,60 @@ let user;
 
 /* AUTH */
 onAuthStateChanged(auth,(u)=>{
-if(u){
+if(!u){location.href="login.html";return;}
 user = u;
-}else{
-location.href="login.html";
+
+/* 🎯 AKTİF GÖREV */
+const qActive = query(
+collection(db,"orders"),
+where("courierId","==",u.uid),
+where("status","==","yolda")
+);
+
+onSnapshot(qActive,(snap)=>{
+const div = document.getElementById("activeOrder");
+div.innerHTML="";
+
+if(snap.empty){
+div.innerHTML="Aktif görev yok";
+return;
 }
+
+snap.forEach(docSnap=>{
+const o = docSnap.data();
+
+div.innerHTML=`
+<div class="order green">
+<b>${o.customer}</b><br>
+${o.address}<br>
+
+<button onclick="finishOrder('${docSnap.id}')">
+Teslim Edildi ✅
+</button>
+</div>`;
+});
+});
+
+/* 💰 KAZANÇ */
+const qEarn = query(
+collection(db,"earnings"),
+where("courierId","==",u.uid)
+);
+
+onSnapshot(qEarn,(snap)=>{
+let total=0;
+snap.forEach(d=>total+=d.data().amount);
+document.getElementById("earnings").innerText="Toplam: "+total+"₺";
+});
+
 });
 
 /* ONLINE */
 window.startTracking = ()=>{
-
 document.getElementById("status").className="status online";
 document.getElementById("status").innerText="Online";
 
 watchId = navigator.geolocation.watchPosition(async(pos)=>{
-
 const lat = pos.coords.latitude;
 const lng = pos.coords.longitude;
 
@@ -172,19 +187,14 @@ marker = L.marker([lat,lng]).addTo(map);
 map.setView([lat,lng],15);
 
 await updateDoc(doc(db,"couriers",user.uid),{
-lat,
-lng,
-online:true,
-updatedAt:new Date()
+lat,lng,online:true
 });
 
 });
-
 };
 
 /* OFFLINE */
 window.stopTracking = async ()=>{
-
 navigator.geolocation.clearWatch(watchId);
 
 document.getElementById("status").className="status offline";
@@ -193,7 +203,6 @@ document.getElementById("status").innerText="Offline";
 await updateDoc(doc(db,"couriers",user.uid),{
 online:false
 });
-
 };
 
 /* 📦 HAVUZ */
@@ -207,76 +216,75 @@ where("status","==","bekliyor")
 onSnapshot(q,(snap)=>{
 
 if(!document.getElementById("status").classList.contains("online")){
-ordersDiv.innerHTML = "Online olunca sipariş göreceksin";
+ordersDiv.innerHTML="Online olunca sipariş görürsün";
 return;
 }
 
-ordersDiv.innerHTML = "";
+ordersDiv.innerHTML="";
 
 snap.forEach(docSnap=>{
-
 const o = docSnap.data();
 
-ordersDiv.innerHTML += `
+ordersDiv.innerHTML+=`
 <div class="order">
-<b>${o.customer || "Müşteri"}</b><br>
-${o.address || ""}
+<b>${o.customer}</b><br>
+${o.address}
 
-<button onclick="acceptOrder('${docSnap.id}', this)">
+<button onclick="acceptOrder('${docSnap.id}',this)">
 Kabul Et
 </button>
-</div>
-`;
-
+</div>`;
 });
 
 });
 
-/* 🔒 TRANSACTION */
-window.acceptOrder = async (orderId, btn)=>{
-
-btn.disabled = true;
-btn.innerText = "Alınıyor...";
+/* 🔒 LOCK */
+window.acceptOrder = async (orderId,btn)=>{
+btn.disabled=true;
+btn.innerText="Alınıyor...";
 
 try{
+await runTransaction(db, async (t)=>{
 
-await runTransaction(db, async (transaction)=>{
+const ref = doc(db,"orders",orderId);
+const snap = await t.get(ref);
 
-const orderRef = doc(db,"orders",orderId);
-const orderSnap = await transaction.get(orderRef);
+if(!snap.exists()) throw "Yok";
 
-if(!orderSnap.exists()){
-throw "Sipariş bulunamadı";
+if(snap.data().status!=="bekliyor"){
+throw "Alındı";
 }
 
-const data = orderSnap.data();
-
-if(data.status !== "bekliyor"){
-throw "Bu sipariş zaten alındı!";
-}
-
-transaction.update(orderRef,{
+t.update(ref,{
 status:"yolda",
-courierId:user.uid,
-acceptedAt:new Date()
+courierId:user.uid
 });
 
 });
 
-alert("🚀 Sipariş alındı!");
+alert("🚀 Sipariş alındı");
 
 }catch(e){
-
-if(e === "Bu sipariş zaten alındı!"){
-alert("⚠️ Geç kaldın, başka kurye aldı");
-}else{
-alert("❌ " + e);
+alert("⚠️ Başka kurye aldı");
+btn.disabled=false;
+btn.innerText="Kabul Et";
 }
+};
 
-btn.disabled = false;
-btn.innerText = "Kabul Et";
+/* ✅ TESLİM */
+window.finishOrder = async (id)=>{
 
-}
+await updateDoc(doc(db,"orders",id),{
+status:"delivered"
+});
+
+await addDoc(collection(db,"earnings"),{
+courierId:user.uid,
+amount:50,
+date:new Date()
+});
+
+alert("💰 +50₺ kazandın!");
 
 };
 

@@ -6,73 +6,230 @@
 
 <title>KuryeAI - Akıllı Kurye Sistemi</title>
 
+<meta name="description" content="KuryeAI ile hızlı, akıllı ve canlı takipli kurye sistemi">
+<meta name="keywords" content="kurye, teslimat, moto kurye, lojistik">
+<meta name="robots" content="index, follow">
+
+<link rel="manifest" href="manifest.json">
+
 <style>
-body{margin:0;font-family:'Segoe UI';background:#f5f7fb;}
-.nav{display:flex;justify-content:space-between;padding:15px;background:white;}
-.hero{text-align:center;padding:60px;}
-button{padding:12px 20px;margin:5px;border:none;border-radius:10px;}
-.primary{background:#00d4ff;color:white;}
-.dark{background:#111;color:white;}
+body{
+margin:0;
+font-family:'Segoe UI';
+background:linear-gradient(135deg,#f5f7fb,#e6f0ff);
+color:#111;
+}
+
+/* NAV */
+.nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 20px;
+background:white;
+box-shadow:0 5px 20px rgba(0,0,0,0.05);
+position:sticky;
+top:0;
+z-index:10;
+}
+
+.logo{
+font-weight:700;
+font-size:18px;
+}
+
+/* HERO */
+.hero{
+text-align:center;
+padding:80px 20px;
+}
+
+.hero h1{
+font-size:34px;
+margin-bottom:10px;
+}
+
+.hero p{
+color:#555;
+margin-bottom:25px;
+}
+
+/* BUTTON */
+.btn{
+padding:14px 20px;
+border:none;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+margin:5px;
+transition:0.3s;
+}
+
+.primary{
+background:linear-gradient(135deg,#00d4ff,#0099ff);
+color:white;
+box-shadow:0 10px 25px rgba(0,212,255,0.3);
+}
+
+.primary:hover{
+transform:translateY(-2px);
+}
+
+.dark{
+background:#111;
+color:white;
+}
+
+/* LOADING */
+#loading{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+font-size:18px;
+}
+
+/* MESSAGE */
+#msg{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:#111;
+color:white;
+padding:10px 20px;
+border-radius:10px;
+display:none;
+}
 </style>
 </head>
 
 <body>
 
+<div id="loading">⏳ Yükleniyor...</div>
+<div id="msg"></div>
+
+<!-- NAV -->
 <div class="nav">
-<div>🚀 KuryeAI</div>
+<div class="logo">🚀 KuryeAI</div>
 <a href="login.html">Giriş</a>
 </div>
 
+<!-- HERO -->
 <div class="hero">
 <h1>Akıllı Kurye Sistemi</h1>
+<p>Gerçek zamanlı takip ve yapay zeka destekli dağıtım</p>
 
-<button class="primary" onclick="goCourier()">Kurye</button>
-<button class="dark" onclick="goAdmin()">Admin</button>
+<button class="btn primary" onclick="goCourier()">🚴 Kurye Panel</button>
+<button class="btn dark" onclick="goAdmin()">📊 Admin Panel</button>
 </div>
 
-<script type="module">
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore-compat.js"></script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+<script>
 
-const app = initializeApp({
+/* CONFIG */
+firebase.initializeApp({
 apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
 authDomain:"kuryeai.firebaseapp.com",
 projectId:"kuryeai"
 });
 
-const auth = getAuth(app);
-const db = getFirestore(app);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 let currentUser=null;
 
-onAuthStateChanged(auth,(user)=>{
+/* MESSAGE */
+function showMsg(text){
+const m = document.getElementById("msg");
+m.innerText=text;
+m.style.display="block";
+setTimeout(()=>m.style.display="none",2000);
+}
+
+/* AUTH + AUTO REDIRECT */
+auth.onAuthStateChanged(async(user)=>{
+
 currentUser=user;
+
+document.getElementById("loading").style.display="none";
+
+if(!user) return;
+
+try{
+const snap = await db.collection("users").doc(user.uid).get();
+
+if(!snap.exists) return;
+
+const role = snap.data().role;
+
+/* AUTO REDIRECT */
+if(role==="admin") location.href="admin.html";
+if(role==="courier") location.href="courier.html";
+
+}catch{}
 });
 
-window.goCourier = async ()=>{
-if(!currentUser){location.href="login.html";return;}
+/* KURYE */
+async function goCourier(){
 
-const snap = await getDoc(doc(db,"users",currentUser.uid));
+if(!currentUser){
+location.href="login.html";
+return;
+}
+
+const snap = await db.collection("users").doc(currentUser.uid).get();
+
+if(!snap.exists){
+showMsg("Kullanıcı bulunamadı");
+return;
+}
+
 if(snap.data().role==="courier"){
 location.href="courier.html";
+}else{
+showMsg("Yetkin yok!");
 }
-};
+}
 
-window.goAdmin = async ()=>{
-if(!currentUser){location.href="login.html";return;}
+/* ADMIN */
+async function goAdmin(){
 
-const snap = await getDoc(doc(db,"users",currentUser.uid));
+if(!currentUser){
+location.href="login.html";
+return;
+}
+
+const snap = await db.collection("users").doc(currentUser.uid).get();
+
+if(!snap.exists){
+showMsg("Kullanıcı bulunamadı");
+return;
+}
+
 if(snap.data().role==="admin"){
 location.href="admin.html";
+}else{
+showMsg("Yetkin yok!");
 }
-};
+}
+
+/* PWA */
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("sw.js");
+}
 
 </script>
-
-<!-- 🤖 AI AUTO ASSIGN -->
-<script type="module" src="autoAssign.js"></script>
 
 </body>
 </html>

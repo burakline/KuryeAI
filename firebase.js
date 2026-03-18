@@ -32,16 +32,20 @@ const firebaseConfig = {
   authDomain: "kuryeai.firebaseapp.com",
   projectId: "kuryeai",
   storageBucket: "kuryeai.appspot.com",
-  messagingSenderId: "000000000000", // opsiyonel
-  appId: "1:000000000000:web:xxxxxx" // opsiyonel
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:xxxxxx"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* 🔄 AUTO LOGIN CHECK */
+/* 🔄 AUTO LOGIN (SADECE INDEX) */
 onAuthStateChanged(auth, async (user) => {
+
+  // sadece index.html'de çalışır
+  if (!window.location.pathname.includes("index")) return;
+
   if (!user) return;
 
   try {
@@ -54,8 +58,9 @@ onAuthStateChanged(auth, async (user) => {
     redirect(role);
 
   } catch (err) {
-    console.error("Auth check error:", err);
+    console.error("Auth redirect error:", err);
   }
+
 });
 
 /* 🚀 LOGIN */
@@ -142,7 +147,7 @@ window.listenOrders = function (callback) {
 };
 
 /* ✅ KABUL */
-window.acceptOrder = async function (orderId, courierId = "kurye-1") {
+window.acceptOrder = async function (orderId, courierId) {
   await updateDoc(doc(db, "orders", orderId), {
     status: "accepted",
     courierId

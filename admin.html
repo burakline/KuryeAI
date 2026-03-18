@@ -72,9 +72,7 @@ border-radius:10px;
 <div class="container">
 
 <div id="apps"></div>
-
 <div id="orders" style="display:none"></div>
-
 <div id="couriers" style="display:none"></div>
 
 <div id="mapPage" style="display:none">
@@ -88,7 +86,6 @@ border-radius:10px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-
 import {
 getFirestore,
 collection,
@@ -121,7 +118,7 @@ let map;
 let markers = {};
 
 ////////////////////////////
-// SAYFA GEÇİŞ (FIXED)
+// NAV
 ////////////////////////////
 window.showPage = (page)=>{
 
@@ -135,7 +132,6 @@ const btnOrders = document.getElementById("btn-orders");
 const btnCouriers = document.getElementById("btn-couriers");
 const btnMap = document.getElementById("btn-map");
 
-// hepsini kapat
 apps.style.display="none";
 orders.style.display="none";
 couriers.style.display="none";
@@ -143,7 +139,6 @@ mapPage.style.display="none";
 
 document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
 
-// aç
 if(page==="apps"){
 apps.style.display="block";
 btnApps.classList.add("active");
@@ -271,7 +266,7 @@ Durum: 🟡 Bekliyor
 
 window.assignCourier = async (orderId)=>{
 
-const email = prompt("Kurye email gir:");
+const email = prompt("Kurye email:");
 
 if(!email) return;
 
@@ -322,7 +317,7 @@ Durum: ${c.online ? "🟢 Online" : "🔴 Offline"}
 }
 
 ////////////////////////////
-// HARİTA
+// HARİTA (BÜYÜK MARKER)
 ////////////////////////////
 function initMap(){
 
@@ -339,13 +334,24 @@ const id = d.id;
 
 if(!c.lat) return;
 
+const icon = L.divIcon({
+className: "custom-marker",
+html: c.online 
+? '<div style="background:#22c55e;width:24px;height:24px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px #22c55e;"></div>'
+: '<div style="background:#ef4444;width:24px;height:24px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px #ef4444;"></div>',
+iconSize: [24,24],
+iconAnchor: [12,12]
+});
+
 if(markers[id]){
 markers[id].setLatLng([c.lat,c.lng]);
+markers[id].setIcon(icon);
 }else{
-markers[id] = L.marker([c.lat,c.lng])
+markers[id] = L.marker([c.lat,c.lng],{icon})
 .addTo(map)
 .bindPopup(c.name);
 }
+
 });
 });
 

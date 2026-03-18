@@ -1,70 +1,100 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoranAI | Mağaza Paneli</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
-        .card-jilet { border-radius: 24px; background: white; border: 1px solid #E2E8F0; }
-        .active-tab { border-bottom: 3px solid #06B6D4; color: #06B6D4; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KuryeAI Restoran PRO</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+body{margin:0;font-family:'Segoe UI';display:flex;background:#020617;color:white}
+.sidebar{width:220px;background:#020617;padding:20px;height:100vh}
+.sidebar h2{color:#00d4ff}
+.sidebar button{display:block;width:100%;padding:10px;margin:5px 0;background:none;border:none;color:#94a3b8;cursor:pointer}
+
+.content{flex:1;padding:20px}
+.card{background:#0f172a;padding:15px;border-radius:12px;margin-bottom:15px}
+
+input,select{padding:10px;margin:5px 0;width:100%;border-radius:8px;border:none}
+
+#map{height:350px;border-radius:12px;margin-top:10px}
+</style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-[#F8FAFC]">
-    <header class="h-20 bg-white border-b border-slate-200 px-6 lg:px-10 flex justify-between items-center shrink-0">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-200">
-                <i data-lucide="store" class="text-white w-5 h-5"></i>
-            </div>
-            <span class="text-xl font-extrabold text-slate-900 tracking-tighter uppercase italic">Burger<span class="text-cyan-500">AI</span></span>
-        </div>
-    </header>
 
-    <nav class="bg-white px-6 lg:px-10 flex gap-8 border-b border-slate-200 shrink-0">
-        <button class="px-2 py-5 active-tab text-sm font-bold uppercase tracking-widest flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4"></i> Kuryelerimiz
-        </button>
-    </nav>
+<body>
 
-    <main class="flex-grow p-6 lg:p-10 overflow-y-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="rest-driver-list">
-            </div>
-    </main>
+<div class="sidebar">
+<h2>Restoran</h2>
+<button onclick="show('dashboard')">Sipariş Oluştur</button>
+<button onclick="show('orders')">Siparişlerim</button>
+</div>
 
-    <script>
-        lucide.createIcons();
-        const firebaseConfig = { apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw", authDomain: "kuryeai.firebaseapp.com", databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app/", projectId: "kuryeai", storageBucket: "kuryeai.firebasestorage.app", messagingSenderId: "655930514402", appId: "1:655930514402:web:379321cbb83f48daf077bb" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+<div class="content">
 
-        db.ref('kuryeler').on('value', snap => {
-            const list = document.getElementById('rest-driver-list');
-            list.innerHTML = "";
-            snap.forEach(c => {
-                const d = c.val();
-                const isOnline = d.durum === 'Aktif';
-                list.innerHTML += `
-                    <div class="card-jilet p-6 flex items-center justify-between hover:border-cyan-200 transition">
-                        <div class="flex items-center gap-4">
-                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center font-bold text-slate-400">
-                                ${c.key.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                                <p class="text-sm font-extrabold text-slate-900 uppercase">${c.key.replace('_',' ')}</p>
-                                <p class="text-[10px] ${isOnline ? 'text-emerald-500' : 'text-slate-400'} font-bold uppercase">
-                                    ${isOnline ? 'Aktif • Teslimatta' : 'Mola • Çevrimdışı'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-            lucide.createIcons();
-        });
-    </script>
-</body>
-</html>
+<!-- CREATE ORDER -->
+<div id="dashboard">
+<h2>🍔 Sipariş Oluştur</h2>
+
+<div class="card">
+
+<input id="product" placeholder="Ürün (örn: 2 Pizza)">
+<input id="address" placeholder="Müşteri adresi">
+
+<select id="payment">
+<option value="online">Online</option>
+<option value="nakit">Nakit</option>
+<option value="kart">Kredi Kartı</option>
+</select>
+
+<button onclick="findAddress()">📍 Adresi Haritada Bul</button>
+<button onclick="createOrder()">🚀 Sipariş Oluştur</button>
+
+<div id="map"></div>
+
+</div>
+</div>
+
+<!-- ORDERS -->
+<div id="orders" style="display:none">
+<h2>📦 Siparişlerim</h2>
+<div id="orderList"></div>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import {
+getFirestore, collection, addDoc, onSnapshot, updateDoc, doc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
+
+const db = getFirestore(app);
+
+/* NAV */
+window.show=id=>{
+document.getElementById("dashboard").style.display="none";
+document.getElementById("orders").style.display="none";
+document.getElementById(id).style.display="block";
+}
+
+/* MAP */
+const map=L.map('map').setView([39.92,32.85],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let selectedLocation=null;
+let marker=null;
+
+/* 📍 ADRES → PIN (NOMINATIM API) */
+window.findAddress=async()=>{
+const address=document.getElementById("address").value;
+
+const res=await fetch(`https://nominatim.openstreetmap.org/search?format

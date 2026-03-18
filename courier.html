@@ -116,7 +116,6 @@ getFirestore, collection, onSnapshot, updateDoc, doc
 
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-/* ✅ PUSH EKLENDİ */
 import { getMessaging, getToken, onMessage }
 from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
 
@@ -129,6 +128,12 @@ projectId:"kuryeai"
 
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+/* 🔥 SERVICE WORKER REGISTER (EKLENDİ) */
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("/firebase-messaging-sw.js")
+.then(()=>console.log("SW ready"));
+}
 
 /* 🔔 PUSH INIT */
 const messaging = getMessaging(app);
@@ -143,7 +148,6 @@ vapidKey:"BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWh
 
 console.log("FCM TOKEN:",token);
 
-/* DB kaydet */
 if(auth.currentUser){
 await updateDoc(doc(db,"couriers",auth.currentUser.uid),{
 fcmToken:token
@@ -153,7 +157,7 @@ fcmToken:token
 }
 });
 
-/* 🔔 APP AÇIKKEN BİLDİRİM */
+/* 🔔 APP AÇIKKEN */
 onMessage(messaging,(payload)=>{
 alert("📦 "+payload.notification.title);
 });
@@ -184,7 +188,6 @@ let lng=pos.coords.longitude;
 courier.setLatLng([lat,lng]);
 map.setView([lat,lng]);
 
-/* ADMIN TRACK */
 if(auth.currentUser){
 await updateDoc(doc(db,"couriers",auth.currentUser.uid),{
 lat,lng
@@ -240,13 +243,8 @@ if(distance < 0.01){
 
 currentOrder={id:d.id,...o};
 
-/* 🔔 UI */
 document.getElementById("popup").style.display="block";
-
-/* 🔊 SES */
 sound.play();
-
-/* 📳 TİTREŞİM */
 navigator.vibrate([300,100,300]);
 
 }
@@ -263,7 +261,6 @@ courierEmail:auth.currentUser.email,
 status:"accepted"
 });
 
-/* NAV */
 window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentOrder.lat},${currentOrder.lng}`);
 }
 

@@ -2,181 +2,184 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<title>KuryeAI Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel | KuryeAI</title>
 
 <style>
-body {
-    margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background:#0b1118;
-    color:#fff;
-}
+body { margin:0; font-family:Segoe UI; background:#0b1118; color:#fff; }
 
-.header {
-    background:#161b22;
-    padding:20px;
-    text-align:center;
-    font-size:22px;
-    border-bottom:1px solid #30363d;
+.sidebar {
+    width:240px; height:100vh; position:fixed;
+    background:#11161d; padding:20px;
+    border-right:1px solid #30363d;
 }
+.logo { color:#00d4ff; font-size:20px; margin-bottom:30px; }
 
-.container {
-    padding:20px;
-}
+.main { margin-left:240px; padding:20px; }
 
-.card {
-    background:#161b22;
-    padding:20px;
-    border-radius:10px;
-    margin-bottom:20px;
+.header { display:flex; justify-content:space-between; }
+
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:20px 0; }
+.card { background:#161b22; padding:15px; border-radius:10px; border:1px solid #30363d; }
+
+.orders { margin-top:20px; }
+.order { background:#161b22; padding:15px; border-radius:10px; margin-bottom:10px; }
+
+button { padding:6px 10px; border:none; border-radius:6px; cursor:pointer; margin-top:5px; }
+.delete { background:#ff4d4d; }
+.assign { background:#00d4ff; }
+.logout { background:#ff4d4d; padding:10px; }
+
+select, input {
+    background:#0d1117; color:#fff;
     border:1px solid #30363d;
-}
-
-button {
-    padding:12px;
-    width:100%;
-    background:#00d4ff;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-    margin-top:10px;
-}
-
-button:hover {
-    background:#fff;
-}
-
-input {
-    width:100%;
-    padding:12px;
-    margin:5px 0;
-    background:#0d1117;
-    border:1px solid #30363d;
-    border-radius:8px;
-    color:#fff;
-}
-
-.logout {
-    background:#ff4d4d;
+    padding:6px; border-radius:6px;
 }
 </style>
-
-<!-- DEBUG (hata varsa ekranda gösterir) -->
-<script>
-window.onerror = function(msg, url, line) {
-    alert("HATA: " + msg + " (Satır: " + line + ")");
-};
-</script>
 
 </head>
 
 <body>
 
+<div class="sidebar">
+    <div class="logo">KuryeAI Admin</div>
+</div>
+
+<div class="main">
+
 <div class="header">
-    Admin Panel - KuryeAI
+    <h2>Dashboard</h2>
+    <button class="logout" onclick="logout()">Çıkış</button>
 </div>
 
-<div class="container">
+<div class="stats">
+    <div class="card">Toplam<br><b id="total">0</b></div>
+    <div class="card">Hazırlanıyor<br><b id="prep">0</b></div>
+    <div class="card">Yolda<br><b id="road">0</b></div>
+    <div class="card">Teslim<br><b id="done">0</b></div>
+</div>
 
-    <div class="card">
-        <h3>Yeni Sipariş Oluştur</h3>
+<h3>🟡 Sipariş Havuzu</h3>
+<div id="pool"></div>
 
-        <input id="restaurant" placeholder="Restoran Email">
-        <input id="address" placeholder="Adres">
-        <input id="product" placeholder="Ürün">
-
-        <button onclick="createOrder()">Sipariş Oluştur</button>
-    </div>
-
-    <div class="card">
-        <h3>Çıkış</h3>
-        <button class="logout" onclick="logout()">Çıkış Yap</button>
-    </div>
+<h3>📦 Tüm Siparişler</h3>
+<div id="orders"></div>
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kuryeai",
-  storageBucket: "kuryeai.firebasestorage.app",
-  messagingSenderId: "655930514402",
-  appId: "1:655930514402:web:379321cbb83f48daf077bb",
-  measurementId: "G-JYQP30LJG3"
+ apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+ authDomain: "kuryeai.firebaseapp.com",
+ projectId: "kuryeai"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// AUTH KONTROL
-onAuthStateChanged(auth, async (user) => {
+// AUTH
+onAuthStateChanged(auth, async user=>{
+    if(!user) return location.href="login.html";
 
-    if (!user) {
-        window.location.href = "login.html";
-        return;
+    const u = await getDoc(doc(db,"users",user.uid));
+    if(!u.exists() || u.data().role!=="admin"){
+        alert("Yetkisiz");
+        return location.href="login.html";
     }
 
-    try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists() || docSnap.data().role !== "admin") {
-            alert("Yetkisiz erişim!");
-            window.location.href = "login.html";
-            return;
-        }
-
-    } catch (e) {
-        alert("Firestore hata: " + e.message);
-    }
+    loadOrders();
 });
 
-// SİPARİŞ EKLE
-window.createOrder = async function() {
+// LOAD
+function loadOrders(){
+    onSnapshot(collection(db,"orders"), snap=>{
 
-    const restaurant = document.getElementById("restaurant").value;
-    const address = document.getElementById("address").value;
-    const product = document.getElementById("product").value;
+        let total=0, prep=0, road=0, done=0;
 
-    if (!restaurant || !address || !product) {
-        alert("Tüm alanları doldur!");
-        return;
-    }
+        document.getElementById("orders").innerHTML="";
+        document.getElementById("pool").innerHTML="";
 
-    try {
-        await addDoc(collection(db, "orders"), {
-            restaurant: restaurant,
-            address: address,
-            product: product,
-            status: "hazırlanıyor",
-            createdAt: new Date()
+        snap.forEach(d=>{
+            const o = d.data();
+            total++;
+
+            if(o.status=="hazırlanıyor") prep++;
+            if(o.status=="yolda") road++;
+            if(o.status=="teslim edildi") done++;
+
+            // HAVUZ
+            if(o.status=="hazır" && !o.courierId){
+                document.getElementById("pool").innerHTML += `
+                <div class="order">
+                    <b>${o.product}</b><br>
+                    ${o.address}<br>
+
+                    <input placeholder="Kurye Email" onchange="assign('${d.id}', this.value)">
+                    <br>
+                    <button class="assign" onclick="deleteOrder('${d.id}')">İptal</button>
+                </div>`;
+            }
+
+            // TÜM SİPARİŞLER
+            document.getElementById("orders").innerHTML += `
+            <div class="order">
+                <b>${o.product}</b><br>
+                ${o.address}<br>
+                Status: ${o.status}<br>
+                Kurye: ${o.courierEmail || "-"}
+
+                <br>
+
+                <select onchange="status('${d.id}',this.value)">
+                    <option ${o.status=="hazırlanıyor"?"selected":""}>hazırlanıyor</option>
+                    <option ${o.status=="hazır"?"selected":""}>hazır</option>
+                    <option ${o.status=="yolda"?"selected":""}>yolda</option>
+                    <option ${o.status=="teslim edildi"?"selected":""}>teslim edildi</option>
+                </select>
+
+                <br>
+                <input placeholder="Kurye değiştir" onchange="assign('${d.id}', this.value)">
+
+                <br>
+                <button class="delete" onclick="deleteOrder('${d.id}')">Sil</button>
+            </div>`;
         });
 
-        alert("Sipariş oluşturuldu!");
+        document.getElementById("total").innerText=total;
+        document.getElementById("prep").innerText=prep;
+        document.getElementById("road").innerText=road;
+        document.getElementById("done").innerText=done;
+    });
+}
 
-        document.getElementById("restaurant").value = "";
-        document.getElementById("address").value = "";
-        document.getElementById("product").value = "";
+// STATUS
+window.status = async(id,s)=>{
+    await updateDoc(doc(db,"orders",id),{status:s});
+};
 
-    } catch (e) {
-        alert("Sipariş hatası: " + e.message);
+// KURYE ATA
+window.assign = async(id,email)=>{
+    await updateDoc(doc(db,"orders",id),{
+        courierEmail: email,
+        courierId: email
+    });
+};
+
+// SİL
+window.deleteOrder = async(id)=>{
+    if(confirm("İptal edilsin mi?")){
+        await deleteDoc(doc(db,"orders",id));
     }
 };
 
 // LOGOUT
-window.logout = function() {
-    signOut(auth);
-};
+window.logout = ()=>signOut(auth);
+
 </script>
 
 </body>

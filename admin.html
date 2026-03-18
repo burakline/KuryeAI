@@ -2,253 +2,162 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Admin</title>
+<title>Admin</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body {
-    margin:0;
-    font-family:Arial;
-    display:flex;
-    background:#0f172a;
-    color:white;
-}
-.light {
-    background:#f1f5f9;
-    color:#111;
-}
-.sidebar {
-    width:220px;
-    background:#020617;
-    padding:20px;
-    height:100vh;
-}
-.sidebar h2 { color:#00eaff; }
-.sidebar button {
-    width:100%;
-    padding:10px;
-    margin:5px 0;
-    background:none;
-    border:none;
-    color:white;
-    text-align:left;
-    cursor:pointer;
-}
-.sidebar button:hover { background:#0ea5e9; }
-.content {
-    flex:1;
-    padding:20px;
-}
-.card {
-    background:#1e293b;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:15px;
-}
-.light .card { background:white; }
-.btn {
-    padding:8px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-.approve { background:green;color:white;}
-.reject { background:red;color:white;}
-.map {
-    height:300px;
-    border-radius:10px;
-}
+body{margin:0;font-family:Arial;background:#0f172a;color:white;display:flex}
+.sidebar{width:220px;background:#020617;padding:20px;height:100vh}
+.sidebar button{width:100%;padding:10px;margin:5px 0;background:none;border:none;color:white;cursor:pointer}
+.content{flex:1;padding:20px}
+.card{background:#1e293b;padding:15px;border-radius:10px;margin-bottom:10px}
+.map{height:300px;border-radius:10px}
+input{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:none}
+.btn{padding:6px 10px;border:none;border-radius:6px;cursor:pointer}
+.red{background:red;color:white}
+.green{background:green;color:white}
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-    <h2>KuryeAI</h2>
-    <button onclick="showPage('dashboard')">Dashboard</button>
-    <button onclick="showPage('applications')">Başvurular</button>
-    <button onclick="showPage('orders')">Siparişler</button>
-    <button onclick="showPage('couriers')">Kuryeler</button>
-    <button onclick="showPage('restaurants')">Restoranlar</button>
-    <button onclick="toggleTheme()">Tema</button>
-    <button onclick="logout()">Çıkış</button>
+<button onclick="show('dashboard')">Dashboard</button>
+<button onclick="show('restaurants')">Restoranlar</button>
 </div>
 
 <div class="content">
 
-<!-- DASHBOARD -->
-<div id="dashboardPage">
-    <h1>Dashboard</h1>
-    <div class="card">Sistem aktif 🚀</div>
-    <div id="map" class="map"></div>
+<div id="dashboard">
+<h2>Harita</h2>
+<div id="map" class="map"></div>
 </div>
 
-<!-- APPLICATIONS -->
-<div id="applicationsPage" style="display:none;">
-    <h1>Restoran Başvuruları</h1>
-    <div id="applicationsList"></div>
+<div id="restaurants" style="display:none">
+<h2>Restoran Yönetimi</h2>
+
+<div class="card">
+<input id="newName" placeholder="Restoran adı">
+<input id="newEmail" placeholder="Email">
+<button onclick="addRestaurant()" class="green">Ekle</button>
 </div>
 
-<!-- ORDERS -->
-<div id="ordersPage" style="display:none;">
-    <h1>Siparişler</h1>
-    <div class="card">Henüz sipariş yok</div>
-</div>
-
-<!-- COURIERS -->
-<div id="couriersPage" style="display:none;">
-    <h1>Kuryeler</h1>
-    <div class="card">Henüz kurye yok</div>
-</div>
-
-<!-- RESTAURANTS -->
-<div id="restaurantsPage" style="display:none;">
-    <h1>Restoranlar</h1>
-    <div id="restaurantList"></div>
+<div id="list"></div>
 </div>
 
 </div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-// FIREBASE
-const firebaseConfig = {
- apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
- authDomain: "kuryeai.firebaseapp.com",
- projectId: "kuryeai"
-};
+const app = initializeApp({
+apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+authDomain:"kuryeai.firebaseapp.com",
+projectId:"kuryeai"
+});
 
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// SAYFA
-window.showPage = function(page){
-    document.getElementById("dashboardPage").style.display="none";
-    document.getElementById("applicationsPage").style.display="none";
-    document.getElementById("ordersPage").style.display="none";
-    document.getElementById("couriersPage").style.display="none";
-    document.getElementById("restaurantsPage").style.display="none";
-
-    document.getElementById(page+"Page").style.display="block";
-
-    if(page==="applications") loadApplications();
-    if(page==="restaurants") loadRestaurants();
+window.show = id=>{
+document.getElementById("dashboard").style.display="none";
+document.getElementById("restaurants").style.display="none";
+document.getElementById(id).style.display="block";
+if(id==="restaurants") load();
 }
 
-// LOGOUT
-window.logout=function(){
-    sessionStorage.clear();
-    location.href="login.html";
-}
-
-// TEMA
-window.toggleTheme=function(){
-    document.body.classList.toggle("light");
-}
-
-// HARİTA
-const map = L.map('map').setView([39.92, 32.85], 12);
+/* MAP */
+const map = L.map('map').setView([39.92,32.85],12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// RESTORAN PINLERİ
-async function loadRestaurantsOnMap() {
-    const snapshot = await getDocs(collection(db, "restaurants"));
+let markers={};
 
-    snapshot.forEach(docSnap => {
-        const data = docSnap.data();
+/* LOAD RESTAURANTS */
+async function load(){
+const list=document.getElementById("list");
+list.innerHTML="";
 
-        if(data.lat && data.lng){
-            L.marker([data.lat, data.lng])
-                .addTo(map)
-                .bindPopup(data.name);
-        }
-    });
+const snap=await getDocs(collection(db,"restaurants"));
+
+snap.forEach(d=>{
+const r=d.data();
+
+/* MAP */
+if(r.lat && r.lng){
+if(!markers[d.id]){
+markers[d.id]=L.marker([r.lat,r.lng]).addTo(map);
+}else{
+markers[d.id].setLatLng([r.lat,r.lng]);
 }
-loadRestaurantsOnMap();
-
-// BAŞVURULAR
-async function loadApplications(){
-    const list=document.getElementById("applicationsList");
-    list.innerHTML="Yükleniyor...";
-
-    const snapshot=await getDocs(collection(db,"applications"));
-    list.innerHTML="";
-
-    snapshot.forEach(docSnap=>{
-        const data=docSnap.data();
-
-        const div=document.createElement("div");
-        div.className="card";
-
-        div.innerHTML=`
-            <b>${data.name}</b><br>
-            ${data.email}<br><br>
-
-            <button class="btn approve" onclick="approve('${docSnap.id}','${data.name}','${data.email}')">Onayla</button>
-            <button class="btn reject" onclick="reject('${docSnap.id}')">Reddet</button>
-        `;
-
-        list.appendChild(div);
-    });
 }
 
-// APPROVE (KONUM + ŞİFRE)
-window.approve = async function(id, name, email) {
+/* UI */
+const div=document.createElement("div");
+div.className="card";
 
-    const password = "123456";
-    const lat = 39.92;
-    const lng = 32.85;
+div.innerHTML=`
+<input value="${r.name}" id="name-${d.id}">
+<input value="${r.email}" id="email-${d.id}">
+<button onclick="updateRestaurant('${d.id}')" class="green">Kaydet</button>
+<button onclick="deleteRestaurant('${d.id}')" class="red">Sil</button>
+<button onclick="selectLocation('${d.id}')">Konum Seç</button>
+`;
 
-    await addDoc(collection(db,"restaurants"),{
-        name:name,
-        email:email,
-        password:password,
-        lat:lat,
-        lng:lng,
-        createdAt:new Date()
-    });
-
-    await deleteDoc(doc(db,"applications",id));
-
-    alert("Onaylandı!\nŞifre: 123456");
-    loadApplications();
-    loadRestaurantsOnMap();
+list.appendChild(div);
+});
 }
 
-// REJECT
-window.reject = async function(id){
-    await deleteDoc(doc(db,"applications",id));
-    alert("Reddedildi");
-    loadApplications();
+/* ADD */
+window.addRestaurant=async()=>{
+await addDoc(collection(db,"restaurants"),{
+name:newName.value,
+email:newEmail.value,
+lat:39.92,
+lng:32.85
+});
+load();
 }
 
-// RESTORAN LİSTESİ
-async function loadRestaurants(){
-    const list = document.getElementById("restaurantList");
-    list.innerHTML = "";
+/* DELETE */
+window.deleteRestaurant=async(id)=>{
+await deleteDoc(doc(db,"restaurants",id));
+if(markers[id]){
+map.removeLayer(markers[id]);
+delete markers[id];
+}
+load();
+}
 
-    const snapshot = await getDocs(collection(db,"restaurants"));
+/* UPDATE */
+window.updateRestaurant=async(id)=>{
+await updateDoc(doc(db,"restaurants",id),{
+name:document.getElementById("name-"+id).value,
+email:document.getElementById("email-"+id).value
+});
+alert("Güncellendi");
+}
 
-    snapshot.forEach(docSnap=>{
-        const data = docSnap.data();
+/* LOCATION PICK */
+let currentId=null;
+map.on("click",async e=>{
+if(!currentId) return;
 
-        const div = document.createElement("div");
-        div.className="card";
+await updateDoc(doc(db,"restaurants",currentId),{
+lat:e.latlng.lat,
+lng:e.latlng.lng
+});
 
-        div.innerHTML = `
-            <b>${data.name}</b><br>
-            ${data.email}
-        `;
+alert("Konum güncellendi");
+currentId=null;
+load();
+});
 
-        list.appendChild(div);
-    });
+window.selectLocation=id=>{
+currentId=id;
+alert("Haritadan konum seç");
 }
 
 </script>

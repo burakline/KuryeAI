@@ -15,50 +15,66 @@ const firebaseConfig = {
   appId: "1:655930514402:web:379321cbb83f48daf077bb"
 };
 
-// 🔥 INIT
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 const auth = getAuth(app);
 
 // 🔔 SERVICE WORKER
-async function registerServiceWorker() {
+async function registerSW() {
   if ("serviceWorker" in navigator) {
-    return await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    console.log("✅ SW OK:", reg);
+    return reg;
+  } else {
+    alert("Service worker yok ❌");
   }
 }
 
 // 🔔 TOKEN
 async function requestNotificationPermission() {
+
   try {
+
+    console.log("🔔 Bildirim izni isteniyor...");
+
     const permission = await Notification.requestPermission();
 
+    console.log("İzin:", permission);
+
     if (permission !== "granted") {
-      alert("Bildirim izni reddedildi ❌");
-      return;
+      alert("İzin verilmedi ❌");
+      return null;
     }
 
-    const registration = await registerServiceWorker();
+    const swReg = await registerSW();
 
     const token = await getToken(messaging, {
       vapidKey: "BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ",
-      serviceWorkerRegistration: registration
+      serviceWorkerRegistration: swReg
     });
 
     console.log("🔥 TOKEN:", token);
+
+    if (!token) {
+      alert("Token boş ❌");
+      return null;
+    }
+
+    alert("Token alındı ✅");
+
     return token;
 
-  } catch (err) {
-    console.error("TOKEN HATA:", err);
+  } catch (e) {
+    console.error("TOKEN HATA:", e);
+    alert("Token hatası: " + e.message);
+    return null;
   }
 }
 
-// 🔔 FOREGROUND MESSAGE
+// 🔔 FOREGROUND
 onMessage(messaging, (payload) => {
-  alert(
-    (payload.notification?.title || "Bildirim") +
-    "\n" +
-    (payload.notification?.body || "")
-  );
+  console.log("📩 Mesaj:", payload);
+  alert("📦 Yeni sipariş!");
 });
 
 // 🔐 LOGIN
@@ -73,7 +89,7 @@ window.loginUser = async (email, password) => {
     }
 
   } catch (e) {
-    alert("Giriş hatası: " + e.message);
+    alert("Login hata: " + e.message);
   }
 };
 
@@ -83,7 +99,7 @@ window.registerUser = async (email, password) => {
     await createUserWithEmailAndPassword(auth, email, password);
     alert("Kayıt başarılı ✅");
   } catch (e) {
-    alert("Kayıt hatası: " + e.message);
+    alert("Register hata: " + e.message);
   }
 };
 

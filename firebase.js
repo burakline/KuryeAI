@@ -1,4 +1,4 @@
-// firebase.js
+--- firebase.js (FULL) ---
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
@@ -8,7 +8,6 @@ from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 import { getDatabase, ref, set, get } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🔥 CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
@@ -24,20 +23,18 @@ const auth = getAuth(app);
 const messaging = getMessaging(app);
 const db = getDatabase(app);
 
-// 🔔 SERVICE WORKER
+window.firebaseAuth = auth;
+
+// SERVICE WORKER
 async function registerSW() {
   return await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 }
 
-// 🔔 TOKEN + DB KAYIT
+// TOKEN + DB
 async function requestNotificationPermission() {
   try {
     const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      alert("Bildirim izni reddedildi ❌");
-      return null;
-    }
+    if (permission !== "granted") return null;
 
     const swReg = await registerSW();
 
@@ -45,8 +42,6 @@ async function requestNotificationPermission() {
       vapidKey: "BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ",
       serviceWorkerRegistration: swReg
     });
-
-    console.log("🔥 TOKEN:", token);
 
     const user = auth.currentUser;
 
@@ -56,7 +51,7 @@ async function requestNotificationPermission() {
       });
     }
 
-    alert("🔥 TOKEN ALINDI");
+    alert("TOKEN ALINDI");
     return token;
 
   } catch (e) {
@@ -65,16 +60,14 @@ async function requestNotificationPermission() {
   }
 }
 
-// 🔔 FOREGROUND MESSAGE
-onMessage(messaging, (payload) => {
-  console.log("📩 Mesaj:", payload);
-  alert("📦 Yeni sipariş!");
+// FOREGROUND MESSAGE
+onMessage(messaging, () => {
+  alert("Yeni sipariş!");
 });
 
-// 🔐 LOGIN (ROLE CHECK)
+// LOGIN (ROLE)
 window.loginUser = async (email, password) => {
   try {
-
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const uid = userCredential.user.uid;
 
@@ -87,19 +80,18 @@ window.loginUser = async (email, password) => {
     }
 
   } catch (e) {
-    alert("Login hata: " + e.message);
+    alert(e.message);
   }
 };
 
-// 📝 REGISTER
+// REGISTER
 window.registerUser = async (email, password) => {
   try {
     await createUserWithEmailAndPassword(auth, email, password);
-    alert("Kayıt başarılı ✅");
+    alert("Kayıt başarılı");
   } catch (e) {
-    alert("Register hata: " + e.message);
+    alert(e.message);
   }
 };
 
-// GLOBAL
 window.requestNotificationPermission = requestNotificationPermission;

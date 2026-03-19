@@ -1,9 +1,10 @@
-// FIREBASE IMPORTS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -11,11 +12,9 @@ import {
   getDatabase,
   ref,
   get,
-  set,
-  update
+  set
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
@@ -27,7 +26,6 @@ const firebaseConfig = {
   measurementId: "G-JYQP30LJG3"
 };
 
-// INIT
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -40,57 +38,54 @@ window.loginUser = async (email, password) => {
 
     const roleSnap = await get(ref(db, "roles/" + uid));
 
-    if (roleSnap.exists()) {
-      const role = roleSnap.val().role;
-
-      if (role === "admin") {
-        window.location.href = "/admin.html";
-      } else if (role === "courier") {
-        window.location.href = "/courier.html";
-      } else if (role === "restaurant") {
-        window.location.href = "/restaurant.html";
-      } else {
-        alert("Rol tanımsız");
-      }
-    } else {
+    if (!roleSnap.exists()) {
       alert("Rol bulunamadı");
+      return;
     }
 
-  } catch (err) {
-    alert("Giriş hatası: " + err.message);
-  }
-};
+    const role = roleSnap.val().role;
 
-// REGISTER
-window.registerUser = async (email, password) => {
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCred.user.uid;
+    if (role === "admin") window.location.href = "/admin.html";
+    else if (role === "courier") window.location.href = "/courier.html";
+    else if (role === "restaurant") window.location.href = "/restaurant.html";
 
-    await set(ref(db, "roles/" + uid), {
-      role: "courier"
-    });
-
-    alert("Kayıt başarılı");
   } catch (err) {
     alert(err.message);
   }
 };
 
-// SESSION CHECK
+// REGISTER
+window.registerUser = async (email, password) => {
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
+  const uid = userCred.user.uid;
+
+  await set(ref(db, "roles/" + uid), {
+    role: "courier"
+  });
+
+  alert("Kayıt başarılı");
+};
+
+// LOGOUT
+window.logout = async () => {
+  await signOut(auth);
+  window.location.href = "/login.html";
+};
+
+// SESSION
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const uid = user.uid;
-    const roleSnap = await get(ref(db, "roles/" + uid));
+  if (!user) return;
 
-    if (roleSnap.exists()) {
-      const role = roleSnap.val().role;
+  const uid = user.uid;
+  const roleSnap = await get(ref(db, "roles/" + uid));
 
-      if (role === "admin") {
-        window.location.href = "/admin.html";
-      } else if (role === "courier") {
-        window.location.href = "/courier.html";
-      }
-    }
+  if (!roleSnap.exists()) return;
+
+  const role = roleSnap.val().role;
+
+  if (location.pathname.includes("login")) {
+    if (role === "admin") window.location.href = "/admin.html";
+    else if (role === "courier") window.location.href = "/courier.html";
+    else if (role === "restaurant") window.location.href = "/restaurant.html";
   }
 });

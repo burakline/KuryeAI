@@ -1,14 +1,18 @@
 // firebase.js
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getMessaging, getToken, onMessage } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import { getDatabase, ref, set, get } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // 🔥 CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
+  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "kuryeai",
   storageBucket: "kuryeai.appspot.com",
   messagingSenderId: "655930514402",
@@ -16,33 +20,22 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
 const auth = getAuth(app);
+const messaging = getMessaging(app);
+const db = getDatabase(app);
 
 // 🔔 SERVICE WORKER
 async function registerSW() {
-  if ("serviceWorker" in navigator) {
-    const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-    console.log("✅ SW OK:", reg);
-    return reg;
-  } else {
-    alert("Service worker yok ❌");
-  }
+  return await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 }
 
-// 🔔 TOKEN
+// 🔔 TOKEN + DB KAYIT
 async function requestNotificationPermission() {
-
   try {
-
-    console.log("🔔 Bildirim izni isteniyor...");
-
     const permission = await Notification.requestPermission();
 
-    console.log("İzin:", permission);
-
     if (permission !== "granted") {
-      alert("İzin verilmedi ❌");
+      alert("Bildirim izni reddedildi ❌");
       return null;
     }
 
@@ -55,34 +48,39 @@ async function requestNotificationPermission() {
 
     console.log("🔥 TOKEN:", token);
 
-    if (!token) {
-      alert("Token boş ❌");
-      return null;
+    const user = auth.currentUser;
+
+    if (user && token) {
+      await set(ref(db, "tokens/" + user.uid), {
+        token: token
+      });
     }
 
-    alert("Token alındı ✅");
-
+    alert("🔥 TOKEN ALINDI");
     return token;
 
   } catch (e) {
-    console.error("TOKEN HATA:", e);
-    alert("Token hatası: " + e.message);
+    alert("Token hata: " + e.message);
     return null;
   }
 }
 
-// 🔔 FOREGROUND
+// 🔔 FOREGROUND MESSAGE
 onMessage(messaging, (payload) => {
   console.log("📩 Mesaj:", payload);
   alert("📦 Yeni sipariş!");
 });
 
-// 🔐 LOGIN
+// 🔐 LOGIN (ROLE CHECK)
 window.loginUser = async (email, password) => {
   try {
-    await signInWithEmailAndPassword(auth, email, password);
 
-    if (email === "admin@kuryeai.com") {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    const snapshot = await get(ref(db, "roles/" + uid));
+
+    if (snapshot.exists() && snapshot.val().role === "admin") {
       location.href = "/admin.html";
     } else {
       location.href = "/courier.html";

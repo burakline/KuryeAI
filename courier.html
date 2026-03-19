@@ -1,164 +1,76 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KuryeAI - Kurye Paneli</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kurye Panel</title>
 
-  <!-- MAP -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f2027;
-      color: white;
-    }
-
-    #map {
-      height: 60vh;
-      width: 100%;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px;
-      background: rgba(0,0,0,0.8);
-    }
-
-    .status {
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-    }
-
-    .online {
-      background: #00c851;
-    }
-
-    .offline {
-      background: #ff4444;
-    }
-
-    .panel {
-      padding: 15px;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .btn-online {
-      background: #00c6ff;
-      color: black;
-    }
-
-    .btn-offline {
-      background: #ff4444;
-      color: white;
-    }
-
-    .orders {
-      margin-top: 15px;
-      background: rgba(255,255,255,0.05);
-      padding: 10px;
-      border-radius: 10px;
-    }
-  </style>
+<style>
+body{margin:0;font-family:Arial;background:#0f2027;color:white}
+#map{height:60vh}
+.topbar{display:flex;justify-content:space-between;padding:15px;background:#020617}
+.status{padding:8px 12px;border-radius:20px}
+.online{background:#00ff9c;color:black}
+.offline{background:#ff4d4d}
+.panel{padding:15px}
+button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold}
+</style>
 </head>
 
 <body>
 
-  <!-- TOP -->
-  <div class="topbar">
-    <div>🚀 KuryeAI</div>
-    <div id="statusBox" class="status offline">Offline</div>
-  </div>
+<div class="topbar">
+  <h3>🚀 KuryeAI</h3>
+  <div id="statusBox" class="status offline">Offline</div>
+</div>
 
-  <!-- MAP -->
-  <div id="map"></div>
+<div id="map"></div>
 
-  <!-- PANEL -->
-  <div class="panel">
+<div class="panel">
+  <button onclick="goOnline()">Online Ol</button>
+  <button onclick="goOffline()">Offline Ol</button>
+</div>
 
-    <button class="btn-online" onclick="goOnline()">Online Ol</button>
-    <button class="btn-offline" onclick="goOffline()">Offline Ol</button>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <div class="orders">
-      📦 Siparişler
-      <div id="orderList">Aktif sipariş yok</div>
-    </div>
+<script type="module">
+import "./firebase.js";
 
-  </div>
+// MAP
+const map = L.map('map').setView([39.92,32.85],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-  <!-- SCRIPTS -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+window.goOnline = async function(){
 
-  <script type="module">
-    import "./firebase.js";
+  document.getElementById("statusBox").innerText="Online";
+  document.getElementById("statusBox").className="status online";
 
-    let map;
-    let marker;
+  try{
 
-    // HARİTA
-    function initMap(lat, lng) {
-      map = L.map("map").setView([lat, lng], 15);
+    const token = await window.requestNotificationPermission();
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap"
-      }).addTo(map);
+    console.log("TOKEN RESULT:", token);
 
-      marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup("Sen buradasın")
-        .openPopup();
+    if(token){
+      alert("🔥 TOKEN ALINDI");
+    }else{
+      alert("❌ TOKEN YOK");
     }
 
-    // KONUM AL
-    function getLocation() {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+  }catch(e){
+    alert("HATA: "+e.message);
+  }
 
-        initMap(lat, lng);
+};
 
-      }, () => {
-        alert("Konum alınamadı ❌");
-      });
-    }
+window.goOffline = function(){
+  document.getElementById("statusBox").innerText="Offline";
+  document.getElementById("statusBox").className="status offline";
+};
 
-    // ONLINE
-    window.goOnline = async function () {
-      document.getElementById("statusBox").innerText = "Online";
-      document.getElementById("statusBox").className = "status online";
-
-      await window.requestNotificationPermission();
-
-      alert("Artık online'sın 🚀");
-    };
-
-    // OFFLINE
-    window.goOffline = function () {
-      document.getElementById("statusBox").innerText = "Offline";
-      document.getElementById("statusBox").className = "status offline";
-
-      alert("Offline oldun ❌");
-    };
-
-    // SAYFA AÇILINCA
-    window.onload = () => {
-      getLocation();
-    };
-
-  </script>
+</script>
 
 </body>
 </html>

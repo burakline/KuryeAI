@@ -1,138 +1,63 @@
+--- login.html (FULL) ---
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KuryeAI Giriş</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KuryeAI Login</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      padding: 30px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 350px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-      font-size: 26px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #00c6ff;
-      color: black;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #00a2cc;
-    }
-
-    .switch {
-      margin-top: 15px;
-      font-size: 14px;
-      cursor: pointer;
-      opacity: 0.8;
-    }
-
-    .switch:hover {
-      opacity: 1;
-    }
-
-    .logo {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-  </style>
+<style>
+body{margin:0;background:#0f2027;color:white;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
+.box{background:#020617;padding:30px;border-radius:20px;width:90%;max-width:400px}
+input{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px}
+button{width:100%;padding:12px;margin-top:15px;border:none;border-radius:10px;background:#00ff9c;font-weight:bold}
+.switch{margin-top:10px;text-align:center;cursor:pointer}
+</style>
 </head>
 
 <body>
 
-  <div class="card">
-    <div class="logo">🚀 KuryeAI</div>
+<div class="box">
+<h2>🚀 KuryeAI</h2>
 
-    <h1 id="title">Giriş Yap</h1>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Şifre">
 
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Şifre" />
+<button onclick="login()">Giriş Yap</button>
 
-    <button onclick="login()">Giriş Yap</button>
+<div class="switch" onclick="toggleMode()" id="modeText">
+Hesabın yok mu? Kayıt ol
+</div>
 
-    <div class="switch" id="modeText" onclick="toggleMode()">
-      Hesabın yok mu? Kayıt ol
-    </div>
-  </div>
+</div>
 
-  <!-- 🔥 SCRIPT -->
-  <script type="module">
-    import "./firebase.js";
+<script type="module">
+import "./firebase.js";
 
-    let isLogin = true;
+let isLogin = true;
 
-    window.login = function () {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+window.login = function(){
 
-      if (!email || !password) {
-        alert("Email ve şifre gir ❗");
-        return;
-      }
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-      if (isLogin) {
-        window.loginUser(email, password);
-      } else {
-        window.registerUser(email, password);
-      }
-    };
+  if(isLogin){
+    window.loginUser(email, password);
+  }else{
+    window.registerUser(email, password);
+  }
 
-    window.toggleMode = function () {
-      isLogin = !isLogin;
+};
 
-      document.getElementById("title").innerText =
-        isLogin ? "Giriş Yap" : "Kayıt Ol";
+window.toggleMode = function(){
+  isLogin = !isLogin;
 
-      document.querySelector("button").innerText =
-        isLogin ? "Giriş Yap" : "Kayıt Ol";
+  document.getElementById("modeText").innerText =
+    isLogin ? "Hesabın yok mu? Kayıt ol" : "Zaten hesabın var mı? Giriş yap";
+};
 
-      document.getElementById("modeText").innerText =
-        isLogin
-          ? "Hesabın yok mu? Kayıt ol"
-          : "Zaten hesabın var mı? Giriş yap";
-    };
-  </script>
+</script>
 
 </body>
 </html>

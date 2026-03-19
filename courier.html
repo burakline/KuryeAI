@@ -93,6 +93,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 let marker = null;
 let watchId = null;
 
+// 🔔 SAYFA AÇILINCA TOKEN AL
+window.onload = async () => {
+  await window.requestNotificationPermission();
+};
+
 // 📍 GPS
 function startTracking(){
 
@@ -161,7 +166,6 @@ onValue(ref(db,"orders"), snap=>{
 
     const o = data[id];
 
-    // SADECE BU KURYEYE AİT
     if(o.courierId !== user.uid) continue;
 
     box.innerHTML += `

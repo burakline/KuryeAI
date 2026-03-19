@@ -1,225 +1,222 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Kurye Panel</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>KuryeAI</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-<style>
-body { margin:0; background:#0b0b0b; color:white; font-family:Arial; }
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #020617;
+      color: white;
+    }
 
-.header {
-  display:flex;
-  justify-content:space-between;
-  padding:15px;
-}
+    #map {
+      height: 70vh;
+      width: 100%;
+    }
 
-.status {
-  padding:8px 12px;
-  border-radius:10px;
-}
+    .btn {
+      width: 90%;
+      margin: 10px auto;
+      display: block;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      font-size: 18px;
+    }
 
-#map { height:45vh; }
-
-.panel { padding:15px; }
-
-.card {
-  background:#1a1a1a;
-  padding:15px;
-  border-radius:10px;
-  margin-top:10px;
-}
-
-button {
-  width:100%;
-  padding:12px;
-  margin-top:5px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-.accept { background:#00d084; }
-.reject { background:#ff4d4d; }
-.done { background:#00aaff; }
-.logout { background:#ff4d4d; }
-
-.online { background:#00d084; }
-.offline { background:#444; }
-</style>
+    .online { background: #22c55e; }
+    .offline { background: #ef4444; }
+  </style>
 </head>
 
 <body>
 
-<div class="header">
-  🚴 KuryeAI
-  <div id="status" class="status offline">Offline</div>
-</div>
+<h2 style="padding:10px;">🚀 KuryeAI</h2>
 
 <div id="map"></div>
 
-<div class="panel">
-
-  <button class="online" onclick="goOnline()">Online Ol</button>
-  <button class="offline" onclick="goOffline()">Offline Ol</button>
-  <button class="logout" onclick="logout()">Çıkış</button>
-
-  <h3>📦 Siparişler</h3>
-  <div id="orders"></div>
-
-</div>
+<button class="btn online" onclick="setOnline()">Online Ol</button>
+<button class="btn offline" onclick="setOffline()">Offline Ol</button>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
+
 import "./firebase.js";
+
 import {
   getDatabase,
   ref,
   set,
-  onValue,
-  update
+  onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getAuth
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* ================= INIT ================= */
 
 const db = getDatabase();
 const auth = getAuth();
 
-const map = L.map('map').setView([39.92,32.85], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+let map = L.map('map').setView([39.92, 32.85], 13);
 
-let marker = null;
-let watchId = null;
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
+  .addTo(map);
 
-// 🔔 SAYFA AÇILINCA TOKEN AL
-window.onload = async () => {
-  await window.requestNotificationPermission();
+let marker;
+
+/* ================= SES ================= */
+
+const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+
+/* ================= TİTREŞİM ================= */
+
+function vibrate() {
+  if (navigator.vibrate) {
+    navigator.vibrate([300,150,300,150,500]);
+  }
+}
+
+/* ================= POPUP ================= */
+
+function showPopup(order) {
+
+  let div = document.createElement("div");
+
+  div.style.position = "fixed";
+  div.style.bottom = "20px";
+  div.style.left = "20px";
+  div.style.right = "20px";
+  div.style.background = "#0f172a";
+  div.style.padding = "20px";
+  div.style.borderRadius = "15px";
+  div.style.zIndex = "9999";
+
+  div.innerHTML = `
+    <h3>🚀 Yeni Sipariş</h3>
+    <p>${order.customer}</p>
+    <p>${order.address}</p>
+
+    <button onclick="acceptOrder('${order.id}')"
+      style="background:#22c55e;padding:10px;border:none;border-radius:8px;">
+      Kabul Et
+    </button>
+
+    <button onclick="rejectOrder('${order.id}')"
+      style="background:#ef4444;padding:10px;border:none;border-radius:8px;">
+      Reddet
+    </button>
+  `;
+
+  document.body.appendChild(div);
+
+  setTimeout(()=>div.remove(),15000);
+}
+
+/* ================= ORDER ACTION ================= */
+
+window.acceptOrder = async (id) => {
+  await set(ref(db, "orders/" + id + "/status"), "accepted");
 };
 
-// 📍 GPS
-function startTracking(){
+window.rejectOrder = async (id) => {
+  await set(ref(db, "orders/" + id + "/status"), "rejected");
+};
 
-  watchId = navigator.geolocation.watchPosition(async (pos) => {
+/* ================= GPS ================= */
+
+function startGPS() {
+
+  navigator.geolocation.watchPosition((pos) => {
 
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
 
-    if(marker){
-      marker.setLatLng([lat,lng]);
-    }else{
+    if (!marker) {
       marker = L.marker([lat,lng]).addTo(map);
+    } else {
+      marker.setLatLng([lat,lng]);
     }
 
-    map.setView([lat,lng], 15);
+    map.setView([lat,lng],15);
 
     const user = auth.currentUser;
-    if(!user) return;
+    if (!user) return;
 
-    await set(ref(db,"canli_takip/"+user.uid),{
+    set(ref(db, "couriers/" + user.uid), {
       lat,
       lng,
-      online:true,
-      time:Date.now()
+      online: true,
+      updatedAt: Date.now()
     });
 
-  }, err=>{
-    alert(err.message);
-  }, { enableHighAccuracy:true });
+  }, (err) => {
+    alert("GPS hata: " + err.message);
+  }, {
+    enableHighAccuracy: true
+  });
 
 }
 
-// 🟢 ONLINE
-window.goOnline = ()=>{
-  document.getElementById("status").innerText="Online";
-  startTracking();
+/* ================= ONLINE / OFFLINE ================= */
+
+window.setOnline = () => {
+  startGPS();
+  alert("Online oldun");
 };
 
-// 🔴 OFFLINE
-window.goOffline = async ()=>{
-  document.getElementById("status").innerText="Offline";
-
-  if(watchId) navigator.geolocation.clearWatch(watchId);
+window.setOffline = () => {
 
   const user = auth.currentUser;
-  if(!user) return;
+  if (!user) return;
 
-  await update(ref(db,"canli_takip/"+user.uid),{
-    online:false
+  set(ref(db, "couriers/" + user.uid + "/online"), false);
+
+  alert("Offline oldun");
+};
+
+/* ================= SİPARİŞ DİNLE ================= */
+
+let seen = {};
+
+auth.onAuthStateChanged(user => {
+
+  if (!user) return;
+
+  startGPS();
+
+  onValue(ref(db, "orders"), (snap) => {
+
+    snap.forEach(orderSnap => {
+
+      const order = orderSnap.val();
+      order.id = orderSnap.key;
+
+      if (
+        order.courierId === user.uid &&
+        order.status === "assigned" &&
+        !seen[order.id]
+      ) {
+
+        audio.play();
+        vibrate();
+        showPopup(order);
+
+        seen[order.id] = true;
+      }
+
+    });
+
   });
-};
-
-// 📦 SİPARİŞLER
-onValue(ref(db,"orders"), snap=>{
-
-  const box = document.getElementById("orders");
-  box.innerHTML="";
-
-  const data = snap.val();
-  if(!data) return;
-
-  const user = auth.currentUser;
-  if(!user) return;
-
-  for(const id in data){
-
-    const o = data[id];
-
-    if(o.courierId !== user.uid) continue;
-
-    box.innerHTML += `
-      <div class="card">
-        <b>${o.customer}</b><br>
-        ${o.address}<br>
-        Durum: ${o.status}<br>
-
-        ${o.status==="assigned" ? `
-          <button class="accept" onclick="acceptOrder('${id}')">Kabul Et</button>
-          <button class="reject" onclick="rejectOrder('${id}')">Reddet</button>
-        ` : ""}
-
-        ${o.status==="accepted" ? `
-          <button class="done" onclick="startOrder('${id}')">Yola Çık</button>
-        ` : ""}
-
-        ${o.status==="onway" ? `
-          <button class="done" onclick="finishOrder('${id}')">Teslim Et</button>
-        ` : ""}
-      </div>
-    `;
-  }
 
 });
-
-// 🚀 KABUL
-window.acceptOrder = async(id)=>{
-  await update(ref(db,"orders/"+id),{
-    status:"accepted"
-  });
-};
-
-// ❌ REDDET
-window.rejectOrder = async(id)=>{
-  await update(ref(db,"orders/"+id),{
-    status:"waiting",
-    courierId:null
-  });
-};
-
-// 🛵 YOLA ÇIK
-window.startOrder = async(id)=>{
-  await update(ref(db,"orders/"+id),{
-    status:"onway"
-  });
-};
-
-// ✅ TESLİM
-window.finishOrder = async(id)=>{
-  await update(ref(db,"orders/"+id),{
-    status:"delivered"
-  });
-};
 
 </script>
 

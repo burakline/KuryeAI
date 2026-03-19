@@ -8,138 +8,215 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body {
-  margin:0;
-  background:#0b0b0b;
-  color:white;
-  font-family:Arial;
-}
+body { margin:0; background:#0b0b0b; color:white; font-family:Arial; }
 
 .header {
   display:flex;
   justify-content:space-between;
-  align-items:center;
   padding:15px;
 }
 
 .status {
-  background:#00d084;
-  padding:10px 15px;
+  padding:8px 12px;
   border-radius:10px;
 }
 
-#map {
-  height:60vh;
-}
+#map { height:45vh; }
 
-.controls {
+.panel { padding:15px; }
+
+.card {
+  background:#1a1a1a;
   padding:15px;
+  border-radius:10px;
+  margin-top:10px;
 }
 
 button {
   width:100%;
-  padding:15px;
-  margin-top:10px;
+  padding:12px;
+  margin-top:5px;
   border:none;
   border-radius:10px;
   font-weight:bold;
 }
 
+.accept { background:#00d084; }
+.reject { background:#ff4d4d; }
+.done { background:#00aaff; }
+.logout { background:#ff4d4d; }
+
 .online { background:#00d084; }
 .offline { background:#444; }
-.logout { background:#ff4d4d; }
 </style>
 </head>
 
 <body>
 
 <div class="header">
-  🚀 KuryeAI
-  <div class="status" id="status">Offline</div>
+  🚴 KuryeAI
+  <div id="status" class="status offline">Offline</div>
 </div>
 
 <div id="map"></div>
 
-<div class="controls">
+<div class="panel">
+
   <button class="online" onclick="goOnline()">Online Ol</button>
   <button class="offline" onclick="goOffline()">Offline Ol</button>
-  <button class="logout" onclick="logout()">Çıkış Yap</button>
+  <button class="logout" onclick="logout()">Çıkış</button>
+
+  <h3>📦 Siparişler</h3>
+  <div id="orders"></div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 import "./firebase.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  update
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const map = L.map('map').setView([39.9208, 32.8541], 13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution:'© OpenStreetMap'
-}).addTo(map);
-
-let marker = null;
-let watchId = null;
 
 const db = getDatabase();
 const auth = getAuth();
 
-// ONLINE
-window.goOnline = () => {
-  if (!navigator.geolocation) {
-    alert("GPS desteklenmiyor");
-    return;
-  }
+const map = L.map('map').setView([39.92,32.85], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-  document.getElementById("status").innerText = "Online";
+let marker = null;
+let watchId = null;
+
+// 📍 GPS
+function startTracking(){
 
   watchId = navigator.geolocation.watchPosition(async (pos) => {
+
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
 
-    // marker
-    if (marker) {
-      marker.setLatLng([lat, lng]);
-    } else {
-      marker = L.marker([lat, lng]).addTo(map);
+    if(marker){
+      marker.setLatLng([lat,lng]);
+    }else{
+      marker = L.marker([lat,lng]).addTo(map);
     }
 
-    map.setView([lat, lng], 15);
+    map.setView([lat,lng], 15);
 
-    // firebase yaz
     const user = auth.currentUser;
-    if (!user) return;
+    if(!user) return;
 
-    await set(ref(db, "canli_takip/" + user.uid), {
+    await set(ref(db,"canli_takip/"+user.uid),{
       lat,
       lng,
-      online: true,
-      time: Date.now()
+      online:true,
+      time:Date.now()
     });
 
-  }, (err) => {
-    alert("GPS hata: " + err.message);
-  }, {
-    enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 10000
-  });
+  }, err=>{
+    alert(err.message);
+  }, { enableHighAccuracy:true });
+
+}
+
+// 🟢 ONLINE
+window.goOnline = ()=>{
+  document.getElementById("status").innerText="Online";
+  startTracking();
 };
 
-// OFFLINE
-window.goOffline = async () => {
-  document.getElementById("status").innerText = "Offline";
+// 🔴 OFFLINE
+window.goOffline = async ()=>{
+  document.getElementById("status").innerText="Offline";
 
-  if (watchId) navigator.geolocation.clearWatch(watchId);
+  if(watchId) navigator.geolocation.clearWatch(watchId);
 
   const user = auth.currentUser;
-  if (!user) return;
+  if(!user) return;
 
-  await set(ref(db, "canli_takip/" + user.uid), {
-    online: false
+  await update(ref(db,"canli_takip/"+user.uid),{
+    online:false
   });
 };
+
+// 📦 SİPARİŞLER
+onValue(ref(db,"orders"), snap=>{
+
+  const box = document.getElementById("orders");
+  box.innerHTML="";
+
+  const data = snap.val();
+  if(!data) return;
+
+  const user = auth.currentUser;
+  if(!user) return;
+
+  for(const id in data){
+
+    const o = data[id];
+
+    // SADECE BU KURYEYE AİT
+    if(o.courierId !== user.uid) continue;
+
+    box.innerHTML += `
+      <div class="card">
+        <b>${o.customer}</b><br>
+        ${o.address}<br>
+        Durum: ${o.status}<br>
+
+        ${o.status==="assigned" ? `
+          <button class="accept" onclick="acceptOrder('${id}')">Kabul Et</button>
+          <button class="reject" onclick="rejectOrder('${id}')">Reddet</button>
+        ` : ""}
+
+        ${o.status==="accepted" ? `
+          <button class="done" onclick="startOrder('${id}')">Yola Çık</button>
+        ` : ""}
+
+        ${o.status==="onway" ? `
+          <button class="done" onclick="finishOrder('${id}')">Teslim Et</button>
+        ` : ""}
+      </div>
+    `;
+  }
+
+});
+
+// 🚀 KABUL
+window.acceptOrder = async(id)=>{
+  await update(ref(db,"orders/"+id),{
+    status:"accepted"
+  });
+};
+
+// ❌ REDDET
+window.rejectOrder = async(id)=>{
+  await update(ref(db,"orders/"+id),{
+    status:"waiting",
+    courierId:null
+  });
+};
+
+// 🛵 YOLA ÇIK
+window.startOrder = async(id)=>{
+  await update(ref(db,"orders/"+id),{
+    status:"onway"
+  });
+};
+
+// ✅ TESLİM
+window.finishOrder = async(id)=>{
+  await update(ref(db,"orders/"+id),{
+    status:"delivered"
+  });
+};
+
 </script>
 
 </body>

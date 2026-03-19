@@ -1,5 +1,4 @@
-// firebase.js
-
+// FIREBASE IMPORTS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
@@ -32,20 +31,22 @@ const firebaseConfig = {
   projectId: "kuryeai",
   storageBucket: "kuryeai.appspot.com",
   messagingSenderId: "655930514402",
-  appId: "1:655930514402:web:379321cbb83f48daf077bb"
+  appId: "1:655930514402:web:379321cbb83f48daf077bb",
+  measurementId: "G-JYQP30LJG3"
 };
 
+// INIT
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 const messaging = getMessaging(app);
 
-// 🔔 SERVICE WORKER
+// 🔔 SERVICE WORKER REGISTER
 async function registerSW() {
   return await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 }
 
-// 🔔 TOKEN AL + DB KAYDET
+// 🔔 TOKEN AL + DB'YE YAZ
 async function requestNotificationPermission() {
   try {
     const permission = await Notification.requestPermission();
@@ -68,47 +69,67 @@ async function requestNotificationPermission() {
 
     return token;
 
-  } catch (e) {
-    alert(e.message);
+  } catch (err) {
+    alert("Bildirim hatası: " + err.message);
     return null;
   }
 }
 
-// 🔔 FOREGROUND
+// 🔔 FOREGROUND BİLDİRİM
 onMessage(messaging, (payload) => {
-  alert(payload.notification?.title || "Yeni sipariş");
+  alert(payload.notification?.title || "Yeni sipariş geldi 🚀");
 });
 
-// LOGIN
+// 🔐 LOGIN (AUTO ROLE FIX)
 window.loginUser = async (email, password) => {
-  const userCred = await signInWithEmailAndPassword(auth, email, password);
-  const uid = userCred.user.uid;
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCred.user.uid;
 
-  const roleSnap = await get(ref(db, "roles/" + uid));
-  if (!roleSnap.exists()) return alert("Rol yok");
+    let roleSnap = await get(ref(db, "roles/" + uid));
 
-  const role = roleSnap.val().role;
+    // 🔥 ROLE YOKSA OTOMATİK OLUŞTUR
+    if (!roleSnap.exists()) {
+      await set(ref(db, "roles/" + uid), {
+        role: "courier"
+      });
+      roleSnap = await get(ref(db, "roles/" + uid));
+    }
 
-  if (role === "admin") location.href = "/admin.html";
-  if (role === "courier") location.href = "/courier.html";
-  if (role === "restaurant") location.href = "/restaurant.html";
+    const role = roleSnap.val().role;
+
+    if (role === "admin") location.href = "/admin.html";
+    else if (role === "courier") location.href = "/courier.html";
+    else if (role === "restaurant") location.href = "/restaurant.html";
+
+  } catch (err) {
+    alert("Giriş hatası: " + err.message);
+  }
 };
 
-// REGISTER
+// 🆕 REGISTER
 window.registerUser = async (email, password) => {
-  const userCred = await createUserWithEmailAndPassword(auth, email, password);
-  const uid = userCred.user.uid;
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCred.user.uid;
 
-  await set(ref(db, "roles/" + uid), { role: "courier" });
+    await set(ref(db, "roles/" + uid), {
+      role: "courier"
+    });
+
+    alert("Kayıt başarılı");
+  } catch (err) {
+    alert(err.message);
+  }
 };
 
-// LOGOUT
+// 🚪 LOGOUT
 window.logout = async () => {
   await signOut(auth);
   location.href = "/login.html";
 };
 
-// SESSION
+// 🔁 SESSION KONTROL
 onAuthStateChanged(auth, async (user) => {
   if (!user) return;
 
@@ -119,10 +140,13 @@ onAuthStateChanged(auth, async (user) => {
 
   const role = roleSnap.val().role;
 
+  // login sayfasındaysa yönlendir
   if (location.pathname.includes("login")) {
     if (role === "admin") location.href = "/admin.html";
-    if (role === "courier") location.href = "/courier.html";
+    else if (role === "courier") location.href = "/courier.html";
+    else if (role === "restaurant") location.href = "/restaurant.html";
   }
 });
 
+// GLOBAL
 window.requestNotificationPermission = requestNotificationPermission;

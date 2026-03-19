@@ -1,314 +1,138 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KuryeAI Giriş</title>
 
-<style>
-body{
-margin:0;
-font-family:'Segoe UI';
-background:#020617;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
 
-/* BOX */
-.box{
-background:#0f172a;
-padding:30px;
-border-radius:15px;
-width:320px;
-text-align:center;
-position:relative;
-animation:fade 0.5s;
-}
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 350px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      text-align: center;
+    }
 
-@keyframes fade{
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1;transform:translateY(0)}
-}
+    h1 {
+      margin-bottom: 20px;
+      font-size: 26px;
+    }
 
-/* INPUT */
-input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border-radius:8px;
-border:none;
-}
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
 
-/* BUTTON */
-button{
-width:100%;
-padding:12px;
-background:#00d4ff;
-border:none;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-margin-top:5px;
-}
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #00c6ff;
+      color: black;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-/* PASSWORD */
-.password-box{position:relative;}
+    button:hover {
+      background: #00a2cc;
+    }
 
-.eye{
-position:absolute;
-right:10px;
-top:50%;
-transform:translateY(-50%);
-cursor:pointer;
-color:black;
-}
+    .switch {
+      margin-top: 15px;
+      font-size: 14px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
 
-/* REMEMBER */
-.remember{
-display:flex;
-align-items:center;
-gap:5px;
-font-size:14px;
-margin:10px 0;
-}
+    .switch:hover {
+      opacity: 1;
+    }
 
-/* LINK */
-.link{
-font-size:13px;
-color:#00d4ff;
-cursor:pointer;
-display:block;
-}
-
-/* LOADING */
-.loading{
-position:absolute;
-top:0;left:0;
-width:100%;height:100%;
-background:rgba(0,0,0,0.7);
-display:none;
-justify-content:center;
-align-items:center;
-border-radius:15px;
-}
-
-/* SPINNER */
-.spinner{
-width:40px;
-height:40px;
-border:4px solid #fff;
-border-top:4px solid #00d4ff;
-border-radius:50%;
-animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-0%{transform:rotate(0)}
-100%{transform:rotate(360deg)}
-}
-
-/* SHAKE */
-.shake{
-animation:shake 0.3s;
-}
-@keyframes shake{
-0%{transform:translateX(0)}
-25%{transform:translateX(-5px)}
-50%{transform:translateX(5px)}
-75%{transform:translateX(-5px)}
-100%{transform:translateX(0)}
-}
-
-/* LANG */
-.lang{
-position:absolute;
-top:10px;
-left:10px;
-cursor:pointer;
-font-size:12px;
-}
-
-/* MODE */
-.mode{
-position:absolute;
-top:10px;
-right:10px;
-cursor:pointer;
-}
-</style>
+    .logo {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="box" id="box">
+  <div class="card">
+    <div class="logo">🚀 KuryeAI</div>
 
-<!-- DARK MODE -->
-<div class="mode" onclick="toggleMode()">🌙</div>
+    <h1 id="title">Giriş Yap</h1>
 
-<!-- LANGUAGE -->
-<div class="lang" id="langBtn">TR / EN</div>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Şifre" />
 
-<!-- LOADING -->
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-</div>
+    <button onclick="login()">Giriş Yap</button>
 
-<h2 id="title">Giriş Yap</h2>
+    <div class="switch" id="modeText" onclick="toggleMode()">
+      Hesabın yok mu? Kayıt ol
+    </div>
+  </div>
 
-<input id="email" placeholder="Email">
+  <!-- 🔥 SCRIPT -->
+  <script type="module">
+    import "./firebase.js";
 
-<div class="password-box">
-<input id="password" type="password" placeholder="Şifre">
-<span class="eye" id="eye">👁</span>
-</div>
+    let isLogin = true;
 
-<div class="remember">
-<input type="checkbox" id="remember">
-<label id="rememberText">Beni hatırla</label>
-</div>
+    window.login = function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-<span class="link" id="forgot">Şifremi unuttum</span>
+      if (!email || !password) {
+        alert("Email ve şifre gir ❗");
+        return;
+      }
 
-<button id="loginBtn">Giriş Yap</button>
+      if (isLogin) {
+        window.loginUser(email, password);
+      } else {
+        window.registerUser(email, password);
+      }
+    };
 
-</div>
+    window.toggleMode = function () {
+      isLogin = !isLogin;
 
-<script type="module">
+      document.getElementById("title").innerText =
+        isLogin ? "Giriş Yap" : "Kayıt Ol";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import {
-getAuth,
-signInWithEmailAndPassword,
-setPersistence,
-browserLocalPersistence,
-browserSessionPersistence,
-sendPasswordResetEmail,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+      document.querySelector("button").innerText =
+        isLogin ? "Giriş Yap" : "Kayıt Ol";
 
-import {
-getFirestore,
-doc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-/* CONFIG */
-const app = initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* ELEMENTS */
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const eye = document.getElementById("eye");
-const remember = document.getElementById("remember");
-const forgot = document.getElementById("forgot");
-const loading = document.getElementById("loading");
-const box = document.getElementById("box");
-
-/* 👁 PASSWORD */
-eye.onclick = ()=>{
-password.type = password.type === "password" ? "text" : "password";
-};
-
-/* 🔐 AUTO LOGIN */
-onAuthStateChanged(auth, async(user)=>{
-if(user){
-redirectByRole(user.uid);
-}
-});
-
-/* 🚀 LOGIN */
-loginBtn.onclick = async ()=>{
-
-showLoading(); // 🔥 EKLENDİ
-
-const mail = email.value.trim();
-const pass = password.value.trim();
-
-if(!mail || !pass){
-shake();
-hideLoading(); // 🔥 EKLENDİ
-return;
-}
-
-try{
-
-await setPersistence(auth,
-remember.checked ? browserLocalPersistence : browserSessionPersistence
-);
-
-const userCred = await signInWithEmailAndPassword(auth, mail, pass);
-
-await redirectByRole(userCred.user.uid);
-
-}catch(e){
-alert("❌ "+e.message);
-shake();
-}
-
-hideLoading(); // 🔥 EKLENDİ
-};
-
-/* 🎯 ROLE */
-async function redirectByRole(uid){
-
-const snap = await getDoc(doc(db,"users",uid));
-
-if(!snap.exists()){
-alert("Rol yok!");
-return;
-}
-
-const role = snap.data().role;
-
-if(role==="admin") location.href="admin.html";
-else if(role==="restaurant") location.href="restaurant.html";
-else if(role==="courier") location.href="courier.html";
-else location.href="index.html";
-}
-
-/* 🔁 RESET */
-forgot.onclick = async ()=>{
-if(!email.value){
-alert("Email gir!");
-return;
-}
-
-await sendPasswordResetEmail(auth,email.value);
-alert("Mail gönderildi 📧");
-};
-
-/* 💥 SHAKE */
-function shake(){
-box.classList.add("shake");
-setTimeout(()=>box.classList.remove("shake"),300);
-}
-
-/* 🌙 DARK MODE */
-window.toggleMode = ()=>{
-document.body.classList.toggle("light");
-};
-
-/* 🔄 LOADING */
-function showLoading(){
-loading.style.display="flex";
-}
-
-function hideLoading(){
-loading.style.display="none";
-}
-
-</script>
+      document.getElementById("modeText").innerText =
+        isLogin
+          ? "Hesabın yok mu? Kayıt ol"
+          : "Zaten hesabın var mı? Giriş yap";
+    };
+  </script>
 
 </body>
 </html>

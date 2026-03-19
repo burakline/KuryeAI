@@ -2,117 +2,144 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kurye Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{margin:0;font-family:Arial;background:#0f2027;color:white}
-#map{height:60vh}
-.topbar{display:flex;justify-content:space-between;padding:15px;background:#020617}
-.status{padding:8px 12px;border-radius:20px}
-.online{background:#00ff9c;color:black}
-.offline{background:#ff4d4d}
-.panel{padding:15px}
-button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold}
+body {
+  margin:0;
+  background:#0b0b0b;
+  color:white;
+  font-family:Arial;
+}
+
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px;
+}
+
+.status {
+  background:#00d084;
+  padding:10px 15px;
+  border-radius:10px;
+}
+
+#map {
+  height:60vh;
+}
+
+.controls {
+  padding:15px;
+}
+
+button {
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.online { background:#00d084; }
+.offline { background:#444; }
+.logout { background:#ff4d4d; }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  <h3>🚀 KuryeAI</h3>
-  <div id="statusBox" class="status offline">Offline</div>
+<div class="header">
+  🚀 KuryeAI
+  <div class="status" id="status">Offline</div>
 </div>
 
 <div id="map"></div>
 
-<div class="panel">
-  <button onclick="goOnline()">Online Ol</button>
-  <button onclick="goOffline()">Offline Ol</button>
+<div class="controls">
+  <button class="online" onclick="goOnline()">Online Ol</button>
+  <button class="offline" onclick="goOffline()">Offline Ol</button>
+  <button class="logout" onclick="logout()">Çıkış Yap</button>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 import "./firebase.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const map = L.map('map').setView([39.9208, 32.8541], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:'© OpenStreetMap'
+}).addTo(map);
+
+let marker = null;
+let watchId = null;
 
 const db = getDatabase();
-
-const map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let userMarker;
-
-// GPS TRACK
-function startTracking(){
-
-  navigator.geolocation.watchPosition(
-    (pos) => {
-
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      if(!userMarker){
-        userMarker = L.marker([lat, lng]).addTo(map)
-          .bindPopup("Sen buradasın")
-          .openPopup();
-      }else{
-        userMarker.setLatLng([lat, lng]);
-      }
-
-      map.setView([lat, lng], 15);
-
-      const user = window.firebaseAuth.currentUser;
-
-      if(user){
-        set(ref(db, "canli_takip/" + user.uid), {
-          lat: lat,
-          lng: lng,
-          zaman: Date.now()
-        });
-      }
-
-    },
-    (err) => {
-      alert(err.message);
-    },
-    { enableHighAccuracy: true }
-  );
-}
+const auth = getAuth();
 
 // ONLINE
-window.goOnline = async function(){
-
-  document.getElementById("statusBox").innerText="Online";
-  document.getElementById("statusBox").className="status online";
-
-  startTracking();
-
-  const user = window.firebaseAuth.currentUser;
-
-  if(user){
-    set(ref(db, "kuryeler/" + user.uid + "/durum"), "online");
+window.goOnline = () => {
+  if (!navigator.geolocation) {
+    alert("GPS desteklenmiyor");
+    return;
   }
 
-  await window.requestNotificationPermission();
+  document.getElementById("status").innerText = "Online";
+
+  watchId = navigator.geolocation.watchPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    // marker
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+    } else {
+      marker = L.marker([lat, lng]).addTo(map);
+    }
+
+    map.setView([lat, lng], 15);
+
+    // firebase yaz
+    const user = auth.currentUser;
+    if (!user) return;
+
+    await set(ref(db, "canli_takip/" + user.uid), {
+      lat,
+      lng,
+      online: true,
+      time: Date.now()
+    });
+
+  }, (err) => {
+    alert("GPS hata: " + err.message);
+  }, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 10000
+  });
 };
 
 // OFFLINE
-window.goOffline = function(){
+window.goOffline = async () => {
+  document.getElementById("status").innerText = "Offline";
 
-  document.getElementById("statusBox").innerText="Offline";
-  document.getElementById("statusBox").className="status offline";
+  if (watchId) navigator.geolocation.clearWatch(watchId);
 
-  const user = window.firebaseAuth.currentUser;
+  const user = auth.currentUser;
+  if (!user) return;
 
-  if(user){
-    set(ref(db, "kuryeler/" + user.uid + "/durum"), "offline");
-  }
+  await set(ref(db, "canli_takip/" + user.uid), {
+    online: false
+  });
 };
-
 </script>
 
 </body>

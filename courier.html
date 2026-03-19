@@ -38,33 +38,59 @@ button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;fo
 <script type="module">
 import "./firebase.js";
 
-// MAP
 const map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+let userMarker;
+
+// 📍 GPS TRACKING
+function startTracking(){
+
+  if(!navigator.geolocation){
+    alert("GPS desteklenmiyor ❌");
+    return;
+  }
+
+  navigator.geolocation.watchPosition(
+    (pos) => {
+
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      console.log("📍", lat, lng);
+
+      if(!userMarker){
+        userMarker = L.marker([lat, lng]).addTo(map)
+          .bindPopup("Sen buradasın 🚀")
+          .openPopup();
+      }else{
+        userMarker.setLatLng([lat, lng]);
+      }
+
+      map.setView([lat, lng], 15);
+
+    },
+    (err) => {
+      alert("GPS hata: " + err.message);
+    },
+    { enableHighAccuracy: true }
+  );
+}
+
+// 🟢 ONLINE
 window.goOnline = async function(){
 
   document.getElementById("statusBox").innerText="Online";
   document.getElementById("statusBox").className="status online";
 
-  try{
+  startTracking();
 
-    const token = await window.requestNotificationPermission();
+  const token = await window.requestNotificationPermission();
 
-    console.log("TOKEN RESULT:", token);
-
-    if(token){
-      alert("🔥 TOKEN ALINDI");
-    }else{
-      alert("❌ TOKEN YOK");
-    }
-
-  }catch(e){
-    alert("HATA: "+e.message);
-  }
-
+  console.log("TOKEN:", token);
 };
 
+// 🔴 OFFLINE
 window.goOffline = function(){
   document.getElementById("statusBox").innerText="Offline";
   document.getElementById("statusBox").className="status offline";

@@ -1,3 +1,5 @@
+--- courier.html (FULL) ---
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -37,19 +39,17 @@ button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;fo
 
 <script type="module">
 import "./firebase.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const db = getDatabase();
 
 const map = L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let userMarker;
 
-// 📍 GPS TRACKING
+// GPS TRACK
 function startTracking(){
-
-  if(!navigator.geolocation){
-    alert("GPS desteklenmiyor ❌");
-    return;
-  }
 
   navigator.geolocation.watchPosition(
     (pos) => {
@@ -57,11 +57,9 @@ function startTracking(){
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      console.log("📍", lat, lng);
-
       if(!userMarker){
         userMarker = L.marker([lat, lng]).addTo(map)
-          .bindPopup("Sen buradasın 🚀")
+          .bindPopup("Sen buradasın")
           .openPopup();
       }else{
         userMarker.setLatLng([lat, lng]);
@@ -69,15 +67,25 @@ function startTracking(){
 
       map.setView([lat, lng], 15);
 
+      const user = window.firebaseAuth.currentUser;
+
+      if(user){
+        set(ref(db, "canli_takip/" + user.uid), {
+          lat: lat,
+          lng: lng,
+          zaman: Date.now()
+        });
+      }
+
     },
     (err) => {
-      alert("GPS hata: " + err.message);
+      alert(err.message);
     },
     { enableHighAccuracy: true }
   );
 }
 
-// 🟢 ONLINE
+// ONLINE
 window.goOnline = async function(){
 
   document.getElementById("statusBox").innerText="Online";
@@ -85,15 +93,26 @@ window.goOnline = async function(){
 
   startTracking();
 
-  const token = await window.requestNotificationPermission();
+  const user = window.firebaseAuth.currentUser;
 
-  console.log("TOKEN:", token);
+  if(user){
+    set(ref(db, "kuryeler/" + user.uid + "/durum"), "online");
+  }
+
+  await window.requestNotificationPermission();
 };
 
-// 🔴 OFFLINE
+// OFFLINE
 window.goOffline = function(){
+
   document.getElementById("statusBox").innerText="Offline";
   document.getElementById("statusBox").className="status offline";
+
+  const user = window.firebaseAuth.currentUser;
+
+  if(user){
+    set(ref(db, "kuryeler/" + user.uid + "/durum"), "offline");
+  }
 };
 
 </script>

@@ -1,5 +1,7 @@
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
+// firebase-messaging-sw.js
+
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
 firebase.initializeApp({
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -11,11 +13,11 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
+messaging.onBackgroundMessage(function(payload) {
   self.registration.showNotification(
-    payload.notification?.title || "Bildirim",
+    payload.notification.title,
     {
-      body: payload.notification?.body || "",
+      body: payload.notification.body,
       icon: "/logo.png"
     }
   );

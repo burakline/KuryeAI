@@ -11,8 +11,29 @@
 body { margin:0; font-family: Arial; background:#0b0b0b; color:white; }
 .header { padding:15px; display:flex; justify-content:space-between; align-items:center; }
 .logout { background:#ff4d4d; border:none; padding:10px 15px; border-radius:8px; color:white; }
-.grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px; }
-.card { background:#1a1a1a; padding:20px; border-radius:15px; }
+
+.card { background:#1a1a1a; padding:20px; border-radius:15px; margin:15px; }
+
+input {
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:8px;
+  border:none;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.btn { background:#00d4aa; }
+.assign { background:#ffaa00; }
+
 #map { height:400px; margin:15px; border-radius:15px; }
 </style>
 </head>
@@ -24,26 +45,38 @@ body { margin:0; font-family: Arial; background:#0b0b0b; color:white; }
   <button class="logout" onclick="logout()">Çıkış</button>
 </div>
 
-<div class="grid">
-  <div class="card">📦 Toplam Sipariş <h2 id="total">0</h2></div>
-  <div class="card">🚀 Aktif Sipariş <h2 id="active">0</h2></div>
+<div class="card">
+  📦 Sipariş Oluştur
+  <input id="customer" placeholder="Müşteri">
+  <input id="address" placeholder="Adres">
+  <input id="lat" placeholder="Lat">
+  <input id="lng" placeholder="Lng">
+  <button class="btn" onclick="createOrder()">Sipariş Oluştur</button>
 </div>
 
-<div class="card" style="margin:15px;">
-  🗺️ Canlı Kurye Haritası
+<div class="card">
+  🚀 Siparişler
+  <div id="orders"></div>
 </div>
 
+<div class="card">🗺️ Kurye Haritası</div>
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 import "./firebase.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  update
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const db = getDatabase();
 
-const map = L.map('map').setView([39.9208, 32.8541], 11);
+const map = L.map('map').setView([39.92,32.85], 11);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
@@ -58,47 +91,139 @@ const offlineIcon = L.icon({
   iconSize: [32,32]
 });
 
-let markers = {};
+let courierMarkers = {};
+let couriers = {};
 
-onValue(ref(db, "canli_takip"), (snapshot) => {
+// 🔴🟢 KURYELER
+onValue(ref(db, "canli_takip"), (snap) => {
 
-  const data = snapshot.val();
+  const data = snap.val();
   if (!data) return;
+
+  couriers = data;
 
   for (const uid in data) {
 
     const k = data[uid];
 
-    // 🔥 EN KRİTİK: GPS varsa göster
+    // GPS varsa göster
     if (!k.lat || !k.lng) continue;
 
     const lat = k.lat;
     const lng = k.lng;
 
-    // 🔥 ONLINE sadece renk için
     const isOnline = k.online === true;
-
     const icon = isOnline ? onlineIcon : offlineIcon;
 
-    if (markers[uid]) {
+    if (courierMarkers[uid]) {
 
-      markers[uid].setLatLng([lat, lng]);
-      markers[uid].setIcon(icon);
+      courierMarkers[uid].setLatLng([lat, lng]);
+      courierMarkers[uid].setIcon(icon);
 
     } else {
 
-      const m = L.marker([lat, lng], { icon }).addTo(map)
+      courierMarkers[uid] = L.marker([lat, lng], { icon })
+        .addTo(map)
         .bindPopup(
           "Kurye: " + uid + "<br>" +
-          "Durum: " + (isOnline ? "🟢 Online" : "🔴 Offline")
+          (isOnline ? "🟢 Online" : "🔴 Offline")
         );
-
-      markers[uid] = m;
     }
+  }
+});
 
+// 📦 SİPARİŞ OLUŞTUR
+window.createOrder = async () => {
+
+  const customer = document.getElementById("customer").value;
+  const address = document.getElementById("address").value;
+  const lat = parseFloat(document.getElementById("lat").value);
+  const lng = parseFloat(document.getElementById("lng").value);
+
+  if (!lat || !lng) return alert("Lat/Lng gir");
+
+  await push(ref(db, "orders"), {
+    customer,
+    address,
+    lat,
+    lng,
+    status: "waiting"
+  });
+
+  alert("Sipariş oluşturuldu");
+};
+
+// 📏 MESAFE
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+
+  const a =
+    Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2)**2;
+
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+
+// 📋 SİPARİŞ LİSTE
+onValue(ref(db, "orders"), (snap) => {
+
+  const box = document.getElementById("orders");
+  box.innerHTML = "";
+
+  const data = snap.val();
+  if (!data) return;
+
+  for (const id in data) {
+
+    const o = data[id];
+    if (o.status !== "waiting") continue;
+
+    box.innerHTML += `
+      <div style="margin-top:10px; padding:10px; background:#111;">
+        <b>${o.customer}</b><br>
+        ${o.address}<br>
+
+        <button class="assign"
+          onclick="assignNearest('${id}', ${o.lat}, ${o.lng})">
+          En Yakın Kurye Ata
+        </button>
+      </div>
+    `;
+  }
+});
+
+// 🚀 ATA
+window.assignNearest = async (orderId, lat, lng) => {
+
+  let best = null;
+  let min = 999;
+
+  for (const uid in couriers) {
+
+    const c = couriers[uid];
+    if (!c.lat) continue;
+
+    const dist = getDistance(lat, lng, c.lat, c.lng);
+
+    if (dist < min) {
+      min = dist;
+      best = uid;
+    }
   }
 
-});
+  if (!best) return alert("Kurye yok");
+
+  await update(ref(db, "orders/" + orderId), {
+    courierId: best,
+    status: "assigned"
+  });
+
+  alert("Atandı");
+};
 </script>
 
 </body>

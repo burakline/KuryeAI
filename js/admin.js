@@ -1,185 +1,184 @@
-// admin.js
+// js/admin.js
 
 import { db } from "../firebase.js";
-import { startAutoAssign } from "../autoAssign.js";
-
 import {
-collection,
-onSnapshot,
-doc,
-getDoc,
-setDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  collection,
+  onSnapshot,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* AUTO ASSIGN BAŞLAT */
-startAutoAssign();
-
-/* ========================= */
-/* 📦 SİPARİŞ PANELİ */
-/* ========================= */
-
-const ordersDiv = document.getElementById("orders");
-const totalDiv = document.getElementById("total");
-const activeDiv = document.getElementById("active");
-
-if (ordersDiv) {
-
-onSnapshot(collection(db, "orders"), (snap) => {
-
-  ordersDiv.innerHTML = "";
-
-  let total = 0;
-  let active = 0;
-
-  snap.forEach(docSnap => {
-
-    const o = docSnap.data();
-    total++;
-
-    if (o.status === "accepted") active++;
-
-    ordersDiv.innerHTML += `
-      <div class="order">
-        <b>${o.customer || "Müşteri"}</b><br>
-        ${o.address}<br>
-
-        <span class="${o.status}">
-          ${o.status}
-        </span>
-
-        <br>💰 ${o.price}₺
-      </div>
-    `;
-
-  });
-
-  if (totalDiv) totalDiv.innerText = total;
-  if (activeDiv) activeDiv.innerText = active;
-
-});
-
-}
-
-/* ========================= */
-/* ⚙️ AYAR PANELİ */
-/* ========================= */
-
-async function loadSettings() {
-
-  const snap = await getDoc(doc(db, "settings", "config"));
-
-  if (snap.exists()) {
-    const data = snap.data();
-
-    const autoAssignEl = document.getElementById("autoAssign");
-    const maxDistanceEl = document.getElementById("maxDistance");
-
-    if (autoAssignEl) autoAssignEl.value = data.autoAssign;
-    if (maxDistanceEl) maxDistanceEl.value = data.maxDistance;
-  }
-
-}
-
-loadSettings();
-
-/* SAVE */
-window.saveSettings = async function () {
-
-  const autoAssign =
-    document.getElementById("autoAssign").value === "true";
-
-  const maxDistance =
-    parseFloat(document.getElementById("maxDistance").value);
-
-  await setDoc(doc(db, "settings", "config"), {
-    autoAssign,
-    maxDistance
-  });
-
-  alert("✅ Ayarlar kaydedildi");
-
-};
-
-/* ========================= */
-/* 🗺️ CANLI HARİTA */
-/* ========================= */
+/* ================= MAP ================= */
 
 const mapEl = document.getElementById("adminMap");
 
+let adminMap;
+let markers = {};
+let couriers = {};
+
 if (mapEl) {
 
-  const adminMap = L.map('adminMap').setView([39.92, 32.85], 11);
+  adminMap = L.map('adminMap').setView([39.92, 32.85], 11);
 
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
-  .addTo(adminMap);
+    .addTo(adminMap);
 
-  const markers = {};
+  // 🔴🟢 ICONS
+  const onlineIcon = L.divIcon({
+    html: '<div style="background:#22c55e;width:28px;height:28px;border-radius:50%;border:3px solid white;"></div>',
+    iconSize:[28,28],
+    iconAnchor:[14,14]
+  });
+
+  const offlineIcon = L.divIcon({
+    html: '<div style="background:#ef4444;width:28px;height:28px;border-radius:50%;border:3px solid white;"></div>',
+    iconSize:[28,28],
+    iconAnchor:[14,14]
+  });
+
+  /* ================= REALTIME KURYELER ================= */
 
   onSnapshot(collection(db, "couriers"), (snapshot) => {
 
     const list = document.getElementById("activeCouriersList");
     if (list) list.innerHTML = "";
 
-    const currentIds = [];
-    snapshot.forEach(doc => currentIds.push(doc.id));
-
-    /* SİLİNEN MARKERLAR */
-    Object.keys(markers).forEach(id => {
-      if (!currentIds.includes(id)) {
-        adminMap.removeLayer(markers[id]);
-        delete markers[id];
-      }
-    });
-
     snapshot.forEach((docSnap) => {
 
       const data = docSnap.data();
       const id = docSnap.id;
 
+      couriers[id] = data;
+
       if (!data.lat) return;
 
-      const icon = L.divIcon({
-        html: data.online
-          ? '<div style="background:#00C2A8;width:26px;height:26px;border-radius:50%;border:2px solid white;box-shadow:0 0 10px #00C2A8;"></div>'
-          : '<div style="background:#ef4444;width:26px;height:26px;border-radius:50%;border:2px solid white;"></div>',
-        iconSize:[26,26],
-        iconAnchor:[13,13]
-      });
+      const icon = data.online ? onlineIcon : offlineIcon;
 
       if (markers[id]) {
         markers[id].setLatLng([data.lat, data.lng]);
         markers[id].setIcon(icon);
       } else {
-        markers[id] = L.marker([data.lat, data.lng], {icon})
+        markers[id] = L.marker([data.lat, data.lng], { icon })
           .addTo(adminMap)
-          .bindPopup(`${data.name || "Kurye"}<br>${data.online ? "🟢 Online":"🔴 Offline"}`);
+          .bindPopup(
+            `${data.name || "Kurye"}<br>
+            ${data.online ? "🟢 Online" : "🔴 Offline"}`
+          );
       }
 
-      /* LİSTE */
       if (list) {
-
-        let timeText = "Bilinmiyor";
-
-        if (data.updatedAt?.seconds) {
-          timeText = new Date(data.updatedAt.seconds * 1000).toLocaleTimeString();
-        }
-
         list.innerHTML += `
-        <div style="
-        padding:10px;
-        background:rgba(255,255,255,0.05);
-        border-radius:10px;
-        margin-bottom:8px;
-        ">
-        <b style="color:#00C2A8">${data.name || "Kurye"}</b><br>
-        <span>${data.online ? "🟢 Online":"🔴 Offline"}</span><br>
-        <small>${timeText}</small>
-        </div>
-        `;
-
+        <div style="padding:10px;background:#0f172a;border-radius:10px;margin-bottom:8px;">
+          <b style="color:#00d4ff">${data.name || "Kurye"}</b><br>
+          ${data.online ? "🟢 Online" : "🔴 Offline"}
+        </div>`;
       }
 
     });
+
+  });
+
+}
+
+/* ================= MESAFE ================= */
+
+function getDistance(lat1, lng1, lat2, lng2) {
+
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI/180;
+  const dLng = (lng2 - lng1) * Math.PI/180;
+
+  const a =
+    Math.sin(dLat/2) ** 2 +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLng/2) ** 2;
+
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+
+/* ================= SİPARİŞ OLUŞTUR ================= */
+
+window.createOrder = async () => {
+
+  const customer = document.getElementById("customer")?.value || "Müşteri";
+  const address = document.getElementById("address")?.value || "Adres";
+
+  const lat = parseFloat(document.getElementById("lat")?.value || 39.92);
+  const lng = parseFloat(document.getElementById("lng")?.value || 32.85);
+
+  const orderRef = await addDoc(collection(db, "orders"), {
+    customer,
+    address,
+    lat,
+    lng,
+    status: "waiting",
+    createdAt: new Date()
+  });
+
+  assignNearest(orderRef.id, lat, lng);
+};
+
+/* ================= EN YAKIN KURYE ================= */
+
+async function assignNearest(orderId, lat, lng) {
+
+  let best = null;
+  let min = 999;
+
+  for (const uid in couriers) {
+
+    const c = couriers[uid];
+    if (!c.lat) continue;
+
+    const dist = getDistance(lat, lng, c.lat, c.lng);
+
+    if (dist < min) {
+      min = dist;
+      best = uid;
+    }
+  }
+
+  if (!best) return alert("Kurye yok");
+
+  await updateDoc(doc(db, "orders", orderId), {
+    courierId: best,
+    status: "assigned"
+  });
+
+  sendNotification(best);
+}
+
+/* ================= PUSH BİLDİRİM ================= */
+
+async function sendNotification(uid) {
+
+  const tokens = await getDocs(collection(db, "tokens"));
+
+  tokens.forEach(async (t) => {
+
+    if (t.id === uid) {
+
+      const token = t.data().token;
+
+      await fetch("https://fcm.googleapis.com/fcm/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "key=SERVER_KEY_BURAYA"
+        },
+        body: JSON.stringify({
+          to: token,
+          notification: {
+            title: "🚀 Yeni Sipariş",
+            body: "Yeni sipariş sana atandı"
+          }
+        })
+      });
+
+    }
 
   });
 

@@ -1,385 +1,164 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kurye Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KuryeAI - Kurye Paneli</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <!-- MAP -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-<style>
-body{margin:0;font-family:Arial;background:#0b0e14;color:white}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f2027;
+      color: white;
+    }
 
-.header{
-display:flex;
-justify-content:space-between;
-padding:15px;
-background:#020617;
-}
+    #map {
+      height: 60vh;
+      width: 100%;
+    }
 
-.status{
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-}
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: rgba(0,0,0,0.8);
+    }
 
-.online{background:#00ff9c;color:black}
-.offline{background:#ff4d4d}
+    .status {
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
 
-#map{height:50vh}
+    .online {
+      background: #00c851;
+    }
 
-.panel{padding:15px}
+    .offline {
+      background: #ff4444;
+    }
 
-.card{
-background:#111827;
-padding:12px;
-margin-top:10px;
-border-radius:10px;
-}
+    .panel {
+      padding: 15px;
+    }
 
-.btn{
-width:100%;
-padding:10px;
-margin-top:5px;
-border:none;
-border-radius:8px;
-font-weight:bold;
-}
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-.accept{background:#00d4ff;color:black}
-.reject{background:#ff4d4d;color:white}
-.done{background:#22c55e;color:white}
-</style>
+    .btn-online {
+      background: #00c6ff;
+      color: black;
+    }
+
+    .btn-offline {
+      background: #ff4444;
+      color: white;
+    }
+
+    .orders {
+      margin-top: 15px;
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="header">
-<h3>🚴 KuryeAI</h3>
-<div id="status" class="status offline">Offline</div>
-</div>
+  <!-- TOP -->
+  <div class="topbar">
+    <div>🚀 KuryeAI</div>
+    <div id="statusBox" class="status offline">Offline</div>
+  </div>
 
-<div id="map"></div>
+  <!-- MAP -->
+  <div id="map"></div>
 
-<div class="panel">
+  <!-- PANEL -->
+  <div class="panel">
 
-<h3>📦 Siparişler</h3>
-<div id="orders"></div>
+    <button class="btn-online" onclick="goOnline()">Online Ol</button>
+    <button class="btn-offline" onclick="goOffline()">Offline Ol</button>
 
-<h3>🚀 Aktif Sipariş</h3>
-<div id="activeOrder"></div>
+    <div class="orders">
+      📦 Siparişler
+      <div id="orderList">Aktif sipariş yok</div>
+    </div>
 
-<button onclick="startShift()" class="btn accept">Online Ol</button>
-<button onclick="endShift()" class="btn reject">Offline Ol</button>
+  </div>
 
-</div>
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- LEAFLET -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script type="module">
+    import "./firebase.js";
 
-<!-- FIREBASE COMPAT (MAP VE SİSTEM İÇİN) -->
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.10.0/firebase-auth-compat.js"></script>
+    let map;
+    let marker;
 
-<!-- 🔥 BİLDİRİM (MODÜL) -->
-<script type="module">
+    // HARİTA
+    function initMap(lat, lng) {
+      map = L.map("map").setView([lat, lng], 15);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-messaging.js";
-import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+      }).addTo(map);
 
-/* CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  projectId: "kuryeai",
-  storageBucket: "kuryeai.appspot.com",
-  messagingSenderId: "562153733113",
-  appId: "1:562153733113:web:61d9242d0af1da6a081b28"
-};
-
-const appMod = initializeApp(firebaseConfig);
-const messaging = getMessaging(appMod);
-const dbMod = getFirestore(appMod);
-
-/* 🔔 TOKEN AL */
-window.initNotifications = async function(userId){
-
-  try{
-
-    const permission = await Notification.requestPermission();
-
-    if(permission !== "granted"){
-      alert("❌ Bildirim izni yok");
-      return;
+      marker = L.marker([lat, lng]).addTo(map)
+        .bindPopup("Sen buradasın")
+        .openPopup();
     }
 
-    const token = await getToken(messaging,{
-      vapidKey:"BCKhC2j7BvH_YGDC9vfHyJ2YfBO-beuRfEWhaQlQcM8e71p8_f6XKze7kkFGLH5oY3pKWhqbWys3FLbSaDVwATQ"
-    });
-
-    console.log("🔥 TOKEN:", token);
-
-    await updateDoc(doc(dbMod,"couriers",userId),{
-      fcmToken:token
-    });
-
-    alert("✅ Bildirim aktif");
-
-  }catch(e){
-    alert("❌ Bildirim hata: "+e.message);
-  }
-
-};
-
-</script>
-
-<script>
-
-/* CONFIG */
-firebase.initializeApp({
-apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-authDomain:"kuryeai.firebaseapp.com",
-projectId:"kuryeai"
-});
-
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-/* MAP */
-const map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let marker;
-
-/* ELEMENTS */
-const orders = document.getElementById("orders");
-const activeOrder = document.getElementById("activeOrder");
-const status = document.getElementById("status");
-
-/* GLOBAL */
-let user;
-let courierData=null;
-let watchId=null;
-let activeListener=null;
-
-/* DISTANCE */
-function getDistance(lat1,lng1,lat2,lng2){
-const R=6371;
-const dLat=(lat2-lat1)*Math.PI/180;
-const dLng=(lng2-lng1)*Math.PI/180;
-
-const a =
-Math.sin(dLat/2)**2 +
-Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
-Math.sin(dLng/2)**2;
-
-return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
-
-/* AUTH */
-auth.onAuthStateChanged(function(u){
-
-if(!u){
-location.href="login.html";
-return;
-}
-
-user=u;
-
-/* 🔥 BİLDİRİMİ BAŞLAT */
-initNotifications(user.uid);
-
-/* COURIER */
-db.collection("couriers").doc(u.uid).onSnapshot(function(snap){
-
-if(!snap.exists) return;
-
-courierData = snap.data();
-
-/* STATUS */
-if(courierData.online){
-status.className="status online";
-status.innerText="Online";
-}else{
-status.className="status offline";
-status.innerText="Offline";
-}
-
-/* ACTIVE ORDER */
-if(!activeListener){
-activeListener = db.collection("orders")
-.where("courierId","==",user.uid)
-.onSnapshot(function(snap){
-
-activeOrder.innerHTML="";
-
-snap.forEach(function(d){
-
-const o=d.data();
-if(o.status!=="yolda") return;
-
-activeOrder.innerHTML=`
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-<button class="btn done" onclick="finishOrder('${d.id}')">
-Teslim Edildi
-</button>
-</div>`;
-});
-
-});
-}
-
-});
-
-/* ORDERS */
-db.collection("orders")
-.where("status","==","bekliyor")
-.onSnapshot(function(snap){
-
-orders.innerHTML="";
-
-snap.forEach(function(d){
-
-const o=d.data();
-if(!o) return;
-
-if(o.rejectedBy && o.rejectedBy.includes(user.uid)) return;
-if(!courierData || !courierData.online) return;
-
-/* DISTANCE */
-if(o.lat && courierData.lat){
-const dist = getDistance(courierData.lat,courierData.lng,o.lat,o.lng);
-if(dist > 10) return;
-}
-
-orders.innerHTML+=`
-<div class="card">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-💰 ${o.price}₺ 🔥x${o.surge||1}
-
-<button class="btn accept" onclick="acceptOrder('${d.id}')">Kabul</button>
-<button class="btn reject" onclick="rejectOrder('${d.id}')">Reddet</button>
-</div>`;
-});
-
-});
-
-});
-
-/* SHIFT */
-function startShift(){
-
-if(watchId) return;
-
-watchId = navigator.geolocation.watchPosition(function(pos){
-
-const lat=pos.coords.latitude;
-const lng=pos.coords.longitude;
-
-if(marker){
-marker.setLatLng([lat,lng]);
-}else{
-marker = L.marker([lat,lng]).addTo(map);
-map.setView([lat,lng],15);
-}
-
-db.collection("couriers").doc(user.uid).update({
-lat:lat,
-lng:lng,
-online:true,
-status:"available"
-});
-
-});
-
-}
-
-/* OFFLINE */
-function endShift(){
-
-if(watchId){
-navigator.geolocation.clearWatch(watchId);
-watchId=null;
-}
-
-db.collection("couriers").doc(user.uid).update({
-online:false
-});
-
-location.reload();
-}
-
-/* ACCEPT */
-function acceptOrder(id){
-
-const ref = db.collection("orders").doc(id);
-
-db.runTransaction(function(t){
-return t.get(ref).then(function(snap){
-
-if(snap.data().status !== "bekliyor"){
-throw "taken";
-}
-
-t.update(ref,{
-status:"yolda",
-courierId:user.uid
-});
-
-});
-}).then(function(){
-
-db.collection("couriers").doc(user.uid).update({
-status:"busy"
-});
-
-alert("🚀 Sipariş alındı!");
-
-}).catch(function(){
-alert("Başka kurye aldı!");
-});
-
-}
-
-/* FINISH */
-function finishOrder(id){
-
-db.collection("orders").doc(id).update({
-status:"delivered"
-});
-
-db.collection("couriers").doc(user.uid).update({
-status:"available"
-});
-
-alert("Teslim edildi 🎉");
-}
-
-/* REJECT */
-function rejectOrder(id){
-
-const ref = db.collection("orders").doc(id);
-
-ref.get().then(function(snap){
-
-const prev = snap.data().rejectedBy || [];
-
-ref.update({
-rejectedBy:[...prev, user.uid]
-});
-
-});
-
-}
-
-</script>
+    // KONUM AL
+    function getLocation() {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        initMap(lat, lng);
+
+      }, () => {
+        alert("Konum alınamadı ❌");
+      });
+    }
+
+    // ONLINE
+    window.goOnline = async function () {
+      document.getElementById("statusBox").innerText = "Online";
+      document.getElementById("statusBox").className = "status online";
+
+      await window.requestNotificationPermission();
+
+      alert("Artık online'sın 🚀");
+    };
+
+    // OFFLINE
+    window.goOffline = function () {
+      document.getElementById("statusBox").innerText = "Offline";
+      document.getElementById("statusBox").className = "status offline";
+
+      alert("Offline oldun ❌");
+    };
+
+    // SAYFA AÇILINCA
+    window.onload = () => {
+      getLocation();
+    };
+
+  </script>
 
 </body>
 </html>

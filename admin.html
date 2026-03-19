@@ -1,213 +1,114 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AdminAI</title>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin:0;
+      font-family: Arial;
+      background:#0b0b0b;
+      color:white;
+    }
 
-<style>
-body{
-margin:0;
-font-family:'Inter',sans-serif;
-background:#0A0A0A;
-color:white;
-}
+    .header {
+      padding:20px;
+      font-size:22px;
+      font-weight:bold;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-/* HEADER */
-.header{
-padding:20px;
-font-size:22px;
-font-weight:bold;
-}
+    .logout {
+      background:#ff4d4d;
+      border:none;
+      padding:10px 15px;
+      border-radius:8px;
+      color:white;
+      font-weight:bold;
+    }
 
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-padding:15px;
-}
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+      padding:15px;
+    }
 
-/* CARD */
-.card{
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:15px;
-padding:15px;
-backdrop-filter:blur(12px);
-}
+    .card {
+      background:#1a1a1a;
+      padding:20px;
+      border-radius:15px;
+    }
 
-/* ORDER */
-.order{
-margin-top:10px;
-padding:10px;
-border-radius:10px;
-background:#111;
-}
-
-/* STATUS */
-.pending{color:#facc15}
-.accepted{color:#00C2A8}
-.delivered{color:#22c55e}
-
-/* INPUT */
-input, select{
-width:100%;
-padding:10px;
-margin-top:8px;
-border:none;
-border-radius:8px;
-background:#1a1a1a;
-color:white;
-}
-
-/* BUTTON */
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-background:#00C2A8;
-color:black;
-font-weight:bold;
-cursor:pointer;
-}
-</style>
+    .btn {
+      width:100%;
+      padding:12px;
+      background:#00d4aa;
+      border:none;
+      border-radius:10px;
+      margin-top:10px;
+      font-weight:bold;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="header">🧠 AdminAI</div>
+<div class="header">
+  🧠 AdminAI
+  <button class="logout" onclick="logout()">Çıkış</button>
+</div>
 
 <div class="grid">
+  <div class="card">
+    📦 Toplam Sipariş
+    <h2 id="total">0</h2>
+  </div>
 
-<!-- METRICS -->
-<div class="card">
-<h3>📦 Toplam Sipariş</h3>
-<div id="total">0</div>
-</div>
+  <div class="card">
+    🚀 Aktif Sipariş
+    <h2 id="active">0</h2>
+  </div>
 
-<div class="card">
-<h3>🚀 Aktif Sipariş</h3>
-<div id="active">0</div>
-</div>
+  <div class="card">
+    ⚙️ Sistem Ayarları
 
-<!-- SETTINGS -->
-<div class="card">
-<h3>⚙️ Sistem Ayarları</h3>
+    <p>Otomatik Atama</p>
+    <select id="autoAssign">
+      <option value="true">Açık</option>
+      <option value="false">Kapalı</option>
+    </select>
 
-<label>Otomatik Atama</label>
-<select id="autoAssign">
-<option value="true">Açık</option>
-<option value="false">Kapalı</option>
-</select>
+    <p>Maks Mesafe (km)</p>
+    <input id="maxDistance" type="number" value="10">
 
-<label>Maks Mesafe (km)</label>
-<input id="maxDistance" type="number" value="10">
+    <button class="btn" onclick="saveSettings()">Kaydet</button>
+  </div>
 
-<button onclick="saveSettings()">Kaydet</button>
-
-</div>
-
-<!-- ORDERS -->
-<div class="card" style="grid-column:span 2">
-<h3>📋 Siparişler</h3>
-<div id="orders"></div>
-</div>
-
+  <div class="card">
+    📋 Siparişler
+  </div>
 </div>
 
 <script type="module">
+import "./firebase.js";
 
-import { db } from "./firebase.js";
-import { startAutoAssign } from "./autoAssign.js";
+window.saveSettings = async () => {
+  const autoAssign = document.getElementById("autoAssign").value === "true";
+  const maxDistance = document.getElementById("maxDistance").value;
 
-import {
-collection,
-onSnapshot,
-doc,
-getDoc,
-setDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  const { getDatabase, ref, update } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js");
+  const db = getDatabase();
 
-/* AUTO ASSIGN BAŞLAT */
-startAutoAssign();
+  await update(ref(db, "sistem"), {
+    autoAssign,
+    maxDistance
+  });
 
-/* ELEMENTS */
-const ordersDiv = document.getElementById("orders");
-const totalDiv = document.getElementById("total");
-const activeDiv = document.getElementById("active");
-
-/* SİPARİŞLER */
-onSnapshot(collection(db,"orders"),(snap)=>{
-
-ordersDiv.innerHTML="";
-
-let total=0;
-let active=0;
-
-snap.forEach(docSnap=>{
-
-const o = docSnap.data();
-total++;
-
-if(o.status==="accepted") active++;
-
-ordersDiv.innerHTML += `
-<div class="order">
-<b>${o.customer}</b><br>
-${o.address}<br>
-
-<span class="${o.status}">
-${o.status}
-</span>
-
-<br>💰 ${o.price}₺
-</div>
-`;
-
-});
-
-totalDiv.innerText = total;
-activeDiv.innerText = active;
-
-});
-
-/* AYARLARI YÜKLE */
-async function loadSettings(){
-
-const snap = await getDoc(doc(db,"settings","config"));
-
-if(snap.exists()){
-const data = snap.data();
-
-document.getElementById("autoAssign").value = data.autoAssign;
-document.getElementById("maxDistance").value = data.maxDistance;
-}
-
-}
-
-loadSettings();
-
-/* KAYDET */
-window.saveSettings = async function(){
-
-const autoAssign =
-document.getElementById("autoAssign").value === "true";
-
-const maxDistance =
-parseFloat(document.getElementById("maxDistance").value);
-
-await setDoc(doc(db,"settings","config"),{
-autoAssign,
-maxDistance
-});
-
-alert("✅ Ayarlar kaydedildi");
-
+  alert("Kaydedildi");
 };
-
 </script>
 
 </body>

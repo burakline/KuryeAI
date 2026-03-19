@@ -2,13 +2,15 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// 🔥 FIREBASE CONFIG (DÜZELTİLDİ)
+// 🔥 CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
   projectId: "kuryeai",
-  storageBucket: "kuryeai.appspot.com", // ✅ DÜZELTİLDİ
+  storageBucket: "kuryeai.appspot.com",
   messagingSenderId: "655930514402",
   appId: "1:655930514402:web:379321cbb83f48daf077bb"
 };
@@ -16,19 +18,17 @@ const firebaseConfig = {
 // 🔥 INIT
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
+const auth = getAuth(app);
 
-// 🔔 SERVICE WORKER REGISTER
+// 🔔 SERVICE WORKER
 async function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
-    const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-    return registration;
-  } else {
-    console.warn("Service Worker desteklenmiyor ❌");
+    return await navigator.serviceWorker.register("/firebase-messaging-sw.js");
   }
 }
 
-// 🔥 TOKEN AL
-export async function requestNotificationPermission() {
+// 🔔 TOKEN
+async function requestNotificationPermission() {
   try {
     const permission = await Notification.requestPermission();
 
@@ -45,22 +45,47 @@ export async function requestNotificationPermission() {
     });
 
     console.log("🔥 TOKEN:", token);
-    alert("Bildirim aktif ✅");
-
     return token;
 
-  } catch (error) {
-    console.error("❌ TOKEN HATA:", error);
-    alert("Bildirim hatası: " + error.message);
+  } catch (err) {
+    console.error("TOKEN HATA:", err);
   }
 }
 
-// 🔔 FOREGROUND MESAJ
+// 🔔 FOREGROUND MESSAGE
 onMessage(messaging, (payload) => {
-  console.log("📩 Ön planda mesaj:", payload);
-
-  const title = payload.notification?.title || "Yeni Bildirim";
-  const body = payload.notification?.body || "";
-
-  alert(title + "\n" + body);
+  alert(
+    (payload.notification?.title || "Bildirim") +
+    "\n" +
+    (payload.notification?.body || "")
+  );
 });
+
+// 🔐 LOGIN
+window.loginUser = async (email, password) => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+
+    if (email === "admin@kuryeai.com") {
+      location.href = "/admin.html";
+    } else {
+      location.href = "/courier.html";
+    }
+
+  } catch (e) {
+    alert("Giriş hatası: " + e.message);
+  }
+};
+
+// 📝 REGISTER
+window.registerUser = async (email, password) => {
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Kayıt başarılı ✅");
+  } catch (e) {
+    alert("Kayıt hatası: " + e.message);
+  }
+};
+
+// GLOBAL
+window.requestNotificationPermission = requestNotificationPermission;

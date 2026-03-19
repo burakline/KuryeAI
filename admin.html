@@ -1,59 +1,22 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin:0;
-      font-family: Arial;
-      background:#0b0b0b;
-      color:white;
-    }
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .header {
-      padding:20px;
-      font-size:22px;
-      font-weight:bold;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-    .logout {
-      background:#ff4d4d;
-      border:none;
-      padding:10px 15px;
-      border-radius:8px;
-      color:white;
-      font-weight:bold;
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:15px;
-      padding:15px;
-    }
-
-    .card {
-      background:#1a1a1a;
-      padding:20px;
-      border-radius:15px;
-    }
-
-    .btn {
-      width:100%;
-      padding:12px;
-      background:#00d4aa;
-      border:none;
-      border-radius:10px;
-      margin-top:10px;
-      font-weight:bold;
-    }
-  </style>
+<style>
+body { margin:0; font-family: Arial; background:#0b0b0b; color:white; }
+.header { padding:15px; display:flex; justify-content:space-between; align-items:center; }
+.logout { background:#ff4d4d; border:none; padding:10px 15px; border-radius:8px; color:white; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px; }
+.card { background:#1a1a1a; padding:20px; border-radius:15px; }
+#map { height:400px; margin:15px; border-radius:15px; }
+</style>
 </head>
+
 <body>
 
 <div class="header">
@@ -62,53 +25,80 @@
 </div>
 
 <div class="grid">
-  <div class="card">
-    📦 Toplam Sipariş
-    <h2 id="total">0</h2>
-  </div>
-
-  <div class="card">
-    🚀 Aktif Sipariş
-    <h2 id="active">0</h2>
-  </div>
-
-  <div class="card">
-    ⚙️ Sistem Ayarları
-
-    <p>Otomatik Atama</p>
-    <select id="autoAssign">
-      <option value="true">Açık</option>
-      <option value="false">Kapalı</option>
-    </select>
-
-    <p>Maks Mesafe (km)</p>
-    <input id="maxDistance" type="number" value="10">
-
-    <button class="btn" onclick="saveSettings()">Kaydet</button>
-  </div>
-
-  <div class="card">
-    📋 Siparişler
-  </div>
+  <div class="card">📦 Toplam Sipariş <h2 id="total">0</h2></div>
+  <div class="card">🚀 Aktif Sipariş <h2 id="active">0</h2></div>
 </div>
+
+<div class="card" style="margin:15px;">
+  🗺️ Canlı Kurye Haritası
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 import "./firebase.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-window.saveSettings = async () => {
-  const autoAssign = document.getElementById("autoAssign").value === "true";
-  const maxDistance = document.getElementById("maxDistance").value;
+const db = getDatabase();
 
-  const { getDatabase, ref, update } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js");
-  const db = getDatabase();
+const map = L.map('map').setView([39.9208, 32.8541], 11);
 
-  await update(ref(db, "sistem"), {
-    autoAssign,
-    maxDistance
-  });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-  alert("Kaydedildi");
-};
+// ICONS
+const onlineIcon = L.icon({
+  iconUrl: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+  iconSize: [32,32]
+});
+
+const offlineIcon = L.icon({
+  iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+  iconSize: [32,32]
+});
+
+let markers = {};
+
+onValue(ref(db, "canli_takip"), (snapshot) => {
+
+  const data = snapshot.val();
+  if (!data) return;
+
+  for (const uid in data) {
+
+    const k = data[uid];
+
+    // 🔥 EN KRİTİK: GPS varsa göster
+    if (!k.lat || !k.lng) continue;
+
+    const lat = k.lat;
+    const lng = k.lng;
+
+    // 🔥 ONLINE sadece renk için
+    const isOnline = k.online === true;
+
+    const icon = isOnline ? onlineIcon : offlineIcon;
+
+    if (markers[uid]) {
+
+      markers[uid].setLatLng([lat, lng]);
+      markers[uid].setIcon(icon);
+
+    } else {
+
+      const m = L.marker([lat, lng], { icon }).addTo(map)
+        .bindPopup(
+          "Kurye: " + uid + "<br>" +
+          "Durum: " + (isOnline ? "🟢 Online" : "🔴 Offline")
+        );
+
+      markers[uid] = m;
+    }
+
+  }
+
+});
 </script>
 
 </body>

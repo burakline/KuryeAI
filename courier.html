@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>KuryeAI REALTIME</title>
+<title>KuryeAI FIX</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -10,49 +10,17 @@
 <style>
 body{margin:0;background:#020617;color:white;font-family:Arial}
 #map{height:45vh}
-
-.header{
-display:flex;
-justify-content:space-between;
-padding:10px;
-background:#020617;
-}
-
-.status{
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-}
-
+.header{display:flex;justify-content:space-between;padding:10px}
+.status{padding:6px 12px;border-radius:20px}
 .online{background:#22c55e;color:black}
 .offline{background:#ef4444}
-
-.card{
-background:#0f172a;
-padding:12px;
-margin:10px;
-border-radius:12px;
-}
-
-button{
-width:100%;
-padding:10px;
-margin-top:6px;
-border:none;
-border-radius:10px;
-font-weight:bold;
-}
-
+.card{background:#0f172a;padding:12px;margin:10px;border-radius:12px}
+button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px;font-weight:bold}
 .green{background:#22c55e}
 .red{background:#ef4444}
 .blue{background:#00d4ff;color:black}
 .orange{background:#f59e0b;color:black}
-
-.countdown{
-font-size:20px;
-color:#f59e0b;
-text-align:center;
-}
+.countdown{text-align:center;font-size:20px;color:#f59e0b}
 </style>
 </head>
 
@@ -70,42 +38,40 @@ text-align:center;
 <button class="red" onclick="goOffline()">Offline</button>
 </div>
 
-<div id="activeOrder"></div>
 <div id="incomingOrder"></div>
+<div id="activeOrder"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import "./firebase.js";
-import {
-getDatabase, ref, onValue, update
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-import {
-getAuth, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const db=getDatabase();
 const auth=getAuth();
 
-let user;
+let user=null;
 let map=L.map('map').setView([39.92,32.85],13);
-
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let marker,routeLayer;
+let marker=null;
+let routeLayer=null;
 let orders={};
 let routeCache={};
+let timer=null;
 
 /* AUTH */
 onAuthStateChanged(auth,function(u){
-if(!u) location.href="login.html";
+if(!u){ location.href="login.html"; return; }
 user=u;
 });
 
 /* GPS */
 navigator.geolocation.watchPosition(function(pos){
+
+if(!user) return;
 
 let lat=pos.coords.latitude;
 let lng=pos.coords.longitude;
@@ -161,11 +127,11 @@ audio.play();
 }
 
 /* COUNTDOWN */
-let timer;
-
 function startCountdown(orderId){
 
 let time=10;
+
+if(timer) clearInterval(timer);
 
 timer=setInterval(function(){
 
@@ -177,7 +143,6 @@ time--;
 if(time<0){
 clearInterval(timer);
 
-/* otomatik reddet */
 update(ref(db,"orders/"+orderId),{
 status:"waiting",
 courierId:null
@@ -205,6 +170,7 @@ for(let id in orders){
 
 let d=orders[id];
 
+if(!user) continue;
 if(d.courierId!==user.uid) continue;
 
 /* NEW ORDER */
@@ -213,7 +179,7 @@ if(d.status==="assigned"){
 playSound();
 startCountdown(id);
 
-incomingOrder.innerHTML+=
+incomingOrder.innerHTML=
 "<div class='card'>"+
 "<b>Yeni Sipariş</b><br>"+
 "<button class='green' onclick=\"accept('"+id+"')\">Kabul</button>"+
@@ -221,7 +187,7 @@ incomingOrder.innerHTML+=
 "</div>";
 }
 
-/* ACTIVE */
+/* ACTIVE ORDER */
 if(d.status==="accepted" || d.status==="onway"){
 
 if(marker && d.lat){
@@ -230,7 +196,9 @@ let route=await getRoute(marker.getLatLng(),d);
 
 if(routeLayer) map.removeLayer(routeLayer);
 
-routeLayer=L.geoJSON(route.geometry,{style:{color:"#00d4ff"}}).addTo(map);
+routeLayer=L.geoJSON(route.geometry,{
+style:{color:"#00d4ff"}
+}).addTo(map);
 
 let km=(route.distance/1000).toFixed(2);
 let eta=Math.round(route.duration/60);
@@ -252,12 +220,12 @@ km+" km | "+eta+" dk<br>"+
 
 /* ACTIONS */
 window.accept=function(id){
-clearInterval(timer);
+if(timer) clearInterval(timer);
 update(ref(db,"orders/"+id),{status:"accepted"});
 };
 
 window.reject=function(id){
-clearInterval(timer);
+if(timer) clearInterval(timer);
 update(ref(db,"orders/"+id),{
 status:"waiting",
 courierId:null
@@ -277,7 +245,9 @@ status.className="status online";
 window.goOffline=function(){
 status.innerText="Offline";
 status.className="status offline";
+if(user){
 update(ref(db,"couriers/"+user.uid),{online:false});
+}
 };
 
 </script>

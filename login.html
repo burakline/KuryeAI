@@ -39,6 +39,11 @@ button{
   color:white;
   font-weight:bold;
 }
+#status{
+  margin-top:10px;
+  font-size:14px;
+  color:#f87171;
+}
 </style>
 </head>
 
@@ -54,12 +59,11 @@ button{
 
 <script type="module">
 
-// FIREBASE IMPORTS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-// CONFIG (SENİN)
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
@@ -75,7 +79,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// LOGIN FUNCTION
+// LOGIN
 window.login = async function(){
 
   const email = document.getElementById("email").value;
@@ -83,41 +87,54 @@ window.login = async function(){
   const status = document.getElementById("status");
 
   try{
+
+    // 🔥 CACHE TEMİZLE
+    await signOut(auth);
+
     const userCred = await signInWithEmailAndPassword(auth, email, password);
     const uid = userCred.user.uid;
 
-    console.log("UID:", uid);
+    console.log("LOGIN UID:", uid);
+    status.innerText = "UID: " + uid;
 
-    // ROLE OKU
-    const roleSnap = await get(ref(db, "roles/" + uid));
+    // 🔥 ROLE OKU
+    const snap = await get(ref(db, "roles/" + uid));
 
-    if(!roleSnap.exists()){
-      status.innerText = "Rol bulunamadı!";
+    if(!snap.exists()){
+      status.innerText = "❌ Role bulunamadı!";
       return;
     }
 
-    const role = roleSnap.val().role;
-    console.log("ROLE:", role);
+    const data = snap.val();
+    console.log("ROLE DATA:", data);
 
-    // ROUTING (EN KRİTİK KISIM)
+    if(!data.role){
+      status.innerText = "❌ Role boş!";
+      return;
+    }
+
+    const role = data.role.trim();
+
+    // 🔥 ROUTING (KESİN)
     if(role === "admin"){
-      window.location.href = "admin.html";
+      location.replace("admin.html");
     }
     else if(role === "restaurant"){
-      window.location.href = "restaurant.html";
+      location.replace("restaurant.html");
     }
     else if(role === "courier"){
-      window.location.href = "courier.html";
+      location.replace("courier.html");
     }
     else{
-      status.innerText = "Geçersiz rol!";
+      status.innerText = "❌ Geçersiz role: " + role;
     }
 
   }catch(err){
     console.error(err);
     status.innerText = err.message;
   }
-}
+
+};
 
 </script>
 

@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>AdminAI ULTIMATE MERGE</title>
+<title>AdminAI ULTIMATE SYSTEM</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -11,7 +11,6 @@
 body{margin:0;background:#020617;color:white;font-family:Arial}
 #map{height:100vh}
 
-/* PANEL */
 .panel{
 position:fixed;bottom:0;width:100%;height:45vh;
 background:#020617;border-radius:20px 20px 0 0;
@@ -23,14 +22,11 @@ content:"";width:60px;height:6px;background:#444;
 display:block;margin:10px auto;border-radius:10px;
 }
 
-/* TABS */
 .tabs{display:flex;justify-content:space-around;padding:6px;background:#020617}
-.tabs button{background:#0f172a;color:white;border-radius:10px;padding:10px;width:22%}
+.tabs button{background:#0f172a;color:white;border-radius:10px;padding:10px;width:18%}
 
-/* CARD */
 .card{margin:8px;padding:12px;border-radius:14px;background:rgba(15,23,42,.7)}
 
-/* FORM */
 input,select{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;background:#0f172a;color:white}
 
 button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;font-weight:bold}
@@ -51,8 +47,9 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 <div class="tabs">
 <button onclick="tab('orders')">📦</button>
 <button onclick="tab('couriers')">🚴</button>
-<button onclick="tab('settings')">⚙️</button>
 <button onclick="tab('zones')">🗺️</button>
+<button onclick="tab('finance')">💰</button>
+<button onclick="tab('settings')">⚙️</button>
 </div>
 
 <!-- ORDERS -->
@@ -63,7 +60,7 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 <input id="address" placeholder="Adres">
 <input id="lat" placeholder="Lat">
 <input id="lng" placeholder="Lng">
-<button class="blue" onclick="createOrder()">Sipariş Oluştur</button>
+<button class="blue" onclick="createOrder()">Sipariş</button>
 </div>
 
 <div class="card">
@@ -81,10 +78,33 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 <div class="card" id="courierList"></div>
 </div>
 
+<!-- ZONES -->
+<div id="zonesTab" style="display:none">
+<div class="card">
+<input id="zoneName" placeholder="Zone adı">
+<button onclick="startZone()">Çiz</button>
+<button onclick="saveZone()">Kaydet</button>
+</div>
+</div>
+
+<!-- FINANCE -->
+<div id="financeTab" style="display:none">
+
+<div class="card">
+<b>📊 Genel</b>
+<div id="financeSummary"></div>
+</div>
+
+<div class="card">
+<b>🚴 Kurye Kazanç</b>
+<div id="courierFinance"></div>
+</div>
+
+</div>
+
 <!-- SETTINGS -->
 <div id="settingsTab" style="display:none">
 <div class="card">
-<b>💰 Ücret</b>
 <select id="pricingType">
 <option value="courier">Kurye</option>
 <option value="restaurant">Restoran</option>
@@ -96,15 +116,6 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 </div>
 </div>
 
-<!-- ZONE -->
-<div id="zonesTab" style="display:none">
-<div class="card">
-<input id="zoneName" placeholder="Zone adı">
-<button onclick="startZone()">Çiz</button>
-<button onclick="saveZone()">Kaydet</button>
-</div>
-</div>
-
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -112,7 +123,7 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 <script type="module">
 
 import "./firebase.js";
-import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const db=getDatabase();
 const map=L.map('map').setView([39.92,32.85],11);
@@ -129,8 +140,9 @@ panel.onclick=()=>panel.classList.toggle("full");
 window.tab=(t)=>{
 ordersTab.style.display="none";
 couriersTab.style.display="none";
-settingsTab.style.display="none";
 zonesTab.style.display="none";
+financeTab.style.display="none";
+settingsTab.style.display="none";
 document.getElementById(t+"Tab").style.display="block";
 };
 
@@ -164,6 +176,7 @@ function findBestCourier(order){
 let best=null,scoreMin=999999;
 
 for(let id in couriers){
+
 let c=couriers[id];
 if(!c.lat) continue;
 
@@ -207,9 +220,7 @@ function animateMarker(id,lat,lng){
 let m=courierMarkers[id];
 if(!m) return;
 
-let s=m.getLatLng(),i=0,steps=20;
-
-if(anim[id]) cancelAnimationFrame(anim[id]);
+let s=m.getLatLng(),i=0,steps=15;
 
 function step(){
 i++;
@@ -217,7 +228,7 @@ m.setLatLng([
 s.lat+(lat-s.lat)*(i/steps),
 s.lng+(lng-s.lng)*(i/steps)
 ]);
-if(i<steps) anim[id]=requestAnimationFrame(step);
+if(i<steps) requestAnimationFrame(step);
 }
 step();
 }
@@ -259,6 +270,46 @@ perKm:+perKm.value
 });
 };
 
+/* FINANCE */
+function calculateFinance(){
+
+let total=0,delivered=0,revenue=0;
+let courierStats={};
+
+for(let id in orders){
+
+let o=orders[id];
+total++;
+
+if(o.status==="delivered"){
+
+delivered++;
+let price=o.price||50;
+revenue+=price;
+
+let cid=o.courierId;
+
+if(!courierStats[cid]) courierStats[cid]=0;
+courierStats[cid]+=price*0.6;
+
+}
+}
+
+financeSummary.innerHTML=`
+Toplam: ${total}<br>
+Teslim: ${delivered}<br>
+Ciro: ${revenue.toFixed(2)}₺
+`;
+
+let html="";
+for(let c in courierStats){
+html+=`${c}: ${courierStats[c].toFixed(2)}₺<br>`;
+}
+
+courierFinance.innerHTML=html;
+
+}
+
 /* COURIERS */
 onValue(ref(db,"couriers"),snap=>{
 courierList.innerHTML="";
@@ -299,12 +350,12 @@ let info=`${d.customer} | ${d.status}`;
 if(d.courierId && couriers[d.courierId]){
 
 let route=await getRoute(couriers[d.courierId],d);
+
 let km=(route.distance/1000).toFixed(2);
 let eta=calcETA(route);
 
 info+=` | ${km}km | ${eta}dk`;
 
-/* ROUTE DRAW */
 if(routes[d.id]) map.removeLayer(routes[d.id]);
 
 routes[d.id]=L.geoJSON(route.geometry,{style:{color:"#00d4ff"}}).addTo(map);
@@ -320,9 +371,10 @@ orderMarkers[d.id]=L.circleMarker([d.lat,d.lng],{radius:5,color:"#00d4ff"}).addT
 
 });
 
+calculateFinance();
+
 });
 
 </script>
-
 </body>
 </html>

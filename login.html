@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Login</title>
+<title>KuryeAI</title>
 
 <style>
 body{
@@ -71,8 +71,7 @@ const firebaseConfig = {
   projectId: "kuryeai",
   storageBucket: "kuryeai.firebasestorage.app",
   messagingSenderId: "655930514402",
-  appId: "1:655930514402:web:379321cbb83f48daf077bb",
-  measurementId: "G-JYQP30LJG3"
+  appId: "1:655930514402:web:379321cbb83f48daf077bb"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -88,53 +87,49 @@ window.login = async function(){
 
   try{
 
-    // 🔥 CACHE TEMİZLE
-    await signOut(auth);
+    await signOut(auth); // cache temizle
 
     const userCred = await signInWithEmailAndPassword(auth, email, password);
     const uid = userCred.user.uid;
 
-    console.log("LOGIN UID:", uid);
-    status.innerText = "UID: " + uid;
+    console.log("UID:", uid);
+    status.innerText = "Giriş başarılı...";
 
-    // 🔥 ROLE OKU
     const snap = await get(ref(db, "roles/" + uid));
 
     if(!snap.exists()){
-      status.innerText = "❌ Role bulunamadı!";
+      status.innerText = "❌ Role yok!";
       return;
     }
 
-    const data = snap.val();
-    console.log("ROLE DATA:", data);
+    const role = snap.val().role?.trim();
 
-    if(!data.role){
+    if(!role){
       status.innerText = "❌ Role boş!";
       return;
     }
 
-    const role = data.role.trim();
+    // 🔥 HARD REDIRECT (KESİN)
+    let target = "";
 
-    // 🔥 ROUTING (KESİN)
-    if(role === "admin"){
-      location.replace("admin.html");
-    }
-    else if(role === "restaurant"){
-      location.replace("restaurant.html");
-    }
-    else if(role === "courier"){
-      location.replace("courier.html");
-    }
+    if(role === "admin") target = "/admin.html";
+    else if(role === "restaurant") target = "/restaurant.html";
+    else if(role === "courier") target = "/courier.html";
     else{
-      status.innerText = "❌ Geçersiz role: " + role;
+      status.innerText = "❌ Geçersiz role!";
+      return;
     }
+
+    console.log("GİDİYOR:", target);
+
+    // 🔥 EN KRİTİK FIX
+    window.location.assign(target + "?r=" + Date.now());
 
   }catch(err){
     console.error(err);
     status.innerText = err.message;
   }
-
-};
+}
 
 </script>
 

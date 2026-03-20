@@ -3,165 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Giriş</title>
+<title>KuryeAI Login</title>
 
 <style>
 body{
   margin:0;
+  background:#0f172a;
   font-family:Arial;
-  background:#0b1220;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   height:100vh;
   color:white;
 }
-
 .box{
-  width:90%;
-  max-width:400px;
   background:#111827;
   padding:25px;
   border-radius:15px;
+  width:90%;
+  max-width:350px;
 }
-
 input{
   width:100%;
-  padding:15px;
-  margin-top:10px;
+  padding:12px;
+  margin:10px 0;
   border-radius:10px;
   border:none;
-  background:#1f2937;
-  color:white;
 }
-
 button{
   width:100%;
-  padding:15px;
-  margin-top:15px;
+  padding:12px;
   border:none;
   border-radius:10px;
   background:#10b981;
   color:white;
   font-weight:bold;
 }
-
-#loading{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#000000dd;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  display:none;
-}
 </style>
 </head>
 
 <body>
 
-<div id="loading">Yükleniyor...</div>
-
 <div class="box">
-  <h2>🚀 KuryeAI</h2>
-
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Şifre">
-
-  <button onclick="login()">Giriş Yap</button>
+<h2>🚀 KuryeAI</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Şifre">
+<button onclick="login()">Giriş Yap</button>
+<p id="status"></p>
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+// FIREBASE IMPORTS
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-/* 🔥 SENİN CONFIG */
+// CONFIG (SENİN)
 const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT.firebaseapp.com",
-  databaseURL: "https://PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "PROJECT",
-  storageBucket: "PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kuryeai",
+  storageBucket: "kuryeai.firebasestorage.app",
+  messagingSenderId: "655930514402",
+  appId: "1:655930514402:web:379321cbb83f48daf077bb",
+  measurementId: "G-JYQP30LJG3"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-const loading = document.getElementById("loading");
-
-/* LOGIN */
+// LOGIN FUNCTION
 window.login = async function(){
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
-  loading.style.display = "flex";
-
-  try{
-    await signInWithEmailAndPassword(auth,email,password);
-  }catch(e){
-    loading.style.display = "none";
-    alert(e.message);
-  }
-};
-
-/* 🔥 SESSION + ROLE ENGINE */
-onAuthStateChanged(auth, async (user) => {
-  if(!user) return;
-
-  loading.style.display = "flex";
+  const status = document.getElementById("status");
 
   try{
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCred.user.uid;
 
-    const roleRef = ref(db, "roles/" + user.uid);
-    const snap = await get(roleRef);
+    console.log("UID:", uid);
 
-    let role;
+    // ROLE OKU
+    const roleSnap = await get(ref(db, "roles/" + uid));
 
-    /* 🧠 AUTO ROLE */
-    if(!snap.exists()){
-      role = "courier";
-      await set(roleRef,{role:"courier"});
-    }else{
-      role = snap.val().role;
-    }
-
-    console.log("ROLE:",role);
-
-    /* 🚫 BLACKLIST (istersen aç) */
-    /*
-    const ban = await get(ref(db,"banned/"+user.uid));
-    if(ban.exists()){
-      alert("Hesap engellendi");
+    if(!roleSnap.exists()){
+      status.innerText = "Rol bulunamadı!";
       return;
     }
-    */
 
-    /* 🚀 REDIRECT */
+    const role = roleSnap.val().role;
+    console.log("ROLE:", role);
+
+    // ROUTING (EN KRİTİK KISIM)
     if(role === "admin"){
-      window.location.href = "/admin.html";
+      window.location.href = "admin.html";
     }
     else if(role === "restaurant"){
-      window.location.href = "/restaurant.html";
+      window.location.href = "restaurant.html";
+    }
+    else if(role === "courier"){
+      window.location.href = "courier.html";
     }
     else{
-      window.location.href = "/courier.html";
+      status.innerText = "Geçersiz rol!";
     }
 
-  }catch(e){
-    console.log(e);
-    alert("Sistem hatası");
+  }catch(err){
+    console.error(err);
+    status.innerText = err.message;
   }
-
-});
+}
 
 </script>
 

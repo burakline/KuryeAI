@@ -2,117 +2,54 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>AdminAI ULTIMATE</title>
+<title>AdminAI REAL ROUTE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{margin:0;font-family:Arial;background:#020617;color:white}
-
-/* GRID */
-.container{
-display:grid;
-grid-template-columns:1fr 360px;
-}
-
-/* MAP */
+body{margin:0;background:#020617;color:white;font-family:Arial}
 #map{height:100vh}
 
-/* PANEL */
-.panel{overflow:auto;height:100vh}
-
-/* CARD */
-.card{
-background:rgba(15,23,42,.6);
-backdrop-filter:blur(10px);
-padding:12px;
-margin:8px;
-border-radius:12px;
+.panel{
+position:fixed;bottom:0;width:100%;height:45vh;
+background:#020617;border-radius:20px 20px 0 0;
+overflow:auto;z-index:9999;transition:.3s;
+}
+.panel.full{height:85vh}
+.panel::before{
+content:"";width:60px;height:6px;background:#444;
+display:block;margin:10px auto;border-radius:10px;
 }
 
-/* INPUT */
-input,select{
-width:100%;
-padding:8px;
-margin-top:6px;
-border:none;
-border-radius:8px;
-background:#0f172a;
-color:white;
-}
+.tabs{display:flex;justify-content:space-around;position:sticky;top:0;background:#020617;padding:6px}
+.tabs button{background:#0f172a;color:white;border-radius:10px;padding:10px;width:22%}
 
-/* BUTTON */
-button{
-width:100%;
-padding:10px;
-margin-top:6px;
-border:none;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-}
+.card{margin:8px;padding:12px;border-radius:14px;background:rgba(15,23,42,.7)}
+
+input,select{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;background:#0f172a;color:white}
+
+button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;font-weight:bold}
 
 .blue{background:#00d4ff;color:black}
-.green{background:#22c55e}
-.red{background:#ef4444}
 .orange{background:#f59e0b;color:black}
-
-/* 🔥 TAB */
-.tabs{
-display:flex;
-justify-content:space-around;
-background:#020617;
-padding:6px;
-position:sticky;
-top:0;
-z-index:999;
-}
-
-.tabs button{
-background:#0f172a;
-color:white;
-border-radius:8px;
-padding:8px;
-width:22%;
-}
-
-/* 🔥 MOBILE */
-@media (max-width:768px){
-
-.container{
-display:flex !important;
-flex-direction:column !important;
-}
-
-#map{height:50vh !important}
-.panel{height:50vh !important}
-
-}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
 <div id="map"></div>
 
-<div class="panel">
+<div class="panel" id="panel">
 
-<!-- TAB MENU -->
 <div class="tabs">
-<button onclick="showTab('orders')">📦</button>
-<button onclick="showTab('couriers')">🚴</button>
-<button onclick="showTab('restaurants')">🏪</button>
-<button onclick="showTab('settings')">⚙️</button>
+<button onclick="tab('orders')">📦</button>
+<button onclick="tab('couriers')">🚴</button>
+<button onclick="tab('settings')">⚙️</button>
 </div>
 
-<!-- SİPARİŞ -->
-<div id="tab-orders" class="tab">
-
+<div id="ordersTab">
 <div class="card">
-<b>📦 Sipariş</b>
 <input id="customer" placeholder="Müşteri">
 <input id="address" placeholder="Adres">
 <input id="lat" placeholder="Lat">
@@ -121,68 +58,22 @@ flex-direction:column !important;
 </div>
 
 <div class="card">
-<b>🎯 Manuel Atama</b>
 <select id="orderSelect"></select>
 <select id="courierSelect"></select>
 <button class="orange" onclick="manualAssign()">Ata</button>
 </div>
 
+<div class="card" id="orderList"></div>
+</div>
+
+<div id="couriersTab" style="display:none">
+<div class="card" id="courierList"></div>
+</div>
+
+<div id="settingsTab" style="display:none">
 <div class="card">
-<b>📋 Siparişler</b>
-<div id="orderList"></div>
+<input id="speed" placeholder="Ortalama hız km/h (örn:40)">
 </div>
-
-</div>
-
-<!-- KURYE -->
-<div id="tab-couriers" class="tab" style="display:none;">
-
-<div class="card">
-<b>🚴 Kuryeler</b>
-<div id="courierList"></div>
-</div>
-
-</div>
-
-<!-- RESTORAN -->
-<div id="tab-restaurants" class="tab" style="display:none;">
-
-<div class="card">
-<b>🏪 Restoranlar</b>
-<div id="restaurantList"></div>
-</div>
-
-</div>
-
-<!-- AYAR -->
-<div id="tab-settings" class="tab" style="display:none;">
-
-<div class="card">
-<b>💰 Ücret</b>
-<select id="pricingType">
-<option value="courier">Kurye</option>
-<option value="restaurant">Restoran</option>
-<option value="zone">Zone</option>
-</select>
-<input id="targetId" placeholder="ID">
-<select id="model">
-<option value="hourly">Saatlik</option>
-<option value="perOrder">Paket</option>
-</select>
-<input id="basePrice" placeholder="Ücret">
-<input id="perKm" placeholder="KM">
-<button class="green" onclick="savePricing()">Kaydet</button>
-</div>
-
-<div class="card">
-<b>🗺️ Zone</b>
-<input id="zoneName" placeholder="Zone adı">
-<button onclick="startZone()">Çizmeye Başla</button>
-<button onclick="saveZone()">Kaydet</button>
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -192,20 +83,26 @@ flex-direction:column !important;
 <script type="module">
 
 import "./firebase.js";
-import { getDatabase, ref, onValue, set } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const db=getDatabase();
-const map=L.map('map').setView([39.92,32.85],11);
 
+const map=L.map('map').setView([39.92,32.85],11);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let couriers={},orders={};
+/* CACHE */
+let courierMarkers={},orderMarkers={},routes={},routeCache={};
+let courierAnim={},couriers={},orders={};
+
+/* PANEL */
+panel.onclick=()=>panel.classList.toggle("full");
 
 /* TAB */
-window.showTab=(t)=>{
-document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
-document.getElementById("tab-"+t).style.display="block";
+window.tab=(t)=>{
+ordersTab.style.display="none";
+couriersTab.style.display="none";
+settingsTab.style.display="none";
+document.getElementById(t+"Tab").style.display="block";
 };
 
 /* MAP CLICK */
@@ -214,48 +111,27 @@ lat.value=e.latlng.lat;
 lng.value=e.latlng.lng;
 });
 
-/* KURYELER */
-onValue(ref(db,"couriers"),snap=>{
-courierSelect.innerHTML="";
-courierList.innerHTML="";
+/* SMOOTH */
+function animateMarker(id,newLat,newLng){
+let m=courierMarkers[id];
+if(!m) return;
 
-snap.forEach(c=>{
-let id=c.key,d=c.val();
-couriers[id]=d;
+let s=m.getLatLng();
+let i=0,steps=20;
 
-if(d.lat){
-L.circleMarker([d.lat,d.lng],{
-radius:6,color:d.online?"#22c55e":"#ef4444"
-}).addTo(map);
+if(courierAnim[id]) cancelAnimationFrame(courierAnim[id]);
+
+function step(){
+i++;
+m.setLatLng([
+s.lat+(newLat-s.lat)*(i/steps),
+s.lng+(newLng-s.lng)*(i/steps)
+]);
+if(i<steps) courierAnim[id]=requestAnimationFrame(step);
 }
 
-courierSelect.innerHTML+=`<option value="${id}">${id}</option>`;
-
-courierList.innerHTML+=`
-<div>
-${id}
-<button class="red" onclick="blacklist('${id}')">⛔</button>
-</div>`;
-});
-});
-
-/* SİPARİŞ */
-onValue(ref(db,"orders"),snap=>{
-orderList.innerHTML="";
-orderSelect.innerHTML="";
-
-snap.forEach(o=>{
-let d=o.val();
-orders[d.id]=d;
-
-orderSelect.innerHTML+=`<option value="${d.id}">${d.customer}</option>`;
-
-orderList.innerHTML+=`
-<div>
-${d.customer} | ${d.status} | 💰${d.price||"-"}
-</div>`;
-});
-});
+step();
+}
 
 /* CREATE */
 window.createOrder=()=>{
@@ -270,27 +146,86 @@ status:"waiting"
 });
 };
 
-/* MANUEL */
-window.manualAssign=()=>{
-set(ref(db,"orders/"+orderSelect.value+"/courierId"),courierSelect.value);
-set(ref(db,"orders/"+orderSelect.value+"/status"),"assigned");
-};
+/* REAL ROUTE */
+async function getRoute(c,o){
 
-/* PRICING */
-window.savePricing=()=>{
-set(ref(db,"pricing/"+pricingType.value+"/"+targetId.value),{
-model:model.value,
-base:+basePrice.value,
-perKm:+perKm.value
+let key=c.lat+","+c.lng+"_"+o.lat+","+o.lng;
+
+if(routeCache[key]) return routeCache[key];
+
+let url=`https://router.project-osrm.org/route/v1/driving/${c.lng},${c.lat};${o.lng},${o.lat}?overview=full&geometries=geojson`;
+
+let res=await fetch(url);
+let data=await res.json();
+
+let route=data.routes[0];
+
+routeCache[key]=route;
+return route;
+}
+
+/* COURIERS */
+onValue(ref(db,"couriers"),snap=>{
+courierList.innerHTML="";
+courierSelect.innerHTML="";
+
+snap.forEach(c=>{
+let id=c.key,d=c.val();
+couriers[id]=d;
+
+if(d.lat){
+if(!courierMarkers[id]){
+courierMarkers[id]=L.marker([d.lat,d.lng]).addTo(map);
+}else{
+animateMarker(id,d.lat,d.lng);
+}
+}
+
+courierList.innerHTML+=id+"<br>";
+courierSelect.innerHTML+=`<option value="${id}">${id}</option>`;
 });
-};
+});
 
-/* BLACKLIST */
-window.blacklist=id=>{
-set(ref(db,"blacklist/courier/"+id),true);
-};
+/* ORDERS */
+onValue(ref(db,"orders"),snap=>{
+
+orderList.innerHTML="";
+orderSelect.innerHTML="";
+
+snap.forEach(async o=>{
+
+let d=o.val();
+orders[d.id]=d;
+
+let eta="";
+if(d.courierId && couriers[d.courierId]){
+
+let route=await getRoute(couriers[d.courierId],d);
+
+let km=(route.distance/1000).toFixed(2);
+let min=Math.round(route.duration/60);
+
+eta=` | ${km} km | ${min} dk`;
+
+/* DRAW ROUTE */
+if(routes[d.id]) map.removeLayer(routes[d.id]);
+
+routes[d.id]=L.geoJSON(route.geometry,{
+style:{color:"#00d4ff",weight:4}
+}).addTo(map);
+
+}
+
+orderList.innerHTML+=`${d.customer} | ${d.status}${eta}<br>`;
+orderSelect.innerHTML+=`<option value="${d.id}">${d.customer}</option>`;
+
+/* MARKER */
+if(d.lat && !orderMarkers[d.id]){
+orderMarkers[d.id]=L.circleMarker([d.lat,d.lng],{radius:5,color:"#00d4ff"}).addTo(map);
+}
+
+});
+
+});
 
 </script>
-
-</body>
-</html>

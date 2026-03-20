@@ -3,47 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI</title>
+<title>KuryeAI Login</title>
 
 <style>
-body{
-  margin:0;
-  background:#0f172a;
-  font-family:Arial;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  color:white;
-}
-.box{
-  background:#111827;
-  padding:25px;
-  border-radius:15px;
-  width:90%;
-  max-width:350px;
-}
-input{
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:10px;
-  border:none;
-}
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#10b981;
-  color:white;
-  font-weight:bold;
-}
-#status{
-  margin-top:10px;
-  font-size:14px;
-  color:#f87171;
-}
+body{margin:0;background:#0f172a;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh;color:white;}
+.box{background:#111827;padding:25px;border-radius:15px;width:90%;max-width:350px;}
+input{width:100%;padding:12px;margin:10px 0;border-radius:10px;border:none;}
+button{width:100%;padding:12px;border:none;border-radius:10px;background:#10b981;color:white;font-weight:bold;}
+#status{margin-top:10px;color:#f87171;}
 </style>
 </head>
 
@@ -63,7 +30,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/fireba
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
@@ -78,7 +44,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// LOGIN
 window.login = async function(){
 
   const email = document.getElementById("email").value;
@@ -86,52 +51,30 @@ window.login = async function(){
   const status = document.getElementById("status");
 
   try{
-
     await signOut(auth); // cache temizle
 
-    const userCred = await signInWithEmailAndPassword(auth, email, password);
-    const uid = userCred.user.uid;
+    const user = await signInWithEmailAndPassword(auth,email,password);
+    const uid = user.user.uid;
 
-    console.log("UID:", uid);
-    status.innerText = "Giriş başarılı...";
-
-    const snap = await get(ref(db, "roles/" + uid));
+    const snap = await get(ref(db,"roles/"+uid));
 
     if(!snap.exists()){
-      status.innerText = "❌ Role yok!";
+      status.innerText="❌ Role bulunamadı";
       return;
     }
 
-    const role = snap.val().role?.trim();
+    const role = snap.val().role;
 
-    if(!role){
-      status.innerText = "❌ Role boş!";
-      return;
-    }
+    if(role==="admin") window.location.href="/admin.html";
+    else if(role==="restaurant") window.location.href="/restaurant.html";
+    else if(role==="courier") window.location.href="/courier.html";
+    else status.innerText="❌ Geçersiz role";
 
-    // 🔥 HARD REDIRECT (KESİN)
-    let target = "";
-
-    if(role === "admin") target = "/admin.html";
-    else if(role === "restaurant") target = "/restaurant.html";
-    else if(role === "courier") target = "/courier.html";
-    else{
-      status.innerText = "❌ Geçersiz role!";
-      return;
-    }
-
-    console.log("GİDİYOR:", target);
-
-    // 🔥 EN KRİTİK FIX
-    window.location.assign(target + "?r=" + Date.now());
-
-  }catch(err){
-    console.error(err);
-    status.innerText = err.message;
+  }catch(e){
+    status.innerText=e.message;
   }
 }
 
 </script>
-
 </body>
 </html>

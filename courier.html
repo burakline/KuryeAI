@@ -15,7 +15,10 @@ button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px}
 .green{background:#22c55e}
 .red{background:#ef4444}
 .blue{background:#00d4ff;color:black}
-.count{font-size:20px;text-align:center;color:#f59e0b}
+.count{font-size:22px;text-align:center;color:#f59e0b}
+.status{text-align:center;padding:6px;margin:5px}
+.online{color:#22c55e}
+.offline{color:#ef4444}
 </style>
 </head>
 
@@ -24,8 +27,9 @@ button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px}
 <div id="map"></div>
 
 <div class="card">
-<button class="green" onclick="goOnline()">Online</button>
-<button class="red" onclick="goOffline()">Offline</button>
+<div id="status" class="status offline">Offline</div>
+<button class="green" onclick="goOnline()">Online Ol</button>
+<button class="red" onclick="goOffline()">Offline Ol</button>
 </div>
 
 <div id="incoming"></div>
@@ -54,8 +58,10 @@ if(!u) location.href="login.html";
 user=u;
 });
 
-/* GPS */
+/* GPS LIVE */
 navigator.geolocation.watchPosition(pos=>{
+if(!user) return;
+
 let lat=pos.coords.latitude;
 let lng=pos.coords.longitude;
 
@@ -67,7 +73,8 @@ marker.setLatLng([lat,lng]);
 }
 
 update(ref(db,"couriers/"+user.uid),{
-lat,lng,online:true
+lat,lng,
+updatedAt:Date.now()
 });
 });
 
@@ -100,7 +107,10 @@ t--;
 
 if(t<0){
 clearInterval(timer);
-update(ref(db,"orders/"+id),{status:"waiting",courierId:null});
+update(ref(db,"orders/"+id),{
+status:"waiting",
+courierId:null
+});
 incoming.innerHTML="";
 }
 },1000);
@@ -120,14 +130,14 @@ for(let id in orders){
 let d=orders[id];
 if(d.courierId!==user.uid) continue;
 
-/* NEW */
+/* NEW ORDER */
 if(d.status==="assigned"){
 sound();
 countdown(id);
 
 incoming.innerHTML=`
 <div class="card">
-Yeni Sipariş
+Yeni Sipariş<br>
 <button class="green" onclick="accept('${id}')">Kabul</button>
 <button class="red" onclick="reject('${id}')">Reddet</button>
 </div>`;
@@ -149,7 +159,8 @@ let eta=Math.round(r.duration/60);
 
 active.innerHTML=`
 <div class="card">
-${km} km | ${eta} dk
+📦 ${d.customer || ""}
+<br>${km} km | ${eta} dk
 <button class="blue" onclick="start('${id}')">Yola Çık</button>
 <button class="green" onclick="finish('${id}')">Teslim</button>
 </div>`;
@@ -169,7 +180,10 @@ update(ref(db,"orders/"+id),{status:"accepted"});
 
 window.reject=id=>{
 clearInterval(timer);
-update(ref(db,"orders/"+id),{status:"waiting",courierId:null});
+update(ref(db,"orders/"+id),{
+status:"waiting",
+courierId:null
+});
 };
 
 window.start=id=>{
@@ -182,12 +196,37 @@ trackingLink:link
 };
 
 window.finish=id=>{
-update(ref(db,"orders/"+id),{status:"delivered"});
+update(ref(db,"orders/"+id),{
+status:"delivered"
+});
 };
 
-window.goOnline=()=>{};
+/* ONLINE FIX */
+window.goOnline=()=>{
+if(!user) return;
+
+navigator.geolocation.getCurrentPosition(pos=>{
+update(ref(db,"couriers/"+user.uid),{
+lat:pos.coords.latitude,
+lng:pos.coords.longitude,
+online:true,
+updatedAt:Date.now()
+});
+
+status.innerText="Online";
+status.className="status online";
+});
+};
+
 window.goOffline=()=>{
-update(ref(db,"couriers/"+user.uid),{online:false});
+if(!user) return;
+
+update(ref(db,"couriers/"+user.uid),{
+online:false
+});
+
+status.innerText="Offline";
+status.className="status offline";
 };
 
 </script>

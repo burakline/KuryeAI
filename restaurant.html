@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>RestoranAI</title>
+<title>RestoranAI ULTRA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -10,187 +10,161 @@
 <style>
 body{margin:0;background:#020617;color:white;font-family:Arial}
 #map{height:40vh}
-
-.header{
-display:flex;
-justify-content:space-between;
-padding:10px;
-background:#020617;
-}
-
-.card{
-background:#0f172a;
-padding:12px;
-margin:10px;
-border-radius:12px;
-}
-
-input,button{
-width:100%;
-padding:10px;
-margin-top:6px;
-border:none;
-border-radius:10px;
-}
-
+.card{background:#0f172a;margin:10px;padding:12px;border-radius:12px}
+input,button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px}
 .blue{background:#00d4ff;color:black}
 .green{background:#22c55e}
-.red{background:#ef4444}
-
-.status{
-padding:4px 8px;
-border-radius:10px;
-font-size:12px;
-}
-
-.waiting{background:#64748b}
-.assigned{background:#f59e0b}
-.onway{background:#00d4ff;color:black}
-.delivered{background:#22c55e}
-.cancelled{background:#ef4444}
+.status{padding:4px 8px;border-radius:8px;font-size:12px}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<h3>🍽️ Restoran Panel</h3>
-<div id="stats"></div>
-</div>
-
 <div id="map"></div>
 
 <div class="card">
-<input id="customer" placeholder="Müşteri adı">
+<input id="customer" placeholder="Müşteri">
+<input id="phone" placeholder="Telefon">
 <input id="address" placeholder="Adres">
 <input id="lat" placeholder="Lat">
 <input id="lng" placeholder="Lng">
-<button class="blue" onclick="createOrder()">Sipariş Oluştur</button>
+<input id="note" placeholder="Not">
+<input id="price" placeholder="Fiyat">
+<button class="blue" onclick="createOrder()">Sipariş</button>
 </div>
 
-<div class="card" id="orderList"></div>
+<div id="stats" class="card"></div>
+<div id="orderList"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import "./firebase.js";
-import {
-getDatabase, ref, onValue, set
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-import {
-getAuth, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const db=getDatabase();
 const auth=getAuth();
 
-let user=null;
+let user;
 let map=L.map('map').setView([39.92,32.85],12);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let orderMarkers={};
-let orders={};
+let orders={},couriers={},markers={},routes={},routeCache={};
 
-/* AUTH */
-onAuthStateChanged(auth,function(u){
-if(!u){ location.href="login.html"; return; }
+onAuthStateChanged(auth,u=>{
+if(!u) location.href="login.html";
 user=u;
 });
 
-/* MAP CLICK */
-map.on("click",function(e){
+map.on("click",e=>{
 lat.value=e.latlng.lat;
 lng.value=e.latlng.lng;
 });
 
-/* CREATE ORDER */
-window.createOrder=function(){
-
+window.createOrder=()=>{
 let id="ORD-"+Date.now();
 
-let order={
-id:id,
+set(ref(db,"orders/"+id),{
+id,
 customer:customer.value,
+phone:phone.value,
 address:address.value,
-lat:parseFloat(lat.value),
-lng:parseFloat(lng.value),
+lat:+lat.value,
+lng:+lng.value,
+note:note.value,
+price:+price.value||50,
 status:"waiting",
-restaurantId:user.uid,
-createdAt:Date.now()
+restaurantId:user.uid
+});
 };
 
-set(ref(db,"orders/"+id),order);
+/* ROUTE */
+async function getRoute(c,o){
+let key=c.lat+","+c.lng+"_"+o.lat+","+o.lng;
+if(routeCache[key]) return routeCache[key];
 
-};
+let url=`https://router.project-osrm.org/route/v1/driving/${c.lng},${c.lat};${o.lng},${o.lat}?overview=full&geometries=geojson`;
 
-/* STATUS CLASS */
-function getStatusClass(s){
-return s==="waiting"?"waiting":
-s==="assigned"?"assigned":
-s==="onway"?"onway":
-s==="delivered"?"delivered":
-"cancelled";
+let res=await fetch(url);
+let data=await res.json();
+routeCache[key]=data.routes[0];
+return data.routes[0];
 }
 
+/* COURIERS */
+onValue(ref(db,"couriers"),snap=>{
+couriers={};
+
+snap.forEach(c=>{
+let d=c.val();
+couriers[c.key]=d;
+
+if(d.lat){
+if(!markers[c.key]){
+markers[c.key]=L.marker([d.lat,d.lng]).addTo(map);
+}else{
+markers[c.key].setLatLng([d.lat,d.lng]);
+}
+}
+});
+});
+
 /* ORDERS */
-onValue(ref(db,"orders"),function(snap){
+onValue(ref(db,"orders"),async snap=>{
 
 orderList.innerHTML="";
-orders={};
+let total=0,del=0,rev=0;
 
-let total=0;
-let revenue=0;
-
-snap.forEach(function(o){
-
+snap.forEach(o=>{
 let d=o.val();
-
-/* SADECE BU RESTORAN */
-if(!user || d.restaurantId!==user.uid) return;
+if(d.restaurantId!==user.uid) return;
 
 orders[d.id]=d;
-
 total++;
 
 if(d.status==="delivered"){
-revenue+=d.price||50;
+del++;
+rev+=d.price||50;
 }
-
-/* MARKER */
-if(d.lat && !orderMarkers[d.id]){
-orderMarkers[d.id]=L.circleMarker([d.lat,d.lng],{
-radius:5,
-color:"#00d4ff"
-}).addTo(map);
-}
-
-/* UI */
-let html=
-"<div class='card'>"+
-"<b>"+d.customer+"</b><br>"+
-d.address+"<br>"+
-"<span class='status "+getStatusClass(d.status)+"'>"+d.status+"</span>";
-
-if(d.courierId){
-html+="<br>Kurye: "+d.courierId;
-}
-
-html+="</div>";
-
-orderList.innerHTML+=html;
-
 });
 
-/* STATS */
-stats.innerHTML=
-"📦 "+total+
-" | 💰 "+revenue+"₺";
+for(let id in orders){
+
+let d=orders[id];
+
+let routeInfo="";
+if(d.courierId && couriers[d.courierId]){
+let r=await getRoute(couriers[d.courierId],d);
+
+if(routes[id]) map.removeLayer(routes[id]);
+
+routes[id]=L.geoJSON(r.geometry,{style:{color:"#00d4ff"}}).addTo(map);
+
+let km=(r.distance/1000).toFixed(2);
+let eta=Math.round(r.duration/60);
+routeInfo=`${km}km | ${eta}dk`;
+}
+
+let link="https://kuryeai.com/tracking.html?id="+id;
+let wa="https://wa.me/90"+(d.phone||"")+"?text="+encodeURIComponent("Canlı takip: "+link);
+
+orderList.innerHTML+=`
+<div class="card">
+<b>${d.customer}</b><br>
+${d.address}<br>
+Durum: ${d.status}<br>
+${routeInfo}<br>
+${d.courierId?"Kurye: "+d.courierId:""}
+${d.status==="onway"?`<a href="${wa}" target="_blank"><button class="green">WhatsApp Gönder</button></a>`:""}
+</div>`;
+}
+
+stats.innerHTML=`📦 ${total} | ✔ ${del} | 💰 ${rev}₺`;
 
 });
 
 </script>
-
 </body>
 </html>

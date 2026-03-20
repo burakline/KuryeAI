@@ -3,57 +3,165 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Login</title>
+<title>KuryeAI Giriş</title>
 
 <style>
-body{margin:0;background:#0f2027;color:white;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
-.box{background:#020617;padding:30px;border-radius:20px;width:90%;max-width:400px}
-input{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px}
-button{width:100%;padding:12px;margin-top:15px;border:none;border-radius:10px;background:#00ff9c;font-weight:bold}
-.switch{margin-top:10px;text-align:center;cursor:pointer}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0b1220;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  color:white;
+}
+
+.box{
+  width:90%;
+  max-width:400px;
+  background:#111827;
+  padding:25px;
+  border-radius:15px;
+}
+
+input{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+  background:#1f2937;
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  margin-top:15px;
+  border:none;
+  border-radius:10px;
+  background:#10b981;
+  color:white;
+  font-weight:bold;
+}
+
+#loading{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#000000dd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
+<div id="loading">Yükleniyor...</div>
+
 <div class="box">
-<h2>🚀 KuryeAI</h2>
+  <h2>🚀 KuryeAI</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Şifre">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Şifre">
 
-<button onclick="login()">Giriş Yap</button>
-
-<div class="switch" onclick="toggleMode()" id="modeText">
-Hesabın yok mu? Kayıt ol
-</div>
-
+  <button onclick="login()">Giriş Yap</button>
 </div>
 
 <script type="module">
-import "./firebase.js";
 
-let isLogin = true;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-window.login = function(){
+/* 🔥 SENİN CONFIG */
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "PROJECT.firebaseapp.com",
+  databaseURL: "https://PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "PROJECT",
+  storageBucket: "PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const loading = document.getElementById("loading");
+
+/* LOGIN */
+window.login = async function(){
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  if(isLogin){
-    window.loginUser(email, password);
-  }else{
-    window.registerUser(email, password);
+  loading.style.display = "flex";
+
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+  }catch(e){
+    loading.style.display = "none";
+    alert(e.message);
+  }
+};
+
+/* 🔥 SESSION + ROLE ENGINE */
+onAuthStateChanged(auth, async (user) => {
+  if(!user) return;
+
+  loading.style.display = "flex";
+
+  try{
+
+    const roleRef = ref(db, "roles/" + user.uid);
+    const snap = await get(roleRef);
+
+    let role;
+
+    /* 🧠 AUTO ROLE */
+    if(!snap.exists()){
+      role = "courier";
+      await set(roleRef,{role:"courier"});
+    }else{
+      role = snap.val().role;
+    }
+
+    console.log("ROLE:",role);
+
+    /* 🚫 BLACKLIST (istersen aç) */
+    /*
+    const ban = await get(ref(db,"banned/"+user.uid));
+    if(ban.exists()){
+      alert("Hesap engellendi");
+      return;
+    }
+    */
+
+    /* 🚀 REDIRECT */
+    if(role === "admin"){
+      window.location.href = "/admin.html";
+    }
+    else if(role === "restaurant"){
+      window.location.href = "/restaurant.html";
+    }
+    else{
+      window.location.href = "/courier.html";
+    }
+
+  }catch(e){
+    console.log(e);
+    alert("Sistem hatası");
   }
 
-};
-
-window.toggleMode = function(){
-  isLogin = !isLogin;
-
-  document.getElementById("modeText").innerText =
-    isLogin ? "Hesabın yok mu? Kayıt ol" : "Zaten hesabın var mı? Giriş yap";
-};
+});
 
 </script>
 

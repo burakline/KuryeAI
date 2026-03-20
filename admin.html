@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>AdminAI REAL ROUTE</title>
+<title>AdminAI ULTIMATE MERGE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -11,6 +11,7 @@
 body{margin:0;background:#020617;color:white;font-family:Arial}
 #map{height:100vh}
 
+/* PANEL */
 .panel{
 position:fixed;bottom:0;width:100%;height:45vh;
 background:#020617;border-radius:20px 20px 0 0;
@@ -22,17 +23,22 @@ content:"";width:60px;height:6px;background:#444;
 display:block;margin:10px auto;border-radius:10px;
 }
 
-.tabs{display:flex;justify-content:space-around;position:sticky;top:0;background:#020617;padding:6px}
+/* TABS */
+.tabs{display:flex;justify-content:space-around;padding:6px;background:#020617}
 .tabs button{background:#0f172a;color:white;border-radius:10px;padding:10px;width:22%}
 
+/* CARD */
 .card{margin:8px;padding:12px;border-radius:14px;background:rgba(15,23,42,.7)}
 
+/* FORM */
 input,select{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;background:#0f172a;color:white}
 
 button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;font-weight:bold}
 
 .blue{background:#00d4ff;color:black}
+.green{background:#22c55e}
 .orange{background:#f59e0b;color:black}
+.red{background:#ef4444}
 </style>
 </head>
 
@@ -46,33 +52,56 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 <button onclick="tab('orders')">📦</button>
 <button onclick="tab('couriers')">🚴</button>
 <button onclick="tab('settings')">⚙️</button>
+<button onclick="tab('zones')">🗺️</button>
 </div>
 
+<!-- ORDERS -->
 <div id="ordersTab">
+
 <div class="card">
 <input id="customer" placeholder="Müşteri">
 <input id="address" placeholder="Adres">
 <input id="lat" placeholder="Lat">
 <input id="lng" placeholder="Lng">
-<button class="blue" onclick="createOrder()">Oluştur</button>
+<button class="blue" onclick="createOrder()">Sipariş Oluştur</button>
 </div>
 
 <div class="card">
 <select id="orderSelect"></select>
 <select id="courierSelect"></select>
-<button class="orange" onclick="manualAssign()">Ata</button>
+<button class="orange" onclick="manualAssign()">Manuel Ata</button>
 </div>
 
 <div class="card" id="orderList"></div>
+
 </div>
 
+<!-- COURIERS -->
 <div id="couriersTab" style="display:none">
 <div class="card" id="courierList"></div>
 </div>
 
+<!-- SETTINGS -->
 <div id="settingsTab" style="display:none">
 <div class="card">
-<input id="speed" placeholder="Ortalama hız km/h (örn:40)">
+<b>💰 Ücret</b>
+<select id="pricingType">
+<option value="courier">Kurye</option>
+<option value="restaurant">Restoran</option>
+</select>
+<input id="targetId" placeholder="ID">
+<input id="basePrice" placeholder="Ücret">
+<input id="perKm" placeholder="KM">
+<button class="green" onclick="savePricing()">Kaydet</button>
+</div>
+</div>
+
+<!-- ZONE -->
+<div id="zonesTab" style="display:none">
+<div class="card">
+<input id="zoneName" placeholder="Zone adı">
+<button onclick="startZone()">Çiz</button>
+<button onclick="saveZone()">Kaydet</button>
 </div>
 </div>
 
@@ -83,16 +112,15 @@ button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:10px;fon
 <script type="module">
 
 import "./firebase.js";
-import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const db=getDatabase();
-
 const map=L.map('map').setView([39.92,32.85],11);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 /* CACHE */
-let courierMarkers={},orderMarkers={},routes={},routeCache={};
-let courierAnim={},couriers={},orders={};
+let couriers={},orders={},zones={};
+let courierMarkers={},orderMarkers={},routes={},routeCache={},anim={};
 
 /* PANEL */
 panel.onclick=()=>panel.classList.toggle("full");
@@ -102,55 +130,62 @@ window.tab=(t)=>{
 ordersTab.style.display="none";
 couriersTab.style.display="none";
 settingsTab.style.display="none";
+zonesTab.style.display="none";
 document.getElementById(t+"Tab").style.display="block";
 };
 
 /* MAP CLICK */
+let drawMode=false,zonePoints=[];
+
 map.on("click",e=>{
 lat.value=e.latlng.lat;
 lng.value=e.latlng.lng;
+
+if(drawMode){
+zonePoints.push([e.latlng.lat,e.latlng.lng]);
+L.marker([e.latlng.lat,e.latlng.lng]).addTo(map);
+}
 });
 
-/* SMOOTH */
-function animateMarker(id,newLat,newLng){
-let m=courierMarkers[id];
-if(!m) return;
-
-let s=m.getLatLng();
-let i=0,steps=20;
-
-if(courierAnim[id]) cancelAnimationFrame(courierAnim[id]);
-
-function step(){
-i++;
-m.setLatLng([
-s.lat+(newLat-s.lat)*(i/steps),
-s.lng+(newLng-s.lng)*(i/steps)
-]);
-if(i<steps) courierAnim[id]=requestAnimationFrame(step);
-}
-
-step();
-}
-
-/* CREATE */
-window.createOrder=()=>{
-let id="ORD-"+Date.now();
-set(ref(db,"orders/"+id),{
-id,
-customer:customer.value,
-address:address.value,
-lat:+lat.value,
-lng:+lng.value,
-status:"waiting"
-});
+/* ZONE */
+window.startZone=()=>{drawMode=true;zonePoints=[];}
+window.saveZone=()=>{
+let id="ZONE-"+Date.now();
+set(ref(db,"zones/"+id),{name:zoneName.value,points:zonePoints});
+drawMode=false;
 };
 
-/* REAL ROUTE */
+/* DIST */
+function dist(a,b,c,d){return Math.hypot(a-c,b-d);}
+
+/* DISPATCH AI */
+function findBestCourier(order){
+
+let best=null,scoreMin=999999;
+
+for(let id in couriers){
+let c=couriers[id];
+if(!c.lat) continue;
+
+let d=dist(order.lat,order.lng,c.lat,c.lng);
+
+let active=0;
+for(let o in orders){
+if(orders[o].courierId===id && orders[o].status!=="delivered") active++;
+}
+
+let score=(d*0.5)+(active*2)+(c.online?0:999);
+
+if(score<scoreMin){scoreMin=score;best=id;}
+}
+
+return best;
+}
+
+/* ROUTE */
 async function getRoute(c,o){
 
 let key=c.lat+","+c.lng+"_"+o.lat+","+o.lng;
-
 if(routeCache[key]) return routeCache[key];
 
 let url=`https://router.project-osrm.org/route/v1/driving/${c.lng},${c.lat};${o.lng},${o.lat}?overview=full&geometries=geojson`;
@@ -158,16 +193,77 @@ let url=`https://router.project-osrm.org/route/v1/driving/${c.lng},${c.lat};${o.
 let res=await fetch(url);
 let data=await res.json();
 
-let route=data.routes[0];
-
-routeCache[key]=route;
-return route;
+routeCache[key]=data.routes[0];
+return data.routes[0];
 }
+
+/* ETA */
+function calcETA(route){
+return Math.round(route.duration/60);
+}
+
+/* ANIMATION */
+function animateMarker(id,lat,lng){
+let m=courierMarkers[id];
+if(!m) return;
+
+let s=m.getLatLng(),i=0,steps=20;
+
+if(anim[id]) cancelAnimationFrame(anim[id]);
+
+function step(){
+i++;
+m.setLatLng([
+s.lat+(lat-s.lat)*(i/steps),
+s.lng+(lng-s.lng)*(i/steps)
+]);
+if(i<steps) anim[id]=requestAnimationFrame(step);
+}
+step();
+}
+
+/* CREATE */
+window.createOrder=()=>{
+let id="ORD-"+Date.now();
+
+let order={
+id,
+customer:customer.value,
+address:address.value,
+lat:+lat.value,
+lng:+lng.value,
+status:"waiting"
+};
+
+set(ref(db,"orders/"+id),order);
+
+let best=findBestCourier(order);
+
+if(best){
+set(ref(db,"orders/"+id+"/courierId"),best);
+set(ref(db,"orders/"+id+"/status"),"assigned");
+}
+};
+
+/* MANUAL */
+window.manualAssign=()=>{
+set(ref(db,"orders/"+orderSelect.value+"/courierId"),courierSelect.value);
+set(ref(db,"orders/"+orderSelect.value+"/status"),"assigned");
+};
+
+/* PRICING */
+window.savePricing=()=>{
+set(ref(db,"pricing/"+pricingType.value+"/"+targetId.value),{
+base:+basePrice.value,
+perKm:+perKm.value
+});
+};
 
 /* COURIERS */
 onValue(ref(db,"couriers"),snap=>{
 courierList.innerHTML="";
 courierSelect.innerHTML="";
+couriers={};
 
 snap.forEach(c=>{
 let id=c.key,d=c.val();
@@ -191,35 +287,33 @@ onValue(ref(db,"orders"),snap=>{
 
 orderList.innerHTML="";
 orderSelect.innerHTML="";
+orders={};
 
 snap.forEach(async o=>{
 
 let d=o.val();
 orders[d.id]=d;
 
-let eta="";
+let info=`${d.customer} | ${d.status}`;
+
 if(d.courierId && couriers[d.courierId]){
 
 let route=await getRoute(couriers[d.courierId],d);
-
 let km=(route.distance/1000).toFixed(2);
-let min=Math.round(route.duration/60);
+let eta=calcETA(route);
 
-eta=` | ${km} km | ${min} dk`;
+info+=` | ${km}km | ${eta}dk`;
 
-/* DRAW ROUTE */
+/* ROUTE DRAW */
 if(routes[d.id]) map.removeLayer(routes[d.id]);
 
-routes[d.id]=L.geoJSON(route.geometry,{
-style:{color:"#00d4ff",weight:4}
-}).addTo(map);
+routes[d.id]=L.geoJSON(route.geometry,{style:{color:"#00d4ff"}}).addTo(map);
 
 }
 
-orderList.innerHTML+=`${d.customer} | ${d.status}${eta}<br>`;
+orderList.innerHTML+=info+"<br>";
 orderSelect.innerHTML+=`<option value="${d.id}">${d.customer}</option>`;
 
-/* MARKER */
 if(d.lat && !orderMarkers[d.id]){
 orderMarkers[d.id]=L.circleMarker([d.lat,d.lng],{radius:5,color:"#00d4ff"}).addTo(map);
 }
@@ -229,3 +323,6 @@ orderMarkers[d.id]=L.circleMarker([d.lat,d.lng],{radius:5,color:"#00d4ff"}).addT
 });
 
 </script>
+
+</body>
+</html>

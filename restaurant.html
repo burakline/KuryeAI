@@ -2,192 +2,193 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RestoranAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-body{
-margin:0;
-font-family: 'Inter', sans-serif;
-background:#0A0A0A;
-color:white;
+body{margin:0;background:#020617;color:white;font-family:Arial}
+#map{height:40vh}
+
+.header{
 display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+justify-content:space-between;
+padding:10px;
+background:#020617;
 }
 
-/* CARD */
-.container{
-width:90%;
-max-width:400px;
-padding:25px;
-border-radius:20px;
-
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(15px);
-border:1px solid rgba(255,255,255,0.1);
-
-box-shadow:0 0 40px rgba(0,194,168,0.1);
-}
-
-/* TITLE */
-h1{
-margin-bottom:20px;
-font-size:22px;
-}
-
-/* INPUT */
-input{
-width:100%;
+.card{
+background:#0f172a;
 padding:12px;
-margin-bottom:12px;
+margin:10px;
+border-radius:12px;
+}
+
+input,button{
+width:100%;
+padding:10px;
+margin-top:6px;
 border:none;
 border-radius:10px;
-background:#1a1a1a;
-color:white;
 }
 
-/* BUTTON */
-button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#00C2A8;
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:0.2s;
+.blue{background:#00d4ff;color:black}
+.green{background:#22c55e}
+.red{background:#ef4444}
+
+.status{
+padding:4px 8px;
+border-radius:10px;
+font-size:12px;
 }
 
-button:hover{
-box-shadow:0 0 20px #00C2A8;
-transform:scale(1.02);
-}
-
-/* PRICE */
-.price{
-margin-top:15px;
-font-size:18px;
-text-align:center;
-color:#00C2A8;
-}
+.waiting{background:#64748b}
+.assigned{background:#f59e0b}
+.onway{background:#00d4ff;color:black}
+.delivered{background:#22c55e}
+.cancelled{background:#ef4444}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<h1>🍔 RestoranAI</h1>
+<div class="header">
+<h3>🍽️ Restoran Panel</h3>
+<div id="stats"></div>
+</div>
 
+<div id="map"></div>
+
+<div class="card">
 <input id="customer" placeholder="Müşteri adı">
 <input id="address" placeholder="Adres">
-
-<button onclick="createOrder()">Sipariş Gönder</button>
-
-<div id="price" class="price"></div>
+<input id="lat" placeholder="Lat">
+<input id="lng" placeholder="Lng">
+<button class="blue" onclick="createOrder()">Sipariş Oluştur</button>
 </div>
+
+<div class="card" id="orderList"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
-import { db } from "./firebase.js";
+import "./firebase.js";
 import {
-collection,
-addDoc,
-getDocs,
-doc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+getDatabase, ref, onValue, set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* POLYGON */
-function isPointInPolygon(point, vs){
-let x=point[0],y=point[1],inside=false;
-for(let i=0,j=vs.length-1;i<vs.length;j=i++){
-let xi=vs[i][0],yi=vs[i][1];
-let xj=vs[j][0],yj=vs[j][1];
-let intersect=((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);
-if(intersect) inside=!inside;
-}
-return inside;
-}
+import {
+getAuth, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const db=getDatabase();
+const auth=getAuth();
+
+let user=null;
+let map=L.map('map').setView([39.92,32.85],12);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let orderMarkers={};
+let orders={};
+
+/* AUTH */
+onAuthStateChanged(auth,function(u){
+if(!u){ location.href="login.html"; return; }
+user=u;
+});
+
+/* MAP CLICK */
+map.on("click",function(e){
+lat.value=e.latlng.lat;
+lng.value=e.latlng.lng;
+});
 
 /* CREATE ORDER */
-window.createOrder = async()=>{
+window.createOrder=function(){
 
-const customer = document.getElementById("customer").value;
-const address = document.getElementById("address").value;
+let id="ORD-"+Date.now();
 
-if(!customer || !address){
-alert("Bilgileri doldur!");
-return;
-}
-
-/* DEMO KONUM */
-const lat=39.92;
-const lng=32.85;
-
-/* ZONE */
-const zones = await getDocs(collection(db,"zones"));
-let zone=null;
-
-zones.forEach(z=>{
-const data=z.data();
-if(data.polygon && isPointInPolygon([lat,lng],data.polygon)){
-zone={...data,id:z.id};
-}
-});
-
-if(!zone){
-alert("Zone bulunamadı!");
-return;
-}
-
-/* SETTINGS */
-const settingsSnap = await getDoc(doc(db,"settings","config"));
-const settings = settingsSnap.exists() ? settingsSnap.data() : {};
-
-/* SURGE */
-let surge=1;
-
-if(settings.surgeEnabled){
-const orders = (await getDocs(collection(db,"orders"))).size;
-const couriers = await getDocs(collection(db,"couriers"));
-
-let active=0;
-couriers.forEach(c=>{
-if(c.data().online) active++;
-});
-
-if(active>0){
-let ratio=orders/active;
-if(ratio>=settings.surgeThreshold){
-surge=Math.min(settings.surgeMax,ratio/settings.surgeThreshold);
-}
-}
-}
-
-/* PRICE */
-const base = (zone.pricing.hourly/60*15)+(5*zone.pricing.perKm);
-const price = Math.round(base*surge);
-
-/* SAVE */
-await addDoc(collection(db,"orders"),{
-customer,
-address,
-lat,
-lng,
-zoneId:zone.id,
-price,
-surge,
-status:"pending",
+let order={
+id:id,
+customer:customer.value,
+address:address.value,
+lat:parseFloat(lat.value),
+lng:parseFloat(lng.value),
+status:"waiting",
+restaurantId:user.uid,
 createdAt:Date.now()
-});
+};
 
-document.getElementById("price").innerText =
-"Sipariş oluşturuldu: "+price+"₺ 🚀";
+set(ref(db,"orders/"+id),order);
 
 };
+
+/* STATUS CLASS */
+function getStatusClass(s){
+return s==="waiting"?"waiting":
+s==="assigned"?"assigned":
+s==="onway"?"onway":
+s==="delivered"?"delivered":
+"cancelled";
+}
+
+/* ORDERS */
+onValue(ref(db,"orders"),function(snap){
+
+orderList.innerHTML="";
+orders={};
+
+let total=0;
+let revenue=0;
+
+snap.forEach(function(o){
+
+let d=o.val();
+
+/* SADECE BU RESTORAN */
+if(!user || d.restaurantId!==user.uid) return;
+
+orders[d.id]=d;
+
+total++;
+
+if(d.status==="delivered"){
+revenue+=d.price||50;
+}
+
+/* MARKER */
+if(d.lat && !orderMarkers[d.id]){
+orderMarkers[d.id]=L.circleMarker([d.lat,d.lng],{
+radius:5,
+color:"#00d4ff"
+}).addTo(map);
+}
+
+/* UI */
+let html=
+"<div class='card'>"+
+"<b>"+d.customer+"</b><br>"+
+d.address+"<br>"+
+"<span class='status "+getStatusClass(d.status)+"'>"+d.status+"</span>";
+
+if(d.courierId){
+html+="<br>Kurye: "+d.courierId;
+}
+
+html+="</div>";
+
+orderList.innerHTML+=html;
+
+});
+
+/* STATS */
+stats.innerHTML=
+"📦 "+total+
+" | 💰 "+revenue+"₺";
+
+});
 
 </script>
 

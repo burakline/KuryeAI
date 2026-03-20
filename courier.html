@@ -1,47 +1,72 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>KuryeAI</title>
+<meta charset="UTF-8">
+<title>KuryeAI ULTRA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #020617;
-      color: white;
-    }
+<style>
+body{margin:0;background:#020617;color:white;font-family:Arial}
+#map{height:50vh}
 
-    #map {
-      height: 70vh;
-      width: 100%;
-    }
+.header{
+display:flex;
+justify-content:space-between;
+padding:10px;
+background:#020617;
+}
 
-    .btn {
-      width: 90%;
-      margin: 10px auto;
-      display: block;
-      padding: 15px;
-      border-radius: 12px;
-      border: none;
-      font-size: 18px;
-    }
+.status{
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+}
 
-    .online { background: #22c55e; }
-    .offline { background: #ef4444; }
-  </style>
+.online{background:#22c55e;color:black}
+.offline{background:#ef4444}
+
+.card{
+background:rgba(15,23,42,.7);
+padding:12px;
+margin:10px;
+border-radius:12px;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+}
+
+.blue{background:#00d4ff;color:black}
+.green{background:#22c55e}
+.red{background:#ef4444}
+</style>
 </head>
 
 <body>
 
-<h2 style="padding:10px;">🚀 KuryeAI</h2>
+<div class="header">
+<h3>🚴 Kurye</h3>
+<div id="status" class="status offline">Offline</div>
+</div>
 
 <div id="map"></div>
 
-<button class="btn online" onclick="setOnline()">Online Ol</button>
-<button class="btn offline" onclick="setOffline()">Offline Ol</button>
+<div class="card">
+<button class="green" onclick="goOnline()">Online</button>
+<button class="red" onclick="goOffline()">Offline</button>
+</div>
+
+<div class="card">
+<h3>📦 Siparişler</h3>
+<div id="orders"></div>
+</div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -50,173 +75,148 @@
 import "./firebase.js";
 
 import {
-  getDatabase,
-  ref,
-  set,
-  onValue
+getDatabase, ref, onValue, update, set
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import {
-  getAuth
+getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* ================= INIT ================= */
+const db=getDatabase();
+const auth=getAuth();
 
-const db = getDatabase();
-const auth = getAuth();
+let map=L.map('map').setView([39.92,32.85],13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let map = L.map('map').setView([39.92, 32.85], 13);
+/* CACHE */
+let user,courierData={},ordersCache={},marker,routeLayer,routeCache={};
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
-  .addTo(map);
+/* AUTH */
+onAuthStateChanged(auth,u=>{
+if(!u) location.href="login.html";
+user=u;
+});
 
-let marker;
+/* GPS SMOOTH */
+let anim;
 
-/* ================= SES ================= */
+navigator.geolocation.watchPosition(pos=>{
 
-const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+let lat=pos.coords.latitude;
+let lng=pos.coords.longitude;
 
-/* ================= TİTREŞİM ================= */
+if(!marker){
+marker=L.marker([lat,lng]).addTo(map);
+map.setView([lat,lng],15);
+}else{
+let s=marker.getLatLng(),i=0;
 
-function vibrate() {
-  if (navigator.vibrate) {
-    navigator.vibrate([300,150,300,150,500]);
-  }
+function step(){
+i++;
+marker.setLatLng([
+s.lat+(lat-s.lat)*(i/15),
+s.lng+(lng-s.lng)*(i/15)
+]);
+if(i<15) requestAnimationFrame(step);
+}
+step();
 }
 
-/* ================= POPUP ================= */
-
-function showPopup(order) {
-
-  let div = document.createElement("div");
-
-  div.style.position = "fixed";
-  div.style.bottom = "20px";
-  div.style.left = "20px";
-  div.style.right = "20px";
-  div.style.background = "#0f172a";
-  div.style.padding = "20px";
-  div.style.borderRadius = "15px";
-  div.style.zIndex = "9999";
-
-  div.innerHTML = `
-    <h3>🚀 Yeni Sipariş</h3>
-    <p>${order.customer}</p>
-    <p>${order.address}</p>
-
-    <button onclick="acceptOrder('${order.id}')"
-      style="background:#22c55e;padding:10px;border:none;border-radius:8px;">
-      Kabul Et
-    </button>
-
-    <button onclick="rejectOrder('${order.id}')"
-      style="background:#ef4444;padding:10px;border:none;border-radius:8px;">
-      Reddet
-    </button>
-  `;
-
-  document.body.appendChild(div);
-
-  setTimeout(()=>div.remove(),15000);
-}
-
-/* ================= ORDER ACTION ================= */
-
-window.acceptOrder = async (id) => {
-  await set(ref(db, "orders/" + id + "/status"), "accepted");
-};
-
-window.rejectOrder = async (id) => {
-  await set(ref(db, "orders/" + id + "/status"), "rejected");
-};
-
-/* ================= GPS ================= */
-
-function startGPS() {
-
-  navigator.geolocation.watchPosition((pos) => {
-
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    if (!marker) {
-      marker = L.marker([lat,lng]).addTo(map);
-    } else {
-      marker.setLatLng([lat,lng]);
-    }
-
-    map.setView([lat,lng],15);
-
-    const user = auth.currentUser;
-    if (!user) return;
-
-    set(ref(db, "couriers/" + user.uid), {
-      lat,
-      lng,
-      online: true,
-      updatedAt: Date.now()
-    });
-
-  }, (err) => {
-    alert("GPS hata: " + err.message);
-  }, {
-    enableHighAccuracy: true
-  });
-
-}
-
-/* ================= ONLINE / OFFLINE ================= */
-
-window.setOnline = () => {
-  startGPS();
-  alert("Online oldun");
-};
-
-window.setOffline = () => {
-
-  const user = auth.currentUser;
-  if (!user) return;
-
-  set(ref(db, "couriers/" + user.uid + "/online"), false);
-
-  alert("Offline oldun");
-};
-
-/* ================= SİPARİŞ DİNLE ================= */
-
-let seen = {};
-
-auth.onAuthStateChanged(user => {
-
-  if (!user) return;
-
-  startGPS();
-
-  onValue(ref(db, "orders"), (snap) => {
-
-    snap.forEach(orderSnap => {
-
-      const order = orderSnap.val();
-      order.id = orderSnap.key;
-
-      if (
-        order.courierId === user.uid &&
-        order.status === "assigned" &&
-        !seen[order.id]
-      ) {
-
-        audio.play();
-        vibrate();
-        showPopup(order);
-
-        seen[order.id] = true;
-      }
-
-    });
-
-  });
+/* FIREBASE */
+set(ref(db,"couriers/"+user?.uid),{
+lat,lng,online:true
+});
 
 });
+
+/* REAL ROUTE */
+async function getRoute(from,to){
+
+let key=from.lat+","+from.lng+"_"+to.lat+","+to.lng;
+
+if(routeCache[key]) return routeCache[key];
+
+let url=`https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
+
+let res=await fetch(url);
+let data=await res.json();
+
+routeCache[key]=data.routes[0];
+return data.routes[0];
+}
+
+/* SOUND */
+function playSound(){
+let audio=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+audio.play();
+}
+
+/* ORDERS */
+onValue(ref(db,"orders"),async snap=>{
+
+orders.innerHTML="";
+
+snap.forEach(async o=>{
+
+let d=o.val();
+ordersCache[d.id]=d;
+
+if(d.courierId!==user.uid) return;
+
+/* NOTIFICATION */
+if(d.status==="assigned"){
+playSound();
+}
+
+/* ROUTE */
+if(marker && d.lat){
+
+let route=await getRoute(marker.getLatLng(),d);
+
+if(routeLayer) map.removeLayer(routeLayer);
+
+routeLayer=L.geoJSON(route.geometry,{style:{color:"#00d4ff"}}).addTo(map);
+
+let km=(route.distance/1000).toFixed(2);
+let min=Math.round(route.duration/60);
+
+orders.innerHTML+=`
+<div class="card">
+<b>${d.address}</b><br>
+${d.status}<br>
+${km} km | ${min} dk
+
+<button class="green" onclick="accept('${d.id}')">Kabul</button>
+<button class="blue" onclick="complete('${d.id}')">Teslim</button>
+</div>
+`;
+
+}
+
+});
+
+});
+
+/* ACTIONS */
+window.accept=id=>{
+update(ref(db,"orders/"+id),{status:"accepted"});
+};
+
+window.complete=id=>{
+update(ref(db,"orders/"+id),{status:"delivered"});
+};
+
+/* STATUS */
+window.goOnline=()=>{
+status.innerText="Online";
+status.className="status online";
+};
+
+window.goOffline=()=>{
+status.innerText="Offline";
+status.className="status offline";
+update(ref(db,"couriers/"+user.uid),{online:false});
+};
 
 </script>
 

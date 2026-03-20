@@ -9,30 +9,92 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#020617;color:white}
-.container{display:grid;grid-template-columns:1fr 360px}
-#map{height:100vh}
-.panel{overflow:auto;height:100vh}
 
+/* GRID */
+.container{
+display:grid;
+grid-template-columns:1fr 360px;
+}
+
+/* MAP */
+#map{
+height:100vh;
+}
+
+/* PANEL */
+.panel{
+overflow:auto;
+height:100vh;
+}
+
+/* CARD */
 .card{
 background:rgba(15,23,42,.6);
 backdrop-filter:blur(10px);
-padding:12px;margin:8px;border-radius:12px
+padding:12px;
+margin:8px;
+border-radius:12px;
 }
 
+/* INPUT */
 input,select{
-width:100%;padding:8px;margin-top:6px;
-background:#0f172a;color:white;border:none;border-radius:8px
+width:100%;
+padding:8px;
+margin-top:6px;
+border:none;
+border-radius:8px;
+background:#0f172a;
+color:white;
 }
 
+/* BUTTON */
 button{
-width:100%;padding:8px;margin-top:6px;
-border:none;border-radius:8px;font-weight:bold
+width:100%;
+padding:10px;
+margin-top:6px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
 }
 
 .blue{background:#00d4ff;color:black}
 .green{background:#22c55e}
 .red{background:#ef4444}
 .orange{background:#f59e0b;color:black}
+
+/* 🔥 MOBİL FIX */
+@media (max-width:768px){
+
+.container{
+display:flex !important;
+flex-direction:column !important;
+}
+
+#map{
+height:50vh !important;
+}
+
+.panel{
+height:50vh !important;
+overflow-y:auto;
+}
+
+.card{
+margin:6px !important;
+padding:10px !important;
+}
+
+button{
+padding:12px !important;
+font-size:14px;
+}
+
+input,select{
+padding:10px !important;
+}
+
+}
 </style>
 </head>
 
@@ -44,7 +106,6 @@ border:none;border-radius:8px;font-weight:bold
 
 <div class="panel">
 
-<!-- SİPARİŞ -->
 <div class="card">
 <b>📦 Sipariş</b>
 <input id="customer" placeholder="Müşteri">
@@ -54,7 +115,6 @@ border:none;border-radius:8px;font-weight:bold
 <button class="blue" onclick="createOrder()">Oluştur</button>
 </div>
 
-<!-- MANUEL ATA -->
 <div class="card">
 <b>🎯 Manuel Atama</b>
 <select id="orderSelect"></select>
@@ -62,7 +122,6 @@ border:none;border-radius:8px;font-weight:bold
 <button class="orange" onclick="manualAssign()">Ata</button>
 </div>
 
-<!-- ÜCRET -->
 <div class="card">
 <b>💰 Ücret</b>
 <select id="pricingType">
@@ -80,25 +139,14 @@ border:none;border-radius:8px;font-weight:bold
 <button class="green" onclick="savePricing()">Kaydet</button>
 </div>
 
-<!-- BAŞVURULAR -->
-<div class="card">
-<b>📝 Kurye Başvuruları</b>
-<div id="courierRequests"></div>
-</div>
+<div class="card"><b>📝 Kurye Başvuruları</b><div id="courierRequests"></div></div>
+<div class="card"><b>🏪 Restoran Başvuruları</b><div id="restaurantRequests"></div></div>
 
-<div class="card">
-<b>🏪 Restoran Başvuruları</b>
-<div id="restaurantRequests"></div>
-</div>
-
-<!-- LİSTELER -->
 <div class="card"><b>🚴 Kuryeler</b><div id="courierList"></div></div>
 <div class="card"><b>🏪 Restoranlar</b><div id="restaurantList"></div></div>
 
-<!-- KARALİSTE -->
 <div class="card"><b>⛔ Kara Liste</b><div id="blacklist"></div></div>
 
-<!-- ZONE -->
 <div class="card">
 <b>🗺️ Zone</b>
 <input id="zoneName" placeholder="Zone adı">
@@ -109,6 +157,7 @@ border:none;border-radius:8px;font-weight:bold
 <div class="card"><b>📋 Siparişler</b><div id="orderList"></div></div>
 
 </div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -116,123 +165,46 @@ border:none;border-radius:8px;font-weight:bold
 <script type="module">
 
 import "./firebase.js";
-import {
-getDatabase, ref, onValue, set, get
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set, get } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const db=getDatabase();
-
-/* MAP */
 const map=L.map('map').setView([39.92,32.85],11);
+
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-/* CACHE */
-let couriers={},orders={},zones={},markers={},polys={},zoneDraw=[];
+let couriers={},orders={};
 
-/* MAP CLICK */
 map.on("click",e=>{
 lat.value=e.latlng.lat;
 lng.value=e.latlng.lng;
-
-if(drawMode){
-zoneDraw.push([e.latlng.lat,e.latlng.lng]);
-L.marker([e.latlng.lat,e.latlng.lng]).addTo(map);
-}
 });
-
-/* ZONE */
-let drawMode=false;
-
-window.startZone=()=>{zoneDraw=[];drawMode=true;}
-window.saveZone=()=>{
-let id="ZONE-"+Date.now();
-set(ref(db,"zones/"+id),{name:zoneName.value,points:zoneDraw});
-drawMode=false;
-alert("Zone kaydedildi");
-};
 
 /* KURYELER */
 onValue(ref(db,"couriers"),snap=>{
-courierList.innerHTML=""; courierSelect.innerHTML="";
-
+courierSelect.innerHTML="";
 snap.forEach(c=>{
-let id=c.key,d=c.val(); couriers[id]=d;
+let id=c.key,d=c.val();
+couriers[id]=d;
 
 if(d.lat){
-if(markers[id]) markers[id].setLatLng([d.lat,d.lng]);
-else markers[id]=L.circleMarker([d.lat,d.lng],{radius:6,color:d.online?"#22c55e":"#ef4444"}).addTo(map);
+L.circleMarker([d.lat,d.lng],{
+radius:6,color:d.online?"#22c55e":"#ef4444"
+}).addTo(map);
 }
 
 courierSelect.innerHTML+=`<option value="${id}">${id}</option>`;
-
-courierList.innerHTML+=`
-<div>
-${id}
-<button onclick="blacklistUser('${id}','courier')" class="red">⛔</button>
-</div>`;
 });
 });
 
-/* RESTORAN */
-onValue(ref(db,"restaurants"),snap=>{
-restaurantList.innerHTML="";
-snap.forEach(r=>{
-restaurantList.innerHTML+=`
-<div>
-${r.key}
-<button onclick="blacklistUser('${r.key}','restaurant')" class="red">⛔</button>
-</div>`;
-});
-});
-
-/* BAŞVURULAR */
-onValue(ref(db,"requests/couriers"),snap=>{
-courierRequests.innerHTML="";
-snap.forEach(r=>{
-courierRequests.innerHTML+=`
-<div>
-${r.key}
-<button onclick="approve('${r.key}','courier')" class="green">✔</button>
-<button onclick="reject('${r.key}','courier')" class="red">✖</button>
-</div>`;
-});
-});
-
-onValue(ref(db,"requests/restaurants"),snap=>{
-restaurantRequests.innerHTML="";
-snap.forEach(r=>{
-restaurantRequests.innerHTML+=`
-<div>
-${r.key}
-<button onclick="approve('${r.key}','restaurant')" class="green">✔</button>
-<button onclick="reject('${r.key}','restaurant')" class="red">✖</button>
-</div>`;
-});
-});
-
-/* APPROVE */
-window.approve=(id,type)=>{
-set(ref(db,type+"s/"+id),{approved:true});
-set(ref(db,"requests/"+type+"s/"+id),null);
-};
-
-/* REJECT */
-window.reject=(id,type)=>{
-set(ref(db,"requests/"+type+"s/"+id),null);
-};
-
-/* BLACKLIST */
-window.blacklistUser=(id,type)=>{
-set(ref(db,"blacklist/"+type+"/"+id),true);
-};
-
-/* SİPARİŞLER */
+/* SİPARİŞ */
 onValue(ref(db,"orders"),snap=>{
 orderList.innerHTML="";
-orders={};
+orderSelect.innerHTML="";
 
 snap.forEach(o=>{
-let d=o.val(); orders[d.id]=d;
+let d=o.val();
+orders[d.id]=d;
 
 orderSelect.innerHTML+=`<option value="${d.id}">${d.customer}</option>`;
 
@@ -243,56 +215,35 @@ ${d.customer} | ${d.status} | 💰${d.price||"-"}
 });
 });
 
-/* MESAFE */
-function dist(a,b,c,d){return Math.hypot(a-c,b-d)}
-
-/* FİYAT */
-async function calc(order,cid){
-let p=await get(ref(db,"pricing/courier/"+cid));
-if(!p.exists()) return 50;
-let d=p.val(); let km=5;
-return d.model==="hourly"?(d.base/60*15)+(km*d.perKm):d.base+(km*d.perKm);
-}
-
 /* CREATE */
 window.createOrder=()=>{
 let id="ORD-"+Date.now();
-let o={id,customer:customer.value,address:address.value,lat:+lat.value,lng:+lng.value,status:"waiting"};
-set(ref(db,"orders/"+id),o);
-autoAssign(id,o);
+set(ref(db,"orders/"+id),{
+id,
+customer:customer.value,
+address:address.value,
+lat:+lat.value,
+lng:+lng.value,
+status:"waiting"
+});
 };
 
-/* AUTO */
-async function autoAssign(id,o){
-let best=null,min=999;
-for(let c in couriers){
-let k=couriers[c]; if(!k.lat) continue;
-let d=dist(o.lat,o.lng,k.lat,k.lng);
-if(d<min){min=d;best=c;}
-}
-if(!best) return;
-let price=await calc(o,best);
-set(ref(db,"orders/"+id+"/courierId"),best);
-set(ref(db,"orders/"+id+"/status"),"assigned");
-set(ref(db,"orders/"+id+"/price"),Math.round(price));
-}
-
 /* MANUEL */
-window.manualAssign=async()=>{
-let oid=orderSelect.value,cid=courierSelect.value;
-let price=await calc(orders[oid],cid);
-set(ref(db,"orders/"+oid+"/courierId"),cid);
-set(ref(db,"orders/"+oid+"/status"),"assigned");
-set(ref(db,"orders/"+oid+"/price"),Math.round(price));
+window.manualAssign=()=>{
+set(ref(db,"orders/"+orderSelect.value+"/courierId"),courierSelect.value);
+set(ref(db,"orders/"+orderSelect.value+"/status"),"assigned");
 };
 
 /* PRICING */
 window.savePricing=()=>{
 set(ref(db,"pricing/"+pricingType.value+"/"+targetId.value),{
-model:model.value,base:+basePrice.value,perKm:+perKm.value
+model:model.value,
+base:+basePrice.value,
+perKm:+perKm.value
 });
 };
 
 </script>
+
 </body>
 </html>

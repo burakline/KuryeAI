@@ -2,14 +2,14 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>KuryeAI ULTRA</title>
+<title>KuryeAI REALTIME</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
 body{margin:0;background:#020617;color:white;font-family:Arial}
-#map{height:50vh}
+#map{height:45vh}
 
 .header{
 display:flex;
@@ -28,7 +28,7 @@ font-size:12px;
 .offline{background:#ef4444}
 
 .card{
-background:rgba(15,23,42,.7);
+background:#0f172a;
 padding:12px;
 margin:10px;
 border-radius:12px;
@@ -36,16 +36,23 @@ border-radius:12px;
 
 button{
 width:100%;
-padding:12px;
+padding:10px;
 margin-top:6px;
 border:none;
 border-radius:10px;
 font-weight:bold;
 }
 
-.blue{background:#00d4ff;color:black}
 .green{background:#22c55e}
 .red{background:#ef4444}
+.blue{background:#00d4ff;color:black}
+.orange{background:#f59e0b;color:black}
+
+.countdown{
+font-size:20px;
+color:#f59e0b;
+text-align:center;
+}
 </style>
 </head>
 
@@ -63,19 +70,16 @@ font-weight:bold;
 <button class="red" onclick="goOffline()">Offline</button>
 </div>
 
-<div class="card">
-<h3>📦 Siparişler</h3>
-<div id="orders"></div>
-</div>
+<div id="activeOrder"></div>
+<div id="incomingOrder"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
 import "./firebase.js";
-
 import {
-getDatabase, ref, onValue, update, set
+getDatabase, ref, onValue, update
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import {
@@ -85,22 +89,23 @@ getAuth, onAuthStateChanged
 const db=getDatabase();
 const auth=getAuth();
 
+let user;
 let map=L.map('map').setView([39.92,32.85],13);
+
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-/* CACHE */
-let user,courierData={},ordersCache={},marker,routeLayer,routeCache={};
+let marker,routeLayer;
+let orders={};
+let routeCache={};
 
 /* AUTH */
-onAuthStateChanged(auth,u=>{
+onAuthStateChanged(auth,function(u){
 if(!u) location.href="login.html";
 user=u;
 });
 
-/* GPS SMOOTH */
-let anim;
-
-navigator.geolocation.watchPosition(pos=>{
+/* GPS */
+navigator.geolocation.watchPosition(function(pos){
 
 let lat=pos.coords.latitude;
 let lng=pos.coords.longitude;
@@ -109,7 +114,8 @@ if(!marker){
 marker=L.marker([lat,lng]).addTo(map);
 map.setView([lat,lng],15);
 }else{
-let s=marker.getLatLng(),i=0;
+let s=marker.getLatLng();
+let i=0;
 
 function step(){
 i++;
@@ -122,21 +128,24 @@ if(i<15) requestAnimationFrame(step);
 step();
 }
 
-/* FIREBASE */
-set(ref(db,"couriers/"+user?.uid),{
-lat,lng,online:true
+update(ref(db,"couriers/"+user.uid),{
+lat:lat,
+lng:lng,
+online:true
 });
 
 });
 
-/* REAL ROUTE */
+/* ROUTE */
 async function getRoute(from,to){
 
 let key=from.lat+","+from.lng+"_"+to.lat+","+to.lng;
 
 if(routeCache[key]) return routeCache[key];
 
-let url=`https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
+let url="https://router.project-osrm.org/route/v1/driving/"
++from.lng+","+from.lat+";"+to.lng+","+to.lat+
+"?overview=full&geometries=geojson";
 
 let res=await fetch(url);
 let data=await res.json();
@@ -151,24 +160,70 @@ let audio=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
 audio.play();
 }
 
-/* ORDERS */
-onValue(ref(db,"orders"),async snap=>{
+/* COUNTDOWN */
+let timer;
 
-orders.innerHTML="";
+function startCountdown(orderId){
 
-snap.forEach(async o=>{
+let time=10;
 
-let d=o.val();
-ordersCache[d.id]=d;
+timer=setInterval(function(){
 
-if(d.courierId!==user.uid) return;
+incomingOrder.innerHTML=
+"<div class='card'><div class='countdown'>"+time+" sn</div></div>";
 
-/* NOTIFICATION */
-if(d.status==="assigned"){
-playSound();
+time--;
+
+if(time<0){
+clearInterval(timer);
+
+/* otomatik reddet */
+update(ref(db,"orders/"+orderId),{
+status:"waiting",
+courierId:null
+});
+
+incomingOrder.innerHTML="";
 }
 
-/* ROUTE */
+},1000);
+
+}
+
+/* ORDERS */
+onValue(ref(db,"orders"),async function(snap){
+
+incomingOrder.innerHTML="";
+activeOrder.innerHTML="";
+orders={};
+
+snap.forEach(function(o){
+orders[o.key]=o.val();
+});
+
+for(let id in orders){
+
+let d=orders[id];
+
+if(d.courierId!==user.uid) continue;
+
+/* NEW ORDER */
+if(d.status==="assigned"){
+
+playSound();
+startCountdown(id);
+
+incomingOrder.innerHTML+=
+"<div class='card'>"+
+"<b>Yeni Sipariş</b><br>"+
+"<button class='green' onclick=\"accept('"+id+"')\">Kabul</button>"+
+"<button class='red' onclick=\"reject('"+id+"')\">Reddet</button>"+
+"</div>";
+}
+
+/* ACTIVE */
+if(d.status==="accepted" || d.status==="onway"){
+
 if(marker && d.lat){
 
 let route=await getRoute(marker.getLatLng(),d);
@@ -178,41 +233,48 @@ if(routeLayer) map.removeLayer(routeLayer);
 routeLayer=L.geoJSON(route.geometry,{style:{color:"#00d4ff"}}).addTo(map);
 
 let km=(route.distance/1000).toFixed(2);
-let min=Math.round(route.duration/60);
+let eta=Math.round(route.duration/60);
 
-orders.innerHTML+=`
-<div class="card">
-<b>${d.address}</b><br>
-${d.status}<br>
-${km} km | ${min} dk
+activeOrder.innerHTML=
+"<div class='card'>"+
+"<b>Aktif Sipariş</b><br>"+
+km+" km | "+eta+" dk<br>"+
+"<button class='blue' onclick=\"setStatus('"+id+"','onway')\">Yola Çık</button>"+
+"<button class='green' onclick=\"setStatus('"+id+"','delivered')\">Teslim</button>"+
+"</div>";
+}
 
-<button class="green" onclick="accept('${d.id}')">Kabul</button>
-<button class="blue" onclick="complete('${d.id}')">Teslim</button>
-</div>
-`;
+}
 
 }
 
 });
 
-});
-
 /* ACTIONS */
-window.accept=id=>{
+window.accept=function(id){
+clearInterval(timer);
 update(ref(db,"orders/"+id),{status:"accepted"});
 };
 
-window.complete=id=>{
-update(ref(db,"orders/"+id),{status:"delivered"});
+window.reject=function(id){
+clearInterval(timer);
+update(ref(db,"orders/"+id),{
+status:"waiting",
+courierId:null
+});
+};
+
+window.setStatus=function(id,s){
+update(ref(db,"orders/"+id),{status:s});
 };
 
 /* STATUS */
-window.goOnline=()=>{
+window.goOnline=function(){
 status.innerText="Online";
 status.className="status online";
 };
 
-window.goOffline=()=>{
+window.goOffline=function(){
 status.innerText="Offline";
 status.className="status offline";
 update(ref(db,"couriers/"+user.uid),{online:false});

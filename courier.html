@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>KuryeAI FIX</title>
+<title>KuryeAI ULTRA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -10,26 +10,16 @@
 <style>
 body{margin:0;background:#020617;color:white;font-family:Arial}
 #map{height:45vh}
-.header{display:flex;justify-content:space-between;padding:10px}
-.status{padding:6px 12px;border-radius:20px}
-.online{background:#22c55e;color:black}
-.offline{background:#ef4444}
 .card{background:#0f172a;padding:12px;margin:10px;border-radius:12px}
-button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px;font-weight:bold}
+button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px}
 .green{background:#22c55e}
 .red{background:#ef4444}
 .blue{background:#00d4ff;color:black}
-.orange{background:#f59e0b;color:black}
-.countdown{text-align:center;font-size:20px;color:#f59e0b}
+.count{font-size:20px;text-align:center;color:#f59e0b}
 </style>
 </head>
 
 <body>
-
-<div class="header">
-<h3>🚴 Kurye</h3>
-<div id="status" class="status offline">Offline</div>
-</div>
 
 <div id="map"></div>
 
@@ -38,8 +28,8 @@ button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px;fon
 <button class="red" onclick="goOffline()">Offline</button>
 </div>
 
-<div id="incomingOrder"></div>
-<div id="activeOrder"></div>
+<div id="incoming"></div>
+<div id="active"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -52,27 +42,20 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 const db=getDatabase();
 const auth=getAuth();
 
-let user=null;
+let user;
 let map=L.map('map').setView([39.92,32.85],13);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let marker=null;
-let routeLayer=null;
-let orders={};
-let routeCache={};
-let timer=null;
+let marker,routeLayer,orders={},routeCache={},timer;
 
 /* AUTH */
-onAuthStateChanged(auth,function(u){
-if(!u){ location.href="login.html"; return; }
+onAuthStateChanged(auth,u=>{
+if(!u) location.href="login.html";
 user=u;
 });
 
 /* GPS */
-navigator.geolocation.watchPosition(function(pos){
-
-if(!user) return;
-
+navigator.geolocation.watchPosition(pos=>{
 let lat=pos.coords.latitude;
 let lng=pos.coords.longitude;
 
@@ -80,136 +63,96 @@ if(!marker){
 marker=L.marker([lat,lng]).addTo(map);
 map.setView([lat,lng],15);
 }else{
-let s=marker.getLatLng();
-let i=0;
-
-function step(){
-i++;
-marker.setLatLng([
-s.lat+(lat-s.lat)*(i/15),
-s.lng+(lng-s.lng)*(i/15)
-]);
-if(i<15) requestAnimationFrame(step);
-}
-step();
+marker.setLatLng([lat,lng]);
 }
 
 update(ref(db,"couriers/"+user.uid),{
-lat:lat,
-lng:lng,
-online:true
+lat,lng,online:true
 });
-
 });
 
 /* ROUTE */
 async function getRoute(from,to){
-
 let key=from.lat+","+from.lng+"_"+to.lat+","+to.lng;
-
 if(routeCache[key]) return routeCache[key];
 
-let url="https://router.project-osrm.org/route/v1/driving/"
-+from.lng+","+from.lat+";"+to.lng+","+to.lat+
-"?overview=full&geometries=geojson";
+let url=`https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
 
 let res=await fetch(url);
 let data=await res.json();
-
 routeCache[key]=data.routes[0];
 return data.routes[0];
 }
 
 /* SOUND */
-function playSound(){
-let audio=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-audio.play();
+function sound(){
+new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play();
 }
 
 /* COUNTDOWN */
-function startCountdown(orderId){
-
-let time=10;
-
-if(timer) clearInterval(timer);
-
-timer=setInterval(function(){
-
-incomingOrder.innerHTML=
-"<div class='card'><div class='countdown'>"+time+" sn</div></div>";
-
-time--;
-
-if(time<0){
+function countdown(id){
+let t=10;
 clearInterval(timer);
 
-update(ref(db,"orders/"+orderId),{
-status:"waiting",
-courierId:null
-});
+timer=setInterval(()=>{
+incoming.innerHTML=`<div class="card"><div class="count">${t}</div></div>`;
+t--;
 
-incomingOrder.innerHTML="";
+if(t<0){
+clearInterval(timer);
+update(ref(db,"orders/"+id),{status:"waiting",courierId:null});
+incoming.innerHTML="";
 }
-
 },1000);
-
 }
 
 /* ORDERS */
-onValue(ref(db,"orders"),async function(snap){
+onValue(ref(db,"orders"),async snap=>{
 
-incomingOrder.innerHTML="";
-activeOrder.innerHTML="";
+incoming.innerHTML="";
+active.innerHTML="";
 orders={};
 
-snap.forEach(function(o){
-orders[o.key]=o.val();
-});
+snap.forEach(o=>orders[o.key]=o.val());
 
 for(let id in orders){
 
 let d=orders[id];
-
-if(!user) continue;
 if(d.courierId!==user.uid) continue;
 
-/* NEW ORDER */
+/* NEW */
 if(d.status==="assigned"){
+sound();
+countdown(id);
 
-playSound();
-startCountdown(id);
-
-incomingOrder.innerHTML=
-"<div class='card'>"+
-"<b>Yeni Sipariş</b><br>"+
-"<button class='green' onclick=\"accept('"+id+"')\">Kabul</button>"+
-"<button class='red' onclick=\"reject('"+id+"')\">Reddet</button>"+
-"</div>";
+incoming.innerHTML=`
+<div class="card">
+Yeni Sipariş
+<button class="green" onclick="accept('${id}')">Kabul</button>
+<button class="red" onclick="reject('${id}')">Reddet</button>
+</div>`;
 }
 
-/* ACTIVE ORDER */
+/* ACTIVE */
 if(d.status==="accepted" || d.status==="onway"){
 
 if(marker && d.lat){
 
-let route=await getRoute(marker.getLatLng(),d);
+let r=await getRoute(marker.getLatLng(),d);
 
 if(routeLayer) map.removeLayer(routeLayer);
 
-routeLayer=L.geoJSON(route.geometry,{
-style:{color:"#00d4ff"}
-}).addTo(map);
+routeLayer=L.geoJSON(r.geometry,{style:{color:"#00d4ff"}}).addTo(map);
 
-let km=(route.distance/1000).toFixed(2);
-let eta=Math.round(route.duration/60);
+let km=(r.distance/1000).toFixed(2);
+let eta=Math.round(r.duration/60);
 
-activeOrder.innerHTML=
-"<div class='card'>"+
-"<b>Aktif Sipariş</b><br>"+
-km+" km | "+eta+" dk<br>"+
-"<button class='blue' onclick=\"setStatus('"+id+"','onway')\">Yola Çık</button>"+
-"<button class='green' onclick=\"setStatus('"+id+"','delivered')\">Teslim</button>"+
-"</div>";
+active.innerHTML=`
+<div class="card">
+${km} km | ${eta} dk
+<button class="blue" onclick="start('${id}')">Yola Çık</button>
+<button class="green" onclick="finish('${id}')">Teslim</button>
+</div>`;
 }
 
 }
@@ -219,38 +162,34 @@ km+" km | "+eta+" dk<br>"+
 });
 
 /* ACTIONS */
-window.accept=function(id){
-if(timer) clearInterval(timer);
+window.accept=id=>{
+clearInterval(timer);
 update(ref(db,"orders/"+id),{status:"accepted"});
 };
 
-window.reject=function(id){
-if(timer) clearInterval(timer);
+window.reject=id=>{
+clearInterval(timer);
+update(ref(db,"orders/"+id),{status:"waiting",courierId:null});
+};
+
+window.start=id=>{
+let link="https://kuryeai.com/tracking.html?id="+id;
+
 update(ref(db,"orders/"+id),{
-status:"waiting",
-courierId:null
+status:"onway",
+trackingLink:link
 });
 };
 
-window.setStatus=function(id,s){
-update(ref(db,"orders/"+id),{status:s});
+window.finish=id=>{
+update(ref(db,"orders/"+id),{status:"delivered"});
 };
 
-/* STATUS */
-window.goOnline=function(){
-status.innerText="Online";
-status.className="status online";
-};
-
-window.goOffline=function(){
-status.innerText="Offline";
-status.className="status offline";
-if(user){
+window.goOnline=()=>{};
+window.goOffline=()=>{
 update(ref(db,"couriers/"+user.uid),{online:false});
-}
 };
 
 </script>
-
 </body>
 </html>

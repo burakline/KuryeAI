@@ -2,23 +2,17 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>KuryeAI ULTRA FINAL</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Courier</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
 <style>
-body{margin:0;background:#020617;color:white;font-family:Arial}
-#map{height:45vh}
-.card{background:#0f172a;padding:12px;margin:10px;border-radius:12px}
-button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px;font-weight:bold}
-.green{background:#22c55e}
-.red{background:#ef4444}
-.blue{background:#00d4ff;color:black}
-.count{font-size:24px;text-align:center;color:#f59e0b}
-.status{text-align:center;padding:6px;margin:5px;font-weight:bold}
-.online{color:#22c55e}
-.offline{color:#ef4444}
+body{margin:0;background:#0f172a;color:white;font-family:Arial;}
+#map{height:60vh;}
+.panel{padding:15px;background:#111827;}
+button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold;}
+.online{background:#22c55e;}
+.offline{background:#ef4444;}
+.status{text-align:center;font-size:18px;margin-bottom:10px;}
 </style>
 </head>
 
@@ -26,223 +20,70 @@ button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px;fon
 
 <div id="map"></div>
 
-<div class="card">
-<div id="status" class="status offline">Offline</div>
-<button class="green" onclick="goOnline()">Online Ol</button>
-<button class="red" onclick="goOffline()">Offline Ol</button>
+<div class="panel">
+<div id="status" class="status">Offline</div>
+<button class="online" onclick="goOnline()">Online Ol</button>
+<button class="offline" onclick="goOffline()">Offline Ol</button>
 </div>
-
-<div id="incoming"></div>
-<div id="active"></div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
-import "./firebase.js";
-import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-const db=getDatabase();
-const auth=getAuth();
-
-let user;
-let map=L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let marker,routeLayer,orders={},routeCache={},timer;
-let statusEl=document.getElementById("status");
-
-/* AUTH */
-onAuthStateChanged(auth,u=>{
-if(!u){
-location.href="login.html";
-return;
-}
-user=u;
-});
-
-/* GPS LIVE (HER ZAMAN AKAR) */
-navigator.geolocation.watchPosition(pos=>{
-if(!user) return;
-
-let lat=pos.coords.latitude;
-let lng=pos.coords.longitude;
-
-if(!marker){
-marker=L.marker([lat,lng]).addTo(map);
-map.setView([lat,lng],15);
-}else{
-marker.setLatLng([lat,lng]);
-}
-
-/* offline olsa bile konum akar */
-update(ref(db,"couriers/"+user.uid),{
-lat,lng,
-updatedAt:Date.now()
-});
-
-});
-
-/* ROUTE CACHE */
-async function getRoute(from,to){
-let key=from.lat+","+from.lng+"_"+to.lat+","+to.lng;
-if(routeCache[key]) return routeCache[key];
-
-let url=`https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
-
-let res=await fetch(url);
-let data=await res.json();
-routeCache[key]=data.routes[0];
-return data.routes[0];
-}
-
-/* SOUND */
-function sound(){
-new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play();
-}
-
-/* COUNTDOWN */
-function countdown(id){
-let t=10;
-clearInterval(timer);
-
-timer=setInterval(()=>{
-incoming.innerHTML=`
-<div class="card">
-<div class="count">${t}</div>
-</div>`;
-t--;
-
-if(t<0){
-clearInterval(timer);
-update(ref(db,"orders/"+id),{
-status:"waiting",
-courierId:null
-});
-incoming.innerHTML="";
-}
-},1000);
-}
-
-/* ORDERS STREAM */
-onValue(ref(db,"orders"),async snap=>{
-
-incoming.innerHTML="";
-active.innerHTML="";
-orders={};
-
-snap.forEach(o=>orders[o.key]=o.val());
-
-for(let id in orders){
-
-let d=orders[id];
-if(d.courierId!==user.uid) continue;
-
-/* YENİ SİPARİŞ */
-if(d.status==="assigned"){
-sound();
-countdown(id);
-
-incoming.innerHTML=`
-<div class="card">
-Yeni Sipariş<br>
-<b>${d.customer || ""}</b><br>
-<button class="green" onclick="accept('${id}')">Kabul</button>
-<button class="red" onclick="reject('${id}')">Reddet</button>
-</div>`;
-}
-
-/* AKTİF */
-if(d.status==="accepted" || d.status==="onway"){
-
-if(marker && d.lat){
-
-let r=await getRoute(marker.getLatLng(),d);
-
-if(routeLayer) map.removeLayer(routeLayer);
-
-routeLayer=L.geoJSON(r.geometry,{style:{color:"#00d4ff"}}).addTo(map);
-
-let km=(r.distance/1000).toFixed(2);
-let eta=Math.round(r.duration/60);
-
-active.innerHTML=`
-<div class="card">
-📦 ${d.customer || ""}
-<br>${km} km | ${eta} dk
-<button class="blue" onclick="start('${id}')">Yola Çık</button>
-<button class="green" onclick="finish('${id}')">Teslim</button>
-</div>`;
-}
-
-}
-
-}
-
-});
-
-/* ACTIONS */
-window.accept=id=>{
-clearInterval(timer);
-update(ref(db,"orders/"+id),{status:"accepted"});
+const firebaseConfig = {
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kuryeai"
 };
 
-window.reject=id=>{
-clearInterval(timer);
-update(ref(db,"orders/"+id),{
-status:"waiting",
-courierId:null
-});
-};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-window.start=id=>{
-let link="https://kuryeai.com/tracking.html?id="+id;
+let userData;
 
-update(ref(db,"orders/"+id),{
-status:"onway",
-trackingLink:link
-});
-};
+onAuthStateChanged(auth, async(user)=>{
+  if(!user) return location.href="/login.html";
 
-window.finish=id=>{
-update(ref(db,"orders/"+id),{
-status:"delivered"
-});
-};
+  userData = user;
 
-/* ONLINE FIX FINAL */
-window.goOnline=()=>{
-if(!user) return;
-
-navigator.geolocation.getCurrentPosition(pos=>{
-update(ref(db,"couriers/"+user.uid),{
-lat:pos.coords.latitude,
-lng:pos.coords.longitude,
-online:true,
-updatedAt:Date.now()
+  const snap = await get(ref(db,"roles/"+user.uid));
+  if(!snap.exists() || snap.val().role !== "courier"){
+    alert("Yetkisiz!");
+    return location.href="/login.html";
+  }
 });
 
-statusEl.innerText="Online";
-statusEl.className="status online";
+// ONLINE
+window.goOnline = async function(){
+  navigator.geolocation.getCurrentPosition(async(pos)=>{
+    await update(ref(db,"couriers/"+userData.uid),{
+      lat:pos.coords.latitude,
+      lng:pos.coords.longitude,
+      online:true
+    });
+    status.innerText="Online";
+  });
+}
 
-},()=>{
-alert("Konum izni gerekli!");
-});
-};
-
-/* OFFLINE */
-window.goOffline=()=>{
-if(!user) return;
-
-update(ref(db,"couriers/"+user.uid),{
-online:false
-});
-
-statusEl.innerText="Offline";
-statusEl.className="status offline";
-};
+// OFFLINE
+window.goOffline = async function(){
+  await update(ref(db,"couriers/"+userData.uid),{
+    online:false
+  });
+  status.innerText="Offline";
+}
 
 </script>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+const map = L.map('map').setView([39.92,32.85],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+</script>
+
 </body>
 </html>

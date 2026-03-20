@@ -17,15 +17,10 @@ grid-template-columns:1fr 360px;
 }
 
 /* MAP */
-#map{
-height:100vh;
-}
+#map{height:100vh}
 
 /* PANEL */
-.panel{
-overflow:auto;
-height:100vh;
-}
+.panel{overflow:auto;height:100vh}
 
 /* CARD */
 .card{
@@ -63,7 +58,26 @@ cursor:pointer;
 .red{background:#ef4444}
 .orange{background:#f59e0b;color:black}
 
-/* 🔥 MOBİL FIX */
+/* 🔥 TAB */
+.tabs{
+display:flex;
+justify-content:space-around;
+background:#020617;
+padding:6px;
+position:sticky;
+top:0;
+z-index:999;
+}
+
+.tabs button{
+background:#0f172a;
+color:white;
+border-radius:8px;
+padding:8px;
+width:22%;
+}
+
+/* 🔥 MOBILE */
 @media (max-width:768px){
 
 .container{
@@ -71,28 +85,8 @@ display:flex !important;
 flex-direction:column !important;
 }
 
-#map{
-height:50vh !important;
-}
-
-.panel{
-height:50vh !important;
-overflow-y:auto;
-}
-
-.card{
-margin:6px !important;
-padding:10px !important;
-}
-
-button{
-padding:12px !important;
-font-size:14px;
-}
-
-input,select{
-padding:10px !important;
-}
+#map{height:50vh !important}
+.panel{height:50vh !important}
 
 }
 </style>
@@ -105,6 +99,17 @@ padding:10px !important;
 <div id="map"></div>
 
 <div class="panel">
+
+<!-- TAB MENU -->
+<div class="tabs">
+<button onclick="showTab('orders')">📦</button>
+<button onclick="showTab('couriers')">🚴</button>
+<button onclick="showTab('restaurants')">🏪</button>
+<button onclick="showTab('settings')">⚙️</button>
+</div>
+
+<!-- SİPARİŞ -->
+<div id="tab-orders" class="tab">
 
 <div class="card">
 <b>📦 Sipariş</b>
@@ -123,6 +128,36 @@ padding:10px !important;
 </div>
 
 <div class="card">
+<b>📋 Siparişler</b>
+<div id="orderList"></div>
+</div>
+
+</div>
+
+<!-- KURYE -->
+<div id="tab-couriers" class="tab" style="display:none;">
+
+<div class="card">
+<b>🚴 Kuryeler</b>
+<div id="courierList"></div>
+</div>
+
+</div>
+
+<!-- RESTORAN -->
+<div id="tab-restaurants" class="tab" style="display:none;">
+
+<div class="card">
+<b>🏪 Restoranlar</b>
+<div id="restaurantList"></div>
+</div>
+
+</div>
+
+<!-- AYAR -->
+<div id="tab-settings" class="tab" style="display:none;">
+
+<div class="card">
 <b>💰 Ücret</b>
 <select id="pricingType">
 <option value="courier">Kurye</option>
@@ -139,14 +174,6 @@ padding:10px !important;
 <button class="green" onclick="savePricing()">Kaydet</button>
 </div>
 
-<div class="card"><b>📝 Kurye Başvuruları</b><div id="courierRequests"></div></div>
-<div class="card"><b>🏪 Restoran Başvuruları</b><div id="restaurantRequests"></div></div>
-
-<div class="card"><b>🚴 Kuryeler</b><div id="courierList"></div></div>
-<div class="card"><b>🏪 Restoranlar</b><div id="restaurantList"></div></div>
-
-<div class="card"><b>⛔ Kara Liste</b><div id="blacklist"></div></div>
-
 <div class="card">
 <b>🗺️ Zone</b>
 <input id="zoneName" placeholder="Zone adı">
@@ -154,7 +181,7 @@ padding:10px !important;
 <button onclick="saveZone()">Kaydet</button>
 </div>
 
-<div class="card"><b>📋 Siparişler</b><div id="orderList"></div></div>
+</div>
 
 </div>
 
@@ -165,7 +192,7 @@ padding:10px !important;
 <script type="module">
 
 import "./firebase.js";
-import { getDatabase, ref, onValue, set, get } 
+import { getDatabase, ref, onValue, set } 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const db=getDatabase();
@@ -175,6 +202,13 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 let couriers={},orders={};
 
+/* TAB */
+window.showTab=(t)=>{
+document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+document.getElementById("tab-"+t).style.display="block";
+};
+
+/* MAP CLICK */
 map.on("click",e=>{
 lat.value=e.latlng.lat;
 lng.value=e.latlng.lng;
@@ -183,6 +217,8 @@ lng.value=e.latlng.lng;
 /* KURYELER */
 onValue(ref(db,"couriers"),snap=>{
 courierSelect.innerHTML="";
+courierList.innerHTML="";
+
 snap.forEach(c=>{
 let id=c.key,d=c.val();
 couriers[id]=d;
@@ -194,6 +230,12 @@ radius:6,color:d.online?"#22c55e":"#ef4444"
 }
 
 courierSelect.innerHTML+=`<option value="${id}">${id}</option>`;
+
+courierList.innerHTML+=`
+<div>
+${id}
+<button class="red" onclick="blacklist('${id}')">⛔</button>
+</div>`;
 });
 });
 
@@ -241,6 +283,11 @@ model:model.value,
 base:+basePrice.value,
 perKm:+perKm.value
 });
+};
+
+/* BLACKLIST */
+window.blacklist=id=>{
+set(ref(db,"blacklist/courier/"+id),true);
 };
 
 </script>

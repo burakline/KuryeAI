@@ -2,27 +2,20 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>RestoranAI ULTRA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<title>Restaurant</title>
 
 <style>
-body{margin:0;background:#020617;color:white;font-family:Arial}
-#map{height:40vh}
-.card{background:#0f172a;margin:10px;padding:12px;border-radius:12px}
-input,button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10px}
-.blue{background:#00d4ff;color:black}
-.green{background:#22c55e}
-.status{padding:4px 8px;border-radius:8px;font-size:12px}
+body{margin:0;background:#0f172a;color:white;font-family:Arial;}
+.panel{padding:15px;}
+input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none;}
+button{width:100%;padding:12px;background:#06b6d4;border:none;border-radius:10px;font-weight:bold;}
 </style>
 </head>
 
 <body>
 
-<div id="map"></div>
-
-<div class="card">
+<div class="panel">
 <input id="customer" placeholder="Müşteri">
 <input id="phone" placeholder="Telefon">
 <input id="address" placeholder="Adres">
@@ -30,141 +23,56 @@ input,button{width:100%;padding:10px;margin-top:6px;border:none;border-radius:10
 <input id="lng" placeholder="Lng">
 <input id="note" placeholder="Not">
 <input id="price" placeholder="Fiyat">
-<button class="blue" onclick="createOrder()">Sipariş</button>
+<button onclick="createOrder()">Sipariş</button>
 </div>
-
-<div id="stats" class="card"></div>
-<div id="orderList"></div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script type="module">
 
-import "./firebase.js";
-import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-const db=getDatabase();
-const auth=getAuth();
-
-let user;
-let map=L.map('map').setView([39.92,32.85],12);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-let orders={},couriers={},markers={},routes={},routeCache={};
-
-onAuthStateChanged(auth,u=>{
-if(!u) location.href="login.html";
-user=u;
-});
-
-map.on("click",e=>{
-lat.value=e.latlng.lat;
-lng.value=e.latlng.lng;
-});
-
-window.createOrder=()=>{
-let id="ORD-"+Date.now();
-
-set(ref(db,"orders/"+id),{
-id,
-customer:customer.value,
-phone:phone.value,
-address:address.value,
-lat:+lat.value,
-lng:+lng.value,
-note:note.value,
-price:+price.value||50,
-status:"waiting",
-restaurantId:user.uid
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain: "kuryeai.firebaseapp.com",
+  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kuryeai"
 };
 
-/* ROUTE */
-async function getRoute(c,o){
-let key=c.lat+","+c.lng+"_"+o.lat+","+o.lng;
-if(routeCache[key]) return routeCache[key];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-let url=`https://router.project-osrm.org/route/v1/driving/${c.lng},${c.lat};${o.lng},${o.lat}?overview=full&geometries=geojson`;
+onAuthStateChanged(auth, async(user)=>{
+  if(!user) return location.href="/login.html";
 
-let res=await fetch(url);
-let data=await res.json();
-routeCache[key]=data.routes[0];
-return data.routes[0];
-}
+  const { get, ref } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js");
+  const snap = await get(ref(db,"roles/"+user.uid));
 
-/* COURIERS */
-onValue(ref(db,"couriers"),snap=>{
-couriers={};
-
-snap.forEach(c=>{
-let d=c.val();
-couriers[c.key]=d;
-
-if(d.lat){
-if(!markers[c.key]){
-markers[c.key]=L.marker([d.lat,d.lng]).addTo(map);
-}else{
-markers[c.key].setLatLng([d.lat,d.lng]);
-}
-}
-});
+  if(!snap.exists() || snap.val().role !== "restaurant"){
+    alert("Yetkisiz!");
+    return location.href="/login.html";
+  }
 });
 
-/* ORDERS */
-onValue(ref(db,"orders"),async snap=>{
+window.createOrder = async function(){
 
-orderList.innerHTML="";
-let total=0,del=0,rev=0;
+  await push(ref(db,"orders"),{
+    customer:customer.value,
+    phone:phone.value,
+    address:address.value,
+    lat:Number(lat.value),
+    lng:Number(lng.value),
+    note:note.value,
+    price:Number(price.value),
+    status:"waiting",
+    createdAt:Date.now()
+  });
 
-snap.forEach(o=>{
-let d=o.val();
-if(d.restaurantId!==user.uid) return;
-
-orders[d.id]=d;
-total++;
-
-if(d.status==="delivered"){
-del++;
-rev+=d.price||50;
+  alert("Sipariş oluşturuldu");
 }
-});
-
-for(let id in orders){
-
-let d=orders[id];
-
-let routeInfo="";
-if(d.courierId && couriers[d.courierId]){
-let r=await getRoute(couriers[d.courierId],d);
-
-if(routes[id]) map.removeLayer(routes[id]);
-
-routes[id]=L.geoJSON(r.geometry,{style:{color:"#00d4ff"}}).addTo(map);
-
-let km=(r.distance/1000).toFixed(2);
-let eta=Math.round(r.duration/60);
-routeInfo=`${km}km | ${eta}dk`;
-}
-
-let link="https://kuryeai.com/tracking.html?id="+id;
-let wa="https://wa.me/90"+(d.phone||"")+"?text="+encodeURIComponent("Canlı takip: "+link);
-
-orderList.innerHTML+=`
-<div class="card">
-<b>${d.customer}</b><br>
-${d.address}<br>
-Durum: ${d.status}<br>
-${routeInfo}<br>
-${d.courierId?"Kurye: "+d.courierId:""}
-${d.status==="onway"?`<a href="${wa}" target="_blank"><button class="green">WhatsApp Gönder</button></a>`:""}
-</div>`;
-}
-
-stats.innerHTML=`📦 ${total} | ✔ ${del} | 💰 ${rev}₺`;
-
-});
 
 </script>
+
 </body>
 </html>

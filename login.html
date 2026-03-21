@@ -26,31 +26,47 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-function login(){
+async function login(){
 
-  const email = emailInput.value;
-  const password = passwordInput.value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  firebase.auth().signInWithEmailAndPassword(email,password)
-  .then(async(res)=>{
+  try{
 
+    const res = await firebase.auth().signInWithEmailAndPassword(email,password);
     const uid = res.user.uid;
 
-    const snap = await firebase.database().ref("roles/"+uid).once("value");
+    console.log("UID:", uid);
+
+    const snap = await firebase.database().ref("roles/"+uid).get();
 
     if(!snap.exists()){
-      alert("Role yok");
+      alert("Role bulunamadı! Firebase roles hatalı.");
       return;
     }
 
     const role = snap.val().role;
 
-    if(role==="admin") location.href="admin.html";
-    else if(role==="restaurant") location.href="restaurant.html";
-    else location.href="courier.html";
+    console.log("ROLE:", role);
 
-  })
-  .catch(e=>alert(e.message));
+    // 🚨 EN KRİTİK KISIM
+    if(role === "admin"){
+      location.href = "admin.html";
+    }
+    else if(role === "restaurant"){
+      location.href = "restaurant.html";
+    }
+    else if(role === "courier"){
+      location.href = "courier.html";
+    }
+    else{
+      alert("Tanımsız role: " + role);
+    }
+
+  }catch(e){
+    alert(e.message);
+  }
+
 }
 
 </script>

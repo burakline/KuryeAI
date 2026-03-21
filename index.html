@@ -1,132 +1,670 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KuryeAI — Akıllı Teslimat | RestoranAI — Akıllı İşletme</title>
+  <meta name="description" content="KuryeAI ile akıllı teslimat yönetimi, RestoranAI ile akıllı işletme yönetimi. Havuz kurye, sabit kurye, restoran adisyon programı tek platformda."/>
+  <meta name="keywords" content="kurye, havuz kurye, sabit kurye, restoran adisyon programı, akıllı teslimat, kurye yönetim sistemi, restoran yazılımı"/>
 
-<style>
-body{
-margin:0;
-font-family:'Inter',sans-serif;
-background:#0A0A0A;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-color:white;
-}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* CARD */
-.container{
-width:90%;
-max-width:350px;
-padding:25px;
+    :root {
+      --black:    #000000;
+      --dark:     #0c0c0c;
+      --card:     #111111;
+      --border:   rgba(255,255,255,0.07);
+      --gray:     #555;
+      --gray-lt:  #999;
+      --silver:   #c8c8c8;
+      --white:    #ffffff;
+      --teal:     #00c8d7;
+      --teal-dk:  #009aaa;
+      --teal-lt:  #33d6e3;
+    }
 
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(15px);
-border-radius:20px;
-border:1px solid rgba(255,255,255,0.1);
+    html { scroll-behavior: smooth; }
 
-box-shadow:0 0 40px rgba(0,194,168,0.15);
-}
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
 
-/* TITLE */
-h1{
-text-align:center;
-margin-bottom:20px;
-}
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(0,0,0,0.80);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 0.5px solid var(--border);
+      transition: background .3s;
+    }
+    nav.scrolled { background: rgba(0,0,0,0.96); }
 
-/* INPUT */
-input{
-width:100%;
-padding:12px;
-margin-bottom:12px;
-border:none;
-border-radius:10px;
-background:#1a1a1a;
-color:white;
-}
+    .nav-logo { display: flex; align-items: center; gap: .65rem; text-decoration: none; }
+    .nav-logo img { height: 36px; width: 36px; border-radius: 50%; object-fit: cover; }
+    .nav-brand { font-size: 1.1rem; font-weight: 700; letter-spacing: -.03em; color: var(--white); }
+    .nav-brand em { font-style: normal; color: var(--teal); }
 
-/* BUTTON */
-button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#00C2A8;
-color:black;
-font-weight:bold;
-cursor:pointer;
-transition:0.2s;
-}
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: .82rem; color: var(--gray-lt); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--white); }
 
-button:hover{
-box-shadow:0 0 20px #00C2A8;
-}
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-contact { font-size: .8rem; color: var(--gray-lt); text-decoration: none; transition: color .2s; }
+    .nav-contact:hover { color: var(--white); }
 
-/* SWITCH */
-.switch{
-text-align:center;
-margin-top:10px;
-font-size:14px;
-cursor:pointer;
-color:#aaa;
-}
-</style>
+    .btn-pill {
+      display: inline-block;
+      background: var(--teal); color: var(--black);
+      font-size: .78rem; font-weight: 700;
+      padding: .44rem 1.2rem; border-radius: 999px;
+      text-decoration: none; transition: background .2s, transform .15s;
+    }
+    .btn-pill:hover { background: var(--teal-lt); transform: scale(1.04); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 7rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,200,215,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,215,.05) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    .hero-glow {
+      position: absolute; top: 40%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(0,200,215,.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: .7rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--teal);
+      display: flex; align-items: center; gap: .5rem; justify-content: center;
+      margin-bottom: 2rem;
+      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .1s;
+    }
+    .pulse-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+      animation: pls 2s infinite;
+    }
+    @keyframes pls { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+
+    .hero-logo-wrap {
+      margin-bottom: 2.5rem;
+      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .2s;
+    }
+    .hero-logo-wrap img {
+      height: 110px; width: 110px; border-radius: 50%; object-fit: cover;
+      box-shadow: 0 0 60px rgba(0,200,215,.25), 0 0 120px rgba(0,200,215,.08);
+    }
+
+    .hero-h1 {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 700; line-height: 1.06; letter-spacing: -.04em; max-width: 860px;
+      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .35s;
+    }
+    .hero-h1 .teal   { color: var(--teal); }
+    .hero-h1 .silver { color: var(--silver); font-weight: 400; }
+
+    .hero-sub {
+      margin-top: 1.6rem; font-size: 1.05rem; color: var(--gray-lt);
+      max-width: 440px; line-height: 1.75;
+      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .5s;
+    }
+
+    .hero-btns {
+      display: flex; gap: .9rem; margin-top: 2.8rem;
+      flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .65s;
+    }
+
+    .btn-lg {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .92rem; font-weight: 700; padding: .85rem 2.2rem;
+      border-radius: 999px; text-decoration: none; transition: all .2s;
+    }
+    .btn-teal { background: var(--teal); color: var(--black); }
+    .btn-teal:hover { background: var(--teal-lt); transform: scale(1.03); box-shadow: 0 0 30px rgba(0,200,215,.3); }
+    .btn-outline { background: transparent; color: var(--white); border: .5px solid rgba(255,255,255,.2); }
+    .btn-outline:hover { background: rgba(255,255,255,.07); transform: scale(1.03); }
+
+    .scroll-ind {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards 1s;
+    }
+    .scroll-ind span { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gray); }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(var(--teal), transparent);
+      animation: scrollAnim 2s ease-in-out infinite;
+    }
+    @keyframes scrollAnim {
+      0%   { transform:scaleY(0); transform-origin:top; opacity:0; }
+      40%  { transform:scaleY(1); transform-origin:top; opacity:1; }
+      60%  { transform:scaleY(1); transform-origin:bottom; opacity:1; }
+      100% { transform:scaleY(0); transform-origin:bottom; opacity:0; }
+    }
+
+    /* ── TICKER ── */
+    .ticker {
+      overflow: hidden;
+      border-top: .5px solid var(--border); border-bottom: .5px solid var(--border);
+      padding: .85rem 0; background: var(--dark);
+    }
+    .ticker-track { display: inline-flex; white-space: nowrap; animation: tick 32s linear infinite; }
+    .ti { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gray); padding: 0 2.5rem; }
+    .ti.accent { color: var(--teal); }
+    @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SECTION ── */
+    .section { padding: 7rem 2rem; }
+    .inner { max-width: 1060px; margin: 0 auto; }
+
+    .lbl { font-size: .68rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--teal); margin-bottom: 1rem; }
+    .h2 { font-size: clamp(1.9rem, 4.5vw, 3.2rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.1; }
+    .h2 .muted { color: var(--gray-lt); font-weight: 400; }
+    .body-lg { font-size: .98rem; color: var(--gray-lt); line-height: 1.75; max-width: 480px; margin-top: 1.2rem; }
+
+    .reveal {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── PRODUCTS ── */
+    .products { background: var(--dark); border-top: .5px solid var(--border); }
+    .prod-header { text-align: center; margin-bottom: 4rem; }
+    .prod-header .body-lg { margin: 1.2rem auto 0; }
+
+    .prod-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border-radius: 20px; overflow: hidden;
+    }
+
+    .prod-card {
+      background: var(--card); padding: 3.5rem;
+      text-decoration: none; color: var(--white);
+      position: relative; overflow: hidden;
+      transition: background .3s; display: flex; flex-direction: column;
+    }
+    .prod-card:hover { background: #161616; }
+
+    .prod-card::after {
+      content: ''; position: absolute; top: -80px; left: -80px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(0,200,215,.13) 0%, transparent 70%);
+      opacity: 0; transition: opacity .4s; pointer-events: none;
+    }
+    .prod-card:hover::after { opacity: 1; }
+
+    .prod-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--teal);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .4s cubic-bezier(.16,1,.3,1);
+    }
+    .prod-card:hover::before { transform: scaleX(1); }
+
+    .prod-num { font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gray); margin-bottom: 2.5rem; }
+
+    .prod-logo { margin-bottom: 1.8rem; }
+    .prod-logo img { height: 60px; width: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 20px rgba(0,200,215,.15); }
+    .prod-emoji { font-size: 2.2rem; line-height: 1; margin-bottom: 1.8rem; }
+
+    .prod-slogan { font-size: .66rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin-bottom: .6rem; }
+    .prod-title { font-size: 2rem; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-bottom: 1.1rem; }
+    .prod-title em { font-style: normal; color: var(--teal); }
+    .prod-desc { font-size: .9rem; color: var(--gray-lt); line-height: 1.7; flex: 1; }
+
+    .prod-features { margin-top: 1.8rem; display: flex; flex-direction: column; gap: .6rem; }
+    .pf { display: flex; align-items: center; gap: .65rem; font-size: .83rem; color: rgba(255,255,255,.55); }
+    .pf-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+    .prod-cta {
+      display: inline-flex; align-items: center; gap: .4rem;
+      margin-top: 2.2rem; font-size: .85rem; font-weight: 700;
+      color: var(--teal); text-decoration: none; transition: gap .2s;
+    }
+    .prod-card:hover .prod-cta { gap: .7rem; }
+
+    /* ── STATS ── */
+    .stats { background: var(--black); padding: 4rem 2rem; border-top: .5px solid var(--border); }
+    .stats-grid {
+      max-width: 1060px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: var(--border); border-radius: 16px; overflow: hidden;
+    }
+    .stat-item { background: var(--black); padding: 2.5rem 2rem; text-align: center; }
+    .stat-n { font-size: 2.8rem; font-weight: 700; letter-spacing: -.05em; color: var(--white); line-height: 1; }
+    .stat-n em { font-style: normal; color: var(--teal); }
+    .stat-l { margin-top: .5rem; font-size: .7rem; color: var(--gray); letter-spacing: .07em; text-transform: uppercase; }
+
+    /* ── HOW ── */
+    .how { background: var(--dark); border-top: .5px solid var(--border); }
+    .how-header { margin-bottom: 4rem; }
+    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem; }
+    .step { padding-top: 1.5rem; }
+    .step-bar { width: 100%; height: .5px; background: linear-gradient(90deg, var(--teal), transparent); margin-bottom: 2rem; }
+    .step-num { font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin-bottom: .9rem; }
+    .step-title { font-size: .98rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .6rem; }
+    .step-desc { font-size: .83rem; color: var(--gray-lt); line-height: 1.65; }
+
+    /* ── PRICING ── */
+    .pricing { background: var(--black); }
+    .pricing-header { margin-bottom: 3.5rem; }
+    .price-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border-radius: 20px; overflow: hidden; max-width: 860px;
+    }
+    .pc { background: var(--card); padding: 2.8rem; position: relative; }
+    .pc.featured::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--teal); }
+    .pc-lbl { font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin-bottom: .8rem; }
+    .pc-name { font-size: 1.25rem; font-weight: 700; letter-spacing: -.03em; margin-bottom: .2rem; }
+    .pc-slogan { font-size: .78rem; color: var(--gray); margin-bottom: 1.6rem; }
+    .pc-price { font-size: 2.8rem; font-weight: 700; letter-spacing: -.05em; color: var(--white); line-height: 1; }
+    .pc-price sup { font-size: 1.1rem; font-weight: 400; color: var(--gray-lt); vertical-align: super; }
+    .pc-price sub { font-size: .8rem; font-weight: 400; color: var(--gray); letter-spacing: 0; }
+    .pc-note { font-size: .75rem; color: var(--gray); margin: .4rem 0 2rem; }
+    .pc-list { list-style: none; display: flex; flex-direction: column; gap: .65rem; }
+    .pc-list li { display: flex; align-items: flex-start; gap: .6rem; font-size: .83rem; color: rgba(255,255,255,.6); line-height: 1.5; }
+    .tick { color: var(--teal); flex-shrink: 0; margin-top: 1px; font-size: .8rem; }
+    .pc-btn { display: block; text-align: center; margin-top: 2rem; padding: .78rem; border-radius: 999px; font-size: .83rem; font-weight: 700; text-decoration: none; transition: all .2s; }
+    .pc-btn-fill { background: var(--teal); color: var(--black); }
+    .pc-btn-fill:hover { background: var(--teal-lt); transform: scale(1.02); }
+    .pc-btn-ol { background: transparent; color: var(--white); border: .5px solid rgba(255,255,255,.18); }
+    .pc-btn-ol:hover { background: rgba(255,255,255,.07); transform: scale(1.02); }
+
+    /* ── MODEL ── */
+    .model { background: var(--dark); border-top: .5px solid var(--border); }
+    .model-header { margin-bottom: 3.5rem; }
+    .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .mc { background: var(--card); border: .5px solid var(--border); border-radius: 16px; padding: 2.5rem; position: relative; overflow: hidden; }
+    .mc::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px; background: linear-gradient(90deg, var(--teal), transparent); }
+    .mc-badge { display: inline-block; font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); background: rgba(0,200,215,.08); border: .5px solid rgba(0,200,215,.2); padding: .26rem .8rem; border-radius: 999px; margin-bottom: 1.2rem; }
+    .mc-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+    .mc-row { display: flex; justify-content: space-between; align-items: center; padding: .72rem 0; border-bottom: .5px solid rgba(255,255,255,.05); font-size: .84rem; }
+    .mc-row:last-of-type { border-bottom: none; }
+    .mc-row-l { color: var(--gray-lt); }
+    .mc-row-v { font-weight: 700; color: var(--white); }
+    .mc-row-v.teal { color: var(--teal); }
+    .mc-note { margin-top: 1.2rem; font-size: .75rem; color: var(--gray); line-height: 1.6; }
+
+    /* ── CTA FINAL ── */
+    .cta-section { background: var(--black); border-top: .5px solid var(--border); text-align: center; padding: 8rem 2rem; }
+    .cta-section .h2 { max-width: 580px; margin: 0 auto; }
+    .cta-section .body-lg { margin: 1.2rem auto 0; text-align: center; max-width: 380px; }
+    .cta-btns { display: flex; gap: .9rem; margin-top: 2.8rem; flex-wrap: wrap; justify-content: center; }
+    .contact-links { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap; }
+    .contact-links a { font-size: .8rem; color: var(--gray); text-decoration: none; transition: color .2s; }
+    .contact-links a:hover { color: var(--teal); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); border-top: .5px solid var(--border);
+      padding: 2.5rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo { display: flex; align-items: center; gap: .6rem; text-decoration: none; }
+    .footer-logo img { height: 30px; width: 30px; border-radius: 50%; object-fit: cover; }
+    .footer-brand { font-size: .95rem; font-weight: 700; letter-spacing: -.03em; color: var(--white); }
+    .footer-brand em { font-style: normal; color: var(--teal); }
+    .footer-links { display: flex; gap: 1.8rem; list-style: none; flex-wrap: wrap; }
+    .footer-links a { font-size: .76rem; color: var(--gray); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: .72rem; color: #333; }
+
+    /* ── ANIMATION ── */
+    @keyframes up { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 1.2rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.4rem 4rem; }
+      .prod-grid { grid-template-columns: 1fr; }
+      .prod-card { padding: 2.5rem 1.8rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+      .price-grid { grid-template-columns: 1fr; max-width: 100%; }
+      .model-grid { grid-template-columns: 1fr; }
+      .section { padding: 5rem 1.4rem; }
+      footer { flex-direction: column; align-items: flex-start; padding: 2rem 1.4rem; }
+    }
+    @media (max-width: 480px) {
+      .steps { grid-template-columns: 1fr; }
+      .hero-h1 { font-size: 2.4rem; }
+      .hero-logo-wrap img { height: 82px; width: 82px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="/" class="nav-logo">
+    <img src="1000414615.png" alt="KuryeAI Logo" onerror="this.style.display='none'"/>
+    <span class="nav-brand">Kurye<em>AI</em></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#urunler">Ürünler</a></li>
+    <li><a href="#nasil-calisir">Nasıl Çalışır</a></li>
+    <li><a href="#fiyatlar">Fiyatlar</a></li>
+    <li><a href="#kurye-modeli">Kurye Modeli</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="mailto:info@kuryeai.com" class="nav-contact">info@kuryeai.com</a>
+    <a href="#urunler" class="btn-pill">Hemen Başvur</a>
+  </div>
+</nav>
 
-<h1>🚀 KuryeAI</h1>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Şifre">
+  <p class="hero-eyebrow">
+    <span class="pulse-dot"></span>
+    AI Teknoloji ve Lojistik
+  </p>
 
-<button onclick="login()">Giriş Yap</button>
+  <div class="hero-logo-wrap">
+    <img src="1000415338.png" alt="AI Teknoloji ve Lojistik" onerror="this.style.display='none'"/>
+  </div>
 
-<div class="switch" onclick="toggleMode()" id="modeText">
-Hesabın yok mu? Kayıt ol
+  <h1 class="hero-h1">
+    Teslimat ve işletme<br/>
+    yönetimi <span class="teal">yeniden</span><br/>
+    <span class="silver">tasarlandı.</span>
+  </h1>
+
+  <p class="hero-sub">
+    KuryeAI ile kurye operasyonunuzu akıllıca yönetin. RestoranAI ile tüm sipariş kanallarınızı tek panelde birleştirin.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#urunler" class="btn-lg btn-teal">Ürünleri Keşfet &nbsp;→</a>
+    <a href="mailto:info@kuryeai.com" class="btn-lg btn-outline">Demo Talep Et</a>
+  </div>
+
+  <div class="scroll-ind">
+    <div class="scroll-line"></div>
+    <span>Kaydır</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="ti accent">KuryeAI</span><span class="ti">Akıllı Teslimat</span>
+    <span class="ti accent">RestoranAI</span><span class="ti">Akıllı İşletme</span>
+    <span class="ti">Havuz Kurye</span><span class="ti">Sabit Kurye</span>
+    <span class="ti">Restoran Adisyon</span><span class="ti accent">AI Analiz</span>
+    <span class="ti">Canlı Takip</span><span class="ti">Sipariş Yönetimi</span>
+    <span class="ti accent">KuryeAI</span><span class="ti">Akıllı Teslimat</span>
+    <span class="ti accent">RestoranAI</span><span class="ti">Akıllı İşletme</span>
+    <span class="ti">Havuz Kurye</span><span class="ti">Sabit Kurye</span>
+    <span class="ti">Restoran Adisyon</span><span class="ti accent">AI Analiz</span>
+    <span class="ti">Canlı Takip</span><span class="ti">Sipariş Yönetimi</span>
+  </div>
 </div>
 
+<!-- PRODUCTS -->
+<section class="section products" id="urunler">
+  <div class="inner">
+    <div class="prod-header reveal">
+      <p class="lbl">Ürünlerimiz</p>
+      <h2 class="h2">İki güçlü ürün.<br/><span class="muted">Bir ekosistem.</span></h2>
+      <p class="body-lg">Restoranlar ve kurye operasyonları için ihtiyacınız olan her şey tek çatı altında. Entegre, akıllı, ölçeklenebilir.</p>
+    </div>
+
+    <div class="prod-grid reveal">
+      <!-- RestoranAI -->
+      <a href="restoran.html" class="prod-card">
+        <p class="prod-num">01 — RestoranAI</p>
+        <div class="prod-emoji">🍽️</div>
+        <p class="prod-slogan">Akıllı İşletme</p>
+        <h3 class="prod-title">Restoran<em>AI</em></h3>
+        <p class="prod-desc">Tüm sipariş kanallarınızı tek ekranda toplayın. Yemeksepeti, Trendyol Yemek, Getir, Migros ve WhatsApp siparişleri tek panelde. Masa yönetimi, ciro takibi ve yapay zeka destekli analizler.</p>
+        <div class="prod-features">
+          <div class="pf"><span class="pf-dot"></span>Tüm platformlar tek entegrasyon</div>
+          <div class="pf"><span class="pf-dot"></span>Masa + paket sipariş yönetimi</div>
+          <div class="pf"><span class="pf-dot"></span>Ciro & gelir/gider raporlaması</div>
+          <div class="pf"><span class="pf-dot"></span>AI destekli satış analizleri</div>
+          <div class="pf"><span class="pf-dot"></span>KuryeAI entegrasyonu</div>
+        </div>
+        <span class="prod-cta">Detaylı Bilgi <span>→</span></span>
+      </a>
+
+      <!-- KuryeAI -->
+      <a href="kurye.html" class="prod-card">
+        <p class="prod-num">02 — KuryeAI</p>
+        <div class="prod-logo">
+          <img src="1000414615.png" alt="KuryeAI" onerror="this.parentElement.innerHTML='<div class=\'prod-emoji\'>🛵</div>'"/>
+        </div>
+        <p class="prod-slogan">Akıllı Teslimat</p>
+        <h3 class="prod-title">Kurye<em>AI</em></h3>
+        <p class="prod-desc">Kurye operasyonunuzu yapay zeka ile yönetin. Canlı konum takibi, otomatik sipariş dağıtımı, kurye performans raporları. Havuz kurye veya sabit kurye modeliyle çalışın.</p>
+        <div class="prod-features">
+          <div class="pf"><span class="pf-dot"></span>Canlı kurye konum takibi</div>
+          <div class="pf"><span class="pf-dot"></span>Otomatik & adil sipariş dağıtımı</div>
+          <div class="pf"><span class="pf-dot"></span>Teslimat süresi ölçümü & raporlama</div>
+          <div class="pf"><span class="pf-dot"></span>Kurye performans analizleri</div>
+          <div class="pf"><span class="pf-dot"></span>Havuz & sabit kurye modelleri</div>
+        </div>
+        <span class="prod-cta">Detaylı Bilgi <span>→</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-grid reveal">
+    <div class="stat-item">
+      <div class="stat-n">90<em>+</em></div>
+      <div class="stat-l">Günlük Paket</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n"><em>%</em>100</div>
+      <div class="stat-l">Canlı Takip</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">3<em>x</em></div>
+      <div class="stat-l">Daha Hızlı</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">AI</div>
+      <div class="stat-l">Destekli Analiz</div>
+    </div>
+  </div>
 </div>
 
-<script type="module">
+<!-- HOW IT WORKS -->
+<section class="section how" id="nasil-calisir">
+  <div class="inner">
+    <div class="how-header reveal">
+      <p class="lbl">Nasıl Çalışır</p>
+      <h2 class="h2">4 adımda <span class="muted">tam kontrol.</span></h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-bar"></div>
+        <p class="step-num">Adım 01</p>
+        <h4 class="step-title">Kaydolun</h4>
+        <p class="step-desc">Restoran veya kurye olarak kuryeai.com üzerinden başvurunuzu yapın. 24 saat içinde hesabınız aktif edilir.</p>
+      </div>
+      <div class="step">
+        <div class="step-bar"></div>
+        <p class="step-num">Adım 02</p>
+        <h4 class="step-title">Entegre Edin</h4>
+        <p class="step-desc">Mevcut sipariş platformlarınızı (Yemeksepeti, Getir, Trendyol vb.) RestoranAI panelinize bağlayın.</p>
+      </div>
+      <div class="step">
+        <div class="step-bar"></div>
+        <p class="step-num">Adım 03</p>
+        <h4 class="step-title">Yönetin</h4>
+        <p class="step-desc">Siparişleri tek ekrandan takip edin. KuryeAI otomatik olarak en uygun kurye'ye siparişi atar.</p>
+      </div>
+      <div class="step">
+        <div class="step-bar"></div>
+        <p class="step-num">Adım 04</p>
+        <h4 class="step-title">Büyüyün</h4>
+        <p class="step-desc">AI destekli raporlar ve analizlerle işletmenizi optimize edin. Veriye dayalı kararlar alın.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-import "./firebase.js";
+<!-- PRICING -->
+<section class="section pricing" id="fiyatlar">
+  <div class="inner">
+    <div class="pricing-header reveal">
+      <p class="lbl">Fiyatlandırma</p>
+      <h2 class="h2">Şeffaf. <span class="muted">Basit.</span></h2>
+      <p class="body-lg">Gizli ücret yok. İhtiyacınıza göre seçin.</p>
+    </div>
+    <div class="price-grid reveal">
+      <div class="pc">
+        <p class="pc-lbl">RestoranAI</p>
+        <p class="pc-name">Akıllı İşletme Paketi</p>
+        <p class="pc-slogan">Tüm sipariş kanalları + AI analiz</p>
+        <div class="pc-price"><sup>₺</sup>10.000<sub>/yıl</sub></div>
+        <p class="pc-note">İşletme başına · KDV dahil</p>
+        <ul class="pc-list">
+          <li><span class="tick">✓</span>Tüm platform entegrasyonları</li>
+          <li><span class="tick">✓</span>Sınırsız sipariş takibi</li>
+          <li><span class="tick">✓</span>Masa & paket yönetimi</li>
+          <li><span class="tick">✓</span>Ciro & raporlama modülü</li>
+          <li><span class="tick">✓</span>AI destekli analizler</li>
+          <li><span class="tick">✓</span>KuryeAI entegrasyonu</li>
+          <li><span class="tick">✓</span>7/24 destek</li>
+        </ul>
+        <a href="mailto:info@kuryeai.com" class="pc-btn pc-btn-fill">Hemen Başla</a>
+      </div>
+      <div class="pc featured">
+        <p class="pc-lbl">KuryeAI</p>
+        <p class="pc-name">Kurye Hizmet Modeli</p>
+        <p class="pc-slogan">Komisyon bazlı · Sabit maliyet yok</p>
+        <div class="pc-price" style="font-size:1.45rem;padding-top:.5rem;line-height:1.4">Paket başı<br/>veya saatlik</div>
+        <p class="pc-note">Kullandığınız kadar ödeyin</p>
+        <ul class="pc-list">
+          <li><span class="tick">✓</span>Esnaf kurye: 170₺/paket + 12₺/km</li>
+          <li><span class="tick">✓</span>SGK'lı kurye: 250₺/saat + 12₺/km</li>
+          <li><span class="tick">✓</span>Öğün yemeği kurye'ye dahil</li>
+          <li><span class="tick">✓</span>Canlı konum takibi</li>
+          <li><span class="tick">✓</span>Otomatik rotalama</li>
+          <li><span class="tick">✓</span>Performans raporları</li>
+          <li><span class="tick">✓</span>Esnek çalışma saatleri</li>
+        </ul>
+        <a href="mailto:info@kuryeai.com" class="pc-btn pc-btn-ol">Teklif Al</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-let isLogin = true;
+<!-- KURYE MODEL -->
+<section class="section model" id="kurye-modeli">
+  <div class="inner">
+    <div class="model-header reveal">
+      <p class="lbl">Kurye Çalışma Modelleri</p>
+      <h2 class="h2">Size uygun <span class="muted">modeli seçin.</span></h2>
+      <p class="body-lg">İki farklı çalışma modeliyle işletmenizin ihtiyacına göre kurye hizmeti alın.</p>
+    </div>
+    <div class="model-grid reveal">
+      <div class="mc">
+        <span class="mc-badge">Esnaf Kurye Modeli</span>
+        <h4 class="mc-title">Paket Başı + KM Ücretlendirme</h4>
+        <div class="mc-row"><span class="mc-row-l">İşletme öder (paket)</span><span class="mc-row-v teal">170 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">İşletme öder (km)</span><span class="mc-row-v teal">12 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">Kurye alır (paket)</span><span class="mc-row-v">140 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">Kurye alır (km)</span><span class="mc-row-v">8 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">Yemek</span><span class="mc-row-v">12 saatte 1 öğün dahil</span></div>
+        <p class="mc-note">30₺/paket + 4₺/km fark KuryeAI'ın hizmet komisyonudur.</p>
+      </div>
+      <div class="mc">
+        <span class="mc-badge">SGK'lı Kurye Modeli</span>
+        <h4 class="mc-title">Saatlik + KM Ücretlendirme</h4>
+        <div class="mc-row"><span class="mc-row-l">İşletme öder (saat)</span><span class="mc-row-v teal">250 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">İşletme öder (km)</span><span class="mc-row-v teal">12 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">Kurye alır (saat)</span><span class="mc-row-v">220 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">Kurye alır (km)</span><span class="mc-row-v">8 ₺</span></div>
+        <div class="mc-row"><span class="mc-row-l">Yemek</span><span class="mc-row-v">12 saatte 1 öğün dahil</span></div>
+        <p class="mc-note">SGK primli, güvenceli çalışma. Tam zamanlı operasyonlar için idealdir.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-/* LOGIN */
-window.login = function(){
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <p class="lbl" style="display:flex;justify-content:center">Hemen Başlayın</p>
+  <h2 class="h2 reveal">Operasyonunuzu<br/><span class="muted">dönüştürün.</span></h2>
+  <p class="body-lg reveal">Demo talep edin, sistemi canlı görün. Size özel teklif için bugün iletişime geçin.</p>
+  <div class="cta-btns reveal">
+    <a href="restoran.html" class="btn-lg btn-teal">Restoran Başvurusu</a>
+    <a href="kurye.html" class="btn-lg btn-outline">Kurye Başvurusu</a>
+  </div>
+  <div class="contact-links reveal">
+    <a href="mailto:info@kuryeai.com">✉ info@kuryeai.com</a>
+    <a href="mailto:destek@kuryeai.com">✉ destek@kuryeai.com</a>
+    <a href="https://www.kuryeai.com">🌐 www.kuryeai.com</a>
+  </div>
+</section>
 
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+<!-- FOOTER -->
+<footer>
+  <a href="/" class="footer-logo">
+    <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <span class="footer-brand">Kurye<em>AI</em></span>
+  </a>
+  <ul class="footer-links">
+    <li><a href="#urunler">Ürünler</a></li>
+    <li><a href="restoran.html">RestoranAI</a></li>
+    <li><a href="kurye.html">KuryeAI</a></li>
+    <li><a href="#fiyatlar">Fiyatlar</a></li>
+    <li><a href="mailto:info@kuryeai.com">İletişim</a></li>
+    <li><a href="#">Gizlilik Politikası</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 AI Teknoloji ve Lojistik Ltd. Şti.</p>
+</footer>
 
-if(isLogin){
-window.loginUser(email,password,true);
-}else{
-window.registerUser(email,password);
-}
+<script>
+  // Scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-};
-
-/* TOGGLE */
-window.toggleMode = function(){
-
-isLogin = !isLogin;
-
-document.querySelector("button").innerText =
-isLogin ? "Giriş Yap" : "Kayıt Ol";
-
-document.getElementById("modeText").innerText =
-isLogin ? "Hesabın yok mu? Kayıt ol" : "Zaten hesabın var mı? Giriş yap";
-
-};
-
+  // Nav scroll effect
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
 </script>
-
 </body>
 </html>

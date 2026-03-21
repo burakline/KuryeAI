@@ -2,79 +2,58 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuryeAI Login</title>
-
-<style>
-body{margin:0;background:#0f172a;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh;color:white;}
-.box{background:#111827;padding:25px;border-radius:15px;width:90%;max-width:350px;}
-input{width:100%;padding:12px;margin:10px 0;border-radius:10px;border:none;}
-button{width:100%;padding:12px;border:none;border-radius:10px;background:#10b981;color:white;font-weight:bold;}
-#status{margin-top:10px;color:#f87171;}
-</style>
+<title>Login</title>
 </head>
 
 <body>
 
-<div class="box">
-<h2>🚀 KuryeAI</h2>
 <input id="email" placeholder="Email">
 <input id="password" type="password" placeholder="Şifre">
-<button onclick="login()">Giriş Yap</button>
-<p id="status"></p>
-</div>
+<button onclick="login()">Giriş</button>
 
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+<script>
 
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
   authDomain: "kuryeai.firebaseapp.com",
   databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kuryeai",
-  storageBucket: "kuryeai.firebasestorage.app",
-  messagingSenderId: "655930514402",
-  appId: "1:655930514402:web:379321cbb83f48daf077bb"
+  projectId: "kuryeai"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
 
-window.login = async function(){
+function login(){
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const status = document.getElementById("status");
+  const email = emailInput.value;
+  const password = passwordInput.value;
 
-  try{
-    await signOut(auth); // cache temizle
+  firebase.auth().signInWithEmailAndPassword(email,password)
+  .then(async(res)=>{
 
-    const user = await signInWithEmailAndPassword(auth,email,password);
-    const uid = user.user.uid;
+    const uid = res.user.uid;
 
-    const snap = await get(ref(db,"roles/"+uid));
+    const snap = await firebase.database().ref("roles/"+uid).once("value");
 
     if(!snap.exists()){
-      status.innerText="❌ Role bulunamadı";
+      alert("Role yok");
       return;
     }
 
     const role = snap.val().role;
 
-    if(role==="admin") window.location.href="/admin.html";
-    else if(role==="restaurant") window.location.href="/restaurant.html";
-    else if(role==="courier") window.location.href="/courier.html";
-    else status.innerText="❌ Geçersiz role";
+    if(role==="admin") location.href="admin.html";
+    else if(role==="restaurant") location.href="restaurant.html";
+    else location.href="courier.html";
 
-  }catch(e){
-    status.innerText=e.message;
-  }
+  })
+  .catch(e=>alert(e.message));
 }
 
 </script>
+
 </body>
 </html>

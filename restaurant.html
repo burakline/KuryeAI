@@ -1,36 +1,20 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Restaurant</title>
-
-<style>
-body{margin:0;background:#0f172a;color:white;font-family:Arial;}
-.panel{padding:15px;}
-input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none;}
-button{width:100%;padding:12px;background:#06b6d4;border:none;border-radius:10px;font-weight:bold;}
-</style>
 </head>
 
 <body>
 
-<div class="panel">
 <input id="customer" placeholder="Müşteri">
 <input id="phone" placeholder="Telefon">
-<input id="address" placeholder="Adres">
-<input id="lat" placeholder="Lat">
-<input id="lng" placeholder="Lng">
-<input id="note" placeholder="Not">
-<input id="price" placeholder="Fiyat">
-<button onclick="createOrder()">Sipariş</button>
-</div>
+<button onclick="order()">Sipariş</button>
 
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+<script>
 
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -39,37 +23,31 @@ const firebaseConfig = {
   projectId: "kuryeai"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
 
-onAuthStateChanged(auth, async(user)=>{
-  if(!user) return location.href="/login.html";
+firebase.auth().onAuthStateChanged(async(user)=>{
 
-  const { get, ref } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js");
-  const snap = await get(ref(db,"roles/"+user.uid));
+  if(!user) return location.href="login.html";
 
-  if(!snap.exists() || snap.val().role !== "restaurant"){
-    alert("Yetkisiz!");
-    return location.href="/login.html";
+  const snap = await firebase.database().ref("roles/"+user.uid).once("value");
+
+  if(!snap.exists() || snap.val().role!=="restaurant"){
+    alert("Yetkisiz");
+    location.href="login.html";
   }
+
 });
 
-window.createOrder = async function(){
+function order(){
 
-  await push(ref(db,"orders"),{
+  firebase.database().ref("orders").push({
     customer:customer.value,
     phone:phone.value,
-    address:address.value,
-    lat:Number(lat.value),
-    lng:Number(lng.value),
-    note:note.value,
-    price:Number(price.value),
-    status:"waiting",
     createdAt:Date.now()
   });
 
-  alert("Sipariş oluşturuldu");
+  alert("Sipariş alındı");
+
 }
 
 </script>

@@ -1,56 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Restaurant</title>
-</head>
-
-<body>
-
-<input id="customer" placeholder="Müşteri">
-<input id="phone" placeholder="Telefon">
-<button onclick="order()">Sipariş</button>
-
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase.js"></script>
 
 <script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kuryeai"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-firebase.auth().onAuthStateChanged(async(user)=>{
+auth.onAuthStateChanged(async(user)=>{
 
   if(!user) return location.href="login.html";
 
-  const snap = await firebase.database().ref("roles/"+user.uid).once("value");
+  const snap = await db.ref("roles/"+user.uid).get();
 
-  if(!snap.exists() || snap.val().role!=="restaurant"){
-    alert("Yetkisiz");
+  if(!snap.exists() || snap.val().role !== "restaurant"){
     location.href="login.html";
   }
 
 });
 
-function order(){
-
-  firebase.database().ref("orders").push({
-    customer:customer.value,
-    phone:phone.value,
-    createdAt:Date.now()
-  });
-
-  alert("Sipariş alındı");
-
-}
-
 </script>
-
-</body>
-</html>

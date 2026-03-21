@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KuryeAI — Kurye Girişi</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #000000;
+      --dark:     #0c0c0c;
+      --card:     #111111;
+      --border:   rgba(255,255,255,0.08);
+      --text:     #ffffff;
+      --sub:      #888888;
+      --teal:     #00c8d7;
+      --teal-lt:  #33d6e3;
+      --teal-dk:  #009aaa;
+      --red:      #ff5f57;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100svh; padding: 2rem 1.2rem;
+      position: relative; overflow: hidden;
+    }
+
+    /* animated grid bg */
+    .bg-grid {
+      position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,200,215,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,215,.05) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    /* center glow */
+    .bg-glow {
+      position: fixed; top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,200,215,.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .back-link {
+      position: fixed; top: 1.4rem; left: 1.8rem;
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .8rem; color: var(--sub);
+      text-decoration: none; transition: color .2s; z-index: 10;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── CARD ── */
+    .card {
+      width: 100%; max-width: 400px;
+      background: var(--card);
+      border: .5px solid var(--border);
+      border-radius: 20px;
+      padding: 2.8rem 2.5rem;
+      position: relative; overflow: hidden;
+      animation: up .65s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    /* top teal line */
+    .card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--teal), transparent);
+    }
+    /* subtle corner glow */
+    .card::after {
+      content: ''; position: absolute;
+      top: -80px; right: -80px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(0,200,215,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    @keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── LOGO ── */
+    .logo-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 2rem;
+    }
+    .logo-wrap img {
+      height: 76px; width: 76px; border-radius: 50%; object-fit: cover;
+      box-shadow: 0 0 40px rgba(0,200,215,.22), 0 0 80px rgba(0,200,215,.07);
+      margin-bottom: 1rem;
+    }
+    .logo-name { font-size: 1.25rem; font-weight: 700; letter-spacing: -.03em; color: var(--text); }
+    .logo-name em { font-style: normal; color: var(--teal); }
+    .logo-sub { font-size: .75rem; color: var(--sub); margin-top: .2rem; }
+
+    /* status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(0,200,215,.08); border: .5px solid rgba(0,200,215,.2);
+      border-radius: 999px; padding: .28rem .85rem;
+      font-size: .68rem; font-weight: 700; color: var(--teal);
+      letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 1.8rem; align-self: center;
+    }
+    .status-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--teal);
+      animation: pls 2s infinite;
+    }
+    @keyframes pls { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+
+    /* ── FORM ── */
+    .form-title { font-size: 1rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .25rem; }
+    .form-sub { font-size: .8rem; color: var(--sub); margin-bottom: 1.6rem; }
+
+    .form-group { margin-bottom: .95rem; }
+    .form-label {
+      display: block; font-size: .68rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--sub); margin-bottom: .4rem;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,.05);
+      border: .5px solid rgba(255,255,255,.1);
+      border-radius: 10px; padding: .78rem 1rem;
+      color: var(--text); font-family: Arial, Helvetica, sans-serif;
+      font-size: .9rem; outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .form-input::placeholder { color: #444; }
+    .form-input:focus {
+      border-color: var(--teal);
+      background: rgba(0,200,215,.04);
+      box-shadow: 0 0 0 3px rgba(0,200,215,.1);
+    }
+    .form-input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(255,95,87,.1); }
+
+    .pw-wrap { position: relative; }
+    .pw-toggle {
+      position: absolute; right: .9rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--sub); font-size: .78rem;
+      font-family: Arial, Helvetica, sans-serif; padding: 0; transition: color .2s;
+    }
+    .pw-toggle:hover { color: var(--teal); }
+
+    .err-msg {
+      display: none;
+      background: rgba(255,95,87,.08);
+      border: .5px solid rgba(255,95,87,.25);
+      border-radius: 8px; padding: .7rem 1rem;
+      font-size: .82rem; color: var(--red);
+      margin-bottom: 1rem; line-height: 1.5;
+    }
+    .err-msg.show { display: block; }
+
+    .success-msg {
+      display: none;
+      background: rgba(0,200,215,.07);
+      border: .5px solid rgba(0,200,215,.25);
+      border-radius: 8px; padding: .7rem 1rem;
+      font-size: .82rem; color: var(--teal);
+      margin-bottom: 1rem; line-height: 1.5;
+    }
+    .success-msg.show { display: block; }
+
+    .btn-submit {
+      width: 100%; margin-top: .3rem;
+      background: var(--teal); color: #000;
+      font-size: .92rem; font-weight: 700;
+      padding: .88rem; border-radius: 999px;
+      border: none; cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      box-shadow: 0 4px 20px rgba(0,200,215,.25);
+    }
+    .btn-submit:hover:not(:disabled) {
+      background: var(--teal-lt);
+      transform: scale(1.02);
+      box-shadow: 0 6px 30px rgba(0,200,215,.35);
+    }
+    .btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin .7s linear infinite; display: none;
+    }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text { display: none; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    .forgot {
+      display: block; text-align: center; margin-top: 1.1rem;
+      font-size: .78rem; color: var(--sub);
+      text-decoration: none; transition: color .2s;
+    }
+    .forgot:hover { color: var(--teal); }
+
+    /* info strip */
+    .info-strip {
+      margin-top: 1.8rem; padding: 1rem 1.1rem;
+      background: rgba(255,255,255,.03);
+      border: .5px solid var(--border);
+      border-radius: 10px;
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .info-row {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .78rem; color: var(--sub);
+    }
+    .info-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(0,200,215,.5); flex-shrink: 0; }
+
+    .card-footer {
+      margin-top: 1.5rem; padding-top: 1.4rem;
+      border-top: .5px solid var(--border);
+      text-align: center;
+    }
+    .card-footer p { font-size: .72rem; color: var(--sub); line-height: 1.6; }
+    .card-footer a { color: var(--teal); text-decoration: none; }
+    .card-footer a:hover { text-decoration: underline; }
+
+    /* page loader */
+    .page-loader {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--black);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .4s;
+    }
+    .page-loader.hide { opacity: 0; pointer-events: none; }
+    .loader-ring {
+      width: 34px; height: 34px;
+      border: 2px solid rgba(0,200,215,.15);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; border-radius: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
+
+<a href="kurye.html" class="back-link">← Geri Dön</a>
+
+<div class="card">
+
+  <div class="logo-wrap">
+    <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <div class="logo-name">Kurye<em>AI</em></div>
+    <div class="logo-sub">Kurye Paneli</div>
+  </div>
+
+  <div style="display:flex;justify-content:center;margin-bottom:1.8rem">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      Sistem Aktif
+    </div>
+  </div>
+
+  <p class="form-title">Vardiyaya Başla 🛵</p>
+  <p class="form-sub">KuryeAI kurye panelinize giriş yapın.</p>
+
+  <div class="err-msg" id="err-msg"></div>
+  <div class="success-msg" id="success-msg"></div>
+
+  <div class="form-group">
+    <label class="form-label">E-posta</label>
+    <input class="form-input" type="email" id="input-email"
+           placeholder="kurye@email.com" autocomplete="email"/>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Şifre</label>
+    <div class="pw-wrap">
+      <input class="form-input" type="password" id="input-password"
+             placeholder="••••••••" autocomplete="current-password"/>
+      <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="btn-login" onclick="doLogin()">
+    <div class="spinner"></div>
+    <span class="btn-text">Giriş Yap →</span>
+  </button>
+
+  <a href="#" class="forgot" onclick="doForgot(event)">Şifremi unuttum</a>
+
+  <div class="info-strip">
+    <div class="info-row"><span class="info-dot"></span>Hesabınız admin onayından sonra aktif olur</div>
+    <div class="info-row"><span class="info-dot"></span>Sorun için: destek@kuryeai.com</div>
+  </div>
+
+  <div class="card-footer">
+    <p>Henüz kurye değil misiniz?<br/>
+    <a href="kurye.html#basvuru">Başvuru yapın</a>, ekibimiz sizi arasın.</p>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail }
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+    authDomain: "kuryeai.firebaseapp.com",
+    databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "kuryeai",
+    storageBucket: "kuryeai.firebasestorage.app",
+    messagingSenderId: "655930514402",
+    appId: "1:655930514402:web:379321cbb83f48daf077bb",
+    measurementId: "G-JYQP30LJG3"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  const loader = document.getElementById('page-loader');
+
+  // Zaten giriş yaptıysa yönlendir
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists() && snap.data().role === 'kurye' && snap.data().status === 'active') {
+          window.location.href = 'kurye-panel.html';
+          return;
+        }
+      } catch(e) {}
+    }
+    loader.classList.add('hide');
+    setTimeout(() => loader.style.display = 'none', 400);
+  });
+
+  function showError(msg) {
+    const el = document.getElementById('err-msg');
+    el.textContent = msg; el.classList.add('show');
+    document.getElementById('success-msg').classList.remove('show');
+  }
+  function showSuccess(msg) {
+    const el = document.getElementById('success-msg');
+    el.textContent = msg; el.classList.add('show');
+    document.getElementById('err-msg').classList.remove('show');
+  }
+  function hideMessages() {
+    document.getElementById('err-msg').classList.remove('show');
+    document.getElementById('success-msg').classList.remove('show');
+  }
+
+  window.togglePw = function() {
+    const inp = document.getElementById('input-password');
+    const btn = document.getElementById('pw-btn');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
+  };
+
+  window.doLogin = async function() {
+    const email    = document.getElementById('input-email').value.trim();
+    const password = document.getElementById('input-password').value;
+    const btn      = document.getElementById('btn-login');
+    hideMessages();
+
+    if (!email)    { showError('Lütfen e-posta adresinizi girin.'); return; }
+    if (!password) { showError('Lütfen şifrenizi girin.'); return; }
+
+    btn.classList.add('loading'); btn.disabled = true;
+
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const snap = await getDoc(doc(db, 'users', cred.user.uid));
+
+      if (!snap.exists()) {
+        await auth.signOut();
+        showError('Hesabınız henüz aktif edilmemiş. Başvurunuz inceleniyor.');
+        btn.classList.remove('loading'); btn.disabled = false; return;
+      }
+
+      const data = snap.data();
+
+      if (data.role !== 'kurye' && data.role !== 'admin') {
+        await auth.signOut();
+        showError('Bu hesap KuryeAI kurye paneli için tanımlı değil.');
+        btn.classList.remove('loading'); btn.disabled = false; return;
+      }
+      if (data.status === 'pending') {
+        await auth.signOut();
+        showError('Hesabınız henüz onaylanmamış. En kısa sürede incelenecektir.');
+        btn.classList.remove('loading'); btn.disabled = false; return;
+      }
+      if (data.status === 'suspended') {
+        await auth.signOut();
+        showError('Hesabınız askıya alınmıştır. destek@kuryeai.com ile iletişime geçin.');
+        btn.classList.remove('loading'); btn.disabled = false; return;
+      }
+
+      window.location.href = data.role === 'admin' ? 'admin-panel.html' : 'kurye-panel.html';
+
+    } catch (err) {
+      btn.classList.remove('loading'); btn.disabled = false;
+      const c = err.code;
+      if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found') {
+        showError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
+      } else if (c === 'auth/too-many-requests') {
+        showError('Çok fazla deneme yapıldı. Lütfen birkaç dakika bekleyin.');
+      } else if (c === 'auth/invalid-email') {
+        showError('Geçersiz e-posta adresi.');
+      } else if (c === 'auth/network-request-failed') {
+        showError('İnternet bağlantınızı kontrol edin.');
+      } else {
+        showError('Giriş yapılamadı. Lütfen tekrar deneyin.');
+      }
+    }
+  };
+
+  window.doForgot = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('input-email').value.trim();
+    if (!email) { showError('Şifre sıfırlamak için önce e-posta adresinizi girin.'); return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showSuccess('Şifre sıfırlama bağlantısı gönderildi. Gelen kutunuzu kontrol edin.');
+    } catch(err) {
+      showError('E-posta gönderilemedi. Adresinizi kontrol edin.');
+    }
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+</script>
+</body>
+</html>

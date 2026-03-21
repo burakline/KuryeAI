@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Restaurant</title>
+</head>
+
+<body>
+
+<h2>Restaurant Panel</h2>
+
+<input id="customer" placeholder="Müşteri">
+<button onclick="order()">Sipariş</button>
+
+<!-- CDN -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -7,14 +21,30 @@
 
 auth.onAuthStateChanged(async(user)=>{
 
-  if(!user) return location.href="login.html";
+  if(!user){
+    location.href="login.html";
+    return;
+  }
 
   const snap = await db.ref("roles/"+user.uid).get();
 
   if(!snap.exists() || snap.val().role !== "restaurant"){
+    alert("Yetkisiz");
     location.href="login.html";
   }
 
 });
 
+function order(){
+  db.ref("orders").push({
+    customer: customer.value,
+    createdAt: Date.now()
+  });
+
+  alert("Sipariş oluşturuldu");
+}
+
 </script>
+
+</body>
+</html>

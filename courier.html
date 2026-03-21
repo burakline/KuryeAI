@@ -1,36 +1,20 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Courier</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<style>
-body{margin:0;background:#0f172a;color:white;font-family:Arial;}
-#map{height:60vh;}
-.panel{padding:15px;background:#111827;}
-button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;font-weight:bold;}
-.online{background:#22c55e;}
-.offline{background:#ef4444;}
-.status{text-align:center;font-size:18px;margin-bottom:10px;}
-</style>
 </head>
 
 <body>
 
-<div id="map"></div>
+<h2 id="status">Offline</h2>
+<button onclick="online()">Online</button>
+<button onclick="offline()">Offline</button>
 
-<div class="panel">
-<div id="status" class="status">Offline</div>
-<button class="online" onclick="goOnline()">Online Ol</button>
-<button class="offline" onclick="goOffline()">Offline Ol</button>
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+<script>
 
 const firebaseConfig = {
   apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
@@ -39,50 +23,47 @@ const firebaseConfig = {
   projectId: "kuryeai"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
 
-let userData;
+firebase.auth().onAuthStateChanged(async(user)=>{
 
-onAuthStateChanged(auth, async(user)=>{
-  if(!user) return location.href="/login.html";
+  if(!user) return location.href="login.html";
 
-  userData = user;
+  const snap = await firebase.database().ref("roles/"+user.uid).once("value");
 
-  const snap = await get(ref(db,"roles/"+user.uid));
-  if(!snap.exists() || snap.val().role !== "courier"){
-    alert("Yetkisiz!");
-    return location.href="/login.html";
+  if(!snap.exists() || snap.val().role!=="courier"){
+    alert("Yetkisiz");
+    location.href="login.html";
   }
+
 });
 
-// ONLINE
-window.goOnline = async function(){
-  navigator.geolocation.getCurrentPosition(async(pos)=>{
-    await update(ref(db,"couriers/"+userData.uid),{
+function online(){
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+
+    firebase.database().ref("couriers/"+firebase.auth().currentUser.uid).update({
       lat:pos.coords.latitude,
       lng:pos.coords.longitude,
       online:true
     });
+
     status.innerText="Online";
+
   });
+
 }
 
-// OFFLINE
-window.goOffline = async function(){
-  await update(ref(db,"couriers/"+userData.uid),{
+function offline(){
+
+  firebase.database().ref("couriers/"+firebase.auth().currentUser.uid).update({
     online:false
   });
+
   status.innerText="Offline";
+
 }
 
-</script>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-const map = L.map('map').setView([39.92,32.85],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 </script>
 
 </body>

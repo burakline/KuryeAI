@@ -1,30 +1,9 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Login</title>
-</head>
-
-<body>
-
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Şifre">
-<button onclick="login()">Giriş</button>
-
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase.js"></script>
 
 <script>
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-  authDomain: "kuryeai.firebaseapp.com",
-  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kuryeai"
-};
-
-firebase.initializeApp(firebaseConfig);
 
 async function login(){
 
@@ -33,35 +12,23 @@ async function login(){
 
   try{
 
-    const res = await firebase.auth().signInWithEmailAndPassword(email,password);
+    await auth.signOut(); // 🔥 eski kullanıcıyı sil
+
+    const res = await auth.signInWithEmailAndPassword(email,password);
     const uid = res.user.uid;
 
-    console.log("UID:", uid);
-
-    const snap = await firebase.database().ref("roles/"+uid).get();
+    const snap = await db.ref("roles/"+uid).get();
 
     if(!snap.exists()){
-      alert("Role bulunamadı! Firebase roles hatalı.");
+      alert("Role yok!");
       return;
     }
 
     const role = snap.val().role;
 
-    console.log("ROLE:", role);
-
-    // 🚨 EN KRİTİK KISIM
-    if(role === "admin"){
-      location.href = "admin.html";
-    }
-    else if(role === "restaurant"){
-      location.href = "restaurant.html";
-    }
-    else if(role === "courier"){
-      location.href = "courier.html";
-    }
-    else{
-      alert("Tanımsız role: " + role);
-    }
+    if(role==="admin") location.href="admin.html";
+    else if(role==="restaurant") location.href="restaurant.html";
+    else if(role==="courier") location.href="courier.html";
 
   }catch(e){
     alert(e.message);
@@ -70,6 +37,3 @@ async function login(){
 }
 
 </script>
-
-</body>
-</html>

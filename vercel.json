@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/restoran", "destination": "/restoran.html" },
+    { "source": "/kurye", "destination": "/kurye.html" },
+    { "source": "/restoran-login", "destination": "/restoran-login.html" },
+    { "source": "/kurye-login", "destination": "/kurye-login.html" }
+  ]
+}

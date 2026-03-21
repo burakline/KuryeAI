@@ -5,9 +5,10 @@ const firebaseConfig = {
   projectId: "kuryeai"
 };
 
+// Tek instance
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const auth = firebase.auth();
-const db = firebase.database();
+window.auth = firebase.auth();
+window.db = firebase.database();

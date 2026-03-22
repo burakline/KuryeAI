@@ -200,16 +200,16 @@
     </div>
 
     <div class="fg">
-      <label class="fl">Alıcı / Gönderim Adresi 📍</label>
+      <label class="fl">📍 Gönderim Adresi (Paketin Alınacağı Yer)</label>
       <div class="addr-wrap">
-        <input class="fi" id="f-adres1" placeholder="Teslimat yapılacak adres (Ankara)" oninput="debounceGeocode('adres1')"/>
+        <input class="fi" id="f-adres1" placeholder="Örn: Keçiören Ayvalı Mah. 197. Sok. 5/1" oninput="debounceGeocode('adres1')"/>
       </div>
     </div>
 
     <div class="fg">
-      <label class="fl">Teslimat Adresi 📍</label>
+      <label class="fl">📍 Teslimat Adresi (Paketin Gideceği Yer)</label>
       <div class="addr-wrap">
-        <input class="fi" id="f-adres2" placeholder="Paketin gideceği adres (Ankara)" oninput="debounceGeocode('adres2')"/>
+        <input class="fi" id="f-adres2" placeholder="Örn: Gordion AVM Çayyolu, Ankara" oninput="debounceGeocode('adres2')"/>
       </div>
     </div>
 
@@ -343,10 +343,19 @@ async function geocodeAddress(field) {
   const query = input.value.trim();
   if(query.length < 5) return;
 
+  // Adrese Ankara ekle eğer yoksa
+  const searchQuery = query.toLowerCase().includes('ankara') ? query : query + ', Ankara, Türkiye';
+
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Ankara, Türkiye')}&limit=1&accept-language=tr`);
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=tr&countrycodes=tr`);
     const data = await res.json();
-    if(!data.length) return;
+    if(!data.length) {
+      // İkinci deneme - sadece şehir ile
+      const res2 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Ankara')}&limit=1&accept-language=tr`);
+      const data2 = await res2.json();
+      if(!data2.length) return;
+      data.push(data2[0]);
+    }
 
     const lat = parseFloat(data[0].lat);
     const lon = parseFloat(data[0].lon);

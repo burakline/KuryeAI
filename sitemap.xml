@@ -1,4 +1,22 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://www.kuryeai.com/sitemap.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.kuryeai.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.kuryeai.com/acil-kurye</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kuryeai.com/izinci</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kuryeai.com/restoran</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kuryeai.com/kurye</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kuryeai.com/hakkimizda</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.kuryeai.com/iletisim</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/blog</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/cankaya</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/kecioren</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/mamak</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/etimesgut</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/sincan</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/yenimahalle</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/altindag</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/hizmet-bolgeleri/pursaklar</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kuryeai.com/kvkk</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.kuryeai.com/kullanim-kosullari</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+</urlset>

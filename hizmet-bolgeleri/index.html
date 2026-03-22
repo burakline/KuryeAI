@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ankara Kurye Hizmet Bölgeleri | KuryeAI</title>
+  <meta name="description" content="Ankara'nın tüm ilçelerinde kurye hizmeti. Çankaya, Keçiören, Mamak, Etimesgut, Sincan, Yenimahalle ve daha fazlası. 7/24 acil kurye."/>
+  <meta name="keywords" content="ankara kurye, çankaya kurye, keçiören kurye, mamak kurye, etimesgut kurye, sincan kurye, yenimahalle kurye, pursaklar kurye, gölbaşı kurye"/>
+  <link rel="icon" type="image/png" href="/1000414615.png"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#000;--dark:#0c0c0c;--card:#111;--border:rgba(255,255,255,.07);--gray:#555;--gray-lt:#999;--white:#fff;--teal:#00c8d7;--teal-lt:#33d6e3}
+    body{background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+    .nav-logo img{height:32px;width:32px;border-radius:50%;object-fit:cover}
+    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em;color:var(--white)}
+    .nav-brand em{font-style:normal;color:var(--teal)}
+    .nav-back{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--white)}
+    .btn-pill{display:inline-block;background:var(--teal);color:var(--black);font-size:.76rem;font-weight:700;padding:.4rem 1.1rem;border-radius:999px;text-decoration:none}
+
+    .page{max-width:1060px;margin:0 auto;padding:6rem 1.5rem 5rem}
+    .lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+    h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:.8rem}
+    .page-sub{font-size:.95rem;color:var(--gray-lt);max-width:560px;line-height:1.75;margin-bottom:3rem}
+
+    .districts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;margin-bottom:4rem}
+    .district-card{background:var(--card);padding:1.8rem;text-decoration:none;color:var(--white);transition:background .3s;position:relative;overflow:hidden}
+    .district-card:hover{background:#161616}
+    .district-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+    .district-card:hover::before{transform:scaleX(1)}
+    .d-icon{font-size:1.5rem;margin-bottom:.7rem}
+    .d-name{font-size:1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.3rem}
+    .d-desc{font-size:.75rem;color:var(--gray-lt);line-height:1.5;margin-bottom:.8rem}
+    .d-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+    .d-tag{font-size:.58rem;background:rgba(0,200,215,.08);border:.5px solid rgba(0,200,215,.15);color:var(--teal);padding:.15rem .5rem;border-radius:999px}
+    .d-cta{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;color:var(--teal);margin-top:.8rem;transition:gap .2s}
+    .district-card:hover .d-cta{gap:.5rem}
+
+    /* CTA */
+    .cta-box{background:var(--dark);border:.5px solid var(--border);border-radius:20px;padding:3rem;text-align:center}
+    .cta-title{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;margin-bottom:.8rem}
+    .cta-sub{font-size:.92rem;color:var(--gray-lt);margin-bottom:2rem}
+    .cta-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+    .btn-lg{display:inline-flex;align-items:center;gap:.4rem;font-size:.88rem;font-weight:700;padding:.78rem 1.8rem;border-radius:999px;text-decoration:none;transition:all .2s}
+    .btn-teal{background:var(--teal);color:var(--black)}
+    .btn-teal:hover{background:var(--teal-lt);transform:scale(1.03)}
+    .btn-outline{background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2)}
+    .btn-outline:hover{background:rgba(255,255,255,.07);transform:scale(1.03)}
+
+    footer{text-align:center;padding:2rem;border-top:.5px solid var(--border);font-size:.75rem;color:var(--gray)}
+    footer a{color:var(--teal);text-decoration:none;margin:0 .5rem}
+
+    @media(max-width:768px){.districts-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.districts-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <span class="nav-brand">Kurye<em>AI</em></span>
+  </a>
+  <a href="/" class="nav-back">← Ana Sayfa</a>
+  <a href="/acil-kurye" class="btn-pill">Acil Kurye</a>
+</nav>
+
+<div class="page">
+  <p class="lbl">Hizmet Bölgeleri</p>
+  <h1>Ankara'nın her<br/><span style="color:var(--teal)">ilçesindeyiz.</span></h1>
+  <p class="page-sub">Ankara genelinde tüm ilçelere 7/24 kurye hizmeti. Acil kurye, izinci kurye ve restoran teslimat yönetimi.</p>
+
+  <div class="districts-grid">
+    <a href="/hizmet-bolgeleri/cankaya" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Çankaya</div>
+      <p class="d-desc">Ankara'nın merkezi. Yoğun teslimat bölgesi.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Tıbbi</span><span class="d-tag">VIP</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/kecioren" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Keçiören</div>
+      <p class="d-desc">Kuzey Ankara'nın en büyük ilçesi.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Restoran</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/mamak" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Mamak</div>
+      <p class="d-desc">Doğu Ankara'ya hizmet.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Eczane</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/etimesgut" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Etimesgut</div>
+      <p class="d-desc">Batı Ankara konut bölgesi.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Evrak</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/sincan" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Sincan</div>
+      <p class="d-desc">OSB ve sanayi bölgesi kurye hizmeti.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Evrak</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/yenimahalle" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Yenimahalle</div>
+      <p class="d-desc">Batı Ankara'nın önemli ilçesi.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Restoran</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/altindag" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Altındağ</div>
+      <p class="d-desc">Tarihi merkez ve çevresi.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Esnaf</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+    <a href="/hizmet-bolgeleri/pursaklar" class="district-card">
+      <div class="d-icon">📍</div>
+      <div class="d-name">Pursaklar</div>
+      <p class="d-desc">Kuzey doğu Ankara ilçesi.</p>
+      <div class="d-tags"><span class="d-tag">Acil Kurye</span><span class="d-tag">Evrak</span></div>
+      <span class="d-cta">Detay <span>→</span></span>
+    </a>
+  </div>
+
+  <div class="cta-box">
+    <h3 class="cta-title">🗺️ Bölgenizi göremiyorsunuz?</h3>
+    <p class="cta-sub">Listelenmemiş ilçelere de hizmet verebiliriz. WhatsApp'tan ulaşın.</p>
+    <div class="cta-btns">
+      <a href="/acil-kurye" class="btn-lg btn-teal">Acil Kurye Talep Et</a>
+      <a href="https://wa.me/905072171995" target="_blank" class="btn-lg btn-outline">💬 WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Ana Sayfa</a><a href="/acil-kurye">Acil Kurye</a><a href="/izinci">İzinci Kurye</a><a href="/iletisim">İletişim</a>
+  <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
+</footer>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>İletişim | KuryeAI — Ankara Kurye</title>
+  <meta name="description" content="KuryeAI ile iletişime geçin. Ankara kurye hizmeti, RestoranAI ve İzinciKuryeAI için 7/24 destek. WhatsApp: 0507 217 19 95"/>
+  <link rel="icon" type="image/png" href="/1000414615.png"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#000;--dark:#0c0c0c;--card:#111;--border:rgba(255,255,255,.07);--gray:#555;--gray-lt:#999;--white:#fff;--teal:#00c8d7;--teal-lt:#33d6e3;--green:#30d158}
+    body{background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+    .nav-logo img{height:32px;width:32px;border-radius:50%;object-fit:cover}
+    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em;color:var(--white)}
+    .nav-brand em{font-style:normal;color:var(--teal)}
+    .nav-back{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--white)}
+
+    .page{max-width:1060px;margin:0 auto;padding:6rem 1.5rem 5rem}
+    .lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+    h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:1.5rem}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:3rem}
+
+    /* CONTACT CARDS */
+    .contact-cards{display:flex;flex-direction:column;gap:1rem}
+    .cc{display:flex;align-items:center;gap:1rem;background:var(--card);border:.5px solid var(--border);border-radius:14px;padding:1.3rem 1.5rem;text-decoration:none;color:var(--white);transition:background .2s,border-color .2s}
+    .cc:hover{background:#161616;border-color:rgba(0,200,215,.2)}
+    .cc-icon{font-size:1.8rem;flex-shrink:0}
+    .cc-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:.2rem}
+    .cc-value{font-size:.92rem;font-weight:700}
+    .cc-sub{font-size:.75rem;color:var(--gray-lt);margin-top:.1rem}
+    .cc.wa .cc-value{color:#25d366}
+    .cc.email .cc-value{color:var(--teal)}
+
+    /* SOSYAL MEDYA */
+    .social-section{margin-top:1.5rem}
+    .social-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:.8rem}
+    .social-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+    .social-btn{display:flex;align-items:center;gap:.7rem;background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:.8rem 1rem;text-decoration:none;color:var(--white);font-size:.82rem;font-weight:700;transition:background .2s}
+    .social-btn:hover{background:#161616}
+    .social-icon{font-size:1.1rem}
+
+    /* FORM */
+    .form-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal)}
+    .form-title{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+    .form-sub{font-size:.78rem;color:var(--gray-lt);margin-bottom:1.5rem}
+    .fg{margin-bottom:.9rem}
+    .fl{display:block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:.38rem}
+    .fi,.fsel,.ftxt{width:100%;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:8px;padding:.72rem .9rem;color:var(--white);font-family:Arial;font-size:.88rem;outline:none;transition:border-color .2s;appearance:none}
+    .fi::placeholder,.ftxt::placeholder{color:var(--gray)}
+    .fi:focus,.fsel:focus,.ftxt:focus{border-color:var(--teal);background:rgba(0,200,215,.04)}
+    .fsel option{background:#111}
+    .ftxt{resize:vertical;min-height:100px}
+    .fbtn{width:100%;background:var(--teal);color:#000;font-size:.9rem;font-weight:700;padding:.85rem;border-radius:999px;border:none;cursor:pointer;font-family:Arial;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.3rem}
+    .fbtn:hover{background:var(--teal-lt);transform:scale(1.02)}
+    .success-msg{display:none;background:rgba(48,209,88,.08);border:.5px solid rgba(48,209,88,.25);border-radius:8px;padding:.8rem 1rem;font-size:.84rem;color:var(--green);margin-top:1rem;text-align:center}
+    .success-msg.show{display:block}
+
+    footer{text-align:center;padding:2rem;border-top:.5px solid var(--border);font-size:.75rem;color:var(--gray)}
+    footer a{color:var(--teal);text-decoration:none;margin:0 .5rem}
+
+    @media(max-width:768px){.grid{grid-template-columns:1fr}.social-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <span class="nav-brand">Kurye<em>AI</em></span>
+  </a>
+  <a href="/" class="nav-back">← Ana Sayfa</a>
+</nav>
+
+<div class="page">
+  <p class="lbl">İletişim</p>
+  <h1>Nasıl yardımcı<br/><span style="color:var(--teal)">olabiliriz?</span></h1>
+
+  <div class="grid">
+    <div>
+      <div class="contact-cards">
+        <a href="https://wa.me/905072171995" target="_blank" class="cc wa">
+          <span class="cc-icon">💬</span>
+          <div>
+            <p class="cc-label">WhatsApp (7/24)</p>
+            <p class="cc-value">0 507 217 19 95</p>
+            <p class="cc-sub">En hızlı yanıt için WhatsApp tercih edin</p>
+          </div>
+        </a>
+        <a href="tel:+905072171995" class="cc">
+          <span class="cc-icon">📞</span>
+          <div>
+            <p class="cc-label">Telefon</p>
+            <p class="cc-value">0 507 217 19 95</p>
+            <p class="cc-sub">Mesai saatleri içinde</p>
+          </div>
+        </a>
+        <a href="mailto:info@kuryeai.com" class="cc email">
+          <span class="cc-icon">✉️</span>
+          <div>
+            <p class="cc-label">Genel İletişim</p>
+            <p class="cc-value">info@kuryeai.com</p>
+            <p class="cc-sub">En geç 24 saat içinde yanıt</p>
+          </div>
+        </a>
+        <a href="mailto:destek@kuryeai.com" class="cc email">
+          <span class="cc-icon">🛠️</span>
+          <div>
+            <p class="cc-label">Teknik Destek</p>
+            <p class="cc-value">destek@kuryeai.com</p>
+            <p class="cc-sub">Panel ve sistem sorunları için</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="social-section">
+        <p class="social-title">Sosyal Medya</p>
+        <div class="social-grid">
+          <a href="https://instagram.com/kuryeai" target="_blank" class="social-btn"><span class="social-icon">📸</span>@kuryeai</a>
+          <a href="https://tiktok.com/@kuryeai" target="_blank" class="social-btn"><span class="social-icon">🎵</span>@kuryeai</a>
+          <a href="https://twitter.com/kuryeai" target="_blank" class="social-btn"><span class="social-icon">𝕏</span>@kuryeai</a>
+          <a href="https://facebook.com/kuryeai" target="_blank" class="social-btn"><span class="social-icon">📘</span>@kuryeai</a>
+          <a href="https://linkedin.com/company/kuryeai" target="_blank" class="social-btn"><span class="social-icon">💼</span>@kuryeai</a>
+          <a href="https://youtube.com/@kuryeai" target="_blank" class="social-btn"><span class="social-icon">▶️</span>@kuryeai</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <p class="form-title">Bize Yazın</p>
+      <p class="form-sub">Mesajınız WhatsApp üzerinden iletilecektir.</p>
+
+      <div class="fg"><label class="fl">Ad Soyad</label><input class="fi" id="c-ad" placeholder="Adınız Soyadınız"/></div>
+      <div class="fg"><label class="fl">Telefon</label><input class="fi" id="c-tel" type="tel" placeholder="05XX XXX XX XX"/></div>
+      <div class="fg"><label class="fl">E-posta</label><input class="fi" id="c-email" type="email" placeholder="email@ornek.com"/></div>
+      <div class="fg">
+        <label class="fl">Konu</label>
+        <select class="fsel" id="c-konu">
+          <option>Acil Kurye Talebi</option>
+          <option>RestoranAI Bilgi</option>
+          <option>KuryeAI Bilgi</option>
+          <option>İzinci Kurye</option>
+          <option>Teknik Destek</option>
+          <option>İş Birliği</option>
+          <option>Diğer</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Mesajınız</label><textarea class="ftxt" id="c-mesaj" placeholder="Nasıl yardımcı olabiliriz?"></textarea></div>
+
+      <button class="fbtn" onclick="sendContact()">💬 WhatsApp'a Gönder →</button>
+      <div class="success-msg" id="c-success">✅ Mesajınız WhatsApp'a yönlendirildi!</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Ana Sayfa</a><a href="/hakkimizda">Hakkımızda</a><a href="/kvkk">Gizlilik</a><a href="/kullanim-kosullari">Kullanım Koşulları</a>
+  <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
+</footer>
+
+<script>
+function sendContact() {
+  const ad = document.getElementById('c-ad').value.trim();
+  const tel = document.getElementById('c-tel').value.trim();
+  const konu = document.getElementById('c-konu').value;
+  const mesaj = document.getElementById('c-mesaj').value.trim();
+  if(!ad||!tel||!mesaj){alert('Lütfen Ad, Telefon ve Mesaj alanlarını doldurun.');return;}
+  const msg = `📬 *İLETİŞİM FORMU — KuryeAI*\n\n👤 *${ad}*\n📞 ${tel}\n✉️ ${document.getElementById('c-email').value||'Belirtilmedi'}\n\n📌 *Konu:* ${konu}\n\n💬 *Mesaj:*\n${mesaj}\n\n---\n_kuryeai.com/iletisim_`;
+  window.open(`https://wa.me/905072171995?text=${encodeURIComponent(msg)}`, '_blank');
+  document.getElementById('c-success').classList.add('show');
+}
+</script>
+</body>
+</html>

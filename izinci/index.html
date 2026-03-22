@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>İzinciKuryeAI — İzinci Kurye Platformu | KuryeAI</title>
+  <meta name="description" content="Türkiye'nin ilk dijital izinci kurye platformu. İzinli kurye yerine anlık izinci kurye bulun. Saatlik 250₺ + 8₺/km. İşletme ve kuryeler için."/>
+  <meta name="keywords" content="izinci kurye, izinli kurye, kurye izin, kurye bulunamadı, acil kurye ankara, saatlik kurye, geçici kurye"/>
+  <link rel="icon" type="image/png" href="/1000414615.png"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --black:#000;--dark:#0c0c0c;--card:#111;--border:rgba(255,255,255,.07);
+      --gray:#555;--gray-lt:#999;--white:#fff;
+      --teal:#00c8d7;--teal-lt:#33d6e3;--teal-dk:#009aaa;
+      --red:#ff5f57;--green:#30d158;--yellow:#ffd60a;--orange:#ff9f0a;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:300;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border);transition:background .3s}
+    nav.scrolled{background:rgba(0,0,0,.97)}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+    .nav-logo img{height:34px;width:34px;border-radius:50%;object-fit:cover}
+    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em;color:var(--white)}
+    .nav-brand em{font-style:normal;color:var(--teal)}
+    .nav-links{display:flex;gap:1.8rem;list-style:none}
+    .nav-links a{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--white)}
+    .nav-right{display:flex;align-items:center;gap:.8rem}
+    .nav-back{font-size:.78rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--white)}
+    .btn-pill{display:inline-block;background:var(--teal);color:var(--black);font-size:.76rem;font-weight:700;padding:.4rem 1.1rem;border-radius:999px;text-decoration:none;transition:background .2s,transform .15s}
+    .btn-pill:hover{background:var(--teal-lt);transform:scale(1.04)}
+
+    /* HERO */
+    .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden}
+    .hero-glow{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(0,200,215,.08) 0%,transparent 65%);pointer-events:none}
+    .hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+    .hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,200,215,.1);border:.5px solid rgba(0,200,215,.3);border-radius:999px;padding:.3rem .9rem;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem;opacity:0;animation:up .8s cubic-bezier(.16,1,.3,1) forwards .1s}
+    .bdot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pls 2s infinite}
+    @keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+    .hero h1{font-size:clamp(2.5rem,6.5vw,5.5rem);font-weight:700;letter-spacing:-.04em;line-height:1.06;max-width:820px;opacity:0;animation:up .8s cubic-bezier(.16,1,.3,1) forwards .25s}
+    .hero h1 em{font-style:normal;color:var(--teal)}
+    .hero h1 .muted{color:var(--gray-lt);font-weight:400}
+    .hero-sub{font-size:1.05rem;color:var(--gray-lt);max-width:500px;margin:1.5rem auto 0;line-height:1.75;opacity:0;animation:up .8s cubic-bezier(.16,1,.3,1) forwards .4s}
+    .hero-btns{display:flex;gap:.9rem;margin-top:2.8rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:up .8s cubic-bezier(.16,1,.3,1) forwards .55s}
+    .btn-lg{display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;transition:all .2s}
+    .btn-teal{background:var(--teal);color:var(--black)}
+    .btn-teal:hover{background:var(--teal-lt);transform:scale(1.03);box-shadow:0 0 30px rgba(0,200,215,.3)}
+    .btn-outline{background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2)}
+    .btn-outline:hover{background:rgba(255,255,255,.07);transform:scale(1.03)}
+    .scroll-ind{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;opacity:0;animation:up .8s cubic-bezier(.16,1,.3,1) forwards 1s}
+    .scroll-ind span{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray)}
+    .scroll-line{width:1px;height:40px;background:linear-gradient(var(--teal),transparent);animation:scrollAnim 2s ease-in-out infinite}
+    @keyframes scrollAnim{0%{transform:scaleY(0);transform-origin:top;opacity:0}40%{transform:scaleY(1);transform-origin:top;opacity:1}60%{transform:scaleY(1);transform-origin:bottom;opacity:1}100%{transform:scaleY(0);transform-origin:bottom;opacity:0}}
+
+    /* HOW IT WORKS */
+    .how{background:var(--dark);border-top:.5px solid var(--border);padding:6rem 1.5rem}
+    .inner{max-width:1060px;margin:0 auto}
+    .lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+    .h2{font-size:clamp(1.9rem,4.5vw,3rem);font-weight:700;letter-spacing:-.035em;line-height:1.1}
+    .h2 .muted{color:var(--gray-lt);font-weight:400}
+    .body-lg{font-size:.98rem;color:var(--gray-lt);line-height:1.75;max-width:480px;margin-top:1.2rem}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    .how-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-top:3rem;align-items:start}
+    .how-steps{display:flex;flex-direction:column;gap:1.5rem}
+    .how-step{display:flex;gap:1rem;padding:1.2rem;background:var(--card);border:.5px solid var(--border);border-radius:12px}
+    .how-step-num{width:32px;height:32px;border-radius:50%;background:rgba(0,200,215,.1);border:.5px solid rgba(0,200,215,.2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--teal);flex-shrink:0}
+    .how-step-title{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
+    .how-step-desc{font-size:.82rem;color:var(--gray-lt);line-height:1.6}
+
+    /* COMMISSION */
+    .comm-box{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+    .comm-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal)}
+    .comm-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+    .comm-example{background:rgba(0,200,215,.05);border:.5px solid rgba(0,200,215,.1);border-radius:10px;padding:1rem;margin-bottom:1rem}
+    .comm-row{display:flex;justify-content:space-between;font-size:.84rem;padding:.4rem 0;border-bottom:.5px solid rgba(255,255,255,.05)}
+    .comm-row:last-child{border-bottom:none;padding-top:.6rem}
+    .comm-l{color:var(--gray-lt)}
+    .comm-v{font-weight:700;color:var(--white)}
+    .comm-v.teal{color:var(--teal)}
+    .comm-v.green{color:var(--green)}
+    .comm-note{font-size:.72rem;color:var(--gray-lt);line-height:1.6;margin-top:.8rem}
+
+    /* FORMS SECTION */
+    .forms-section{padding:6rem 1.5rem;background:var(--black);border-top:.5px solid var(--border)}
+    .forms-tabs{display:flex;gap:.4rem;margin-bottom:2rem;background:rgba(255,255,255,.04);border:.5px solid var(--border);border-radius:10px;padding:.3rem;width:fit-content}
+    .forms-tab{padding:.6rem 1.4rem;border-radius:7px;font-size:.84rem;font-weight:700;cursor:pointer;color:var(--gray-lt);border:none;background:transparent;font-family:Arial;transition:all .2s}
+    .forms-tab.active{background:rgba(0,200,215,.12);color:var(--teal);border:.5px solid rgba(0,200,215,.25)}
+    .form-pane{display:none}
+    .form-pane.active{display:block}
+    .form-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;max-width:700px;position:relative;overflow:hidden}
+    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal)}
+    .form-title{font-size:1.05rem;font-weight:700;margin-bottom:.25rem}
+    .form-sub{font-size:.78rem;color:var(--gray-lt);margin-bottom:1.8rem}
+    .fg{margin-bottom:.95rem}
+    .fl{display:block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:.38rem}
+    .fi,.fsel,.ftxt{width:100%;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:8px;padding:.72rem .9rem;color:var(--white);font-family:Arial;font-size:.88rem;outline:none;transition:border-color .2s,background .2s;appearance:none}
+    .fi::placeholder,.ftxt::placeholder{color:var(--gray)}
+    .fi:focus,.fsel:focus,.ftxt:focus{border-color:var(--teal);background:rgba(0,200,215,.04)}
+    .fsel option{background:#111}
+    .ftxt{resize:vertical;min-height:70px}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+    .fsection{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin:1.5rem 0 .8rem;padding-bottom:.5rem;border-bottom:.5px solid rgba(0,200,215,.15)}
+    .fbtn{width:100%;background:var(--teal);color:#000;font-size:.9rem;font-weight:700;padding:.88rem;border-radius:999px;border:none;cursor:pointer;font-family:Arial;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+    .fbtn:hover{background:var(--teal-lt);transform:scale(1.02)}
+    .fbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .spin{width:15px;height:15px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;display:none}
+    .fbtn.loading .spin{display:block}
+    .fbtn.loading .fbtxt{display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .fnote{font-size:.72rem;color:var(--gray);text-align:center;margin-top:.8rem;line-height:1.5}
+
+    /* SUCCESS */
+    .success-card{display:none;background:var(--card);border:.5px solid rgba(0,200,215,.2);border-radius:16px;padding:3rem;text-align:center;max-width:700px}
+    .success-card.show{display:block}
+    .success-icon{font-size:3rem;margin-bottom:1rem}
+    .success-title{font-size:1.2rem;font-weight:700;margin-bottom:.5rem}
+    .success-desc{font-size:.88rem;color:var(--gray-lt);line-height:1.6}
+
+    /* WHY */
+    .why{background:var(--dark);border-top:.5px solid var(--border);padding:6rem 1.5rem}
+    .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:3rem}
+    .why-card{background:var(--card);padding:2rem;transition:background .2s}
+    .why-card:hover{background:#161616}
+    .why-icon{font-size:1.8rem;margin-bottom:1rem}
+    .why-title{font-size:.98rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem}
+    .why-desc{font-size:.84rem;color:var(--gray-lt);line-height:1.65}
+
+    /* FOOTER */
+    footer{background:var(--dark);border-top:.5px solid var(--border);padding:2.5rem;text-align:center;font-size:.76rem;color:var(--gray)}
+    footer a{color:var(--teal);text-decoration:none;margin:0 .6rem}
+
+    @keyframes up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:768px){
+      nav{padding:0 1.2rem}
+      .nav-links{display:none}
+      .how-grid{grid-template-columns:1fr;gap:2rem}
+      .why-grid{grid-template-columns:1fr}
+      .frow{grid-template-columns:1fr}
+      .forms-tabs{width:100%}
+      .forms-tab{flex:1;text-align:center}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="/" class="nav-logo">
+    <img src="../1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <span class="nav-brand">İzinciKurye<em>AI</em></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#nasil-calisir">Nasıl Çalışır</a></li>
+    <li><a href="#komisyon">Komisyon</a></li>
+    <li><a href="#isletme">İşletme Talebi</a></li>
+    <li><a href="#kurye">Kurye Başvurusu</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="/" class="nav-back">← Ana Sayfa</a>
+    <a href="#isletme" class="btn-pill">İzinci Kurye Bul</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span class="bdot"></span>Türkiye'de Bir İlk</div>
+  <h1>İzinci kurye bulmak<br/><em>artık çok kolay.</em><br/><span class="muted">Dijital. Hızlı. Güvenli.</span></h1>
+  <p class="hero-sub">İzinli kuryeniz mi var? Araç arızası mı? Yoğun gün mü? Türkiye'nin ilk dijital izinci kurye platformuyla dakikalar içinde çözüm bulun.</p>
+  <div class="hero-btns">
+    <a href="#isletme" class="btn-lg btn-teal">🏪 İzinci Kurye Arıyorum</a>
+    <a href="#kurye" class="btn-lg btn-outline">🛵 İzinci Kurye Olmak İstiyorum</a>
+  </div>
+  <div class="scroll-ind"><div class="scroll-line"></div><span>Kaydır</span></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="nasil-calisir">
+  <div class="inner">
+    <div class="how-grid">
+      <div class="reveal">
+        <p class="lbl">İşletmeler İçin</p>
+        <h2 class="h2">3 adımda <span class="muted">izinci kurye.</span></h2>
+        <div class="how-steps" style="margin-top:2rem">
+          <div class="how-step"><div class="how-step-num">1</div><div><p class="how-step-title">Talep Oluşturun</p><p class="how-step-desc">Tarih, saat, adres ve teslimat alanı bilgilerini girin. Ücretlendirmeyi görün.</p></div></div>
+          <div class="how-step"><div class="how-step-num">2</div><div><p class="how-step-title">Eşleştirme Yapılır</p><p class="how-step-desc">Admin panelimizdeki deneyimli kuryeler arasından size en uygun kurye görevlendirilir.</p></div></div>
+          <div class="how-step"><div class="how-step-num">3</div><div><p class="how-step-title">Ödeme ve Teslim</p><p class="how-step-desc">Hizmet tamamlanınca ödemeyi şirket hesabımıza yapın. Kurye hakedişi aynı gün ödenir.</p></div></div>
+        </div>
+      </div>
+      <div class="reveal" id="komisyon">
+        <p class="lbl">Ücretlendirme & Komisyon</p>
+        <h2 class="h2">Şeffaf <span class="muted">fiyatlandırma.</span></h2>
+        <div class="comm-box" style="margin-top:2rem">
+          <p class="comm-title">Örnek Hesaplama</p>
+          <div class="comm-example">
+            <div class="comm-row"><span class="comm-l">Çalışma süresi</span><span class="comm-v">8 saat</span></div>
+            <div class="comm-row"><span class="comm-l">Toplam KM</span><span class="comm-v">45 km</span></div>
+            <div class="comm-row"><span class="comm-l">Kurye hakedişi (brüt)</span><span class="comm-v">8×250 + 45×8 = 2.360 ₺</span></div>
+          </div>
+          <div class="comm-row"><span class="comm-l">İşletme öder (%5 kom. dahil)</span><span class="comm-v teal">2.478 ₺</span></div>
+          <div class="comm-row"><span class="comm-l">Kuryeye ödenen (%5 sonrası)</span><span class="comm-v green">2.242 ₺</span></div>
+          <div class="comm-row"><span class="comm-l">Platform komisyonu</span><span class="comm-v">236 ₺ (her iki taraftan)</span></div>
+          <p class="comm-note">* Yemek veriliyorsa fiyata dahil edilmez. Minimum çalışma süresi 4 saattir.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KURYELER İÇİN NEDEN -->
+<section class="why">
+  <div class="inner">
+    <div class="reveal" style="text-align:center;margin-bottom:1rem">
+      <p class="lbl">Kuryeler İçin</p>
+      <h2 class="h2">Neden İzinciKurye<em style="font-style:normal;color:var(--teal)">AI</em>?</h2>
+    </div>
+    <div class="why-grid reveal">
+      <div class="why-card"><div class="why-icon">📅</div><h4 class="why-title">Esnek Çalışma</h4><p class="why-desc">İstediğiniz gün ve saatte çalışın. Minimum bağlılık yok. Profilinizi oluşturun, talepler gelsin.</p></div>
+      <div class="why-card"><div class="why-icon">💰</div><h4 class="why-title">Adil Kazanç</h4><p class="why-desc">Saatlik 237,5₺ + 7,6₺/km net kazanç. Hakediş hizmet bittiği gün hesabınıza yatırılır.</p></div>
+      <div class="why-card"><div class="why-icon">🛡️</div><h4 class="why-title">Güvenli Platform</h4><p class="why-desc">Ödeme garantisi platforma yapılır. Doğrudan işletmeyle nakit riski yok. Şeffaf hesaplama.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMLAR -->
+<section class="forms-section" id="formlar">
+  <div class="inner">
+    <div class="reveal">
+      <div class="forms-tabs">
+        <button class="forms-tab active" onclick="switchTab('isletme', this)" id="tab-isletme">🏪 İzinci Kurye Talep Et</button>
+        <button class="forms-tab" onclick="switchTab('kurye', this)" id="tab-kurye">🛵 Kurye Profilimi Oluştur</button>
+      </div>
+
+      <!-- İŞLETME FORMU -->
+      <div class="form-pane active" id="pane-isletme">
+        <div class="form-card" id="isletme-form-card">
+          <p class="form-title" id="isletme">İzinci Kurye Talep Formu</p>
+          <p class="form-sub">İşletme bilgilerinizi ve ihtiyacınızı girin. 2 saat içinde dönüş yapacağız.</p>
+
+          <p class="fsection">İşletme Bilgileri</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Ad Soyad</label><input class="fi" id="i-adsoyad" placeholder="Yetkili kişi adı"/></div>
+            <div class="fg"><label class="fl">İşletme Adı</label><input class="fi" id="i-isletme" placeholder="Restoran / Dükkan adı"/></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Telefon</label><input class="fi" id="i-tel" type="tel" placeholder="05XX XXX XX XX"/></div>
+            <div class="fg"><label class="fl">E-posta</label><input class="fi" id="i-email" type="email" placeholder="isletme@email.com"/></div>
+          </div>
+          <div class="fg"><label class="fl">İşletme Adresi</label><input class="fi" id="i-adres" placeholder="Tam adres (Ankara)"/></div>
+
+          <p class="fsection">Kurye İhtiyacı</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Hangi Tarihte?</label><input class="fi" id="i-tarih" type="date"/></div>
+            <div class="fg"><label class="fl">Hangi Saatler?</label><input class="fi" id="i-saatler" placeholder="Örn: 10:00 - 20:00"/></div>
+          </div>
+          <div class="fg">
+            <label class="fl">Teslimat Alanı Çapı</label>
+            <select class="fsel" id="i-alan">
+              <option value="">Seçiniz</option>
+              <option>0-3 km</option>
+              <option>3-5 km</option>
+              <option>5-10 km</option>
+              <option>10-15 km</option>
+              <option>15 km üzeri</option>
+            </select>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Yemek Verilecek mi?</label>
+              <select class="fsel" id="i-yemek">
+                <option>Evet, yemek verilecek</option>
+                <option>Hayır, yemek verilmeyecek</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Ödeme Zamanı</label>
+              <select class="fsel" id="i-odeme-zaman">
+                <option>Aynı gün</option>
+                <option>Ertesi gün</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Ödeme Şekli</label>
+            <select class="fsel" id="i-odeme-sekil">
+              <option>Nakit</option>
+              <option>Banka Havalesi / IBAN</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Ek Bilgi</label><textarea class="ftxt" id="i-bilgi" placeholder="İşletmeniz hakkında eklemek istediğiniz bilgiler..."></textarea></div>
+
+          <button class="fbtn" id="i-btn" onclick="submitIsletme()">
+            <div class="spin"></div>
+            <span class="fbtxt">💬 Talep Gönder → WhatsApp</span>
+          </button>
+          <p class="fnote">Formu gönderdikten sonra WhatsApp açılacak. Mesajı gönderin, 2 saat içinde dönüş yapacağız.</p>
+        </div>
+        <div class="success-card" id="isletme-success">
+          <div class="success-icon">✅</div>
+          <p class="success-title">Talebiniz Alındı!</p>
+          <p class="success-desc">En kısa sürede sizi arayacağız ve uygun kurye profillerini paylaşacağız.</p>
+        </div>
+      </div>
+
+      <!-- KURYE FORMU -->
+      <div class="form-pane" id="pane-kurye">
+        <div class="form-card" id="kurye-form-card">
+          <p class="form-title" id="kurye">İzinci Kurye Başvuru Formu</p>
+          <p class="form-sub">Detaylı profilinizi oluşturun. İşletmeler sizi bulabilsin.</p>
+
+          <p class="fsection">Kişisel Bilgiler</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Ad</label><input class="fi" id="k-ad" placeholder="Adınız"/></div>
+            <div class="fg"><label class="fl">Soyad</label><input class="fi" id="k-soyad" placeholder="Soyadınız"/></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Doğum Tarihi</label><input class="fi" id="k-dogum-tarih" type="date"/></div>
+            <div class="fg"><label class="fl">Doğum Yeri</label><input class="fi" id="k-dogum-yer" placeholder="İl / İlçe"/></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Telefon</label><input class="fi" id="k-tel" type="tel" placeholder="05XX XXX XX XX"/></div>
+            <div class="fg"><label class="fl">E-posta</label><input class="fi" id="k-email" type="email" placeholder="email@ornek.com"/></div>
+          </div>
+          <div class="fg"><label class="fl">İkamet Adresi</label><input class="fi" id="k-adres" placeholder="Tam ikamet adresi"/></div>
+
+          <p class="fsection">Askerlik & Eğitim</p>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Askerlik Durumu</label>
+              <select class="fsel" id="k-askerlik">
+                <option>Yapıldı</option>
+                <option>Muaf</option>
+                <option>Tecilli</option>
+                <option>Yapılmadı</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Askerlik Yeri / Yılı</label><input class="fi" id="k-askerlik-detay" placeholder="Nerede, ne zaman?"/></div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Eğitim Durumu</label>
+              <select class="fsel" id="k-egitim">
+                <option>İlköğretim</option>
+                <option>Lise</option>
+                <option>Ön Lisans</option>
+                <option>Lisans</option>
+                <option>Lisansüstü</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Sabıka Kaydı</label>
+              <select class="fsel" id="k-sabika">
+                <option>Yok</option>
+                <option>Var (Açıklayınız)</option>
+              </select>
+            </div>
+          </div>
+
+          <p class="fsection">Acil İletişim</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Acil Kişi Adı</label><input class="fi" id="k-acil-ad" placeholder="Ad Soyad (yakın)"/></div>
+            <div class="fg"><label class="fl">Acil Kişi Telefonu</label><input class="fi" id="k-acil-tel" type="tel" placeholder="05XX XXX XX XX"/></div>
+          </div>
+
+          <p class="fsection">Araç Bilgileri</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Araç Marka / Model</label><input class="fi" id="k-arac-marka" placeholder="Örn: Honda PCX 125"/></div>
+            <div class="fg"><label class="fl">Araç Plakası</label><input class="fi" id="k-plaka" placeholder="06 XX 000"/></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Trafik Sigortası Bitiş</label><input class="fi" id="k-sigorta" type="date"/></div>
+            <div class="fg"><label class="fl">Araç Muayene Bitiş</label><input class="fi" id="k-muayene" type="date"/></div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">SRC / Kurye Belgesi</label>
+              <select class="fsel" id="k-src">
+                <option>Yok</option>
+                <option>Var</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">P1* Belgesi</label>
+              <select class="fsel" id="k-p1">
+                <option>Yok</option>
+                <option>Var</option>
+              </select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Çanta Ruhsata İşli mi?</label>
+              <select class="fsel" id="k-canta-ruhsat">
+                <option>Evet</option>
+                <option>Hayır</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Çanta Kaç Litre?</label>
+              <select class="fsel" id="k-canta-litre">
+                <option>20 litre</option>
+                <option>30 litre</option>
+                <option>45 litre</option>
+                <option>50+ litre</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Çanta Markası</label>
+            <select class="fsel" id="k-canta-marka">
+              <option>Maxem</option>
+              <option>Shad</option>
+              <option>RMS</option>
+              <option>Wogen</option>
+              <option>Online Platform Çantası</option>
+              <option>Diğer</option>
+            </select>
+          </div>
+
+          <p class="fsection">Ehliyet Bilgileri</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Ehliyet Alma Tarihi</label><input class="fi" id="k-ehliyet-tarih" type="date"/></div>
+            <div class="fg"><label class="fl">Ehliyet Tipleri</label><input class="fi" id="k-ehliyet-tipler" placeholder="A, A2, B, vs."/></div>
+          </div>
+
+          <p class="fsection">Sağlık & Tecrübe</p>
+          <div class="fg">
+            <label class="fl">Sağlık Sorunu Var mı?</label>
+            <select class="fsel" id="k-saglik">
+              <option>Hayır, sağlık sorunu yok</option>
+              <option>Evet (Açıklayınız)</option>
+            </select>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Kuryelik Tecrübesi</label>
+              <select class="fsel" id="k-tecrube">
+                <option>1 yıldan az</option>
+                <option>1-3 yıl</option>
+                <option>3-5 yıl</option>
+                <option>5+ yıl</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Maks. Çalışma Saati</label>
+              <select class="fsel" id="k-maks-saat">
+                <option>4 saat</option>
+                <option>6 saat</option>
+                <option>8 saat</option>
+                <option>10 saat</option>
+                <option>12 saat</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label class="fl">Daha Önce Çalıştığı Yerler</label><textarea class="ftxt" id="k-gecmis" placeholder="Hangi şirket/platform, hangi şehirde, kaç yıl?"></textarea></div>
+          <div class="fg"><label class="fl">Tecrübeli Olduğu İlçeler</label><input class="fi" id="k-ilceler" placeholder="Çankaya, Keçiören, Mamak..."/></div>
+
+          <p class="fsection">Çalışma Tercihleri</p>
+          <div class="frow">
+            <div class="fg"><label class="fl">Tercih Ettiği Şehir / İlçe</label><input class="fi" id="k-tercih-ilce" placeholder="Ankara - Çankaya, vb."/></div>
+            <div class="fg"><label class="fl">Tercih Ettiği Saatler</label><input class="fi" id="k-tercih-saat" placeholder="Örn: 09:00 - 18:00"/></div>
+          </div>
+
+          <p class="fsection">Ödeme Bilgileri</p>
+          <div class="fg"><label class="fl">IBAN (Banka Hesap No)</label><input class="fi" id="k-iban" placeholder="TR00 0000 0000 0000 0000 0000 00"/></div>
+
+          <button class="fbtn" id="k-btn" onclick="submitKurye()">
+            <div class="spin"></div>
+            <span class="fbtxt">💬 Başvuruyu Gönder → WhatsApp</span>
+          </button>
+          <p class="fnote">Başvurunuz WhatsApp üzerinden gönderilecek. Ekibimiz 24 saat içinde sizinle iletişime geçecektir.</p>
+        </div>
+        <div class="success-card" id="kurye-success">
+          <div class="success-icon">🎉</div>
+          <p class="success-title">Başvurunuz Alındı!</p>
+          <p class="success-desc">24 saat içinde sizi arayacağız ve profilinizi platformumuza ekleyeceğiz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="/">Ana Sayfa</a>
+  <a href="/acil-kurye">Acil Kurye</a>
+  <a href="/restoran">RestoranAI</a>
+  <a href="mailto:info@kuryeai.com">info@kuryeai.com</a>
+  <a href="https://wa.me/905072171995">WhatsApp</a>
+  <br/><br/>
+  © 2025 AI Teknoloji ve Lojistik Ltd. Şti.
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });
+  }, {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Tab switch
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.forms-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.form-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('pane-' + tab).classList.add('active');
+    document.getElementById('formlar').scrollIntoView({behavior:'smooth'});
+  }
+
+  // İşletme formu
+  function submitIsletme() {
+    const adsoyad = document.getElementById('i-adsoyad').value.trim();
+    const isletme = document.getElementById('i-isletme').value.trim();
+    const tel = document.getElementById('i-tel').value.trim();
+    const adres = document.getElementById('i-adres').value.trim();
+    const tarih = document.getElementById('i-tarih').value;
+    const saatler = document.getElementById('i-saatler').value.trim();
+    const alan = document.getElementById('i-alan').value;
+    const yemek = document.getElementById('i-yemek').value;
+    const odemeZaman = document.getElementById('i-odeme-zaman').value;
+    const odeemSekil = document.getElementById('i-odeme-sekil').value;
+    const bilgi = document.getElementById('i-bilgi').value.trim();
+
+    if(!adsoyad||!isletme||!tel||!adres||!tarih||!saatler||!alan){
+      alert('Lütfen zorunlu alanları doldurun.');return;
+    }
+
+    const btn = document.getElementById('i-btn');
+    btn.classList.add('loading'); btn.disabled = true;
+
+    const tarihStr = new Date(tarih).toLocaleDateString('tr-TR');
+    const msg = `🏪 *İZİNCİ KURYE TALEBİ — İzinciKuryeAI*
+
+👤 *İşletme Bilgileri:*
+• Yetkili: ${adsoyad}
+• İşletme: ${isletme}
+• Telefon: ${tel}
+• Adres: ${adres}
+
+📅 *İhtiyaç Detayları:*
+• Tarih: ${tarihStr}
+• Saatler: ${saatler}
+• Teslimat Alanı: ${alan}
+• Yemek: ${yemek}
+• Ödeme Zamanı: ${odemeZaman}
+• Ödeme Şekli: ${odeemSekil}
+
+📝 *Ek Bilgi:* ${bilgi||'Yok'}
+
+---
+_İzinciKuryeAI — kuryeai.com/izinci_`;
+
+    setTimeout(() => {
+      window.open(`https://wa.me/905072171995?text=${encodeURIComponent(msg)}`, '_blank');
+      btn.classList.remove('loading'); btn.disabled = false;
+      document.getElementById('isletme-form-card').style.display = 'none';
+      document.getElementById('isletme-success').classList.add('show');
+    }, 800);
+  }
+
+  // Kurye formu
+  function submitKurye() {
+    const ad = document.getElementById('k-ad').value.trim();
+    const soyad = document.getElementById('k-soyad').value.trim();
+    const tel = document.getElementById('k-tel').value.trim();
+    const arac = document.getElementById('k-arac-marka').value.trim();
+    const plaka = document.getElementById('k-plaka').value.trim();
+
+    if(!ad||!soyad||!tel||!arac||!plaka){
+      alert('Lütfen zorunlu alanları doldurun: Ad, Soyad, Telefon, Araç ve Plaka.');return;
+    }
+
+    const btn = document.getElementById('k-btn');
+    btn.classList.add('loading'); btn.disabled = true;
+
+    const msg = `🛵 *İZİNCİ KURYE BAŞVURUSU — İzinciKuryeAI*
+
+👤 *Kişisel Bilgiler:*
+• Ad Soyad: ${ad} ${soyad}
+• Doğum: ${document.getElementById('k-dogum-tarih').value} / ${document.getElementById('k-dogum-yer').value}
+• Telefon: ${tel}
+• E-posta: ${document.getElementById('k-email').value}
+• İkamet: ${document.getElementById('k-adres').value}
+
+📋 *Askerlik & Eğitim:*
+• Askerlik: ${document.getElementById('k-askerlik').value} - ${document.getElementById('k-askerlik-detay').value}
+• Eğitim: ${document.getElementById('k-egitim').value}
+• Sabıka: ${document.getElementById('k-sabika').value}
+
+🚨 *Acil İletişim:*
+• ${document.getElementById('k-acil-ad').value} — ${document.getElementById('k-acil-tel').value}
+
+🏍️ *Araç Bilgileri:*
+• Araç: ${arac} / Plaka: ${plaka}
+• Sigorta Bitiş: ${document.getElementById('k-sigorta').value}
+• Muayene Bitiş: ${document.getElementById('k-muayene').value}
+• SRC: ${document.getElementById('k-src').value} | P1*: ${document.getElementById('k-p1').value}
+• Çanta: ${document.getElementById('k-canta-litre').value} ${document.getElementById('k-canta-marka').value} (Ruhsata işli: ${document.getElementById('k-canta-ruhsat').value})
+
+📜 *Ehliyet:*
+• Alma tarihi: ${document.getElementById('k-ehliyet-tarih').value}
+• Tipler: ${document.getElementById('k-ehliyet-tipler').value}
+
+💪 *Tecrübe:*
+• Deneyim: ${document.getElementById('k-tecrube').value}
+• Maks. çalışma: ${document.getElementById('k-maks-saat').value}
+• Geçmiş: ${document.getElementById('k-gecmis').value||'Belirtilmedi'}
+• Tecrübeli ilçeler: ${document.getElementById('k-ilceler').value}
+
+⚙️ *Çalışma Tercihleri:*
+• Tercih bölge: ${document.getElementById('k-tercih-ilce').value}
+• Tercih saatler: ${document.getElementById('k-tercih-saat').value}
+
+🏦 *IBAN:* ${document.getElementById('k-iban').value||'Belirtilmedi'}
+❤️ *Sağlık:* ${document.getElementById('k-saglik').value}
+
+---
+_İzinciKuryeAI — kuryeai.com/izinci_`;
+
+    setTimeout(() => {
+      window.open(`https://wa.me/905072171995?text=${encodeURIComponent(msg)}`, '_blank');
+      btn.classList.remove('loading'); btn.disabled = false;
+      document.getElementById('kurye-form-card').style.display = 'none';
+      document.getElementById('kurye-success').classList.add('show');
+    }, 800);
+  }
+</script>
+</body>
+</html>

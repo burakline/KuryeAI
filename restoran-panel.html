@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KuryeAI — Restoran Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0A0F;--surface:#111118;--surface2:#1A1A24;--surface3:#22222E;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --accent:#FF5C28;--accent2:#FF8C5C;
+  --text:#F0EEF8;--text2:#8884A0;--text3:#5A5870;
+  --green:#10B981;--blue:#3B82F6;--purple:#8B5CF6;--yellow:#F59E0B;--red:#EF4444;
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--fm:'DM Mono',monospace;
+  --r:14px;--rs:8px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb)}
+.app{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sb{width:240px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:20}
+.sb-logo{padding:28px 24px 20px;border-bottom:1px solid var(--border)}
+.logo-m{display:flex;align-items:center;gap:10px}
+.logo-i{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-t{font-family:var(--fh);font-weight:800;font-size:20px;letter-spacing:-.5px}
+.logo-t span{color:var(--accent)}
+.logo-s{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;padding-left:46px}
+.sb-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.nav-lbl{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;padding:12px 12px 6px;font-family:var(--fm)}
+.nav-i{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .15s;color:var(--text2);font-size:14px;border:1px solid transparent;user-select:none}
+.nav-i:hover{background:var(--surface2);color:var(--text)}
+.nav-i.active{background:rgba(255,92,40,0.12);color:var(--accent2);border-color:rgba(255,92,40,0.2);font-weight:500}
+.nav-ic{font-size:16px;width:20px;text-align:center}
+.nav-b{margin-left:auto;background:var(--accent);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;font-family:var(--fm)}
+.sb-foot{padding:16px 12px;border-top:1px solid var(--border)}
+.rc{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:12px}
+.rc-name{font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:2px}
+.rc-meta{font-size:11px;color:var(--text3);font-family:var(--fm)}
+.sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:5px;animation:pd 2s infinite}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Main */
+.main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-width:0;overflow-y:auto;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.tb-title{font-family:var(--fh);font-size:18px;font-weight:700;flex:1}
+.tb-time{font-family:var(--fm);font-size:12px;color:var(--text3)}
+.fb-b{display:flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:11px;font-family:var(--fm);font-weight:500}
+.fb-b.connected{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.2);color:var(--blue)}
+.fb-b.error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+.fb-b.loading{background:rgba(90,88,112,.2);border:1px solid var(--border);color:var(--text3)}
+.live-b{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.2);border-radius:999px;padding:4px 12px;font-size:11px;color:var(--green);font-family:var(--fm)}
+.content{padding:28px 32px;flex:1}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:border-color .2s}
+.sc:hover{border-color:var(--border2)}
+.sc::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 var(--r) 0 60px;opacity:.06}
+.sc.o::after{background:var(--accent)}.sc.g::after{background:var(--green)}.sc.b::after{background:var(--blue)}.sc.p::after{background:var(--purple)}.sc.y::after{background:var(--yellow)}
+.sc-lbl{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:var(--fm);margin-bottom:10px}
+.sc-val{font-family:var(--fh);font-size:32px;font-weight:800;line-height:1;margin-bottom:6px}
+.sc.o .sc-val{color:var(--accent2)}.sc.g .sc-val{color:var(--green)}.sc.b .sc-val{color:var(--blue)}.sc.p .sc-val{color:var(--purple)}.sc.y .sc-val{color:var(--yellow)}
+.sc-sub{font-size:12px;color:var(--text3)}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.tb{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;transition:all .15s;font-family:var(--fb)}
+.tb:hover{border-color:var(--border2);color:var(--text2)}
+.tb.active{background:rgba(255,92,40,0.12);border-color:rgba(255,92,40,0.3);color:var(--accent2)}
+
+/* Orders */
+.og{display:flex;flex-direction:column;gap:10px}
+.oc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:grid;grid-template-columns:80px 1fr auto auto auto;align-items:center;gap:16px;transition:all .15s}
+.oc:hover{border-color:var(--border2);background:var(--surface2)}
+.oc-id{font-family:var(--fm);font-size:11px;color:var(--text3)}
+.oc-cust{font-weight:600;font-size:14px;margin-bottom:3px}
+.oc-items{font-size:12px;color:var(--text2)}
+.oc-addr{font-size:11px;color:var(--text3);margin-top:2px}
+.oc-total{font-family:var(--fm);font-size:16px;font-weight:600;text-align:right;white-space:nowrap}
+.oc-time{font-size:11px;color:var(--text3);text-align:right;font-family:var(--fm)}
+.sbadge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:600;font-family:var(--fm);white-space:nowrap}
+.sdot-sm{width:5px;height:5px;border-radius:50%;background:currentColor}
+.adv-btn{background:var(--surface3);border:1px solid var(--border);color:var(--text2);font-size:11px;padding:5px 12px;border-radius:var(--rs);cursor:pointer;transition:all .15s;font-family:var(--fm);white-space:nowrap;min-width:80px}
+.adv-btn:hover{background:var(--surface2);border-color:var(--border2);color:var(--text)}
+
+/* Menu */
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .15s}
+.mc:hover{border-color:var(--border2)}
+.mc.off{opacity:.5}
+.mc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.mc-name{font-family:var(--fh);font-size:15px;font-weight:700}
+.mc-price{font-family:var(--fm);font-size:15px;font-weight:600;color:var(--accent2)}
+.mc-cat{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:var(--fm);margin-bottom:6px}
+.mc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+.mc-foot{display:flex;justify-content:space-between;align-items:center}
+.tgl-w{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--text2);user-select:none}
+.tgl{width:36px;height:20px;border-radius:999px;position:relative;transition:background .2s;flex-shrink:0}
+.tgl.on{background:var(--green)}.tgl.off{background:var(--surface3)}
+.tgl::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:white;top:3px;transition:left .2s}
+.tgl.on::after{left:19px}.tgl.off::after{left:3px}
+
+/* Couriers */
+.cg{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;display:flex;align-items:center;gap:16px;transition:all .15s}
+.cc:hover{border-color:var(--border2)}
+.cav{width:44px;height:44px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative}
+.csd{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--surface)}
+.csd.available{background:var(--green)}.csd.busy{background:var(--yellow)}
+.ci{flex:1;min-width:0}
+.ci-name{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:2px}
+.ci-loc{font-size:12px;color:var(--text3);margin-bottom:4px}
+.ci-ord{font-size:11px;font-family:var(--fm)}
+.cs{text-align:right;flex-shrink:0}
+.cs-r{font-family:var(--fm);font-size:14px;font-weight:600;color:var(--yellow);margin-bottom:2px}
+.cs-d{font-size:11px;color:var(--text3)}
+
+/* Reports */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.rcard-t{font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:16px;color:var(--text2)}
+.barchart{display:flex;flex-direction:column;gap:10px}
+.barrow{display:flex;align-items:center;gap:10px}
+.barlbl{width:110px;color:var(--text2);font-size:11px;flex-shrink:0}
+.bartr{flex:1;height:8px;background:var(--surface3);border-radius:999px;overflow:hidden}
+.barfill{height:100%;border-radius:999px;transition:width .6s ease}
+.barval{width:46px;text-align:right;font-family:var(--fm);font-size:11px;color:var(--text3)}
+.hchart{display:flex;align-items:flex-end;gap:6px;height:90px}
+.hbar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.hfill{width:100%;border-radius:4px 4px 0 0;background:var(--accent);opacity:.75;min-height:4px}
+.hlbl{font-size:9px;color:var(--text3);font-family:var(--fm)}
+
+/* Misc */
+.empty{text-align:center;padding:48px;color:var(--text3);font-size:13px}
+.empty .ei{font-size:32px;margin-bottom:12px}
+.loading-box{display:flex;align-items:center;justify-content:center;padding:60px;flex-direction:column;gap:16px;color:var(--text3);font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .25s ease forwards}
+.view{display:none}.view.active{display:block}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:12px 20px;font-size:13px;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:fadeUp .25s ease;pointer-events:none}
+.toast.s{border-color:rgba(16,185,129,.3);color:var(--green)}
+.toast.e{border-color:rgba(239,68,68,.3);color:var(--red)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:999px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <nav class="sb">
+    <div class="sb-logo">
+      <div class="logo-m">
+        <div class="logo-i">🛵</div>
+        <div class="logo-t">Kurye<span>AI</span></div>
+      </div>
+      <div class="logo-s">Restoran Paneli</div>
+    </div>
+    <div class="sb-nav">
+      <div class="nav-lbl">Yönetim</div>
+      <div class="nav-i active" data-page="orders">
+        <span class="nav-ic">📋</span> Siparişler
+        <span class="nav-b" id="pending-badge" style="display:none">0</span>
+      </div>
+      <div class="nav-i" data-page="menu">
+        <span class="nav-ic">🍽️</span> Menü Yönetimi
+      </div>
+      <div class="nav-i" data-page="couriers">
+        <span class="nav-ic">🛵</span> Kuryeler
+      </div>
+      <div class="nav-i" data-page="reports">
+        <span class="nav-ic">📊</span> Raporlar
+      </div>
+    </div>
+    <div class="sb-foot">
+      <div class="rc">
+        <div class="rc-name" id="rid-label">demo_restoran_001</div>
+        <div class="rc-meta"><span class="sdot"></span>Aktif</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-title" id="page-title">Sipariş Yönetimi</div>
+      <div class="tb-time" id="clock">--:--:--</div>
+      <div class="fb-b loading" id="fb-status">Bağlanıyor…</div>
+      <div class="live-b"><span class="sdot" style="width:6px;height:6px;background:var(--green)"></span>Canlı</div>
+    </div>
+
+    <div class="content">
+
+      <!-- ORDERS VIEW -->
+      <div class="view active fu" id="view-orders">
+        <div class="stats" id="order-stats">
+          <div class="sc y"><div class="sc-lbl">Bekleyen</div><div class="sc-val" id="cnt-pending">0</div><div class="sc-sub">sipariş</div></div>
+          <div class="sc b"><div class="sc-lbl">Hazırlanan</div><div class="sc-val" id="cnt-preparing">0</div><div class="sc-sub">sipariş</div></div>
+          <div class="sc p"><div class="sc-lbl">Yolda</div><div class="sc-val" id="cnt-onway">0</div><div class="sc-sub">sipariş</div></div>
+          <div class="sc g"><div class="sc-lbl">Teslim</div><div class="sc-val" id="cnt-delivered">0</div><div class="sc-sub">sipariş</div></div>
+        </div>
+        <div class="tabs" id="order-tabs">
+          <button class="tb active" data-filter="all">Tümü <span id="tab-all">(0)</span></button>
+          <button class="tb" data-filter="pending">Bekleyen <span id="tab-pending">(0)</span></button>
+          <button class="tb" data-filter="preparing">Hazırlanan <span id="tab-preparing">(0)</span></button>
+          <button class="tb" data-filter="on_the_way">Yolda <span id="tab-onway">(0)</span></button>
+          <button class="tb" data-filter="delivered">Teslim <span id="tab-delivered">(0)</span></button>
+        </div>
+        <div class="og" id="orders-list">
+          <div class="loading-box"><div class="spin"></div><span>Firebase'den yükleniyor…</span></div>
+        </div>
+      </div>
+
+      <!-- MENU VIEW -->
+      <div class="view fu" id="view-menu">
+        <div class="tabs" id="menu-tabs">
+          <button class="tb active" data-mfilter="all">Tümü</button>
+        </div>
+        <div class="mg" id="menu-list">
+          <div class="loading-box"><div class="spin"></div><span>Menü yükleniyor…</span></div>
+        </div>
+      </div>
+
+      <!-- COURIERS VIEW -->
+      <div class="view fu" id="view-couriers">
+        <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+          <div class="sc g"><div class="sc-lbl">Müsait</div><div class="sc-val" id="cnt-avail">0</div><div class="sc-sub">kurye</div></div>
+          <div class="sc o"><div class="sc-lbl">Aktif</div><div class="sc-val" id="cnt-busy">0</div><div class="sc-sub">dağıtımda</div></div>
+          <div class="sc b"><div class="sc-lbl">Toplam</div><div class="sc-val" id="cnt-total-c">0</div><div class="sc-sub">kayıtlı</div></div>
+        </div>
+        <div class="cg" id="couriers-list">
+          <div class="loading-box"><div class="spin"></div><span>Kuryeler yükleniyor…</span></div>
+        </div>
+      </div>
+
+      <!-- REPORTS VIEW -->
+      <div class="view fu" id="view-reports">
+        <div class="stats" id="report-stats">
+          <div class="sc o"><div class="sc-lbl">Bugün Ciro</div><div class="sc-val" id="rep-rev">₺0</div><div class="sc-sub" id="rep-cnt">0 sipariş</div></div>
+          <div class="sc g"><div class="sc-lbl">Teslim</div><div class="sc-val" id="rep-del">0</div><div class="sc-sub">başarılı</div></div>
+          <div class="sc b"><div class="sc-lbl">Ort. Sepet</div><div class="sc-val" id="rep-avg">₺0</div><div class="sc-sub">sipariş değeri</div></div>
+          <div class="sc p"><div class="sc-lbl">Ort. Süre</div><div class="sc-val">28dk</div><div class="sc-sub">teslimat</div></div>
+        </div>
+        <div class="rg">
+          <div class="rcard">
+            <div class="rcard-t">Saatlik Yoğunluk</div>
+            <div class="hchart" id="hourly-chart"></div>
+          </div>
+          <div class="rcard">
+            <div class="rcard-t">Sipariş Durumları</div>
+            <div class="barchart" id="status-chart"></div>
+          </div>
+          <div class="rcard">
+            <div class="rcard-t">Haftalık Ciro</div>
+            <div class="barchart" id="weekly-chart"></div>
+          </div>
+          <div class="rcard">
+            <div class="rcard-t">Firebase Bilgileri</div>
+            <div id="fb-info" style="display:flex;flex-direction:column;gap:12px;margin-top:4px;font-size:12px"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<div id="toast-el" class="toast" style="display:none"></div>
+
+<!-- Firebase SDK (CDN) -->
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ─── Config ────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:      "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
+  authDomain:  "kuryeai.firebaseapp.com",
+  databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:   "kuryeai",
+  storageBucket: "kuryeai.firebasestorage.app",
+  messagingSenderId: "655930514402",
+  appId:       "1:655930514402:web:379321cbb83f48daf077bb",
+};
+
+const RESTAURANT_ID = "demo_restoran_001";
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ─── Seed data ─────────────────────────────────────────────────────────────
+const SEED_ORDERS = {
+  ord_001:{ customer:"Ahmet Yılmaz",  items:["Adana Kebap x2","Ayran x2"],  total:180, status:"preparing",  address:"Bağcılar, İstanbul",  courier:"Mehmet K.", createdAt:Date.now()-800000 },
+  ord_002:{ customer:"Zeynep Arslan", items:["Pizza Margarita","Kola"],      total:95,  status:"on_the_way", address:"Kadıköy, İstanbul",   courier:"Ali R.",    createdAt:Date.now()-400000 },
+  ord_003:{ customer:"Murat Demir",   items:["Hamburger","Patates","Su"],    total:120, status:"pending",    address:"Şişli, İstanbul",     courier:null,        createdAt:Date.now()-120000 },
+  ord_004:{ customer:"Selin Kaya",    items:["Tavuk Döner","Cacık"],         total:75,  status:"delivered",  address:"Beşiktaş, İstanbul",  courier:"Emre T.",   createdAt:Date.now()-3600000},
+};
+const SEED_MENU = {
+  menu_001:{ name:"Adana Kebap",     category:"Ana Yemek",    price:75,  available:true,  description:"Özel baharatlı el yapımı kebap" },
+  menu_002:{ name:"Pizza Margarita", category:"Pizza",        price:85,  available:true,  description:"Fırında ince hamur, domates sos" },
+  menu_003:{ name:"Hamburger",       category:"Burger",       price:65,  available:true,  description:"El yapımı köfte, cheddar, özel sos" },
+  menu_004:{ name:"Tavuk Döner",     category:"Döner",        price:60,  available:false, description:"Çıtır tavuk, lavaş, garnitür" },
+  menu_005:{ name:"Lahmacun",        category:"Türk Mutfağı", price:25,  available:true,  description:"Kıymalı, ince hamur, limon" },
+  menu_006:{ name:"Ayran",           category:"İçecek",       price:15,  available:true,  description:"Ev yapımı soğuk ayran" },
+};
+const SEED_COURIERS = {
+  cour_001:{ name:"Mehmet Kaya", status:"busy",      activeOrder:"ord_001", location:"Bağcılar yolunda", rating:4.8, deliveries:142 },
+  cour_002:{ name:"Ali Rıza",   status:"busy",      activeOrder:"ord_002", location:"Kadıköy'e 5dk",    rating:4.9, deliveries:208 },
+  cour_003:{ name:"Emre Tunç",  status:"available", activeOrder:null,       location:"Şişli merkez",     rating:4.7, deliveries:89  },
+  cour_004:{ name:"Volkan Sarı",status:"available", activeOrder:null,       location:"Beşiktaş merkez",  rating:4.6, deliveries:176 },
+};
+
+const STATUS_CFG = {
+  pending:    { label:"Bekliyor",      color:"#F59E0B", bg:"rgba(245,158,11,0.12)",  next:"preparing"  },
+  preparing:  { label:"Hazırlanıyor",  color:"#3B82F6", bg:"rgba(59,130,246,0.12)",  next:"on_the_way" },
+  on_the_way: { label:"Yolda",         color:"#8B5CF6", bg:"rgba(139,92,246,0.12)",  next:"delivered"  },
+  delivered:  { label:"Teslim Edildi", color:"#10B981", bg:"rgba(16,185,129,0.12)",  next:null         },
+  cancelled:  { label:"İptal",         color:"#EF4444", bg:"rgba(239,68,68,0.12)",   next:null         },
+};
+
+const objToArr = o => o ? Object.entries(o).map(([id,v])=>({id,...v})) : [];
+const timeAgo  = ts => {
+  if (!ts) return "—";
+  const d=Date.now()-ts;
+  if(d<60000)   return "az önce";
+  if(d<3600000) return `${Math.floor(d/60000)} dk önce`;
+  return `${Math.floor(d/3600000)} sa önce`;
+};
+
+// ─── State ─────────────────────────────────────────────────────────────────
+let orders   = [];
+let menu     = [];
+let couriers = [];
+let currentPage    = "orders";
+let currentFilter  = "all";
+let currentMFilter = "all";
+
+// ─── Toast ─────────────────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type="s") {
+  const el = document.getElementById("toast-el");
+  el.textContent = msg;
+  el.className = `toast ${type}`;
+  el.style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ el.style.display="none"; }, 2800);
+}
+
+// ─── Firebase Status ───────────────────────────────────────────────────────
+function setFbStatus(s) {
+  const el = document.getElementById("fb-status");
+  const map = { loading:["Bağlanıyor…","loading"], connected:["Firebase ●","connected"], error:["Bağlantı Hatası","error"] };
+  el.textContent = map[s][0];
+  el.className = `fb-b ${map[s][1]}`;
+}
+
+// ─── Render Orders ─────────────────────────────────────────────────────────
+function renderOrders() {
+  const filtered = currentFilter==="all" ? orders : orders.filter(o=>o.status===currentFilter);
+
+  // counts
+  document.getElementById("cnt-pending").textContent   = orders.filter(o=>o.status==="pending").length;
+  document.getElementById("cnt-preparing").textContent = orders.filter(o=>o.status==="preparing").length;
+  document.getElementById("cnt-onway").textContent     = orders.filter(o=>o.status==="on_the_way").length;
+  document.getElementById("cnt-delivered").textContent = orders.filter(o=>o.status==="delivered").length;
+
+  document.getElementById("tab-all").textContent       = `(${orders.length})`;
+  document.getElementById("tab-pending").textContent   = `(${orders.filter(o=>o.status==="pending").length})`;
+  document.getElementById("tab-preparing").textContent = `(${orders.filter(o=>o.status==="preparing").length})`;
+  document.getElementById("tab-onway").textContent     = `(${orders.filter(o=>o.status==="on_the_way").length})`;
+  document.getElementById("tab-delivered").textContent = `(${orders.filter(o=>o.status==="delivered").length})`;
+
+  const pCount = orders.filter(o=>o.status==="pending").length;
+  const badge  = document.getElementById("pending-badge");
+  badge.style.display = pCount>0 ? "inline-block" : "none";
+  badge.textContent   = pCount;
+
+  const list = document.getElementById("orders-list");
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="ei">📭</div>Bu kategoride sipariş yok</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(order => {
+    const cfg = STATUS_CFG[order.status] || STATUS_CFG.pending;
+    const items = Array.isArray(order.items) ? order.items.join(", ") : order.items;
+    const advBtn = cfg.next
+      ? `<button class="adv-btn" onclick="advanceOrder('${order.id}','${cfg.next}')">${STATUS_CFG[cfg.next].label} →</button>`
+      : `<div style="min-width:80px"></div>`;
+    return `
+      <div class="oc">
+        <div class="oc-id">#${order.id.slice(-6).toUpperCase()}</div>
+        <div>
+          <div class="oc-cust">${order.customer}</div>
+          <div class="oc-items">${items}</div>
+          <div class="oc-addr">📍 ${order.address}</div>
+          ${order.courier ? `<div class="oc-addr" style="color:var(--blue)">🛵 ${order.courier}</div>` : ""}
+        </div>
+        <div>
+          <div class="oc-total">₺${order.total}</div>
+          <div class="oc-time">${timeAgo(order.createdAt)}</div>
+        </div>
+        <span class="sbadge" style="color:${cfg.color};background:${cfg.bg}">
+          <span class="sdot-sm" style="background:${cfg.color}"></span>${cfg.label}
+        </span>
+        ${advBtn}
+      </div>`;
+  }).join("");
+}
+
+// ─── Render Menu ───────────────────────────────────────────────────────────
+function renderMenu() {
+  const cats = ["all", ...new Set(menu.map(i=>i.category))];
+
+  // Rebuild tabs if needed
+  const tabsEl = document.getElementById("menu-tabs");
+  tabsEl.innerHTML = cats.map(c=>`
+    <button class="tb ${currentMFilter===c?"active":""}" data-mfilter="${c}">${c==="all"?"Tümü":c}</button>
+  `).join("");
+  tabsEl.querySelectorAll(".tb").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      currentMFilter=btn.dataset.mfilter;
+      renderMenu();
+    });
+  });
+
+  const filtered = currentMFilter==="all" ? menu : menu.filter(m=>m.category===currentMFilter);
+  document.getElementById("menu-list").innerHTML = filtered.map(item=>`
+    <div class="mc ${!item.available?"off":""}">
+      <div class="mc-h"><div class="mc-name">${item.name}</div><div class="mc-price">₺${item.price}</div></div>
+      <div class="mc-cat">${item.category}</div>
+      <div class="mc-desc">${item.description}</div>
+      <div class="mc-foot">
+        <label class="tgl-w" onclick="toggleMenu('${item.id}',${!item.available})">
+          <span class="tgl ${item.available?"on":"off"}"></span>
+          <span>${item.available?"Aktif":"Pasif"}</span>
+        </label>
+        <span style="font-size:11px;color:var(--text3);font-family:var(--fm)">${item.id.slice(-4)}</span>
+      </div>
+    </div>`).join("");
+}
+
+// ─── Render Couriers ───────────────────────────────────────────────────────
+function renderCouriers() {
+  document.getElementById("cnt-avail").textContent   = couriers.filter(c=>c.status==="available").length;
+  document.getElementById("cnt-busy").textContent    = couriers.filter(c=>c.status==="busy").length;
+  document.getElementById("cnt-total-c").textContent = couriers.length;
+
+  document.getElementById("couriers-list").innerHTML = couriers.map(c=>`
+    <div class="cc">
+      <div class="cav">🧑‍💼<div class="csd ${c.status}"></div></div>
+      <div class="ci">
+        <div class="ci-name">${c.name}</div>
+        <div class="ci-loc">📍 ${c.location}</div>
+        ${c.activeOrder
+          ? `<div class="ci-ord" style="color:var(--blue)">🔸 #${String(c.activeOrder).slice(-6).toUpperCase()} teslimatında</div>`
+          : `<div class="ci-ord" style="color:var(--green)">✓ Müsait</div>`}
+      </div>
+      <div class="cs"><div class="cs-r">⭐ ${c.rating}</div><div class="cs-d">${c.deliveries} teslimat</div></div>
+    </div>`).join("");
+}
+
+// ─── Render Reports ────────────────────────────────────────────────────────
+function renderReports() {
+  const rev  = orders.reduce((s,o)=>s+(o.total||0),0);
+  const del  = orders.filter(o=>o.status==="delivered").length;
+  const avg  = Math.round(rev/(orders.length||1));
+
+  document.getElementById("rep-rev").textContent = `₺${rev}`;
+  document.getElementById("rep-del").textContent = del;
+  document.getElementById("rep-avg").textContent = `₺${avg}`;
+  document.getElementById("rep-cnt").textContent = `${orders.length} sipariş`;
+
+  // Hourly
+  const HOURS=["10","11","12","13","14","15","16","17","18","19","20","21"];
+  const HOURLY=[4,6,9,12,18,22,15,19,24,28,31,26];
+  const maxH=Math.max(...HOURLY);
+  document.getElementById("hourly-chart").innerHTML = HOURS.map((h,i)=>`
+    <div class="hbar">
+      <div class="hfill" style="height:${(HOURLY[i]/maxH)*100}%"></div>
+      <div class="hlbl">${h}</div>
+    </div>`).join("");
+
+  // Status chart
+  document.getElementById("status-chart").innerHTML = Object.entries(STATUS_CFG).map(([k,cfg])=>{
+    const cnt=orders.filter(o=>o.status===k).length;
+    const pct=Math.round((cnt/(orders.length||1))*100);
+    return `<div class="barrow">
+      <div class="barlbl">${cfg.label}</div>
+      <div class="bartr"><div class="barfill" style="width:${pct}%;background:${cfg.color}"></div></div>
+      <div class="barval">${cnt}</div>
+    </div>`;
+  }).join("");
+
+  // Weekly
+  const WEEKLY=[["Pzt","₺2.4K",82],["Sal","₺2.1K",74],["Çar","₺2.8K",96],["Per","₺3.2K",110],["Cum","₺4.1K",138],["Cmt","₺5.3K",178],["Paz","₺4.8K",162]];
+  document.getElementById("weekly-chart").innerHTML = WEEKLY.map(([g,c,s])=>`
+    <div class="barrow">
+      <div class="barlbl">${g}</div>
+      <div class="bartr"><div class="barfill" style="width:${(s/178)*100}%;background:var(--accent)"></div></div>
+      <div class="barval">${c}</div>
+    </div>`).join("");
+
+  // FB info
+  document.getElementById("fb-info").innerHTML = [
+    ["Restoran ID", RESTAURANT_ID],
+    ["DB Bölgesi",  "europe-west1"],
+    ["Toplam Sipariş", orders.length],
+    ["Son Güncelleme", new Date().toLocaleTimeString("tr-TR")],
+  ].map(([k,v])=>`
+    <div style="display:flex;justify-content:space-between">
+      <span style="color:var(--text3)">${k}</span>
+      <span style="font-family:var(--fm);font-size:11px;color:var(--text2)">${v}</span>
+    </div>`).join("");
+}
+
+// ─── Actions (global) ──────────────────────────────────────────────────────
+window.advanceOrder = async (id, next) => {
+  orders = orders.map(o=>o.id===id?{...o,status:next}:o);
+  renderOrders();
+  try {
+    await update(ref(db, `restaurants/${RESTAURANT_ID}/orders/${id}`), { status: next });
+    showToast(`✓ ${STATUS_CFG[next].label}`);
+  } catch {
+    showToast("Güncelleme başarısız", "e");
+  }
+};
+
+window.toggleMenu = async (id, newVal) => {
+  menu = menu.map(m=>m.id===id?{...m,available:newVal}:m);
+  renderMenu();
+  try {
+    await update(ref(db, `restaurants/${RESTAURANT_ID}/menu/${id}`), { available: newVal });
+    showToast(newVal ? "✓ Ürün aktif" : "✓ Ürün pasif");
+  } catch {
+    showToast("Menü güncellenemedi", "e");
+  }
+};
+
+// ─── Navigation ────────────────────────────────────────────────────────────
+const TITLES = { orders:"Sipariş Yönetimi", menu:"Menü Yönetimi", couriers:"Kurye Takibi", reports:"Raporlar & İstatistikler" };
+
+document.querySelectorAll(".nav-i").forEach(el=>{
+  el.addEventListener("click",()=>{
+    const page = el.dataset.page;
+    if (!page) return;
+    currentPage = page;
+    document.querySelectorAll(".nav-i").forEach(n=>n.classList.remove("active"));
+    el.classList.add("active");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    document.getElementById(`view-${page}`).classList.add("active");
+    document.getElementById("page-title").textContent = TITLES[page];
+    if (page==="reports") renderReports();
+  });
+});
+
+document.querySelectorAll("#order-tabs .tb").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    currentFilter = btn.dataset.filter;
+    document.querySelectorAll("#order-tabs .tb").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderOrders();
+  });
+});
+
+// ─── Clock ─────────────────────────────────────────────────────────────────
+setInterval(()=>{ document.getElementById("clock").textContent=new Date().toLocaleTimeString("tr-TR"); }, 1000);
+
+// ─── Firebase Init ─────────────────────────────────────────────────────────
+async function initFirebase() {
+  try {
+    // Orders
+    const ordSnap = await get(ref(db, `restaurants/${RESTAURANT_ID}/orders`));
+    if (!ordSnap.exists()) await set(ref(db, `restaurants/${RESTAURANT_ID}/orders`), SEED_ORDERS);
+
+    // Menu
+    const menuSnap = await get(ref(db, `restaurants/${RESTAURANT_ID}/menu`));
+    if (!menuSnap.exists()) await set(ref(db, `restaurants/${RESTAURANT_ID}/menu`), SEED_MENU);
+
+    // Couriers
+    const courSnap = await get(ref(db, "couriers"));
+    if (!courSnap.exists()) await set(ref(db, "couriers"), SEED_COURIERS);
+
+    setFbStatus("connected");
+    showToast("Firebase bağlantısı kuruldu ✓");
+
+    // ── Realtime Listeners ──────────────────────────────────────────────
+    onValue(ref(db, `restaurants/${RESTAURANT_ID}/orders`), snap => {
+      orders = objToArr(snap.val());
+      renderOrders();
+    });
+
+    onValue(ref(db, `restaurants/${RESTAURANT_ID}/menu`), snap => {
+      menu = objToArr(snap.val());
+      renderMenu();
+    });
+
+    onValue(ref(db, "couriers"), snap => {
+      couriers = objToArr(snap.val());
+      renderCouriers();
+    });
+
+  } catch(err) {
+    console.error("Firebase:", err);
+    setFbStatus("error");
+    orders   = objToArr(SEED_ORDERS);
+    menu     = objToArr(SEED_MENU);
+    couriers = objToArr(SEED_COURIERS);
+    renderOrders(); renderMenu(); renderCouriers();
+    showToast("Firebase bağlanamadı — demo mod", "e");
+  }
+}
+
+initFirebase();
+</script>
+</body>
+</html>

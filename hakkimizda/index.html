@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hakkımızda | KuryeAI — AI Teknoloji ve Lojistik</title>
+  <meta name="description" content="KuryeAI — AI Teknoloji ve Lojistik Ltd. Şti. hakkında. Misyon, vizyon, ekip ve hikayemiz."/>
+  <link rel="icon" type="image/png" href="/1000414615.png"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#000;--dark:#0c0c0c;--card:#111;--border:rgba(255,255,255,.07);--gray:#555;--gray-lt:#999;--white:#fff;--teal:#00c8d7;--teal-lt:#33d6e3}
+    html{scroll-behavior:smooth}
+    body{background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+    .nav-logo img{height:32px;width:32px;border-radius:50%;object-fit:cover}
+    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em;color:var(--white)}
+    .nav-brand em{font-style:normal;color:var(--teal)}
+    .nav-back{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--white)}
+    .btn-pill{display:inline-block;background:var(--teal);color:var(--black);font-size:.76rem;font-weight:700;padding:.4rem 1.1rem;border-radius:999px;text-decoration:none}
+
+    /* HERO */
+    .hero{padding:8rem 1.5rem 5rem;text-align:center;position:relative;overflow:hidden;border-bottom:.5px solid var(--border)}
+    .hero-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,200,215,.08) 0%,transparent 65%);pointer-events:none}
+    .lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+    h1{font-size:clamp(2.2rem,5vw,4rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:1.2rem}
+    .hero-sub{font-size:1.05rem;color:var(--gray-lt);max-width:560px;margin:0 auto;line-height:1.75}
+
+    /* SECTIONS */
+    .section{padding:5rem 1.5rem;border-bottom:.5px solid var(--border)}
+    .inner{max-width:1060px;margin:0 auto}
+    .h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.035em;line-height:1.1;margin-bottom:1.5rem}
+    .h2 .teal{color:var(--teal)}
+    p{font-size:.95rem;color:var(--gray-lt);line-height:1.8;margin-bottom:1rem}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    /* MİSYON VİZYON */
+    .mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+    .mv-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+    .mv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal)}
+    .mv-icon{font-size:2rem;margin-bottom:1rem}
+    .mv-title{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.8rem;color:var(--white)}
+    .mv-text{font-size:.88rem;color:var(--gray-lt);line-height:1.75}
+
+    /* HİKAYE */
+    .story{background:var(--dark)}
+    .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+    .story-visual{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2.5rem;text-align:center}
+    .story-logo img{height:120px;width:120px;border-radius:50%;object-fit:cover;box-shadow:0 0 50px rgba(0,200,215,.2);margin-bottom:1.5rem}
+    .story-stat{margin-top:1.5rem;padding-top:1.5rem;border-top:.5px solid var(--border)}
+    .story-stat-n{font-size:2.5rem;font-weight:700;letter-spacing:-.04em;color:var(--teal)}
+    .story-stat-l{font-size:.75rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:.08em}
+
+    /* DEĞERLER */
+    .values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:2rem}
+    .val-card{background:var(--card);padding:2rem;transition:background .2s}
+    .val-card:hover{background:#161616}
+    .val-icon{font-size:1.6rem;margin-bottom:.8rem}
+    .val-title{font-size:.95rem;font-weight:700;margin-bottom:.5rem}
+    .val-desc{font-size:.84rem;color:var(--gray-lt);line-height:1.65}
+
+    /* CTA */
+    .cta-sec{text-align:center;padding:5rem 1.5rem;border-bottom:.5px solid var(--border)}
+    .btn-lg{display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;transition:all .2s;background:var(--teal);color:var(--black)}
+    .btn-lg:hover{background:var(--teal-lt);transform:scale(1.03)}
+
+    footer{text-align:center;padding:2rem;font-size:.76rem;color:var(--gray)}
+    footer a{color:var(--teal);text-decoration:none;margin:0 .6rem}
+
+    @media(max-width:768px){
+      .mv-grid,.story-grid,.values-grid{grid-template-columns:1fr}
+      .section{padding:4rem 1rem}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <span class="nav-brand">Kurye<em>AI</em></span>
+  </a>
+  <a href="/" class="nav-back">← Ana Sayfa</a>
+  <a href="/iletisim" class="btn-pill">İletişim</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <p class="lbl">Hakkımızda</p>
+  <h1>Ankara'nın <span style="color:var(--teal)">akıllı</span><br/>lojistik şirketi.</h1>
+  <p class="hero-sub">AI Teknoloji ve Lojistik olarak, kurye sektörünü yapay zeka ile dönüştürüyoruz. RestoranAI, KuryeAI ve İzinciKuryeAI ile Ankara'dan Türkiye'ye büyüyoruz.</p>
+</section>
+
+<section class="section">
+  <div class="inner">
+    <div class="mv-grid reveal">
+      <div class="mv-card">
+        <div class="mv-icon">🎯</div>
+        <h3 class="mv-title">Misyonumuz</h3>
+        <p class="mv-text">Kurye sektöründeki verimsizlikleri yapay zeka ile ortadan kaldırmak. Restoranları, kuryeleri ve işletmeleri tek akıllı platformda buluşturmak. Her teslimatı daha hızlı, daha şeffaf ve daha adil yapmak.</p>
+      </div>
+      <div class="mv-card">
+        <div class="mv-icon">🚀</div>
+        <h3 class="mv-title">Vizyonumuz</h3>
+        <p class="mv-text">Türkiye'nin lider kurye teknoloji şirketi olmak. İzinciKuryeAI ile kurye arz-talebini dijitalleştiren Türkiye'nin ilk platformu olarak sektörde devrim yaratmak ve tüm Türkiye'ye yayılmak.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section story">
+  <div class="inner">
+    <div class="story-grid">
+      <div class="reveal">
+        <p class="lbl">Hikayemiz</p>
+        <h2 class="h2">Sektörün <span class="teal">içinden</span> geldik.</h2>
+        <p>KuryeAI'ın hikayesi, Ankara sokaklarında başladı. Kurucumuz, bizzat moto kurye olarak çalışırken sektörün sorunlarını gözlemledi: Adil olmayan sipariş dağılımı, şeffaf olmayan ücretlendirme, izinli kurye sorunu ve restoranların birden fazla platformu yönetme zorluğu.</p>
+        <p>Bu sorunlara çözüm olarak doğan KuryeAI, bugün RestoranAI, KuryeAI ve İzinciKuryeAI ürünleriyle Ankara'nın lojistik ekosistemini dönüştürüyor.</p>
+        <p>Yapay zeka destekli analizler, gerçek zamanlı takip ve şeffaf ücretlendirme ile sektörde bir ilki hayata geçiriyoruz.</p>
+      </div>
+      <div class="story-visual reveal">
+        <div class="story-logo">
+          <img src="/1000417933.png" alt="AI Teknoloji ve Lojistik" onerror="this.style.display='none'"/>
+        </div>
+        <p style="font-size:.8rem;color:var(--gray-lt);font-weight:700;text-transform:uppercase;letter-spacing:.1em">AI Teknoloji ve Lojistik Ltd. Şti.</p>
+        <div class="story-stat">
+          <div class="story-stat-n">3</div>
+          <div class="story-stat-l">Ürün Platformu</div>
+        </div>
+        <div class="story-stat">
+          <div class="story-stat-n" style="color:var(--white)">7/24</div>
+          <div class="story-stat-l">Hizmet</div>
+        </div>
+        <div class="story-stat">
+          <div class="story-stat-n">Ankara</div>
+          <div class="story-stat-l">Merkez Şehir</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="inner">
+    <div class="reveal" style="text-align:center;margin-bottom:1rem">
+      <p class="lbl">Değerlerimiz</p>
+      <h2 class="h2">Bizi <span style="color:var(--teal)">biz</span> yapan.</h2>
+    </div>
+    <div class="values-grid reveal">
+      <div class="val-card"><div class="val-icon">🤝</div><h4 class="val-title">Adillik</h4><p class="val-desc">Kuryelerimize adil ücret, işletmelere şeffaf fiyatlandırma. Her zaman her iki tarafın çıkarını koruruz.</p></div>
+      <div class="val-card"><div class="val-icon">⚡</div><h4 class="val-title">Hız</h4><p class="val-desc">7/24 aktif sistem. Acil kurye taleplerinde 15-30 dakika içinde görevlendirme. Gecikme kabul etmeyiz.</p></div>
+      <div class="val-card"><div class="val-icon">🔍</div><h4 class="val-title">Şeffaflık</h4><p class="val-desc">Gizli ücret yok. Komisyon oranlarımız açık. Her hesaplama müşteriye gösterilir.</p></div>
+      <div class="val-card"><div class="val-icon">🤖</div><h4 class="val-title">İnovasyon</h4><p class="val-desc">Yapay zeka ile desteklenen sistemlerimizle sektörde ilkleri hayata geçiriyoruz.</p></div>
+      <div class="val-card"><div class="val-icon">🛡️</div><h4 class="val-title">Güvenilirlik</h4><p class="val-desc">SGK'lı kurye modeli, ödeme garantisi ve 7/24 destek ile güvenilir bir partner olarak yanınızdayız.</p></div>
+      <div class="val-card"><div class="val-icon">🌱</div><h4 class="val-title">Büyüme</h4><p class="val-desc">Ankara'dan başlayarak tüm Türkiye'ye yayılma hedefiyle kurye sektörünü dijitalleştiriyoruz.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec">
+  <p class="lbl" style="display:flex;justify-content:center">Bize Katılın</p>
+  <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.04em;margin-bottom:1rem">Ankara'nın geleceğini<br/><span style="color:var(--gray-lt);font-weight:400">birlikte inşa edelim.</span></h2>
+  <div style="display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-top:2rem">
+    <a href="/restoran#basvuru" class="btn-lg">Restoran Başvurusu</a>
+    <a href="/kurye#basvuru" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2);transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'">Kurye Başvurusu</a>
+    <a href="/iletisim" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2);transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'">İletişime Geç</a>
+  </div>
+</section>
+
+<footer>
+  <a href="/">Ana Sayfa</a><a href="/iletisim">İletişim</a><a href="/kvkk">Gizlilik</a>
+  <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });
+  }, {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

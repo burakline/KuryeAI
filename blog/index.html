@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog | KuryeAI — Kurye ve Lojistik Rehberi</title>
+  <meta name="description" content="Ankara kurye, izinci kurye, restoran yönetimi ve lojistik hakkında faydalı içerikler. KuryeAI blogu."/>
+  <meta name="keywords" content="kurye blog, ankara kurye rehberi, izinci kurye nedir, restoran sipariş yönetimi, kurye ipuçları"/>
+  <link rel="icon" type="image/png" href="/1000414615.png"/>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#000;--dark:#0c0c0c;--card:#111;--border:rgba(255,255,255,.07);--gray:#555;--gray-lt:#999;--white:#fff;--teal:#00c8d7;--teal-lt:#33d6e3}
+    body{background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+    .nav-logo img{height:32px;width:32px;border-radius:50%;object-fit:cover}
+    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em;color:var(--white)}
+    .nav-brand em{font-style:normal;color:var(--teal)}
+    .nav-back{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--white)}
+
+    .page{max-width:1060px;margin:0 auto;padding:6rem 1.5rem 5rem}
+    .lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+    h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:.8rem}
+    .page-sub{font-size:.95rem;color:var(--gray-lt);max-width:500px;line-height:1.75;margin-bottom:3rem}
+
+    /* FEATURED */
+    .featured{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:2.5rem;margin-bottom:3rem;position:relative;overflow:hidden;text-decoration:none;color:var(--white);display:block;transition:background .3s}
+    .featured:hover{background:#161616}
+    .featured::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal)}
+    .feat-tag{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);background:rgba(0,200,215,.1);border:.5px solid rgba(0,200,215,.2);padding:.2rem .7rem;border-radius:999px;margin-bottom:1rem}
+    .feat-title{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:-.03em;line-height:1.2;margin-bottom:.8rem}
+    .feat-desc{font-size:.92rem;color:var(--gray-lt);line-height:1.7;max-width:680px}
+    .feat-meta{display:flex;align-items:center;gap:1.5rem;margin-top:1.5rem;font-size:.75rem;color:var(--gray-lt)}
+    .feat-cta{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:700;color:var(--teal);margin-top:1.5rem;transition:gap .2s}
+    .featured:hover .feat-cta{gap:.7rem}
+
+    /* BLOG GRID */
+    .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .blog-card{background:var(--card);border:.5px solid var(--border);border-radius:14px;padding:1.8rem;text-decoration:none;color:var(--white);transition:background .3s;position:relative;overflow:hidden;display:flex;flex-direction:column}
+    .blog-card:hover{background:#161616}
+    .blog-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+    .blog-card:hover::before{transform:scaleX(1)}
+    .blog-tag{display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;border-radius:999px;margin-bottom:.9rem}
+    .tag-kurye{background:rgba(0,200,215,.1);color:var(--teal)}
+    .tag-restoran{background:rgba(255,159,10,.1);color:#ff9f0a}
+    .tag-rehber{background:rgba(48,209,88,.1);color:#30d158}
+    .tag-izinci{background:rgba(255,214,10,.1);color:#ffd60a}
+    .blog-title{font-size:.98rem;font-weight:700;letter-spacing:-.02em;line-height:1.35;margin-bottom:.6rem;flex:1}
+    .blog-desc{font-size:.82rem;color:var(--gray-lt);line-height:1.65;margin-bottom:1rem}
+    .blog-meta{font-size:.7rem;color:var(--gray);display:flex;align-items:center;gap:.8rem}
+    .blog-cta{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:var(--teal);margin-top:.8rem;transition:gap .2s}
+    .blog-card:hover .blog-cta{gap:.6rem}
+
+    /* NEWSLETTER */
+    .newsletter{background:var(--dark);border:.5px solid var(--border);border-radius:16px;padding:2.5rem;margin-top:4rem;text-align:center}
+    .nl-title{font-size:1.3rem;font-weight:700;letter-spacing:-.03em;margin-bottom:.5rem}
+    .nl-sub{font-size:.88rem;color:var(--gray-lt);margin-bottom:1.5rem}
+    .nl-form{display:flex;gap:.6rem;max-width:400px;margin:0 auto}
+    .nl-input{flex:1;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:8px;padding:.7rem 1rem;color:var(--white);font-family:Arial;font-size:.88rem;outline:none;transition:border-color .2s}
+    .nl-input:focus{border-color:var(--teal)}
+    .nl-input::placeholder{color:var(--gray)}
+    .nl-btn{background:var(--teal);color:#000;font-size:.82rem;font-weight:700;padding:.7rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-family:Arial;white-space:nowrap;transition:background .2s}
+    .nl-btn:hover{background:var(--teal-lt)}
+
+    footer{text-align:center;padding:2rem;border-top:.5px solid var(--border);font-size:.75rem;color:var(--gray)}
+    footer a{color:var(--teal);text-decoration:none;margin:0 .5rem}
+
+    @media(max-width:768px){.blog-grid{grid-template-columns:1fr}.nl-form{flex-direction:column}}
+    @media(max-width:480px){.blog-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+    <span class="nav-brand">Kurye<em>AI</em></span>
+  </a>
+  <a href="/" class="nav-back">← Ana Sayfa</a>
+</nav>
+
+<div class="page">
+  <p class="lbl">Blog</p>
+  <h1>Kurye ve lojistik<br/><span style="color:var(--teal)">rehberi.</span></h1>
+  <p class="page-sub">Kurye sektörü, restoran yönetimi ve lojistik hakkında faydalı içerikler. Her hafta yeni yazılar.</p>
+
+  <!-- FEATURED -->
+  <a href="#" class="featured">
+    <span class="feat-tag">⭐ Öne Çıkan</span>
+    <h2 class="feat-title">İzinci Kurye Nedir? Ankara'da Nasıl Bulunur?</h2>
+    <p class="feat-desc">Kuryeniz izinli mi? Araç arızası mı var? İzinci kurye bulmak için artık WhatsApp gruplarında saatlerce beklemek yok. Türkiye'nin ilk dijital izinci kurye platformu KuryeAI ile nasıl çalışır, ücretlendirme nasıl yapılır — tüm detaylar bu yazıda.</p>
+    <div class="feat-meta">
+      <span>📅 Ocak 2025</span>
+      <span>⏱ 5 dk okuma</span>
+      <span>🏷️ İzinci Kurye</span>
+    </div>
+    <span class="feat-cta">Devamını Oku <span>→</span></span>
+  </a>
+
+  <!-- BLOG GRID -->
+  <div class="blog-grid">
+    <a href="#" class="blog-card">
+      <span class="blog-tag tag-kurye">Kurye</span>
+      <h3 class="blog-title">Ankara'da Kurye Olmak: Başlangıç Rehberi</h3>
+      <p class="blog-desc">Motosikletiniz var ve kurye olmak istiyorsunuz. Nereden başlayacaksınız? Hangi belgeler gerekli? Ne kadar kazanabilirsiniz?</p>
+      <div class="blog-meta"><span>📅 Ocak 2025</span><span>⏱ 4 dk</span></div>
+      <span class="blog-cta">Oku <span>→</span></span>
+    </a>
+    <a href="#" class="blog-card">
+      <span class="blog-tag tag-restoran">Restoran</span>
+      <h3 class="blog-title">Yemeksepeti, Getir ve Trendyol'u Tek Panelde Yönetmek</h3>
+      <p class="blog-desc">Birden fazla platformu aynı anda yönetmek nasıl kolaylaşır? RestoranAI entegrasyonu nasıl çalışır?</p>
+      <div class="blog-meta"><span>📅 Ocak 2025</span><span>⏱ 6 dk</span></div>
+      <span class="blog-cta">Oku <span>→</span></span>
+    </a>
+    <a href="#" class="blog-card">
+      <span class="blog-tag tag-rehber">Rehber</span>
+      <h3 class="blog-title">Acil Kurye Seçerken Dikkat Edilmesi Gerekenler</h3>
+      <p class="blog-desc">Acil kurye hizmeti alırken nelere dikkat etmelisiniz? Fiyat, güvenilirlik ve hız nasıl dengelenir?</p>
+      <div class="blog-meta"><span>📅 Ocak 2025</span><span>⏱ 3 dk</span></div>
+      <span class="blog-cta">Oku <span>→</span></span>
+    </a>
+    <a href="#" class="blog-card">
+      <span class="blog-tag tag-izinci">İzinci Kurye</span>
+      <h3 class="blog-title">İzinci Kurye Olarak Ne Kadar Kazanabilirsiniz?</h3>
+      <p class="blog-desc">Saatlik 237,5₺ + 7,6₺/km net kazanç. Aylık ortalama izinci kurye geliri ne kadar? Gerçek hesaplamalar.</p>
+      <div class="blog-meta"><span>📅 Ocak 2025</span><span>⏱ 5 dk</span></div>
+      <span class="blog-cta">Oku <span>→</span></span>
+    </a>
+    <a href="#" class="blog-card">
+      <span class="blog-tag tag-kurye">Kurye</span>
+      <h3 class="blog-title">Tıbbi Kurye Nedir? Sağlık Sektöründe Kurye Hizmetleri</h3>
+      <p class="blog-desc">Hastaneler, eczaneler ve kliniklerin kurye ihtiyaçları nasıl karşılanır? Tıbbi kurye hizmetinin önemi.</p>
+      <div class="blog-meta"><span>📅 Ocak 2025</span><span>⏱ 4 dk</span></div>
+      <span class="blog-cta">Oku <span>→</span></span>
+    </a>
+    <a href="#" class="blog-card">
+      <span class="blog-tag tag-restoran">Restoran</span>
+      <h3 class="blog-title">Restoran Cirosunu Artırmak İçin 5 AI Destekli Yöntem</h3>
+      <p class="blog-desc">Yapay zeka analizleri restoranınızın zayıf noktalarını nasıl tespit eder? Hangi saatler daha verimli?</p>
+      <div class="blog-meta"><span>📅 Ocak 2025</span><span>⏱ 7 dk</span></div>
+      <span class="blog-cta">Oku <span>→</span></span>
+    </a>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="newsletter">
+    <h3 class="nl-title">📬 Yeni yazılardan haberdar olun</h3>
+    <p class="nl-sub">Haftada bir e-posta. Spam yok.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="E-posta adresiniz" id="nl-email"/>
+      <button class="nl-btn" onclick="subscribeNewsletter()">Abone Ol</button>
+    </div>
+    <p id="nl-msg" style="font-size:.75rem;color:#30d158;margin-top:.8rem;display:none">✓ Abone oldunuz!</p>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Ana Sayfa</a><a href="/hakkimizda">Hakkımızda</a><a href="/iletisim">İletişim</a><a href="/kvkk">Gizlilik</a>
+  <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
+</footer>
+
+<script>
+function subscribeNewsletter() {
+  const email = document.getElementById('nl-email').value.trim();
+  if(!email) return;
+  document.getElementById('nl-msg').style.display = 'block';
+  document.getElementById('nl-email').value = '';
+}
+</script>
+</body>
+</html>

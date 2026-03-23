@@ -516,17 +516,20 @@ tbody tr:hover{background:var(--bg)}
 
 /* ── PAGE LOADER ── */
 #page-loader{
-  position:fixed;inset:0;background:var(--white);z-index:999;
+  position:fixed;inset:0;background:var(--white);z-index:9999;
   display:flex;align-items:center;justify-content:center;
-  transition:opacity .3s;
+  animation:loader-hide 0.4s ease 2s forwards;
 }
-#page-loader.hide{opacity:0;pointer-events:none}
+@keyframes loader-hide{
+  0%{opacity:1;pointer-events:all}
+  100%{opacity:0;pointer-events:none;display:none}
+}
 .loader-content{text-align:center}
 .loader-logo{font-size:32px;margin-bottom:16px}
 .loader-name{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
 .loader-name em{font-style:normal;color:var(--teal)}
 .loader-bar{width:180px;height:3px;background:var(--border);border-radius:999px;margin:16px auto 0;overflow:hidden}
-.loader-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-lt));border-radius:999px;animation:load-bar 1.2s ease forwards}
+.loader-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-lt));border-radius:999px;animation:load-bar 1.8s ease forwards}
 @keyframes load-bar{from{width:0}to{width:100%}}
 
 /* ── MOBİL HAMBURGER ── */
@@ -1605,17 +1608,18 @@ window.logout=async()=>{
 // ── Loader yardımcısı ─────────────────────────────────────────────────────
 const hideLoader=()=>{
   const l=document.getElementById("page-loader");
-  if(!l||l.style.display==="none")return;
-  l.classList.add("hide");
-  setTimeout(()=>l.style.display="none",350);
+  if(l) l.style.display="none";
 };
 
-// ── ÖNCE SEED DATA GÖSTER, loader'ı hemen kapat ───────────────────────────
-orders   = objToArr(SEED_ORDERS);
-menu     = objToArr(SEED_MENU);
-couriers = objToArr(SEED_COURIERS);
-renderAll();
-setTimeout(hideLoader, 600); // 600ms'de loader kapanır — Firebase beklenmez
+// ── ÖNCE SEED DATA GÖSTER ─────────────────────────────────────────────────
+try{
+  orders   = objToArr(SEED_ORDERS);
+  menu     = objToArr(SEED_MENU);
+  couriers = objToArr(SEED_COURIERS);
+  renderAll();
+}catch(e){ console.error("renderAll hatası:",e); }
+// Loader CSS ile 2sn'de kapanıyor, JS de 2.5sn'de kapatır
+setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){

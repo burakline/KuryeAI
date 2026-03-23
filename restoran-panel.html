@@ -1429,6 +1429,49 @@ tbody tr:hover{background:var(--bg)}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- Sidebar toggle — module dışında, onclick'ten erişilebilir -->
+<script>
+// Overlay'i body'ye ekle
+var _sbOv = document.createElement("div");
+_sbOv.style.cssText = "display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998";
+_sbOv.onclick = function(){ window.closeSidebar(); };
+document.body.appendChild(_sbOv);
+
+window.toggleSidebar = function(){
+  var sb = document.querySelector(".sidebar");
+  if(!sb) return;
+  var isOpen = sb.classList.contains("sb-open");
+  if(isOpen){
+    window.closeSidebar();
+  } else {
+    sb.style.transform = "translateX(0)";
+    sb.style.zIndex = "9999";
+    sb.style.transition = "transform .28s ease";
+    sb.classList.add("sb-open");
+    _sbOv.style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+};
+
+window.closeSidebar = function(){
+  var sb = document.querySelector(".sidebar");
+  if(!sb) return;
+  sb.style.transform = "translateX(-100%)";
+  sb.classList.remove("sb-open");
+  _sbOv.style.display = "none";
+  document.body.style.overflow = "";
+};
+
+window.addEventListener("resize", function(){
+  if(window.innerWidth > 768){
+    var sb = document.querySelector(".sidebar");
+    if(sb){ sb.style.transform=""; sb.style.zIndex=""; sb.classList.remove("sb-open"); }
+    _sbOv.style.display = "none";
+    document.body.style.overflow = "";
+  }
+});
+</script>
+
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1528,50 +1571,11 @@ const setFbStatus=s=>{
   if(mobtxt)mobtxt.textContent=s==="connected"?"●":s==="error"?"✕":"…";
 };
 
-// ── Mobil Sidebar ──────────────────────────────────────────────────────────
-// Overlay'i JS ile oluştur — CSS çakışması yok
-const _ov = document.createElement("div");
-_ov.style.cssText = "display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998";
-_ov.addEventListener("click", closeSidebar);
-document.body.appendChild(_ov);
-
-window.toggleSidebar = () => {
-  const sb = document.querySelector(".sidebar");
-  const isOpen = sb.classList.contains("open");
-  if (isOpen) {
-    closeSidebar();
-  } else {
-    sb.style.cssText = "transform:translateX(0);z-index:9999;width:280px;transition:transform .28s ease";
-    sb.classList.add("open");
-    _ov.style.display = "block";
-    document.body.style.overflow = "hidden";
-  }
-};
-
-window.closeSidebar = () => {
-  const sb = document.querySelector(".sidebar");
-  sb.style.cssText = "transform:translateX(-100%);z-index:9999;width:280px;transition:transform .28s ease";
-  sb.classList.remove("open");
-  _ov.style.display = "none";
-  document.body.style.overflow = "";
-};
-
-// Ekran genişliyince sidebar'ı resetle
-window.addEventListener("resize", () => {
-  if (window.innerWidth > 768) {
-    const sb = document.querySelector(".sidebar");
-    sb.style.cssText = "";
-    sb.classList.remove("open");
-    _ov.style.display = "none";
-    document.body.style.overflow = "";
-  }
-});
-
 // ── Navigation ─────────────────────────────────────────────────────────────
 const TITLES={dashboard:"Genel Bakış",orders:"Siparişler",tracking:"Canlı Takip",couriers:"Kurye Yönetimi",menu:"Menü Yönetimi",reports:"Raporlar",settings:"Sistem Ayarları","manual-order":"Manuel Sipariş",platforms:"Platform Entegrasyonları"};
 window.goPage=page=>{
   currentPage=page;
-  closeSidebar();
+  if(window.closeSidebar) window.closeSidebar();
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add("active");
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));

@@ -865,6 +865,7 @@ function centerMap(){if(G.map)G.map.setView([G.gps.lat,G.gps.lng],16,{animate:tr
 // GPS
 function initGPS(){
   if(!navigator.geolocation){simGPS();return;}
+  if(G.gpsW!==null){navigator.geolocation.clearWatch(G.gpsW);G.gpsW=null;}
   G.gpsW=navigator.geolocation.watchPosition(p=>{
     const{latitude:la,longitude:ln,speed:sp}=p.coords;
     const pl=G.gps.lat,pn=G.gps.lng;
@@ -875,7 +876,7 @@ function initGPS(){
     if(G.marker)G.marker.setLatLng([la,ln]);
     document.getElementById('gpsDot').style.background='var(--green)';
   },_=>simGPS(),{enableHighAccuracy:true,maximumAge:2000,timeout:8000});
-  G.gpsI=setInterval(pushGPS,3000);
+  if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }
 function simGPS(){setInterval(()=>{G.gps.lat+=(Math.random()-.5)*0.0002;G.gps.lng+=(Math.random()-.5)*0.0002;G.gps.speed=G.shift.on?15+Math.random()*20:0;document.getElementById('spnum').textContent=Math.round(G.gps.speed);if(G.marker)G.marker.setLatLng([G.gps.lat,G.gps.lng]);if(G.shift.on){G.stats.km+=0.01;G.trail.addLatLng([G.gps.lat,G.gps.lng]);}},3000);if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);}
 function stopGPS(){if(G.gpsW)navigator.geolocation.clearWatch(G.gpsW);if(G.gpsI)clearInterval(G.gpsI);}
@@ -883,7 +884,7 @@ function pushGPS(){const fb=window._fb;if(!fb)return;try{fb.set(fb.ref(fb.db,`co
 function hvs(a,b,c,d){const R=6371,dA=(c-a)*Math.PI/180,dB=(d-b)*Math.PI/180,x=Math.sin(dA/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dB/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 
 // WAKE LOCK
-async function initWL(){if('wakeLock' in navigator){try{G.wl=await navigator.wakeLock.request('screen');document.getElementById('wdot').classList.add('on');document.getElementById('wtxt').textContent='Aktif';document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'&&G.wl?.released)G.wl=await navigator.wakeLock.request('screen');});}catch(e){}}}
+async function initWL(){if('wakeLock' in navigator){try{G.wl=await navigator.wakeLock.request('screen');document.getElementById('wdot').classList.add('on');document.getElementById('wtxt').textContent='Aktif';document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'){if(G.wl?.released)G.wl=await navigator.wakeLock.request('screen');initGPS();}});}catch(e){}}}
 
 // STATS
 function initStats(){G.stI=setInterval(()=>{if(!G.shift.on)return;G.stats.dur++;const h=Math.floor(G.stats.dur/3600),m=Math.floor((G.stats.dur%3600)/60),s=G.stats.dur%60;document.getElementById('sDur').textContent=h>0?`${h}:${p2(m)}:${p2(s)}`:`${p2(m)}:${p2(s)}`;document.getElementById('sKm').textContent=G.stats.km.toFixed(1);const avg=G.stats.speeds.length?G.stats.speeds.slice(-20).reduce((a,b)=>a+b,0)/Math.min(G.stats.speeds.length,20):0;document.getElementById('sAvg').textContent=Math.round(avg);const hrs=G.stats.dur/3600;const earn=hrs*G.rates.h+G.stats.km*G.rates.km;document.getElementById('sHour').textContent=Math.round(hrs>0?earn/hrs:0);document.getElementById('sTotal').textContent=Math.round(earn);},1000);}

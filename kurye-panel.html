@@ -348,6 +348,54 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ORDER NOTIFICATION */
+.onot{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;display:none;align-items:flex-end;justify-content:center;}
+.onot.active{display:flex;animation:fi 0.2s;}
+.ocard{background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:480px;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,0.18);animation:su 0.32s cubic-bezier(0.16,1,0.3,1);padding-bottom:env(safe-area-inset-bottom,0px);}
+.ochead{background:var(--orange);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.ohtit{font-size:1.05rem;font-weight:800;color:#fff;}
+.octimer{font-size:1.65rem;font-weight:900;color:#fff;min-width:36px;text-align:right;line-height:1;}
+.octimerbar{height:3px;background:rgba(255,255,255,0.3);margin:0;}
+.octimerbarfill{height:100%;background:#fff;transition:width 1s linear;border-radius:0;}
+.ocbody{padding:16px 20px 4px;}
+.odetrow{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.odetico{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.odetinf{flex:1;}
+.odlbl{font-size:0.71rem;color:var(--tx2);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;}
+.odval{font-size:0.88rem;font-weight:700;color:var(--tx);line-height:1.35;}
+.oamt{font-size:1.65rem;font-weight:900;color:var(--teal);text-align:center;padding:8px 0 14px;}
+.obtns{display:flex;gap:10px;padding:0 20px 18px;}
+.obrej{flex:1;background:var(--red-bg);border:1.5px solid var(--red);color:var(--red);border-radius:var(--r2);padding:14px;font-family:var(--f);font-size:0.9rem;font-weight:700;cursor:pointer;}
+.obacc{flex:2;background:var(--teal);border:none;color:#fff;border-radius:var(--r2);padding:14px;font-family:var(--f);font-size:0.95rem;font-weight:700;cursor:pointer;}
+
+/* ACTIVE ORDER */
+.aord{background:var(--card);border-radius:14px;margin:8px 14px 4px;border:1.5px solid var(--teal-bg);box-shadow:var(--sh);display:none;}
+.aord.show{display:block;}
+.aordhd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px;}
+.aordt{font-size:0.84rem;font-weight:800;color:var(--tx);}
+.aordst{font-size:0.71rem;font-weight:700;padding:3px 10px;border-radius:20px;}
+.ast-acc{background:var(--teal-bg);color:var(--teal);}
+.ast-pk{background:var(--orange-bg);color:var(--orange);}
+.ast-dl{background:var(--green-bg);color:var(--green);}
+.aordrow{display:flex;align-items:flex-start;gap:8px;padding:3px 14px;}
+.aordico{font-size:0.9rem;flex-shrink:0;margin-top:1px;}
+.aordaddr{font-size:0.77rem;color:var(--tx2);line-height:1.3;flex:1;}
+.aordbtn{margin:8px 14px 10px;width:calc(100% - 28px);background:var(--teal);color:#fff;border:none;border-radius:var(--r2);padding:12px;font-family:var(--f);font-size:0.88rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.aordbtn:hover{background:var(--teal2);}
+
+/* ORDERS HISTORY */
+.ohcard{background:var(--card);border-radius:var(--r2);box-shadow:var(--sh);padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+.ohico{font-size:1.25rem;flex-shrink:0;margin-top:2px;}
+.ohinf{flex:1;}
+.ohtit2{font-size:0.87rem;font-weight:700;color:var(--tx);margin-bottom:3px;}
+.ohdt{font-size:0.74rem;color:var(--tx2);line-height:1.4;}
+.ohamt{font-size:0.9rem;font-weight:800;color:var(--teal);white-space:nowrap;}
+
+/* ORDER BADGE */
+.ordtopdot{width:10px;height:10px;background:var(--red);border-radius:50%;border:2px solid var(--card);display:none;position:absolute;top:-2px;right:-2px;}
+.ordtopdot.show{display:block;animation:blink 1s infinite;}
+.av-wrap{position:relative;display:inline-flex;}
 </style>
 </head>
 <body>
@@ -383,8 +431,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
         <div class="sdot" id="gpsDot" style="background:var(--tx3)" title="GPS"></div>
         <div class="sdot" id="shDot" style="background:var(--tx3)" title="Vardiya"></div>
       </div>
-      <div class="av-btn" onclick="openS('profileScreen')">
-        <img id="topAv" src="https://ui-avatars.com/api/?name=K&background=009688&color=fff&bold=true" alt="">
+      <div class="av-wrap">
+        <div class="av-btn" onclick="openS('profileScreen')">
+          <img id="topAv" src="https://ui-avatars.com/api/?name=K&background=009688&color=fff&bold=true" alt="">
+        </div>
+        <div class="ordtopdot" id="ordTopdot"></div>
       </div>
     </div>
   </div>
@@ -401,6 +452,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="sitem"><div class="slbl">Ort. Hız</div><div class="sval" id="sAvg">0</div></div>
       <div class="sitem"><div class="slbl">₺/Saat</div><div class="sval t" id="sHour">0</div></div>
       <div class="sitem"><div class="slbl">Toplam ₺</div><div class="sval g" id="sTotal">0</div></div>
+    </div>
+    <!-- ACTIVE ORDER CARD -->
+    <div class="aord" id="aord">
+      <div class="aordhd">
+        <div class="aordt">📦 Aktif Sipariş</div>
+        <div class="aordst ast-acc" id="aordSt">Kabul Edildi</div>
+      </div>
+      <div class="aordrow"><div class="aordico">🍽️</div><div class="aordaddr" id="aordRest">—</div></div>
+      <div class="aordrow"><div class="aordico">📍</div><div class="aordaddr" id="aordAddr">—</div></div>
+      <div class="aordrow"><div class="aordico">👤</div><div class="aordaddr" id="aordCust">—</div></div>
+      <div class="aordrow" style="padding-bottom:4px"><div class="aordico">💰</div><div class="aordaddr" id="aordAmt" style="font-weight:800;color:var(--teal)">—</div></div>
+      <button class="aordbtn" id="aordBtn" onclick="advOrderStatus()">Restorana Vardım — Teslim Alıyorum</button>
     </div>
     <div class="sbwrap">
       <button class="sbtn start" id="shBtn" onclick="handleSh()">
@@ -431,6 +494,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="nsec">Finans</div>
     <div class="ni" onclick="closeSB();openS('earningsScreen')"><div class="nico">💰</div>Kazançlarım</div>
     <div class="ni" onclick="closeSB();openS('perfScreen')"><div class="nico">📈</div>Performansım</div>
+    <div class="nsec">Siparişler</div>
+    <div class="ni" onclick="closeSB();openS('ordersScreen')" id="ordNI"><div class="nico" style="position:relative">📦<div class="ordtopdot" id="ordSBdot"></div></div>Siparişlerim<div class="nbadge" id="ordNBadge" style="display:none">0</div></div>
     <div class="nsec">İletişim</div>
     <div class="ni" onclick="closeSB();openS('chatScreen')"><div class="nico">💬</div>Chat<div class="nbadge" id="chatBadge" style="display:none">3</div></div>
     <div class="nsec">Araçlar</div>
@@ -686,11 +751,58 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
 </div>
 
+<!-- ORDER NOTIFICATION MODAL -->
+<div class="onot" id="ordNotif">
+  <div class="ocard">
+    <div class="ochead">
+      <div class="ohtit">🛵 Yeni Sipariş Geldi!</div>
+      <div class="octimer" id="ordTimerNum">30</div>
+    </div>
+    <div class="octimerbar"><div class="octimerbarfill" id="ordTimerBar" style="width:100%"></div></div>
+    <div class="ocbody">
+      <div class="odetrow">
+        <div class="odetico">🍽️</div>
+        <div class="odetinf"><div class="odlbl">Restoran</div><div class="odval" id="onRest">—</div></div>
+      </div>
+      <div class="odetrow">
+        <div class="odetico">📍</div>
+        <div class="odetinf"><div class="odlbl">Teslimat Adresi</div><div class="odval" id="onAddr">—</div></div>
+      </div>
+      <div class="odetrow">
+        <div class="odetico">👤</div>
+        <div class="odetinf"><div class="odlbl">Müşteri</div><div class="odval" id="onCust">—</div></div>
+      </div>
+      <div class="odetrow" id="onItemsRow" style="display:none">
+        <div class="odetico">🛍️</div>
+        <div class="odetinf"><div class="odlbl">Sipariş</div><div class="odval" id="onItems">—</div></div>
+      </div>
+      <div class="oamt" id="onAmt">₺0</div>
+    </div>
+    <div class="obtns">
+      <button class="obrej" onclick="rejectOrder()">✗ Reddet</button>
+      <button class="obacc" onclick="acceptOrder()">✓ Kabul Et</button>
+    </div>
+  </div>
+</div>
+
+<!-- ORDERS SCREEN -->
+<div class="isc" id="ordersScreen">
+  <div class="ihd">
+    <div class="bbtn" onclick="closeS('ordersScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="ititle">Siparişlerim</div>
+  </div>
+  <div class="ibody">
+    <div id="ordList">
+      <p style="text-align:center;color:var(--tx3);padding:32px 0;font-size:0.84rem">Henüz tamamlanan sipariş yok</p>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const G={
-  id:'c_'+Math.random().toString(36).substr(2,6),
+  id:localStorage.getItem('cid')||(()=>{const id='c_'+Math.random().toString(36).substr(2,6);localStorage.setItem('cid',id);return id;})(),
   name:localStorage.getItem('cn')||'Demo Kurye',
   avatar:localStorage.getItem('ca')||'',
   vehicle:localStorage.getItem('cv')||'motosiklet',
@@ -711,6 +823,10 @@ const G={
     {n:'Hava Filtresi',i:'💨',e:15000,l:+localStorage.getItem('mf')||0},
   ],
   ph:{s:null,e:null},lt:'income',cI:null,
+  activeOrder:null,
+  pendingOrderData:null,
+  ordHistory:JSON.parse(localStorage.getItem('oh')||'[]'),
+  ordTimerI:null,ordTimerSec:30,
 };
 
 function doLogin(){
@@ -801,14 +917,37 @@ function resetPh(t){G.ph[t]=null;document.getElementById(t==='s'?'sPPrev':'ePPre
 function pushShFB(a){const fb=window._fb;if(!fb)return;try{fb.set(fb.ref(fb.db,`couriers/${G.id}/shift`),{active:a,updatedAt:fb.serverTimestamp()});}catch(e){}}
 
 // FIREBASE
-function initFB(){const fb=window._fb;if(!fb)return;fb.signInAnonymously(fb.auth).catch(()=>{});fb.onValue(fb.ref(fb.db,'settings/rates'),s=>{const d=s.val();if(d){G.rates={h:d.hourly||250,km:d.km||8};renderEarn();}});fb.onValue(fb.ref(fb.db,'chats/room1'),s=>{const m=[];s.forEach(c=>m.push(c.val()));G.msgs[1]=m;if(G.room===1)renderChat();});fb.onValue(fb.ref(fb.db,'chats/room2'),s=>{const m=[];s.forEach(c=>m.push(c.val()));G.msgs[2]=m;if(G.room===2)renderChat();});}
+function initFB(){
+  const fb=window._fb;if(!fb)return;
+  fb.signInAnonymously(fb.auth).catch(()=>{});
+  fb.onValue(fb.ref(fb.db,'settings/rates'),s=>{const d=s.val();if(d){G.rates={h:d.hourly||250,km:d.km||8};renderEarn();}});
+  fb.onValue(fb.ref(fb.db,'chats/room1'),s=>{const m=[];s.forEach(c=>m.push(c.val()));G.msgs[1]=m;if(G.room===1)renderChat();});
+  fb.onValue(fb.ref(fb.db,'chats/room2'),s=>{const m=[];s.forEach(c=>m.push(c.val()));G.msgs[2]=m;if(G.room===2)renderChat();});
+  // Bekleyen sipariş dinleyicisi
+  fb.onValue(fb.ref(fb.db,`couriers/${G.id}/pendingOrder`),s=>{
+    const d=s.val();
+    if(d&&d.orderId){
+      // Zaten gösterilen bir bildirim yoksa göster
+      if(!document.getElementById('ordNotif').classList.contains('active')){
+        G.pendingOrderData=d;
+        showOrderNotif(d);
+      }
+    }
+  });
+  // Aktif sipariş dinleyicisi
+  fb.onValue(fb.ref(fb.db,`couriers/${G.id}/activeOrder`),s=>{
+    const d=s.val();
+    G.activeOrder=d||null;
+    renderActiveOrder();
+  });
+}
 
 // SIDEBAR
 function openSB(){document.getElementById('sb').classList.add('open');document.getElementById('ov').classList.add('open');}
 function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('ov').classList.remove('open');}
 
 // SCREENS
-function openS(id){const el=document.getElementById(id);if(!el)return;el.classList.add('active');if(id==='chatScreen')renderChat();if(id==='earningsScreen')renderEarn();if(id==='perfScreen')renderPerf();if(id==='tLedger')renderLedger();if(id==='tMaint')renderMaint();if(id==='tComp')startCmp();}
+function openS(id){const el=document.getElementById(id);if(!el)return;el.classList.add('active');if(id==='chatScreen')renderChat();if(id==='earningsScreen')renderEarn();if(id==='perfScreen')renderPerf();if(id==='tLedger')renderLedger();if(id==='tMaint')renderMaint();if(id==='tComp')startCmp();if(id==='ordersScreen'){renderOrdHistory();document.getElementById('ordNBadge').style.display='none';}}
 function closeS(id){document.getElementById(id).classList.remove('active');}
 function openM(id){document.getElementById(id).classList.add('active');}
 function closeM(id){document.getElementById(id).classList.remove('active');}
@@ -817,7 +956,17 @@ function closeM(id){document.getElementById(id).classList.remove('active');}
 function updAv(){const n=G.name,init=n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2),url=G.avatar||`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true`;['topAv','sbAv','pAvImg'].forEach(id=>{const e=document.getElementById(id);if(e)e.src=url;});['sbName','pNameDisp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
 function handleAv(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{G.avatar=ev.target.result;localStorage.setItem('ca',ev.target.result);updAv();toast('Fotoğraf güncellendi','success');};r.readAsDataURL(f);}
 function selV(el,t){document.querySelectorAll('.vc').forEach(c=>c.classList.remove('active'));el.classList.add('active');G.vehicle=t;}
-function saveProf(){const n=document.getElementById('pName').value;if(n){G.name=n;localStorage.setItem('cn',n);}localStorage.setItem('cv',G.vehicle);updAv();updMkr();const fb=window._fb;if(fb){try{fb.set(fb.ref(fb.db,`couriers/${G.id}/profile`),{name:G.name,phone:document.getElementById('pPhone').value,vehicle:G.vehicle,plate:document.getElementById('pPlate').value,updatedAt:fb.serverTimestamp()});}catch(e){}}toast('Profil kaydedildi ✓','success');}
+function saveProf(){
+  const fields=['pName','pPhone','pEmail','pTc','pPlate','pLic','pBank','pIban'];
+  fields.forEach(id=>{const el=document.getElementById(id);if(el&&el.value.trim())localStorage.setItem('pf_'+id,el.value.trim());});
+  const n=document.getElementById('pName').value.trim();
+  if(n){G.name=n;localStorage.setItem('cn',n);}
+  localStorage.setItem('cv',G.vehicle);
+  updAv();updMkr();
+  const fb=window._fb;
+  if(fb){try{fb.set(fb.ref(fb.db,`couriers/${G.id}/profile`),{name:G.name,phone:document.getElementById('pPhone').value,email:document.getElementById('pEmail').value,vehicle:G.vehicle,plate:document.getElementById('pPlate').value,updatedAt:fb.serverTimestamp()});}catch(e){}}
+  toast('Profil kaydedildi ✓','success');
+}
 
 // EARNINGS
 function renderEarn(){const tot=G.hist.reduce((a,b)=>a+b.earn,0);document.getElementById('eTotal').textContent='₺'+tot.toLocaleString('tr-TR');document.getElementById('eHrs').textContent=fmtD(G.hist.reduce((a,b)=>a+b.dur,0));document.getElementById('eKm').textContent=G.hist.reduce((a,b)=>a+b.km,0)+' km';document.getElementById('eHR').textContent=G.rates.h+' ₺';document.getElementById('eKR').textContent=G.rates.km+' ₺/km';const el=document.getElementById('eHist');if(!G.hist.length){el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div><div class="hrow"><div class="hico">🛵</div><div class="hinfo"><div class="ht">Henüz vardiya yok</div><div class="hd">Ana ekrana dönüp vardiya başlat</div></div></div>';return;}el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div>'+G.hist.slice(0,10).map(r=>`<div class="hrow"><div class="hico">🛵</div><div class="hinfo"><div class="ht">${r.km} km · ${fmtD(r.dur)}</div><div class="hd">${r.date} · ${r.sk}→${r.ek} km</div></div><div class="hamt">₺${r.earn}</div></div>`).join('');}
@@ -856,12 +1005,156 @@ function markDone(i){const km=+document.getElementById('curKm').value;if(!km){to
 // TOAST
 function toast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);}
 
+// ORDERS
+function showOrderNotif(d){
+  document.getElementById('onRest').textContent=d.restaurant||'—';
+  document.getElementById('onAddr').textContent=d.deliveryAddr||'—';
+  document.getElementById('onCust').textContent=(d.deliveryName||'—')+(d.deliveryPhone?' · '+d.deliveryPhone:'');
+  const items=d.items||'';
+  if(items){document.getElementById('onItems').textContent=items;document.getElementById('onItemsRow').style.display='flex';}
+  else{document.getElementById('onItemsRow').style.display='none';}
+  document.getElementById('onAmt').textContent='₺'+(d.amount||0);
+  document.getElementById('ordNotif').classList.add('active');
+  // Badge göster
+  document.getElementById('ordTopdot').classList.add('show');
+  document.getElementById('ordSBdot').classList.add('show');
+  // Titreşim
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  // Timer başlat
+  G.ordTimerSec=30;
+  document.getElementById('ordTimerNum').textContent=30;
+  document.getElementById('ordTimerBar').style.width='100%';
+  if(G.ordTimerI)clearInterval(G.ordTimerI);
+  G.ordTimerI=setInterval(()=>{
+    G.ordTimerSec--;
+    document.getElementById('ordTimerNum').textContent=G.ordTimerSec;
+    document.getElementById('ordTimerBar').style.width=(G.ordTimerSec/30*100)+'%';
+    if(G.ordTimerSec<=0){clearInterval(G.ordTimerI);rejectOrder();}
+  },1000);
+}
+function acceptOrder(){
+  if(!G.pendingOrderData)return;
+  clearInterval(G.ordTimerI);
+  const d=G.pendingOrderData;
+  G.activeOrder={...d,status:'accepted',acceptedAt:Date.now()};
+  const fb=window._fb;
+  if(fb){
+    try{
+      fb.set(fb.ref(fb.db,`couriers/${G.id}/activeOrder`),G.activeOrder);
+      fb.set(fb.ref(fb.db,`couriers/${G.id}/pendingOrder`),null);
+      if(d.orderId)fb.set(fb.ref(fb.db,`orders/${d.orderId}/status`),'accepted');
+    }catch(e){}
+  }
+  document.getElementById('ordNotif').classList.remove('active');
+  document.getElementById('ordTopdot').classList.remove('show');
+  document.getElementById('ordSBdot').classList.remove('show');
+  G.pendingOrderData=null;
+  renderActiveOrder();
+  toast('Sipariş kabul edildi! 📦','success');
+}
+function rejectOrder(){
+  clearInterval(G.ordTimerI);
+  const d=G.pendingOrderData;
+  const fb=window._fb;
+  if(fb&&d){
+    try{
+      fb.set(fb.ref(fb.db,`couriers/${G.id}/pendingOrder`),null);
+      if(d.orderId)fb.set(fb.ref(fb.db,`orders/${d.orderId}/status`),'rejected');
+    }catch(e){}
+  }
+  document.getElementById('ordNotif').classList.remove('active');
+  document.getElementById('ordTopdot').classList.remove('show');
+  document.getElementById('ordSBdot').classList.remove('show');
+  G.pendingOrderData=null;
+  toast('Sipariş reddedildi','error');
+}
+function advOrderStatus(){
+  if(!G.activeOrder)return;
+  const st=G.activeOrder.status;
+  let nst,msg,btnTxt;
+  if(st==='accepted'){nst='pickedUp';msg='Paket teslim alındı! 🛵';btnTxt='Teslim Ettim — Tamamla';}
+  else if(st==='pickedUp'){nst='delivered';msg='Sipariş teslim edildi! ✅';btnTxt=null;}
+  else return;
+  G.activeOrder.status=nst;
+  const fb=window._fb;
+  if(fb){
+    try{
+      fb.set(fb.ref(fb.db,`couriers/${G.id}/activeOrder/status`),nst);
+      if(G.activeOrder.orderId)fb.set(fb.ref(fb.db,`orders/${G.activeOrder.orderId}/status`),nst);
+    }catch(e){}
+  }
+  if(nst==='delivered'){
+    // Teslim edildi: geçmişe ekle, aktif siparişi temizle
+    const rec={...G.activeOrder,deliveredAt:Date.now(),date:new Date().toLocaleDateString('tr-TR')};
+    G.ordHistory.unshift(rec);
+    if(G.ordHistory.length>50)G.ordHistory.pop();
+    localStorage.setItem('oh',JSON.stringify(G.ordHistory));
+    G.activeOrder=null;
+    const fb2=window._fb;
+    if(fb2){try{fb2.set(fb2.ref(fb2.db,`couriers/${G.id}/activeOrder`),null);}catch(e){}}
+    if(document.getElementById('ordNBadge')){
+      const cnt=parseInt(document.getElementById('ordNBadge').textContent||'0')+1;
+      document.getElementById('ordNBadge').textContent=cnt;
+      document.getElementById('ordNBadge').style.display='flex';
+    }
+  }
+  renderActiveOrder();
+  toast(msg,'success');
+}
+function renderActiveOrder(){
+  const card=document.getElementById('aord');
+  if(!G.activeOrder){card.classList.remove('show');return;}
+  card.classList.add('show');
+  const o=G.activeOrder;
+  document.getElementById('aordRest').textContent=o.restaurant||'—';
+  document.getElementById('aordAddr').textContent=o.deliveryAddr||'—';
+  document.getElementById('aordCust').textContent=(o.deliveryName||'—')+(o.deliveryPhone?' · '+o.deliveryPhone:'');
+  document.getElementById('aordAmt').textContent='₺'+(o.amount||0);
+  const st=document.getElementById('aordSt');
+  const btn=document.getElementById('aordBtn');
+  if(o.status==='accepted'){
+    st.className='aordst ast-acc';st.textContent='Kabul Edildi';
+    btn.textContent='Restorana Vardım — Teslim Alıyorum';btn.style.display='block';
+  }else if(o.status==='pickedUp'){
+    st.className='aordst ast-pk';st.textContent='Paket Alındı';
+    btn.textContent='Müşteriye Teslim Ettim ✓';btn.style.display='block';
+  }else if(o.status==='delivered'){
+    st.className='aordst ast-dl';st.textContent='Teslim Edildi';
+    btn.style.display='none';
+    setTimeout(()=>{G.activeOrder=null;renderActiveOrder();},3000);
+  }
+}
+function renderOrdHistory(){
+  const el=document.getElementById('ordList');
+  if(!G.ordHistory.length){el.innerHTML='<p style="text-align:center;color:var(--tx3);padding:32px 0;font-size:0.84rem">Henüz tamamlanan sipariş yok</p>';return;}
+  el.innerHTML=G.ordHistory.slice(0,30).map(o=>{
+    const ico=o.status==='delivered'?'✅':'❌';
+    const dur=o.acceptedAt&&o.deliveredAt?Math.round((o.deliveredAt-o.acceptedAt)/60000)+' dk':'—';
+    return`<div class="ohcard"><div class="ohico">${ico}</div><div class="ohinf"><div class="ohtit2">${o.restaurant||'Sipariş'}</div><div class="ohdt">📍 ${o.deliveryAddr||'—'}<br>👤 ${o.deliveryName||'—'} · ${o.date||'—'} · ${dur}</div></div><div class="ohamt">₺${o.amount||0}</div></div>`;
+  }).join('');
+}
+
 // INIT
 window.addEventListener('load',()=>{
-  const n=localStorage.getItem('cn');if(n){G.name=n;document.getElementById('pName').value=n;['pNameDisp','sbName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
+  const n=localStorage.getItem('cn');
+  if(n){G.name=n;['pNameDisp','sbName'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
   const av=localStorage.getItem('ca');if(av){G.avatar=av;updAv();}
+  // Profil alanlarını yükle
+  const pfFields=['pName','pPhone','pEmail','pTc','pPlate','pLic','pBank','pIban'];
+  pfFields.forEach(id=>{const v=localStorage.getItem('pf_'+id);if(v){const el=document.getElementById(id);if(el)el.value=v;}});
+  // İsim pName alanından da güncelle
+  const savedName=localStorage.getItem('pf_pName')||localStorage.getItem('cn');
+  if(savedName){const e=document.getElementById('pName');if(e)e.value=savedName;}
+  // Araç tipi
+  const sv=localStorage.getItem('cv');
+  if(sv){document.querySelectorAll('.vc').forEach(c=>{const oc=c.getAttribute('onclick')||'';if(oc.includes("'"+sv+"'"))c.classList.add('active');else c.classList.remove('active');});G.vehicle=sv;}
+  // Ad Soyad göster
+  const dn=document.getElementById('pNameDisp');if(dn)dn.textContent=G.name;
   const months=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const now=new Date();document.getElementById('ePer').textContent=months[now.getMonth()]+' '+now.getFullYear();
+  // Mevcut aktif sipariş varsa göster
+  const savedOrd=localStorage.getItem('pf_activeOrder');
+  if(savedOrd){try{G.activeOrder=JSON.parse(savedOrd);renderActiveOrder();}catch(e){}}
 });
 document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');}));
 </script>

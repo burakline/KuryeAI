@@ -528,6 +528,73 @@ tbody tr:hover{background:var(--bg)}
 .loader-bar{width:180px;height:3px;background:var(--border);border-radius:999px;margin:16px auto 0;overflow:hidden}
 .loader-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-lt));border-radius:999px;animation:load-bar 1.2s ease forwards}
 @keyframes load-bar{from{width:0}to{width:100%}}
+
+/* ── MOBİL HAMBURGER ── */
+.mob-topbar{
+  display:none;background:var(--white);border-bottom:1px solid var(--border);
+  height:56px;padding:0 16px;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:60;
+}
+.mob-menu-btn{
+  width:36px;height:36px;border-radius:var(--radius-xs);
+  background:var(--bg);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;flex-shrink:0;
+}
+.mob-brand{font-size:16px;font-weight:800;letter-spacing:-.3px;flex:1}
+.mob-brand em{font-style:normal;color:var(--teal)}
+.mob-status{display:flex;gap:6px}
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:49;backdrop-filter:blur(2px);
+}
+.sidebar-overlay.open{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:55}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.15)}
+  .main{margin-left:0}
+  .mob-topbar{display:flex}
+  .topbar{display:none}
+  .content{padding:14px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px;margin-bottom:14px}
+  .stat-card{padding:14px 12px}
+  .stat-value{font-size:22px}
+  .stat-top{margin-bottom:8px}
+  .menu-grid{grid-template-columns:1fr!important}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:560px}
+  #map{height:240px!important}
+  .metrics-grid{grid-template-columns:repeat(3,1fr)!important;gap:8px!important}
+  .metric-card{padding:10px 8px}
+  .metric-value{font-size:14px!important}
+  .metric-label{font-size:9px!important}
+  .radio-grid{grid-template-columns:1fr 1fr!important}
+  .form-row{grid-template-columns:1fr!important}
+  .source-btn{padding:10px 6px}
+  .card-header{padding:12px 14px;flex-wrap:wrap;gap:8px}
+  .card-body{padding:14px}
+  .card-title{font-size:13px}
+  .map-overlay{top:8px;right:8px}
+  .map-overlay-card{padding:8px 10px}
+  .map-overlay-card .value{font-size:14px}
+  .map-overlay-card .label{font-size:9px}
+  /* tüm inline grid'leri tek kolon yap */
+  [style*="grid-template-columns:1fr 1fr"]{display:flex!important;flex-direction:column!important;gap:12px!important}
+  [style*="grid-template-columns:1fr 380px"]{display:flex!important;flex-direction:column!important;gap:12px!important}
+  [style*="grid-template-columns:1fr 340px"]{display:flex!important;flex-direction:column!important;gap:12px!important}
+  [style*="grid-template-columns:3fr 2fr"]{display:flex!important;flex-direction:column!important;gap:12px!important}
+  [style*="grid-template-columns:repeat(2,1fr)"]{display:flex!important;flex-direction:column!important;gap:12px!important}
+  [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+  [style*="grid-template-columns:repeat(6,1fr)"]{grid-template-columns:repeat(3,1fr)!important}
+  [style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(3,1fr)!important}
+}
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:1fr!important}
+  .radio-grid{grid-template-columns:1fr!important}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)!important}
+}
 </style>
 </head>
 <body>
@@ -540,6 +607,20 @@ tbody tr:hover{background:var(--bg)}
     <div class="loader-bar"><div class="loader-bar-fill"></div></div>
   </div>
 </div>
+
+<!-- Mobil üst bar -->
+<div class="mob-topbar">
+  <div class="mob-menu-btn" onclick="toggleSidebar()">☰</div>
+  <div class="mob-brand">Restoran<em>AI</em></div>
+  <div class="mob-status">
+    <div class="status-pill fb-load" id="fb-status-mob" style="font-size:10px;padding:3px 8px">
+      <span class="pill-dot"></span><span id="fb-status-mob-txt">…</span>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar overlay (mobilde sidebar dışına tıklayınca kapanır) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div class="app">
 
@@ -1432,15 +1513,29 @@ window.showToast=(msg,type="success")=>{
 // ── Firebase Status ───────────────────────────────────────────────────────
 const setFbStatus=s=>{
   const el=document.getElementById("fb-status");
+  const mob=document.getElementById("fb-status-mob");
+  const mobtxt=document.getElementById("fb-status-mob-txt");
   const m={loading:["Bağlanıyor","fb-load"],connected:["Firebase ●","fb-ok"],error:["Bağlantı Hatası","fb-err"]};
-  el.innerHTML=`<span class="pill-dot ${s==="connected"?"pulse":""}"></span>${m[s][0]}`;
-  el.className=`status-pill ${m[s][1]}`;
+  if(el){el.innerHTML=`<span class="pill-dot ${s==="connected"?"pulse":""}"></span>${m[s][0]}`;el.className=`status-pill ${m[s][1]}`;}
+  if(mob){mob.className=`status-pill ${m[s][1]}`;mob.style.cssText="font-size:10px;padding:3px 8px";}
+  if(mobtxt)mobtxt.textContent=s==="connected"?"●":s==="error"?"✕":"…";
+};
+
+// ── Mobil Sidebar ──────────────────────────────────────────────────────────
+window.toggleSidebar=()=>{
+  document.querySelector(".sidebar").classList.toggle("open");
+  document.getElementById("sidebar-overlay").classList.toggle("open");
+};
+window.closeSidebar=()=>{
+  document.querySelector(".sidebar").classList.remove("open");
+  document.getElementById("sidebar-overlay").classList.remove("open");
 };
 
 // ── Navigation ─────────────────────────────────────────────────────────────
 const TITLES={dashboard:"Genel Bakış",orders:"Siparişler",tracking:"Canlı Takip",couriers:"Kurye Yönetimi",menu:"Menü Yönetimi",reports:"Raporlar",settings:"Sistem Ayarları","manual-order":"Manuel Sipariş",platforms:"Platform Entegrasyonları"};
 window.goPage=page=>{
   currentPage=page;
+  closeSidebar();
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add("active");
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));

@@ -1609,62 +1609,49 @@ const hideLoader=()=>{
   l.classList.add("hide");
   setTimeout(()=>l.style.display="none",350);
 };
-// Güvenlik: Firebase hiç cevap vermese bile 4 saniyede loader kapanır
-const loaderSafetyTimer=setTimeout(()=>{
-  hideLoader();
-  // Eğer data hâlâ boşsa seed data göster
-  if(!orders.length){ orders=objToArr(SEED_ORDERS); }
-  if(!menu.length)  { menu=objToArr(SEED_MENU); }
-  if(!couriers.length){ couriers=objToArr(SEED_COURIERS); }
-  renderAll();
-  setFbStatus("error");
-  showToast("Bağlantı zaman aşımı — demo mod","error");
-},4000);
 
+// ── ÖNCE SEED DATA GÖSTER, loader'ı hemen kapat ───────────────────────────
+orders   = objToArr(SEED_ORDERS);
+menu     = objToArr(SEED_MENU);
+couriers = objToArr(SEED_COURIERS);
+renderAll();
+setTimeout(hideLoader, 600); // 600ms'de loader kapanır — Firebase beklenmez
+
+// ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
   try{
     const os=await get(ref(db,`restaurants/${RESTAURANT_ID}/orders`));
-    if(!os.exists())await set(ref(db,`restaurants/${RESTAURANT_ID}/orders`),SEED_ORDERS);
+    if(!os.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/orders`),SEED_ORDERS);
     const ms=await get(ref(db,`restaurants/${RESTAURANT_ID}/menu`));
-    if(!ms.exists())await set(ref(db,`restaurants/${RESTAURANT_ID}/menu`),SEED_MENU);
+    if(!ms.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/menu`),SEED_MENU);
     const cs=await get(ref(db,`restaurants/${RESTAURANT_ID}/couriers`));
-    if(!cs.exists())await set(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),SEED_COURIERS);
+    if(!cs.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),SEED_COURIERS);
     const ss=await get(ref(db,`restaurants/${RESTAURANT_ID}/settings`));
-    if(!ss.exists())await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),SEED_SETTINGS);
-    else{settings={...SEED_SETTINGS,...ss.val()};applySettings();}
+    if(!ss.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),SEED_SETTINGS);
+    else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
 
-    clearTimeout(loaderSafetyTimer);
     setFbStatus("connected");
     showToast("Firebase bağlantısı kuruldu ✓");
 
-    // Listeners
+    // Realtime listeners — data gelince UI güncellenir
     onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
-      orders=objToArr(snap.val());
-      renderAll();
+      if(snap.val()){ orders=objToArr(snap.val()); renderAll(); }
     });
     onValue(ref(db,`restaurants/${RESTAURANT_ID}/menu`),snap=>{
-      menu=objToArr(snap.val());
-      renderMenu();
+      if(snap.val()){ menu=objToArr(snap.val()); renderMenu(); }
     });
     onValue(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),snap=>{
-      couriers=objToArr(snap.val());
-      renderCouriers();renderTrackingCouriers();renderDashCouriers();
-      updateMapMarkers();updateMetrics();
+      if(snap.val()){
+        couriers=objToArr(snap.val());
+        renderCouriers();renderTrackingCouriers();renderDashCouriers();
+        updateMapMarkers();updateMetrics();
+      }
     });
 
-    // Loader'ı kapat
-    setTimeout(hideLoader, 800);
-
   }catch(err){
-    console.error(err);
-    clearTimeout(loaderSafetyTimer);
+    console.error("Firebase hatası:",err);
     setFbStatus("error");
-    orders=objToArr(SEED_ORDERS);
-    menu=objToArr(SEED_MENU);
-    couriers=objToArr(SEED_COURIERS);
-    renderAll();
-    hideLoader();
-    showToast("Firebase bağlanamadı — demo mod","error");
+    // Seed data zaten gösteriliyor, sadece status güncelle
   }
 }
 

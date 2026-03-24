@@ -144,6 +144,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   width:44px;height:44px;border-radius:var(--r2);
   background:var(--card);box-shadow:var(--sh);border:1.5px solid var(--border);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:background 0.2s,border-color 0.2s;
+}
+.cbtn.active{background:var(--teal);border-color:var(--teal);}
+.cbtn.active svg{stroke:#fff;}
+/* Smooth marker glide */
+.leaflet-marker-pane .leaflet-marker-icon{transition:transform 0.45s linear;}
+/* Profile marker circle */
+.km-circle{
+  width:46px;height:46px;border-radius:50%;overflow:hidden;
+  border:3px solid #fff;box-shadow:0 3px 16px rgba(0,150,136,0.55);
+  background:#009688;transition:transform 0.4s ease;
+}
+.km-circle img{width:100%;height:100%;object-fit:cover;display:block;}
+.km-label{
+  background:rgba(255,255,255,0.97);color:#009688;
+  font-size:10px;font-weight:800;padding:2px 7px;
+  border-radius:5px;margin-top:4px;white-space:nowrap;
+  box-shadow:0 1px 5px rgba(0,0,0,0.12);font-family:Inter,sans-serif;
 }
 
 /* BOTTOM PANEL */
@@ -482,7 +500,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
   <div class="wakeind" id="wakeind"><div class="wdot" id="wdot"></div><span id="wtxt">Ekran</span></div>
   <div class="speed-badge"><div class="snum" id="spnum">0</div><div class="sunit">km/s</div></div>
-  <div class="cbtn" onclick="centerMap()">
+  <div class="cbtn active" id="followBtn" onclick="toggleFollow()" title="Takip modu">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
   </div>
   <div class="bpanel">
@@ -853,6 +871,7 @@ const G={
   stats:{dur:0,km:0,speeds:[],earn:0},
   gps:{lat:39.9334,lng:32.8597,speed:0},
   map:null,marker:null,trail:null,
+  follow:true,bearing:0,lastGPS:0,
   gpsW:null,gpsI:null,stI:null,wl:null,
   room:1,msgs:{1:[],2:[]},
   hist:[],
@@ -885,31 +904,77 @@ function initMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
   G.map=m; mkMarker();
   G.trail=L.polyline([],{color:'#009688',weight:3.5,opacity:0.75,dashArray:'6,5'}).addTo(m);
+  // Disable follow mode when user manually drags the map
+  m.on('dragstart',()=>{G.follow=false;updFollowBtn();});
 }
 function mkMarker(){
-  const ic=L.divIcon({html:`<div style="display:flex;flex-direction:column;align-items:center"><div style="width:42px;height:42px;background:#009688;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 14px rgba(0,150,136,0.45)"><svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div style="background:rgba(255,255,255,0.96);color:#009688;font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;margin-top:4px;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,0.12);font-family:Inter,sans-serif">${G.name}</div></div>`,className:'',iconAnchor:[21,46],iconSize:[42,56]});
+  const init=G.name.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'K';
+  const av=G.avatar||`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128`;
+  const ic=L.divIcon({
+    html:`<div style="display:flex;flex-direction:column;align-items:center">
+      <div class="km-circle" id="kurMrkCirc" style="transform:rotate(${G.bearing}deg)">
+        <img src="${av}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128'" />
+      </div>
+      <div class="km-label">${G.name}</div>
+    </div>`,
+    className:'',iconAnchor:[25,62],iconSize:[50,74]
+  });
   G.marker=L.marker([G.gps.lat,G.gps.lng],{icon:ic}).addTo(G.map);
 }
 function updMkr(){if(!G.map)return;if(G.marker)G.map.removeLayer(G.marker);mkMarker();}
-function centerMap(){if(G.map)G.map.setView([G.gps.lat,G.gps.lng],16,{animate:true});}
+function updFollowBtn(){const b=document.getElementById('followBtn');if(b)b.classList.toggle('active',G.follow);}
+function toggleFollow(){
+  G.follow=!G.follow;
+  updFollowBtn();
+  if(G.follow&&G.map)G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
+}
+function centerMap(){if(!G.follow){G.follow=true;updFollowBtn();}if(G.map)G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});}
+function calcBearing(a,b,c,d){const dL=(d-b)*Math.PI/180,a1=a*Math.PI/180,a2=c*Math.PI/180,y=Math.sin(dL)*Math.cos(a2),x=Math.cos(a1)*Math.sin(a2)-Math.sin(a1)*Math.cos(a2)*Math.cos(dL);return(Math.atan2(y,x)*180/Math.PI+360)%360;}
 
 // GPS
 function initGPS(){
   if(!navigator.geolocation){simGPS();return;}
   if(G.gpsW!==null){navigator.geolocation.clearWatch(G.gpsW);G.gpsW=null;}
   G.gpsW=navigator.geolocation.watchPosition(p=>{
-    const{latitude:la,longitude:ln,speed:sp}=p.coords;
+    const{latitude:la,longitude:ln,speed:sp,heading:hd}=p.coords;
     const pl=G.gps.lat,pn=G.gps.lng;
+    const d=hvs(pl,pn,la,ln);
+    // Jitter filter: ignore updates < 8m unless first fix
+    if(d<0.008&&G.gps.lat!==39.9334&&G.gps.lng!==32.8597)return;
+    // Bearing: use device heading if available, else calculate from movement
+    if(d>0.005){G.bearing=typeof hd==='number'&&hd>=0?hd:calcBearing(pl,pn,la,ln);}
     G.gps={lat:la,lng:ln,speed:sp?sp*3.6:0};
     document.getElementById('spnum').textContent=Math.round(G.gps.speed);
     G.stats.speeds.push(G.gps.speed);
-    if(G.shift.on){const d=hvs(pl,pn,la,ln);if(d>0.005&&d<0.5)G.stats.km+=d;G.trail.addLatLng([la,ln]);}
-    if(G.marker)G.marker.setLatLng([la,ln]);
+    if(G.shift.on){if(d>0.005&&d<0.5)G.stats.km+=d;G.trail.addLatLng([la,ln]);}
+    if(G.marker){
+      G.marker.setLatLng([la,ln]);
+      const el=document.getElementById('kurMrkCirc');
+      if(el)el.style.transform=`rotate(${G.bearing}deg)`;
+    }
+    if(G.follow&&G.map)G.map.panTo([la,ln],{animate:true,duration:0.8});
     document.getElementById('gpsDot').style.background='var(--green)';
-  },_=>simGPS(),{enableHighAccuracy:true,maximumAge:2000,timeout:8000});
+  },_=>simGPS(),{enableHighAccuracy:true,maximumAge:0,timeout:10000});
   if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }
-function simGPS(){setInterval(()=>{G.gps.lat+=(Math.random()-.5)*0.0002;G.gps.lng+=(Math.random()-.5)*0.0002;G.gps.speed=G.shift.on?15+Math.random()*20:0;document.getElementById('spnum').textContent=Math.round(G.gps.speed);if(G.marker)G.marker.setLatLng([G.gps.lat,G.gps.lng]);if(G.shift.on){G.stats.km+=0.01;G.trail.addLatLng([G.gps.lat,G.gps.lng]);}},3000);if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);}
+function simGPS(){
+  setInterval(()=>{
+    const pl=G.gps.lat,pn=G.gps.lng;
+    G.gps.lat+=(Math.random()-.5)*0.0003;
+    G.gps.lng+=(Math.random()-.5)*0.0003;
+    G.gps.speed=G.shift.on?15+Math.random()*20:0;
+    G.bearing=calcBearing(pl,pn,G.gps.lat,G.gps.lng);
+    document.getElementById('spnum').textContent=Math.round(G.gps.speed);
+    if(G.marker){
+      G.marker.setLatLng([G.gps.lat,G.gps.lng]);
+      const el=document.getElementById('kurMrkCirc');
+      if(el)el.style.transform=`rotate(${G.bearing}deg)`;
+    }
+    if(G.shift.on){G.stats.km+=0.01;G.trail.addLatLng([G.gps.lat,G.gps.lng]);}
+    if(G.follow&&G.map)G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
+  },3000);
+  if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
+}
 function stopGPS(){if(G.gpsW)navigator.geolocation.clearWatch(G.gpsW);if(G.gpsI)clearInterval(G.gpsI);}
 function pushGPS(){const fb=window._fb;if(!fb)return;try{fb.set(fb.ref(fb.db,`couriers/${G.id}/location`),{lat:G.gps.lat,lng:G.gps.lng,speed:Math.round(G.gps.speed),shiftActive:G.shift.on,name:G.name,updatedAt:fb.serverTimestamp()});}catch(e){}}
 function hvs(a,b,c,d){const R=6371,dA=(c-a)*Math.PI/180,dB=(d-b)*Math.PI/180,x=Math.sin(dA/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dB/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}

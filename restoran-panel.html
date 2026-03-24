@@ -1479,6 +1479,8 @@ import { getDatabase, ref, onValue, set, update, get, push, remove }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ── Config ────────────────────────────────────────────────────────────────
 const FB = {
@@ -1493,6 +1495,7 @@ const FB = {
 const app  = initializeApp(FB);
 const db   = getDatabase(app);
 const auth = getAuth(app);
+const fs   = getFirestore(app);
 
 let RESTAURANT_ID = "demo_restoran_001";
 
@@ -1597,11 +1600,46 @@ const updateClock=()=>{
 setInterval(updateClock,1000);updateClock();
 
 // ── Auth ──────────────────────────────────────────────────────────────────
-onAuthStateChanged(auth,user=>{
-  if(user){
-    const n=user.displayName||user.email?.split("@")[0]||"Restoran";
-    document.getElementById("user-display").textContent=n;
-    document.getElementById("user-avatar").textContent=n[0].toUpperCase();
+onAuthStateChanged(auth, async user=>{
+  if(!user){ window.location.href="restoran-login.html"; return; }
+  try {
+    const snap = await getDoc(doc(fs,'users',user.uid));
+    if(snap.exists()){
+      const data = snap.data();
+      if(data.status==='pending'){
+        await signOut(auth);
+        window.location.href="restoran-login.html?msg=pending";
+        return;
+      }
+      if(data.status==='rejected'||data.status==='suspended'){
+        await signOut(auth);
+        window.location.href="restoran-login.html?msg="+data.status;
+        return;
+      }
+      if(data.role!=='restoran'&&data.role!=='admin'){
+        await signOut(auth);
+        window.location.href="restoran-login.html";
+        return;
+      }
+      // Set dynamic restaurant ID
+      RESTAURANT_ID = data.restoranId || user.uid;
+      const n = data.name||user.displayName||user.email?.split("@")[0]||"Restoran";
+      document.getElementById("user-display").textContent = n;
+      document.getElementById("user-avatar").textContent = n[0].toUpperCase();
+      document.getElementById("rest-id-label").textContent = data.restoranId||user.uid;
+    } else {
+      // No Firestore doc — use UID as restaurant ID (admin/legacy)
+      RESTAURANT_ID = user.uid;
+      const n = user.displayName||user.email?.split("@")[0]||"Restoran";
+      document.getElementById("user-display").textContent = n;
+      document.getElementById("user-avatar").textContent = n[0].toUpperCase();
+    }
+    // Start Firebase RTDB connection with real restaurant ID
+    initFirebase();
+  } catch(e){
+    console.error("Auth hata:",e);
+    // Fallback: use seed data already rendered
+    initFirebase();
   }
 });
 window.logout=async()=>{
@@ -2255,8 +2293,7 @@ window.fetchFromPlatform = async (platform, apiKey) => {
   await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), normalized);
 };
 
-// ── Start ──────────────────────────────────────────────────────────────────
-initFirebase();
+// initFirebase() is now called from onAuthStateChanged after user is verified
 
 </script>
 

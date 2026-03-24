@@ -483,15 +483,16 @@ async function loadUsers() {
 }
 
 function updateBadge() {
-  const n=allBasvurular.filter(b=>b.status==='pending').length;
+  const n=allBasvurular.filter(b=>b.status==='pending').length +
+          allUsers.filter(u=>u.status==='pending').length;
   const b=document.getElementById('badge-bsv');
   b.textContent=n; b.style.display=n?'flex':'none';
 }
 
 // ── DASHBOARD ──
 function renderDash() {
-  document.getElementById('d-basvuru').textContent=allBasvurular.length;
-  document.getElementById('d-bekleyen').textContent=allBasvurular.filter(b=>b.status==='pending').length;
+  document.getElementById('d-basvuru').textContent=allBasvurular.length + allUsers.filter(u=>u.status==='pending').length;
+  document.getElementById('d-bekleyen').textContent=allBasvurular.filter(b=>b.status==='pending').length + allUsers.filter(u=>u.status==='pending').length;
   document.getElementById('d-kurye').textContent=allUsers.filter(u=>u.role==='kurye'&&u.status==='active').length;
   document.getElementById('d-restoran').textContent=allUsers.filter(u=>u.role==='restoran'&&u.status==='active').length;
 
@@ -510,7 +511,15 @@ function renderDash() {
 window.fBasvuru=(f,btn)=>{fBsv=f;setActive(btn,'#pane-basvurular .ftab');renderBasvurular();};
 window.renderBasvurular=()=>{
   const s=document.getElementById('s-basvuru').value.toLowerCase();
-  let list=[...allBasvurular];
+
+  // Form başvuruları + self-registered pending users
+  const pendingUsers = allUsers.filter(u => u.status==='pending').map(u=>({
+    _isUser:true, id:u.id, name:u.name||'—', email:u.email||'',
+    telefon:u.phone||'', type:u.role, status:'pending', createdAt:u.createdAt,
+    restoranAdi:u.role==='restoran'?u.name:''
+  }));
+  let list=[...allBasvurular, ...pendingUsers];
+
   if(fBsv==='pending') list=list.filter(b=>b.status==='pending');
   if(fBsv==='restoran') list=list.filter(b=>b.type==='restoran');
   if(fBsv==='kurye') list=list.filter(b=>b.type==='kurye');
@@ -523,7 +532,7 @@ window.renderBasvurular=()=>{
     <div class="litem ${b.status}">
       <div class="litem-top">
         <div>
-          <div class="litem-name">${b.name||'—'}</div>
+          <div class="litem-name">${b.name||'—'} ${b._isUser?'<span style="font-size:.6rem;background:rgba(0,200,215,.1);color:var(--teal);border-radius:4px;padding:.1rem .4rem;margin-left:.4rem">Kendi Kaydı</span>':''}</div>
           <div class="litem-sub">${b.email||''} ${b.sehir?'· '+b.sehir:''}</div>
         </div>
         <span class="badge b-${b.status}">${statusLbl(b.status)}</span>
@@ -531,15 +540,18 @@ window.renderBasvurular=()=>{
       <div class="litem-meta">
         <span class="badge b-${b.type}">${b.type==='restoran'?'🍽️ Restoran':'🛵 Kurye'}</span>
         ${b.telefon?`<span style="font-size:.72rem;color:var(--gray-lt)">📞 ${b.telefon}</span>`:''}
-        ${b.restoranAdi?`<span style="font-size:.72rem;color:var(--gray-lt)">🏪 ${b.restoranAdi}</span>`:''}
+        ${b.restoranAdi&&!b._isUser?`<span style="font-size:.72rem;color:var(--gray-lt)">🏪 ${b.restoranAdi}</span>`:''}
         ${b.model?`<span style="font-size:.72rem;color:var(--gray-lt)">📋 ${b.model}</span>`:''}
       </div>
       <div class="litem-actions">
-        ${b.status==='pending'?`
+        ${b.status==='pending' && b._isUser ? `
+          <button class="bsm b-approve" onclick="approveUser('${b.id}')">✓ Onayla</button>
+          <button class="bsm b-reject"  onclick="rejectUser('${b.id}')">✕ Reddet</button>
+        ` : b.status==='pending' ? `
           <button class="bsm b-approve" onclick="approveBasvuru('${b.id}')">✓ Onayla & Hesap Oluştur</button>
           <button class="bsm b-reject"  onclick="rejectBasvuru('${b.id}')">✕ Reddet</button>
-        `:''}
-        ${b.status==='active'?`<span style="font-size:.72rem;color:var(--green)">✓ Hesap oluşturuldu</span>`:''}
+        ` : ''}
+        ${b.status==='active'?`<span style="font-size:.72rem;color:var(--green)">✓ Onaylandı</span>`:''}
         ${b.status==='rejected'?`<span style="font-size:.72rem;color:var(--gray-lt)">Reddedildi</span>`:''}
       </div>
     </div>`).join('');
@@ -558,6 +570,25 @@ window.rejectBasvuru=async(id)=>{
     allBasvurular=allBasvurular.map(b=>b.id===id?{...b,status:'rejected'}:b);
     renderBasvurular(); renderDash();
     showToast('Başvuru reddedildi.','err');
+  } catch(e){ showToast('Hata: '+e.message,'err'); }
+};
+
+window.approveUser=async(uid)=>{
+  try {
+    await updateDoc(doc(db,'users',uid),{status:'active'});
+    allUsers=allUsers.map(u=>u.id===uid?{...u,status:'active'}:u);
+    renderBasvurular(); renderRestoranlar(); renderKuryeler(); renderDash(); renderIstatistik(); updateBadge();
+    showToast('✓ Kullanıcı onaylandı! Artık giriş yapabilir.','ok');
+  } catch(e){ showToast('Hata: '+e.message,'err'); }
+};
+
+window.rejectUser=async(uid)=>{
+  if(!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
+  try {
+    await updateDoc(doc(db,'users',uid),{status:'rejected'});
+    allUsers=allUsers.map(u=>u.id===uid?{...u,status:'rejected'}:u);
+    renderBasvurular(); renderDash(); updateBadge();
+    showToast('Kullanıcı reddedildi.','err');
   } catch(e){ showToast('Hata: '+e.message,'err'); }
 };
 
@@ -604,6 +635,9 @@ function userCard(u) {
     <div class="litem-actions">
       ${u.status==='active'
         ?`<button class="bsm b-suspend" onclick="toggleStatus('${u.id}','suspended')">⏸ Askıya Al</button>`
+        :u.status==='pending'
+        ?`<button class="bsm b-approve" onclick="approveUser('${u.id}')">✓ Onayla</button>
+          <button class="bsm b-reject" onclick="rejectUser('${u.id}')">✕ Reddet</button>`
         :`<button class="bsm b-activate" onclick="toggleStatus('${u.id}','active')">▶ Aktif Et</button>`}
     </div>
   </div>`;

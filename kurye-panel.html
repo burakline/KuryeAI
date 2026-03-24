@@ -17,7 +17,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/fireba
 import { getDatabase, ref, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit }
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -35,7 +35,7 @@ const rtdb = getDatabase(app);
 const fs   = getFirestore(app);
 const auth = getAuth(app);
 window._fb = {db:rtdb, fs, auth, ref, set, onValue, push, serverTimestamp, signOut,
-              doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit};
+              doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit};
 
 function generateID(prefix) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -1220,20 +1220,28 @@ window._initKuryeApp = async function() {
   setTimeout(()=>{initMap();initGPS();initFB();initWL();initStats();},300);
   toast('Hoş geldin, '+G.name+'! 👋','success');
 
-  // Son vardiyaları yükle (Firestore)
+  // Firestore gerçek zamanlı dinleyiciler
   const fb=window._fb;
   if(fb){
+    // Vardiya geçmişi
     try{
-      const shQ=await fb.getDocs(fb.query(fb.collection(fb.fs,'users',G.uid,'shifts'),fb.orderBy('createdAt','desc'),fb.limit(30)));
-      G.hist=shQ.docs.map(d=>d.data());
+      const shQ=fb.query(fb.collection(fb.fs,'users',G.uid,'shifts'),fb.orderBy('createdAt','desc'),fb.limit(30));
+      fb.onSnapshot ? fb.onSnapshot(shQ,s=>{G.hist=s.docs.map(d=>d.data());renderPerf&&renderPerf();}) : null;
+      const shSnap=await fb.getDocs(shQ);G.hist=shSnap.docs.map(d=>d.data());
     }catch(e){}
+    // Ledger — gerçek zamanlı kazanç güncellemeleri
     try{
-      const ldQ=await fb.getDocs(fb.query(fb.collection(fb.fs,'users',G.uid,'ledger'),fb.orderBy('createdAt','desc'),fb.limit(100)));
-      G.ledger=ldQ.docs.map(d=>d.data());
+      const ldQ=fb.query(fb.collection(fb.fs,'users',G.uid,'ledger'),fb.orderBy('createdAt','desc'),fb.limit(100));
+      const ldSnap=await fb.getDocs(ldQ);
+      G.ledger=ldSnap.docs.map(d=>d.data());
+      renderEarn();
     }catch(e){}
+    // Sipariş geçmişi — gerçek zamanlı
     try{
-      const orQ=await fb.getDocs(fb.query(fb.collection(fb.fs,'users',G.uid,'orders'),fb.orderBy('createdAt','desc'),fb.limit(50)));
-      G.ordHistory=orQ.docs.map(d=>d.data());
+      const orQ=fb.query(fb.collection(fb.fs,'users',G.uid,'orders'),fb.orderBy('createdAt','desc'),fb.limit(50));
+      const orSnap=await fb.getDocs(orQ);
+      G.ordHistory=orSnap.docs.map(d=>d.data());
+      renderOrdHistory();
     }catch(e){}
   }
 };

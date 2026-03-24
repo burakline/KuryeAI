@@ -17,7 +17,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/fireba
 import { getDatabase, ref, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit }
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit, serverTimestamp as fsServerTimestamp }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -36,7 +36,7 @@ const fs   = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 window._fb = {db:rtdb, fs, auth, storage, ref, set, onValue, push, serverTimestamp, signOut,
-              doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit,
+              doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit, fsServerTimestamp,
               storageRef, uploadBytes, getDownloadURL};
 
 function generateID(prefix) {
@@ -954,8 +954,10 @@ function pushShFB(a){const fb=window._fb;if(!fb)return;try{fb.set(fb.ref(fb.db,`
 function initFB(){
   const fb=window._fb;if(!fb)return;
   fb.onValue(fb.ref(fb.db,'settings/rates'),s=>{const d=s.val();if(d){G.rates={h:d.hourly||250,km:d.km||8};renderEarn();}});
-  fb.onValue(fb.ref(fb.db,'chats/room1'),s=>{const m=[];s.forEach(c=>m.push(c.val()));G.msgs[1]=m;if(G.room===1)renderChat();});
-  fb.onValue(fb.ref(fb.db,'chats/room2'),s=>{const m=[];s.forEach(c=>m.push(c.val()));G.msgs[2]=m;if(G.room===2)renderChat();});
+  const q1=fb.query(fb.collection(fb.fs,'chats','room1','messages'),fb.orderBy('timestamp'));
+  fb.onSnapshot(q1,s=>{G.msgs[1]=s.docs.map(d=>d.data());if(G.room===1)renderChat();});
+  const q2=fb.query(fb.collection(fb.fs,'chats','room2','messages'),fb.orderBy('timestamp'));
+  fb.onSnapshot(q2,s=>{G.msgs[2]=s.docs.map(d=>d.data());if(G.room===2)renderChat();});
   // Bekleyen sipariş dinleyicisi
   fb.onValue(fb.ref(fb.db,`couriers/${G.id}/pendingOrder`),s=>{
     const d=s.val();
@@ -1048,7 +1050,7 @@ function chatFile(e){const f=e.target.files[0];if(!f)return;const r=new FileRead
 let _mr,_ac=[];
 function startV(){navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{_mr=new MediaRecorder(s);_ac=[];_mr.ondataavailable=e=>_ac.push(e.data);_mr.start();document.getElementById('vBtn').style.background='var(--red-bg)';}).catch(()=>toast('Mikrofon erişimi yok','error'));}
 function stopV(){if(!_mr)return;_mr.onstop=()=>{pushMsg({type:'audio'});document.getElementById('vBtn').style.background='';};_mr.stop();}
-function pushMsg(d){const m={...d,senderId:G.id,senderName:G.name,timestamp:Date.now()};const fb=window._fb;const rk=G.room===1?'room1':'room2';if(fb){try{fb.push(fb.ref(fb.db,`chats/${rk}`),{...m,timestamp:fb.serverTimestamp()});}catch(e){}}G.msgs[G.room].push(m);renderChat();}
+function pushMsg(d){const m={...d,senderId:G.id,senderName:G.name,timestamp:Date.now()};const fb=window._fb;const rk=G.room===1?'room1':'room2';if(fb){try{fb.addDoc(fb.collection(fb.fs,'chats',rk,'messages'),{...m,timestamp:fb.fsServerTimestamp()});}catch(e){console.error('Chat err:',e);}}G.msgs[G.room].push(m);renderChat();}
 
 // TOOLS
 function calcE(){const h=+document.getElementById('cH').value||0,k=+document.getElementById('cK').value||0,hr=+document.getElementById('cHR').value||250,kr=+document.getElementById('cKR').value||8;if(!h&&!k){document.getElementById('calcRes').style.display='none';return;}const earn=h*hr+k*kr;document.getElementById('cResV').textContent='₺'+Math.round(earn).toLocaleString('tr-TR');document.getElementById('cResBr').textContent=`${h}s × ${hr}₺ = ${Math.round(h*hr)}₺  +  ${k}km × ${kr}₺ = ${Math.round(k*kr)}₺`;document.getElementById('calcRes').style.display='block';}

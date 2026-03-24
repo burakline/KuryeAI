@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RestoranAI — Giriş Yap</title>
   <style>
@@ -181,6 +182,14 @@
     }
     .forgot:hover { color: var(--teal); }
 
+    .tabs { display:flex; background:#f2f2f7; border-radius:12px; padding:4px; margin-bottom:1.5rem; }
+    .tab-btn { flex:1; text-align:center; padding:.55rem; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; color:var(--sub); transition:all .2s; border:none; background:none; font-family:Arial,Helvetica,sans-serif; }
+    .tab-btn.active { background:#fff; color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:block; }
+    .ok-msg { display:none; background:rgba(52,199,89,.07); border:.5px solid rgba(52,199,89,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:#1a7f3c; margin-bottom:1rem; line-height:1.5; }
+    .ok-msg.show { display:block; }
+
     .card-footer {
       margin-top: 1.8rem; padding-top: 1.5rem;
       border-top: .5px solid var(--border);
@@ -226,70 +235,127 @@
     <div class="logo-sub">Akıllı İşletme Paneli</div>
   </div>
 
-  <p class="form-title">Hoş Geldiniz 👋</p>
-  <p class="form-sub">RestoranAI panelinize giriş yapın.</p>
-
-  <div class="err-msg" id="err-msg"></div>
-  <div class="success-msg" id="success-msg"></div>
-
-  <div class="form-group">
-    <label class="form-label">E-posta</label>
-    <input class="form-input" type="email" id="input-email"
-           placeholder="restoran@email.com" autocomplete="email"/>
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
+    <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
   </div>
 
-  <div class="form-group">
-    <label class="form-label">Şifre</label>
-    <div class="pw-wrap">
-      <input class="form-input" type="password" id="input-password"
-             placeholder="••••••••" autocomplete="current-password"/>
-      <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+  <!-- GİRİŞ -->
+  <div class="tab-pane active" id="pane-giris">
+    <p class="form-title">Hoş Geldiniz 👋</p>
+    <p class="form-sub">E-posta, telefon veya işletme ID ile giriş yapın.</p>
+
+    <div class="err-msg" id="err-msg"></div>
+    <div class="success-msg" id="success-msg"></div>
+
+    <div class="form-group">
+      <label class="form-label">E-posta / Telefon / ID</label>
+      <input class="form-input" type="text" id="input-email"
+             placeholder="restoran@email.com veya RAI-XXXXXX" autocomplete="username"/>
     </div>
+
+    <div class="form-group">
+      <label class="form-label">Şifre</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="input-password"
+               placeholder="••••••••" autocomplete="current-password"/>
+        <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
+        <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
+        Beni hatırla
+      </label>
+      <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
+         onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
+         onclick="doForgot(event)">Şifremi unuttum</a>
+    </div>
+
+    <button class="btn-submit" id="btn-login" onclick="doLogin()">
+      <div class="spinner"></div>
+      <span class="btn-text">Giriş Yap →</span>
+    </button>
   </div>
 
-  <button class="btn-submit" id="btn-login" onclick="doLogin()">
-    <div class="spinner"></div>
-    <span class="btn-text">Giriş Yap →</span>
-  </button>
+  <!-- KAYIT -->
+  <div class="tab-pane" id="pane-kayit">
+    <p class="form-title">Restoran Kaydı 🍔</p>
+    <p class="form-sub">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
 
-  <a href="#" class="forgot" onclick="doForgot(event)">Şifremi unuttum</a>
+    <div class="err-msg" id="kayit-err"></div>
+    <div class="ok-msg" id="kayit-ok"></div>
 
-  <div class="card-footer">
-    <p>Henüz hesabınız yok mu?<br/>
-    <a href="restoran.html#basvuru">Başvuru yapın</a>, ekibimiz hesabınızı aktif eder.</p>
+    <div class="form-group">
+      <label class="form-label">İşletme Adı</label>
+      <input class="form-input" type="text" id="k-name" placeholder="Restoran / İşletme Adı"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Yetkili Kişi</label>
+      <input class="form-input" type="text" id="k-owner" placeholder="Ad Soyad"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Telefon</label>
+      <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">E-posta</label>
+      <input class="form-input" type="email" id="k-email" placeholder="restoran@email.com" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw',this)">Göster</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre Tekrar</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw2',this)">Göster</button>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btn-kayit" onclick="doKayit()">
+      <div class="spinner"></div>
+      <span class="btn-text">Kayıt Ol →</span>
+    </button>
   </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail }
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+           sendEmailVerification, onAuthStateChanged, sendPasswordResetEmail, signOut,
+           browserLocalPersistence, browserSessionPersistence, setPersistence }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc }
+  import { getFirestore, doc, getDoc, setDoc, query, collection, where, getDocs }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-    authDomain: "kuryeai.firebaseapp.com",
+    apiKey: "AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
+    authDomain: "kuryeai-99bf9.firebaseapp.com",
     databaseURL: "https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "kuryeai",
-    storageBucket: "kuryeai.firebasestorage.app",
-    messagingSenderId: "655930514402",
-    appId: "1:655930514402:web:379321cbb83f48daf077bb",
-    measurementId: "G-JYQP30LJG3"
+    projectId: "kuryeai-99bf9",
+    storageBucket: "kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId: "1012295004135",
+    appId: "1:1012295004135:web:0cceac0476175e19395742",
+    measurementId: "G-1M5VL9Z27Z"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  const app    = initializeApp(firebaseConfig);
+  const auth   = getAuth(app);
+  const db     = getFirestore(app);
   const loader = document.getElementById('page-loader');
 
-  // Zaten giriş yaptıysa yönlendir
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
-        if (snap.exists() && snap.data().role === 'restoran' && snap.data().status === 'active') {
-          window.location.href = 'restoran-panel.html';
+        if (snap.exists() && ['restoran','admin'].includes(snap.data().role) && snap.data().status === 'active') {
+          window.location.href = snap.data().role === 'admin' ? '/admin-panel' : '/restoran-panel';
           return;
         }
       } catch(e) {}
@@ -313,6 +379,24 @@
     document.getElementById('success-msg').classList.remove('show');
   }
 
+  function generateID(prefix) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = prefix + '-';
+    for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  window.switchTab = (t) => {
+    document.querySelectorAll('.tab-pane').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+    document.getElementById('pane-'+t).classList.add('active');
+    document.getElementById('tab-'+t).classList.add('active');
+  };
+
+  // URL'de ?tab=kayit varsa otomatik aç
+  const _urlTab = new URLSearchParams(location.search).get('tab');
+  if (_urlTab === 'kayit') switchTab('kayit');
+
   window.togglePw = function() {
     const inp = document.getElementById('input-password');
     const btn = document.getElementById('pw-btn');
@@ -320,20 +404,84 @@
     btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
   };
 
+  window.toggleKayitPw = (id, btn) => {
+    const el = document.getElementById(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+    btn.textContent = el.type === 'password' ? 'Göster' : 'Gizle';
+  };
+
+  window.doKayit = async function() {
+    const name  = document.getElementById('k-name').value.trim();
+    const owner = document.getElementById('k-owner').value.trim();
+    const phone = document.getElementById('k-phone').value.trim();
+    const email = document.getElementById('k-email').value.trim();
+    const pw    = document.getElementById('k-pw').value;
+    const pw2   = document.getElementById('k-pw2').value;
+    const btn   = document.getElementById('btn-kayit');
+    const err   = document.getElementById('kayit-err');
+    const ok    = document.getElementById('kayit-ok');
+    err.classList.remove('show'); ok.classList.remove('show');
+
+    if (!name||!owner||!phone||!email||!pw||!pw2) { err.textContent='Tüm alanları doldurun.'; err.classList.add('show'); return; }
+    if (pw !== pw2) { err.textContent='Şifreler eşleşmiyor.'; err.classList.add('show'); return; }
+    if (pw.length < 6) { err.textContent='Şifre en az 6 karakter olmalı.'; err.classList.add('show'); return; }
+
+    btn.classList.add('loading'); btn.disabled = true;
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      const restoranId = generateID('RAI');
+      await setDoc(doc(db,'users',cred.user.uid), {
+        uid: cred.user.uid, restoranId, name, owner, phone, email,
+        role: 'restoran', status: 'pending', createdAt: new Date().toISOString()
+      });
+      await sendEmailVerification(cred.user);
+      await signOut(auth);
+      ok.textContent = `✅ Kayıt başarılı! İşletme ID'niz: ${restoranId}. E-posta doğrulama linki gönderildi. Doğrulama sonrası admin onayı beklemeniz gerekiyor.`;
+      ok.classList.add('show');
+      ['k-name','k-owner','k-phone','k-email','k-pw','k-pw2'].forEach(id => document.getElementById(id).value='');
+      setTimeout(() => window.switchTab('giris'), 6000);
+    } catch(e) {
+      const msgs = { 'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.', 'auth/invalid-email':'Geçersiz e-posta.', 'auth/weak-password':'Şifre çok zayıf.' };
+      err.textContent = msgs[e.code] || e.message;
+      err.classList.add('show');
+    }
+    btn.classList.remove('loading'); btn.disabled = false;
+  };
+
+  async function resolveEmail(input) {
+    if (input.includes('@')) return input;
+    if (/^RAI-/i.test(input)) {
+      const q = query(collection(db,'users'), where('restoranId','==',input.toUpperCase()));
+      const snap = await getDocs(q);
+      if (!snap.empty) return snap.docs[0].data().email;
+      throw new Error('Bu ID ile kayıtlı restoran bulunamadı.');
+    }
+    if (/^[0-9+\s\-()]{7,}$/.test(input)) {
+      const q = query(collection(db,'users'), where('phone','==',input.replace(/\s/g,'')));
+      const snap = await getDocs(q);
+      if (!snap.empty) return snap.docs[0].data().email;
+      throw new Error('Bu telefon numarasıyla kayıtlı hesap bulunamadı.');
+    }
+    return input;
+  }
+
   window.doLogin = async function() {
-    const email    = document.getElementById('input-email').value.trim();
-    const password = document.getElementById('input-password').value;
-    const btn      = document.getElementById('btn-login');
+    const inputVal  = document.getElementById('input-email').value.trim();
+    const password  = document.getElementById('input-password').value;
+    const remember  = document.getElementById('remember-me').checked;
+    const btn       = document.getElementById('btn-login');
     hideMessages();
 
-    if (!email)    { showError('Lütfen e-posta adresinizi girin.'); return; }
-    if (!password) { showError('Lütfen şifrenizi girin.'); return; }
+    if (!inputVal)  { showError('Lütfen e-posta, telefon veya ID girin.'); return; }
+    if (!password)  { showError('Lütfen şifrenizi girin.'); return; }
 
     btn.classList.add('loading'); btn.disabled = true;
 
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const snap = await getDoc(doc(db, 'users', cred.user.uid));
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+      const email = await resolveEmail(inputVal);
+      const cred  = await signInWithEmailAndPassword(auth, email, password);
+      const snap  = await getDoc(doc(db, 'users', cred.user.uid));
 
       if (!snap.exists()) {
         await auth.signOut();
@@ -359,11 +507,12 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
-      window.location.href = data.role === 'admin' ? 'admin-panel.html' : 'restoran-panel.html';
+      window.location.href = data.role === 'admin' ? '/admin-panel' : '/restoran-panel';
 
     } catch (err) {
       btn.classList.remove('loading'); btn.disabled = false;
       const c = err.code;
+      if (err.message && !c) { showError(err.message); return; }
       if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found') {
         showError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
       } else if (c === 'auth/too-many-requests') {
@@ -380,20 +529,21 @@
 
   window.doForgot = async function(e) {
     e.preventDefault();
-    const email = document.getElementById('input-email').value.trim();
-    if (!email) { showError('Şifre sıfırlamak için önce e-posta adresinizi girin.'); return; }
+    const inputVal = document.getElementById('input-email').value.trim();
+    if (!inputVal) { showError('Şifre sıfırlamak için önce e-posta adresinizi girin.'); return; }
     try {
+      const email = inputVal.includes('@') ? inputVal : await resolveEmail(inputVal);
       await sendPasswordResetEmail(auth, email);
-      showSuccess('Şifre sıfırlama e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin.');
+      showSuccess('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.');
     } catch(err) {
-      showError('E-posta gönderilemedi. Adresinizi kontrol edin.');
+      showError(err.message || 'E-posta gönderilemedi. Adresinizi kontrol edin.');
     }
   };
 
-  // Enter tuşu
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') window.doLogin();
   });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

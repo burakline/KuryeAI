@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>İzinciKuryeAI — Kurye Girişi</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#0c0c0c; --card:#161616; --border:rgba(255,255,255,0.08); --tx:#fff; --tx2:#888; --purple:#a855f7; --purple2:#9333ea; --red:#ff3b30; --green:#34c759; --sh:0 4px 24px rgba(0,0,0,0.4); --r:16px; --f:Arial,Helvetica,sans-serif; }
+    html,body { min-height:100%; background:var(--bg); color:var(--tx); font-family:var(--f); -webkit-font-smoothing:antialiased; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+    .page-loader { position:fixed; inset:0; z-index:999; background:var(--bg); display:flex; align-items:center; justify-content:center; }
+    .page-loader.hide { display:none; }
+    .spinner-r { width:32px; height:32px; border:3px solid rgba(168,85,247,.2); border-top-color:var(--purple); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .box { width:100%; max-width:420px; }
+    .logo { text-align:center; font-size:1.3rem; font-weight:800; margin-bottom:2rem; }
+    .logo em { font-style:normal; color:var(--purple); }
+    .tabs { display:flex; background:#111; border-radius:12px; padding:4px; margin-bottom:1.5rem; }
+    .tab { flex:1; text-align:center; padding:.6rem; border-radius:9px; font-size:.85rem; font-weight:700; cursor:pointer; color:var(--tx2); transition:all .2s; border:none; background:none; font-family:var(--f); }
+    .tab.active { background:var(--card); color:var(--tx); box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+    .card { background:var(--card); border:.5px solid var(--border); border-radius:var(--r); padding:1.8rem; box-shadow:var(--sh); }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:block; }
+    .form-group { margin-bottom:1rem; }
+    .form-label { display:block; font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--tx2); margin-bottom:.35rem; }
+    .form-input { width:100%; background:#0c0c0c; border:1px solid var(--border); border-radius:10px; padding:.75rem 1rem; font-size:.9rem; font-family:var(--f); outline:none; transition:border-color .2s; color:var(--tx); }
+    .form-input:focus { border-color:var(--purple); }
+    .pw-wrap { position:relative; }
+    .pw-wrap .form-input { padding-right:2.8rem; }
+    .pw-eye { position:absolute; right:.85rem; top:50%; transform:translateY(-50%); cursor:pointer; font-size:1rem; color:var(--tx2); background:none; border:none; padding:0; }
+    .remember-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+    .remember-left { display:flex; align-items:center; gap:.5rem; font-size:.8rem; color:var(--tx2); cursor:pointer; }
+    .remember-left input[type="checkbox"] { accent-color:var(--purple); width:15px; height:15px; cursor:pointer; }
+    .forgot-link { font-size:.78rem; color:var(--purple); cursor:pointer; background:none; border:none; font-family:var(--f); text-decoration:none; }
+    .forgot-link:hover { text-decoration:underline; }
+    .btn-primary { width:100%; background:var(--purple); color:#fff; border:none; border-radius:12px; padding:.85rem; font-size:.9rem; font-weight:700; cursor:pointer; font-family:var(--f); transition:background .2s; }
+    .btn-primary:hover { background:var(--purple2); }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+    .err-box { display:none; background:rgba(255,59,48,.08); border:.5px solid rgba(255,59,48,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--red); margin-bottom:1rem; }
+    .ok-box { display:none; background:rgba(52,199,89,.08); border:.5px solid rgba(52,199,89,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--green); margin-bottom:1rem; }
+    .divider { text-align:center; font-size:.75rem; color:var(--tx2); margin:.5rem 0 1rem; }
+    .back-link { display:block; text-align:center; margin-top:1.2rem; font-size:.8rem; color:var(--tx2); text-decoration:none; }
+    .back-link:hover { color:var(--tx); }
+  </style>
+</head>
+<body>
+<div class="page-loader" id="page-loader"><div class="spinner-r"></div></div>
+
+<div class="box">
+  <div class="logo">İzinci<em>Kurye</em>AI</div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
+    <button class="tab" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
+  </div>
+
+  <div class="card">
+    <!-- GİRİŞ -->
+    <div class="tab-pane active" id="pane-giris">
+      <div class="err-box" id="giris-err"></div>
+      <div class="form-group">
+        <label class="form-label">E-posta veya Kurye ID</label>
+        <input class="form-input" type="text" id="g-email" placeholder="kurye@email.com veya KAI-XXXXXX" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="g-pw" placeholder="••••••••" autocomplete="current-password"/>
+          <button type="button" class="pw-eye" onclick="togglePw('g-pw',this)">👁</button>
+        </div>
+      </div>
+      <div class="remember-row">
+        <label class="remember-left">
+          <input type="checkbox" id="g-remember"/> Beni hatırla
+        </label>
+        <button class="forgot-link" onclick="doForgot()">Şifremi unuttum</button>
+      </div>
+      <button class="btn-primary" id="btn-giris" onclick="doGiris()">Giriş Yap →</button>
+    </div>
+
+    <!-- KAYIT -->
+    <div class="tab-pane" id="pane-kayit">
+      <div class="err-box" id="kayit-err"></div>
+      <div class="ok-box" id="kayit-ok"></div>
+      <div class="form-group">
+        <label class="form-label">Ad Soyad</label>
+        <input class="form-input" type="text" id="k-name" placeholder="Ad Soyad"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-posta</label>
+        <input class="form-input" type="email" id="k-email" placeholder="kurye@email.com" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"/>
+          <button type="button" class="pw-eye" onclick="togglePw('k-pw',this)">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Şifre Tekrar</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"/>
+          <button type="button" class="pw-eye" onclick="togglePw('k-pw2',this)">👁</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-kayit" onclick="doKayit()">Kayıt Ol & E-posta Doğrula →</button>
+    </div>
+  </div>
+
+  <a href="/izincikurye" class="back-link">← İzinciKurye Ana Sayfasına Dön</a>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    sendEmailVerification, sendPasswordResetEmail, signOut,
+    browserLocalPersistence, browserSessionPersistence, setPersistence }
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, query, collection, where, getDocs }
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  function generateID(prefix) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = prefix + '-';
+    for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user && user.emailVerified) {
+      try {
+        const snap = await getDoc(doc(db,'users',user.uid));
+        if (snap.exists()) {
+          const role = snap.data().role;
+          if (role === 'admin') { window.location.href = '/admin-panel'; return; }
+          if (role === 'izinci_kurye') { window.location.href = '/izincikurye-panel'; return; }
+        }
+      } catch(e) {}
+    }
+    document.getElementById('page-loader').classList.add('hide');
+  });
+
+  async function resolveEmail(input) {
+    input = input.trim();
+    if (input.includes('@')) return input;
+    if (input.toUpperCase().startsWith('KAI-')) {
+      const q = query(collection(db,'users'), where('kuryeId','==',input.toUpperCase()));
+      const snap = await getDocs(q);
+      if (!snap.empty) return snap.docs[0].data().email;
+      throw new Error('Bu Kurye ID ile kayıtlı kullanıcı bulunamadı.');
+    }
+    // phone
+    const q = query(collection(db,'users'), where('phone','==',input));
+    const snap = await getDocs(q);
+    if (!snap.empty) return snap.docs[0].data().email;
+    throw new Error('Bu bilgiyle kayıtlı kullanıcı bulunamadı.');
+  }
+
+  window.switchTab = (t) => {
+    document.querySelectorAll('.tab-pane').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+    document.getElementById('pane-'+t).classList.add('active');
+    document.getElementById('tab-'+t).classList.add('active');
+  };
+
+  window.togglePw = (id, btn) => {
+    const el = document.getElementById(id);
+    if (el.type === 'password') { el.type = 'text'; btn.textContent = '🙈'; }
+    else { el.type = 'password'; btn.textContent = '👁'; }
+  };
+
+  window.doGiris = async () => {
+    const inputVal = document.getElementById('g-email').value.trim();
+    const pw       = document.getElementById('g-pw').value;
+    const remember = document.getElementById('g-remember').checked;
+    const btn = document.getElementById('btn-giris');
+    const err = document.getElementById('giris-err');
+    err.style.display = 'none';
+
+    if (!inputVal || !pw) { err.textContent='Tüm alanları doldurun.'; err.style.display='block'; return; }
+    btn.disabled = true; btn.textContent = 'Giriş yapılıyor...';
+    try {
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+      const email = await resolveEmail(inputVal);
+      const cred = await signInWithEmailAndPassword(auth, email, pw);
+      if (!cred.user.emailVerified) {
+        await signOut(auth);
+        err.textContent = 'E-posta adresinizi doğrulamanız gerekiyor. Lütfen gelen kutunuzu kontrol edin.';
+        err.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Giriş Yap →';
+        return;
+      }
+      const snap = await getDoc(doc(db,'users',cred.user.uid));
+      if (!snap.exists()) { await signOut(auth); throw new Error('Kullanıcı profili bulunamadı.'); }
+      const role = snap.data().role;
+      if (role === 'admin') { window.location.href = '/admin-panel'; return; }
+      if (role !== 'izinci_kurye') { await signOut(auth); throw new Error('Bu hesap İzinciKurye sistemine ait değil.'); }
+      window.location.href = '/izincikurye-panel';
+    } catch(e) {
+      const msgs = { 'auth/invalid-credential':'E-posta veya şifre hatalı.', 'auth/too-many-requests':'Çok fazla deneme. Lütfen bekleyin.' };
+      err.textContent = msgs[e.code] || e.message;
+      err.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Giriş Yap →';
+    }
+  };
+
+  window.doKayit = async () => {
+    const name  = document.getElementById('k-name').value.trim();
+    const phone = document.getElementById('k-phone').value.trim();
+    const email = document.getElementById('k-email').value.trim();
+    const pw    = document.getElementById('k-pw').value;
+    const pw2   = document.getElementById('k-pw2').value;
+    const btn = document.getElementById('btn-kayit');
+    const err = document.getElementById('kayit-err');
+    const ok  = document.getElementById('kayit-ok');
+    err.style.display = 'none'; ok.style.display = 'none';
+
+    if (!name||!phone||!email||!pw||!pw2) { err.textContent='Tüm alanları doldurun.'; err.style.display='block'; return; }
+    if (pw !== pw2) { err.textContent='Şifreler eşleşmiyor.'; err.style.display='block'; return; }
+    if (pw.length < 6) { err.textContent='Şifre en az 6 karakter olmalı.'; err.style.display='block'; return; }
+    btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      const kuryeId = generateID('KAI');
+      await setDoc(doc(db,'users',cred.user.uid), {
+        uid: cred.user.uid, kuryeId, name, phone, email,
+        role: 'izinci_kurye', createdAt: new Date().toISOString(),
+        musait: false
+      });
+      await sendEmailVerification(cred.user);
+      await signOut(auth);
+      ok.textContent = `✅ Kayıt başarılı! Kurye ID'niz: ${kuryeId}. E-posta adresinize doğrulama linki gönderildi. Lütfen e-postanızı kontrol edip doğrulama yapın, ardından giriş yapabilirsiniz.`;
+      ok.style.display = 'block';
+      ['k-name','k-phone','k-email','k-pw','k-pw2'].forEach(id => document.getElementById(id).value='');
+      setTimeout(() => window.switchTab('giris'), 5000);
+    } catch(e) {
+      const msgs = { 'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.', 'auth/invalid-email':'Geçersiz e-posta adresi.', 'auth/weak-password':'Şifre çok zayıf.' };
+      err.textContent = msgs[e.code] || e.message;
+      err.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = 'Kayıt Ol & E-posta Doğrula →';
+  };
+
+  window.doForgot = async () => {
+    const inputVal = document.getElementById('g-email').value.trim();
+    const err = document.getElementById('giris-err');
+    err.style.display = 'none';
+    if (!inputVal) { err.textContent='Şifre sıfırlama için e-posta veya Kurye ID girin.'; err.style.display='block'; return; }
+    try {
+      const email = await resolveEmail(inputVal);
+      await sendPasswordResetEmail(auth, email);
+      err.style.background='rgba(52,199,89,.08)'; err.style.borderColor='rgba(52,199,89,.25)'; err.style.color='#34c759';
+      err.textContent = '✅ Şifre sıfırlama e-postası gönderildi.';
+      err.style.display = 'block';
+    } catch(e) {
+      err.style.background=''; err.style.borderColor=''; err.style.color='';
+      err.textContent = e.message || 'Bir hata oluştu.';
+      err.style.display = 'block';
+    }
+  };
+</script>
+</body>
+</html>

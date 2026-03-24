@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AcilKuryeAI — Hızlı ve Güvenilir Kurye</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:#000; --dark:#0c0c0c; --card:#111; --border:rgba(255,255,255,0.08);
+      --text:#fff; --sub:#888; --teal:#00c8d7; --teal-lt:#33d6e3; --orange:#ff9500;
+    }
+    html,body { background:var(--black); color:var(--text); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
+    .bg-grid { position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px);
+      background-size:48px 48px; mask-image:radial-gradient(ellipse 100% 100% at 50% 0%,black 30%,transparent 100%); }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1rem 2rem; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); border-bottom:.5px solid var(--border); }
+    .nav-logo { font-size:1.1rem; font-weight:800; letter-spacing:-.02em; }
+    .nav-logo em { font-style:normal; color:var(--orange); }
+    .nav-links { display:flex; gap:1rem; align-items:center; }
+    .nav-link { font-size:.8rem; color:var(--sub); text-decoration:none; transition:color .2s; }
+    .nav-link:hover { color:var(--text); }
+    .nav-btn { font-size:.8rem; font-weight:700; color:#000; background:var(--teal); padding:.45rem 1.1rem; border-radius:999px; text-decoration:none; transition:background .2s; }
+    .nav-btn:hover { background:var(--teal-lt); }
+
+    /* HERO */
+    .hero { position:relative; z-index:1; min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6rem 1.5rem 4rem; text-align:center; }
+    .hero-badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(255,149,0,.1); border:.5px solid rgba(255,149,0,.25); border-radius:999px; padding:.4rem 1rem; font-size:.75rem; font-weight:700; color:var(--orange); letter-spacing:.06em; text-transform:uppercase; margin-bottom:1.5rem; }
+    .hero-badge span { width:6px; height:6px; border-radius:50%; background:var(--orange); animation:blink 1.5s infinite; display:inline-block; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    h1 { font-size:clamp(2rem,7vw,3.8rem); font-weight:900; letter-spacing:-.04em; line-height:1.05; margin-bottom:1.2rem; }
+    h1 em { font-style:normal; color:var(--orange); }
+    .hero-sub { font-size:clamp(.95rem,2.5vw,1.15rem); color:var(--sub); max-width:560px; line-height:1.7; margin-bottom:3rem; }
+
+    /* CARDS */
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:760px; width:100%; }
+    @media(max-width:600px){ .cards { grid-template-columns:1fr; } }
+    .choice-card { background:var(--card); border:.5px solid var(--border); border-radius:20px; padding:2.5rem 2rem; text-align:center; text-decoration:none; color:var(--text); transition:transform .25s,box-shadow .25s,border-color .25s; display:flex; flex-direction:column; align-items:center; gap:1rem; }
+    .choice-card:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+    .choice-card.kurye { border-color:rgba(0,200,215,.2); }
+    .choice-card.kurye:hover { border-color:rgba(0,200,215,.5); box-shadow:0 20px 60px rgba(0,200,215,.1); }
+    .choice-card.talep { border-color:rgba(255,149,0,.2); }
+    .choice-card.talep:hover { border-color:rgba(255,149,0,.5); box-shadow:0 20px 60px rgba(255,149,0,.1); }
+    .card-icon { font-size:3.5rem; line-height:1; }
+    .card-title { font-size:1.15rem; font-weight:800; letter-spacing:-.02em; }
+    .card-desc { font-size:.85rem; color:var(--sub); line-height:1.6; }
+    .card-btn { margin-top:.5rem; padding:.75rem 1.8rem; border-radius:999px; font-size:.88rem; font-weight:700; border:none; cursor:pointer; transition:background .2s,transform .15s; }
+    .choice-card.kurye .card-btn { background:var(--teal); color:#000; }
+    .choice-card.kurye .card-btn:hover { background:var(--teal-lt); }
+    .choice-card.talep .card-btn { background:var(--orange); color:#000; }
+    .choice-card.talep .card-btn:hover { background:#ffaa33; }
+
+    /* FEATURES */
+    .features { position:relative; z-index:1; padding:5rem 1.5rem; max-width:900px; margin:0 auto; }
+    .section-title { text-align:center; font-size:1.6rem; font-weight:800; margin-bottom:3rem; letter-spacing:-.03em; }
+    .feats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.2rem; }
+    .feat { background:var(--card); border:.5px solid var(--border); border-radius:16px; padding:1.6rem; }
+    .feat-icon { font-size:1.8rem; margin-bottom:.8rem; }
+    .feat-title { font-size:.95rem; font-weight:700; margin-bottom:.4rem; }
+    .feat-desc { font-size:.8rem; color:var(--sub); line-height:1.6; }
+
+    /* FOOTER */
+    footer { position:relative; z-index:1; text-align:center; padding:2rem 1.5rem; border-top:.5px solid var(--border); font-size:.78rem; color:var(--sub); }
+    footer a { color:var(--teal); text-decoration:none; }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-logo">Acil<em>Kurye</em>AI</div>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Ana Sayfa</a>
+    <a href="/acilkurye-login" class="nav-btn">Kurye Girişi</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge"><span></span>7/24 Aktif</div>
+  <h1>Acil Kurye<br/><em>Çözümü</em></h1>
+  <p class="hero-sub">Aynı gün, aynı saat teslimat. İster kurye ol, ister acil kurye talep et — hepsi tek platformda.</p>
+
+  <div class="cards">
+    <a href="/acilkurye-login" class="choice-card kurye">
+      <div class="card-icon">🛵</div>
+      <div class="card-title">Acil Kurye Olmak İstiyorum</div>
+      <div class="card-desc">Serbest zamanlarda acil teslimat işleri al. Hemen kayıt ol, anında çalışmaya başla.</div>
+      <button class="card-btn" onclick="window.location.href='/acilkurye-login'">Kurye Olarak Kaydol</button>
+    </a>
+
+    <a href="/acilkurye-talep-login" class="choice-card talep">
+      <div class="card-icon">📦</div>
+      <div class="card-title">Acil Kurye İhtiyacım Var</div>
+      <div class="card-desc">Dakikalar içinde size en yakın acil kuryeyi bulun. Hızlı ve güvenli teslimat.</div>
+      <button class="card-btn" onclick="window.location.href='/acilkurye-talep-login'">Kurye Talep Et</button>
+    </a>
+  </div>
+</section>
+
+<section class="features">
+  <div class="section-title">Neden AcilKuryeAI?</div>
+  <div class="feats">
+    <div class="feat">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">Anında Eşleştirme</div>
+      <div class="feat-desc">Talebiniz oluştuğunda size en yakın müsait kurye otomatik olarak bilgilendirilir.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Güvenli Ödeme</div>
+      <div class="feat-desc">Teslimat tamamlandıktan sonra ödeme yapılır. Güvenli ve şeffaf fiyatlandırma.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📍</div>
+      <div class="feat-title">Canlı Takip</div>
+      <div class="feat-desc">Kurye konumunu anlık olarak harita üzerinde takip edin.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">⭐</div>
+      <div class="feat-title">Puanlı Sistem</div>
+      <div class="feat-desc">Her teslimat sonrası değerlendirme yapın. Güvenilir kurye profilleri.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 KuryeAI · <a href="/kvkk">KVKK</a> · <a href="/kullanim-kosullari">Kullanım Koşulları</a> · <a href="/iletisim">İletişim</a></p>
+</footer>
+</body>
+</html>

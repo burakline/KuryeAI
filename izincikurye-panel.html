@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>İzinciKuryeAI — Panel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#f5f5f7; --card:#fff; --border:#e5e5ea; --tx:#1c1c1e; --tx2:#636366; --purple:#a855f7; --purple2:#9333ea; --red:#ff3b30; --green:#34c759; --orange:#ff9500; --sh:0 2px 12px rgba(0,0,0,0.07); --r:16px; --f:Arial,Helvetica,sans-serif; }
+    html,body { height:100%; background:var(--bg); color:var(--tx); font-family:var(--f); -webkit-font-smoothing:antialiased; }
+    .page-loader { position:fixed; inset:0; z-index:999; background:#fff; display:flex; align-items:center; justify-content:center; }
+    .page-loader.hide { display:none; }
+    .spinner-r { width:32px; height:32px; border:3px solid rgba(168,85,247,.2); border-top-color:var(--purple); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    header { background:var(--card); border-bottom:1px solid var(--border); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+    .hlogo { font-size:1.05rem; font-weight:800; }
+    .hlogo em { font-style:normal; color:var(--purple); }
+    .hout { font-size:.8rem; color:var(--tx2); cursor:pointer; border:1px solid var(--border); background:var(--card); padding:.4rem .9rem; border-radius:8px; }
+    .hout:hover { color:var(--red); border-color:var(--red); }
+
+    main { max-width:640px; margin:0 auto; padding:1.5rem 1.5rem 6rem; }
+    .sec-title { font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--tx2); margin-bottom:.8rem; }
+    .card { background:var(--card); border-radius:var(--r); box-shadow:var(--sh); padding:1.4rem; }
+    .card + .card { margin-top:1rem; }
+
+    /* STATUS CARD */
+    .status-card { display:flex; align-items:center; justify-content:space-between; }
+    .status-info { display:flex; flex-direction:column; gap:.2rem; }
+    .status-name { font-size:1rem; font-weight:700; }
+    .status-id { font-size:.75rem; color:var(--purple); font-weight:700; }
+    .toggle-wrap { display:flex; align-items:center; gap:.6rem; font-size:.82rem; color:var(--tx2); font-weight:600; }
+    .toggle { position:relative; width:44px; height:24px; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:#ccc; border-radius:999px; cursor:pointer; transition:.3s; }
+    .toggle-slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.3s; }
+    .toggle input:checked + .toggle-slider { background:var(--green); }
+    .toggle input:checked + .toggle-slider:before { transform:translateX(20px); }
+
+    /* SHIFT CARD */
+    .shift-card { display:flex; flex-direction:column; gap:.8rem; }
+    .shift-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.6rem; }
+    .stat-box { background:#f5f5f7; border-radius:10px; padding:.8rem; text-align:center; }
+    .stat-val { font-size:1.2rem; font-weight:800; color:var(--purple); }
+    .stat-lbl { font-size:.68rem; color:var(--tx2); margin-top:.2rem; }
+    .btn-shift { width:100%; padding:.8rem; border-radius:12px; font-size:.88rem; font-weight:700; border:none; cursor:pointer; font-family:var(--f); transition:background .2s; }
+    .btn-shift.start { background:var(--green); color:#fff; }
+    .btn-shift.start:hover { background:#2fb350; }
+    .btn-shift.end { background:var(--red); color:#fff; }
+    .btn-shift.end:hover { background:#e0352a; }
+
+    /* ORDERS */
+    .order-item { border:1px solid var(--border); border-radius:var(--r); padding:1rem; margin-bottom:.7rem; }
+    .order-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
+    .order-id { font-size:.72rem; font-weight:700; color:var(--purple); }
+    .st-badge { font-size:.7rem; font-weight:700; padding:.2rem .6rem; border-radius:999px; }
+    .st-open { background:rgba(255,149,0,.1); color:var(--orange); }
+    .st-delivered { background:rgba(0,122,255,.1); color:#007aff; }
+    .order-info { font-size:.82rem; color:var(--tx2); line-height:1.6; }
+    .empty-state { text-align:center; padding:2rem; color:var(--tx2); font-size:.88rem; }
+    .empty-state .ico { font-size:2rem; margin-bottom:.6rem; }
+
+    /* LEDGER */
+    .ledger-total { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+    .ledger-amount { font-size:1.6rem; font-weight:800; color:var(--green); }
+    .ledger-item { display:flex; align-items:center; justify-content:space-between; padding:.65rem 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+    .ledger-item:last-child { border-bottom:none; }
+    .ledger-desc { color:var(--tx2); }
+    .ledger-val { font-weight:700; }
+    .ledger-val.pos { color:var(--green); }
+    .ledger-val.neg { color:var(--red); }
+
+    /* PROFILE */
+    .form-group { margin-bottom:.9rem; }
+    .form-label { display:block; font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--tx2); margin-bottom:.35rem; }
+    .form-input { width:100%; background:#f5f5f7; border:1px solid var(--border); border-radius:10px; padding:.7rem 1rem; font-size:.9rem; font-family:var(--f); outline:none; transition:border-color .2s; color:var(--tx); }
+    .form-input:focus { border-color:var(--purple); }
+    .btn-save { background:var(--purple); color:#fff; border:none; border-radius:12px; padding:.75rem 2rem; font-size:.88rem; font-weight:700; cursor:pointer; font-family:var(--f); transition:background .2s; }
+    .btn-save:hover { background:var(--purple2); }
+    .id-badge { display:inline-block; background:rgba(168,85,247,.1); border:1px solid rgba(168,85,247,.2); border-radius:8px; padding:.3rem .8rem; font-size:.8rem; font-weight:700; color:var(--purple); margin-bottom:1rem; }
+
+    /* MAINTENANCE */
+    .maint-row { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+
+    /* NAV */
+    .nav-tabs { display:flex; background:var(--card); border-top:1px solid var(--border); position:fixed; bottom:0; left:0; right:0; z-index:100; }
+    .nav-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:.3rem; padding:.8rem .5rem; cursor:pointer; font-size:.65rem; font-weight:600; color:var(--tx2); transition:color .2s; border:none; background:none; font-family:var(--f); }
+    .nav-tab.active { color:var(--purple); }
+    .nav-tab .ico { font-size:1.4rem; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+
+    /* TOAST */
+    .toast { position:fixed; bottom:5rem; left:50%; transform:translateX(-50%) translateY(80px); background:#1c1c1e; color:#fff; padding:.75rem 1.5rem; border-radius:999px; font-size:.85rem; font-weight:600; z-index:9999; transition:transform .3s; pointer-events:none; }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+
+    /* SHIFT HISTORY */
+    .shift-hist-item { display:flex; align-items:center; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.82rem; }
+    .shift-hist-item:last-child { border-bottom:none; }
+    .shift-date { color:var(--tx2); }
+    .shift-dur { font-weight:700; color:var(--purple); }
+  </style>
+</head>
+<body>
+<div class="page-loader" id="page-loader"><div class="spinner-r"></div></div>
+
+<header>
+  <div class="hlogo">İzinci<em>Kurye</em>AI</div>
+  <button class="hout" onclick="doLogout()">Çıkış</button>
+</header>
+
+<main>
+  <!-- PANEL (Vardiya & Siparişler) -->
+  <div class="tab-content active" id="tab-panel">
+    <div class="sec-title" style="margin-top:.5rem">Durum</div>
+    <div class="card">
+      <div class="status-card">
+        <div class="status-info">
+          <div class="status-name" id="s-name">Yükleniyor...</div>
+          <div class="status-id" id="s-kid"></div>
+        </div>
+        <div class="toggle-wrap">
+          <span id="musait-lbl">Müsait Değil</span>
+          <label class="toggle">
+            <input type="checkbox" id="musait-toggle" onchange="toggleMusait(this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title" style="margin-top:1.2rem">Vardiya</div>
+    <div class="card shift-card">
+      <div class="shift-stats">
+        <div class="stat-box">
+          <div class="stat-val" id="st-bugun">0</div>
+          <div class="stat-lbl">Bugün (sa)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="st-hafta">0</div>
+          <div class="stat-lbl">Bu Hafta (sa)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="st-siparis">0</div>
+          <div class="stat-lbl">Toplam Sipariş</div>
+        </div>
+      </div>
+      <div id="shift-status-text" style="font-size:.82rem;color:var(--tx2);text-align:center"></div>
+      <button class="btn-shift start" id="btn-shift" onclick="toggleShift()">Vardiyayı Başlat</button>
+    </div>
+
+    <div class="sec-title" style="margin-top:1.2rem">Aktif Siparişler</div>
+    <div id="active-orders">
+      <div class="empty-state"><div class="ico">📭</div><div>Aktif sipariş yok</div></div>
+    </div>
+
+    <div class="sec-title" style="margin-top:1.2rem">Güzergah Eşleşmeleri</div>
+    <div id="route-orders">
+      <div class="empty-state"><div class="ico">🗺️</div><div>Güzergah bilgisi girin (Profil tabı)</div></div>
+    </div>
+
+    <div class="sec-title" style="margin-top:1.2rem">Sipariş Geçmişi</div>
+    <div id="order-history">
+      <div class="empty-state"><div class="ico">📋</div><div>Henüz teslim edilen sipariş yok</div></div>
+    </div>
+  </div>
+
+  <!-- KAZANÇ -->
+  <div class="tab-content" id="tab-kazanc">
+    <div class="sec-title" style="margin-top:.5rem">Kazanç Özeti</div>
+    <div class="card">
+      <div class="ledger-total">
+        <div>
+          <div style="font-size:.75rem;color:var(--tx2);margin-bottom:.2rem">Toplam Kazanç</div>
+          <div class="ledger-amount" id="total-kazanc">₺0.00</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.75rem;color:var(--tx2);margin-bottom:.2rem">Bu Ay</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--purple)" id="ay-kazanc">₺0.00</div>
+        </div>
+      </div>
+      <div id="ledger-list">
+        <div class="empty-state"><div class="ico">💰</div><div>Henüz kazanç kaydı yok</div></div>
+      </div>
+    </div>
+
+    <div class="sec-title" style="margin-top:1.2rem">Vardiya Geçmişi</div>
+    <div class="card">
+      <div id="shift-history">
+        <div class="empty-state"><div class="ico">📅</div><div>Henüz vardiya kaydı yok</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFİL -->
+  <div class="tab-content" id="tab-profil">
+    <div class="sec-title" style="margin-top:.5rem">Profilim</div>
+    <div class="card">
+      <div id="kuryeIdBadge" class="id-badge" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Ad Soyad</label>
+        <input class="form-input" type="text" id="p-name" placeholder="Ad Soyad"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" type="tel" id="p-phone" placeholder="05XX XXX XX XX"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Araç Plakası</label>
+        <input class="form-input" type="text" id="p-plate" placeholder="34 ABC 123"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Araç Markası / Modeli</label>
+        <input class="form-input" type="text" id="p-vehicle" placeholder="Honda PCX 125"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Güzergah (Bölge / Hat)</label>
+        <input class="form-input" type="text" id="p-route" placeholder="örn. Kadıköy, Beşiktaş, Merkez"/>
+        <div style="font-size:.72rem;color:var(--tx2);margin-top:.3rem">Bu alana girdiğiniz bölgeye ait siparişler size eşleştirilir.</div>
+      </div>
+      <button class="btn-save" onclick="saveProfile()">Kaydet</button>
+    </div>
+
+    <div class="sec-title" style="margin-top:1.2rem">Araç Bakım Takibi</div>
+    <div class="card">
+      <div class="maint-row">
+        <div class="form-group">
+          <label class="form-label">Son Yağ Değişimi (km)</label>
+          <input class="form-input" type="number" id="m-oil" placeholder="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Son Filtre (km)</label>
+          <input class="form-input" type="number" id="m-filter" placeholder="0"/>
+        </div>
+      </div>
+      <div class="maint-row">
+        <div class="form-group">
+          <label class="form-label">Mevcut km</label>
+          <input class="form-input" type="number" id="m-km" placeholder="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Son Servis</label>
+          <input class="form-input" type="date" id="m-service"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bakım Notu</label>
+        <input class="form-input" type="text" id="m-note" placeholder="Hatırlatıcı not..."/>
+      </div>
+      <button class="btn-save" onclick="saveMaint()">Bakım Bilgilerini Kaydet</button>
+    </div>
+  </div>
+</main>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" id="nav-panel" onclick="switchTab('panel')"><span class="ico">🏠</span>Panel</button>
+  <button class="nav-tab" id="nav-kazanc" onclick="switchTab('kazanc')"><span class="ico">💰</span>Kazanç</button>
+  <button class="nav-tab" id="nav-profil" onclick="switchTab('profil')"><span class="ico">👤</span>Profil</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, getDocs }
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  let currentUser = null;
+  let shiftStart = null;
+  let shiftTimer = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user || !user.emailVerified) { window.location.href = '/izincikurye-login'; return; }
+    try {
+      const snap = await getDoc(doc(db,'users',user.uid));
+      if (!snap.exists() || (snap.data().role !== 'izinci_kurye' && snap.data().role !== 'admin')) {
+        await signOut(auth); window.location.href = '/izincikurye-login'; return;
+      }
+      currentUser = { uid:user.uid, ...snap.data() };
+      initPanel();
+      document.getElementById('page-loader').classList.add('hide');
+    } catch(e) { window.location.href = '/izincikurye-login'; }
+  });
+
+  function initPanel() {
+    const u = currentUser;
+    document.getElementById('s-name').textContent = u.name || 'Kurye';
+    document.getElementById('s-kid').textContent = u.kuryeId || '';
+
+    const badge = document.getElementById('kuryeIdBadge');
+    if (u.kuryeId) { badge.textContent = '🪪 ' + u.kuryeId; badge.style.display='inline-block'; }
+
+    document.getElementById('p-name').value    = u.name    || '';
+    document.getElementById('p-phone').value   = u.phone   || '';
+    document.getElementById('p-plate').value   = u.plate   || '';
+    document.getElementById('p-vehicle').value = u.vehicle || '';
+    document.getElementById('p-route').value   = u.route   || '';
+    document.getElementById('m-oil').value     = u.maintOil    || '';
+    document.getElementById('m-filter').value  = u.maintFilter || '';
+    document.getElementById('m-km').value      = u.maintKm     || '';
+    document.getElementById('m-service').value = u.maintService|| '';
+    document.getElementById('m-note').value    = u.maintNote   || '';
+
+    const musait = u.musait || false;
+    document.getElementById('musait-toggle').checked = musait;
+    document.getElementById('musait-lbl').textContent = musait ? 'Müsait' : 'Müsait Değil';
+
+    // Check if shift is active
+    if (u.shiftActive && u.shiftStart) {
+      shiftStart = new Date(u.shiftStart);
+      startShiftTimer();
+      document.getElementById('btn-shift').className = 'btn-shift end';
+      document.getElementById('btn-shift').textContent = 'Vardiyayı Bitir';
+    }
+
+    loadLedger();
+    loadShiftHistory();
+    listenOrders();
+    updateStats();
+    if (u.route) listenRouteOrders(u.route);
+  }
+
+  let _unsubRouteOrders = null;
+  function listenRouteOrders(route) {
+    if (_unsubRouteOrders) _unsubRouteOrders();
+    if (!route) return;
+    // Listen to global orders collection where address contains route keyword
+    const q = query(
+      collection(db,'orders'),
+      where('status','==','pending'),
+      orderBy('createdAt','desc')
+    );
+    _unsubRouteOrders = onSnapshot(q, snap => {
+      const routeLower = route.toLowerCase();
+      const matched = snap.docs
+        .map(d=>({id:d.id,...d.data()}))
+        .filter(o => {
+          const addr = ((o.address||'') + ' ' + (o.fromAddr||'') + ' ' + (o.toAddr||'')).toLowerCase();
+          return addr.includes(routeLower);
+        });
+      renderRouteOrders(matched);
+    }, ()=>{});
+  }
+
+  function renderRouteOrders(orders) {
+    const el = document.getElementById('route-orders');
+    if (!el) return;
+    if (!orders.length) { el.innerHTML='<div class="empty-state"><div class="ico">🗺️</div><div>Güzergahınıza ait bekleyen sipariş yok</div></div>'; return; }
+    el.innerHTML = orders.map(o=>`
+      <div class="order-item">
+        <div class="order-head">
+          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="st-badge st-open">Bekliyor</span>
+        </div>
+        <div class="order-info">
+          📍 ${o.address||o.fromAddr||'—'}<br/>
+          🍽️ ${o.restoranName||'—'}<br/>
+          💰 ₺${o.total||0}
+        </div>
+      </div>`).join('');
+  }
+
+  let _unsubOrders = null;
+  function listenOrders() {
+    if (_unsubOrders) _unsubOrders();
+    const q = query(
+      collection(db,'users',currentUser.uid,'orders'),
+      orderBy('createdAt','desc')
+    );
+    _unsubOrders = onSnapshot(q, snap => {
+      const orders = snap.docs.map(d=>({id:d.id,...d.data()}));
+      const active = orders.filter(o=>o.status!=='delivered');
+      const history = orders.filter(o=>o.status==='delivered');
+      renderActiveOrders(active);
+      renderOrderHistory(history);
+      document.getElementById('st-siparis').textContent = orders.length;
+    }, ()=>{});
+  }
+
+  function renderActiveOrders(orders) {
+    const el = document.getElementById('active-orders');
+    if (!orders.length) { el.innerHTML='<div class="empty-state"><div class="ico">📭</div><div>Aktif sipariş yok</div></div>'; return; }
+    el.innerHTML = orders.map(o=>`
+      <div class="order-item">
+        <div class="order-head">
+          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="st-badge st-open">Aktif</span>
+        </div>
+        <div class="order-info">
+          📍 ${o.fromAddr||'—'} → ${o.toAddr||'—'}<br/>
+          🕐 ${o.createdAt ? new Date(o.createdAt).toLocaleString('tr-TR') : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  function renderOrderHistory(orders) {
+    const el = document.getElementById('order-history');
+    if (!orders.length) { el.innerHTML='<div class="empty-state"><div class="ico">📋</div><div>Henüz teslim edilen sipariş yok</div></div>'; return; }
+    el.innerHTML = orders.slice(0,20).map(o=>`
+      <div class="order-item">
+        <div class="order-head">
+          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="st-badge st-delivered">Teslim Edildi</span>
+        </div>
+        <div class="order-info">
+          📍 ${o.fromAddr||'—'} → ${o.toAddr||'—'}<br/>
+          🕐 ${o.createdAt ? new Date(o.createdAt).toLocaleString('tr-TR') : ''}
+          ${o.amount ? `<br/>💰 ₺${parseFloat(o.amount).toFixed(2)}` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  function loadLedger() {
+    const q = query(collection(db,'users',currentUser.uid,'ledger'), orderBy('createdAt','desc'));
+    onSnapshot(q, snap => {
+      const entries = snap.docs.map(d=>({id:d.id,...d.data()}));
+      let total = 0, ayTotal = 0;
+      const now = new Date();
+      entries.forEach(e => {
+        const v = parseFloat(e.amount||0);
+        total += v;
+        const d = new Date(e.createdAt);
+        if (d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()) ayTotal+=v;
+      });
+      document.getElementById('total-kazanc').textContent = '₺'+total.toFixed(2);
+      document.getElementById('ay-kazanc').textContent = '₺'+ayTotal.toFixed(2);
+      const el = document.getElementById('ledger-list');
+      if (!entries.length) { el.innerHTML='<div class="empty-state"><div class="ico">💰</div><div>Henüz kazanç kaydı yok</div></div>'; return; }
+      el.innerHTML = entries.slice(0,30).map(e=>`
+        <div class="ledger-item">
+          <div>
+            <div>${e.description||'Gelir'}</div>
+            <div class="ledger-desc">${e.createdAt ? new Date(e.createdAt).toLocaleDateString('tr-TR') : ''}</div>
+          </div>
+          <div class="ledger-val ${parseFloat(e.amount||0)>=0?'pos':'neg'}">
+            ${parseFloat(e.amount||0)>=0?'+':''}₺${Math.abs(parseFloat(e.amount||0)).toFixed(2)}
+          </div>
+        </div>`).join('');
+    }, ()=>{});
+  }
+
+  async function loadShiftHistory() {
+    try {
+      const q = query(collection(db,'users',currentUser.uid,'shifts'), orderBy('startTime','desc'));
+      const snap = await getDocs(q);
+      const shifts = snap.docs.map(d=>({id:d.id,...d.data()}));
+      const el = document.getElementById('shift-history');
+      if (!shifts.length) { el.innerHTML='<div class="empty-state"><div class="ico">📅</div><div>Henüz vardiya kaydı yok</div></div>'; return; }
+      el.innerHTML = shifts.slice(0,20).map(s=>{
+        const dur = s.duration ? (s.duration/3600).toFixed(1)+'sa' : '—';
+        return `<div class="shift-hist-item">
+          <span class="shift-date">${s.startTime ? new Date(s.startTime).toLocaleDateString('tr-TR') : ''}</span>
+          <span class="shift-dur">${dur}</span>
+        </div>`;
+      }).join('');
+    } catch(e) {}
+  }
+
+  async function updateStats() {
+    try {
+      const q = query(collection(db,'users',currentUser.uid,'shifts'), orderBy('startTime','desc'));
+      const snap = await getDocs(q);
+      const shifts = snap.docs.map(d=>d.data());
+      const now = new Date();
+      let bugun=0, hafta=0;
+      shifts.forEach(s => {
+        if (!s.duration||!s.startTime) return;
+        const d = new Date(s.startTime);
+        const isToday = d.toDateString()===now.toDateString();
+        const diffDays = (now-d)/(1000*60*60*24);
+        if (isToday) bugun += s.duration/3600;
+        if (diffDays<=7) hafta += s.duration/3600;
+      });
+      document.getElementById('st-bugun').textContent = bugun.toFixed(1);
+      document.getElementById('st-hafta').textContent = hafta.toFixed(1);
+
+      const oq = query(collection(db,'users',currentUser.uid,'orders'));
+      const oSnap = await getDocs(oq);
+      document.getElementById('st-siparis').textContent = oSnap.size;
+    } catch(e) {}
+  }
+
+  window.toggleMusait = async (checked) => {
+    document.getElementById('musait-lbl').textContent = checked ? 'Müsait' : 'Müsait Değil';
+    try {
+      await updateDoc(doc(db,'users',currentUser.uid), { musait: checked });
+    } catch(e) { toast('Güncelleme başarısız','error'); }
+  };
+
+  window.toggleShift = async () => {
+    const btn = document.getElementById('btn-shift');
+    if (!shiftStart) {
+      // Start shift
+      shiftStart = new Date();
+      try {
+        await updateDoc(doc(db,'users',currentUser.uid), { shiftActive:true, shiftStart:shiftStart.toISOString() });
+        startShiftTimer();
+        btn.className = 'btn-shift end';
+        btn.textContent = 'Vardiyayı Bitir';
+        toast('Vardiya başladı ✅','success');
+      } catch(e) { toast('Hata: '+e.message,'error'); shiftStart=null; }
+    } else {
+      // End shift
+      const duration = Math.floor((new Date() - shiftStart)/1000);
+      try {
+        await updateDoc(doc(db,'users',currentUser.uid), { shiftActive:false, shiftStart:null });
+        await addDoc(collection(db,'users',currentUser.uid,'shifts'), {
+          startTime: shiftStart.toISOString(),
+          endTime: new Date().toISOString(),
+          duration
+        });
+        clearInterval(shiftTimer); shiftTimer=null;
+        shiftStart = null;
+        btn.className = 'btn-shift start';
+        btn.textContent = 'Vardiyayı Başlat';
+        document.getElementById('shift-status-text').textContent = '';
+        toast('Vardiya bitti. Süre: ' + (duration/3600).toFixed(1) + ' sa','success');
+        loadShiftHistory();
+        updateStats();
+      } catch(e) { toast('Hata: '+e.message,'error'); }
+    }
+  };
+
+  function startShiftTimer() {
+    function update() {
+      if (!shiftStart) return;
+      const elapsed = Math.floor((new Date()-shiftStart)/1000);
+      const h = Math.floor(elapsed/3600), m = Math.floor((elapsed%3600)/60), s = elapsed%60;
+      document.getElementById('shift-status-text').textContent =
+        `Vardiya süresi: ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    update();
+    shiftTimer = setInterval(update, 1000);
+  }
+
+  window.saveProfile = async () => {
+    const data = {
+      name:    document.getElementById('p-name').value.trim(),
+      phone:   document.getElementById('p-phone').value.trim(),
+      plate:   document.getElementById('p-plate').value.trim(),
+      vehicle: document.getElementById('p-vehicle').value.trim(),
+      route:   document.getElementById('p-route').value.trim()
+    };
+    try {
+      await updateDoc(doc(db,'users',currentUser.uid), data);
+      Object.assign(currentUser, data);
+      document.getElementById('s-name').textContent = data.name || 'Kurye';
+      if (data.route) listenRouteOrders(data.route);
+      toast('Profil kaydedildi ✅','success');
+    } catch(e) { toast('Kayıt başarısız','error'); }
+  };
+
+  window.saveMaint = async () => {
+    const data = {
+      maintOil:     document.getElementById('m-oil').value,
+      maintFilter:  document.getElementById('m-filter').value,
+      maintKm:      document.getElementById('m-km').value,
+      maintService: document.getElementById('m-service').value,
+      maintNote:    document.getElementById('m-note').value
+    };
+    try {
+      await updateDoc(doc(db,'users',currentUser.uid), data);
+      toast('Bakım bilgileri kaydedildi ✅','success');
+    } catch(e) { toast('Kayıt başarısız','error'); }
+  };
+
+  window.doLogout = async () => {
+    clearInterval(shiftTimer);
+    await signOut(auth);
+    window.location.href = '/izincikurye-login';
+  };
+
+  window.switchTab = (t) => {
+    document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+    document.getElementById('tab-'+t).classList.add('active');
+    document.getElementById('nav-'+t).classList.add('active');
+  };
+
+  function toast(msg,type='info') {
+    const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show';
+    if(type==='success') t.style.background='#34c759';
+    else if(type==='error') t.style.background='#ff3b30';
+    else t.style.background='#1c1c1e';
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
+</body>
+</html>

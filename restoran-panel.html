@@ -964,6 +964,20 @@ tbody tr:hover{background:var(--bg)}
           <!-- Sol -->
           <div style="display:flex;flex-direction:column;gap:14px">
             <div class="card">
+              <div class="card-header"><div class="card-title">🏪 İşletme Logosu</div></div>
+              <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+                <div style="position:relative;width:96px;height:96px">
+                  <img id="restoran-logo" src="" alt="" style="width:96px;height:96px;border-radius:16px;object-fit:cover;border:2px solid var(--border);display:none">
+                  <div id="restoran-logo-placeholder" style="width:96px;height:96px;border-radius:16px;background:var(--teal-bg);border:2px dashed var(--teal);display:flex;align-items:center;justify-content:center;font-size:32px">🍽️</div>
+                  <div onclick="document.getElementById('logo-inp').click()" style="position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--white)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="13" height="13"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                  <input type="file" id="logo-inp" accept="image/*" style="display:none" onchange="uploadRestoranLogo(event)">
+                </div>
+                <div id="logo-status" style="font-size:12px;color:var(--text3)">Logo yüklemek için tıkla</div>
+              </div>
+            </div>
+            <div class="card">
               <div class="card-header"><div class="card-title">⚙️ Atama Modu</div></div>
               <div class="card-body">
                 <div class="radio-grid" id="assign-mode-grid">
@@ -1498,8 +1512,10 @@ import { getDatabase, ref, onValue, set, update, get, push, remove }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, addDoc, collection }
+import { getFirestore, doc, getDoc, updateDoc, addDoc, collection }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // ── Config ────────────────────────────────────────────────────────────────
 const FB = {
@@ -1511,10 +1527,11 @@ const FB = {
   messagingSenderId:"1012295004135",
   appId:"1:1012295004135:web:0cceac0476175e19395742",
 };
-const app  = initializeApp(FB);
-const db   = getDatabase(app);
-const auth = getAuth(app);
-const fs   = getFirestore(app);
+const app     = initializeApp(FB);
+const db      = getDatabase(app);
+const auth    = getAuth(app);
+const fs      = getFirestore(app);
+const storage = getStorage(app);
 
 let RESTAURANT_ID = "demo_restoran_001";
 
@@ -1646,6 +1663,13 @@ onAuthStateChanged(auth, async user=>{
       document.getElementById("user-display").textContent = n;
       document.getElementById("user-avatar").textContent = n[0].toUpperCase();
       document.getElementById("rest-id-label").textContent = data.restoranId||user.uid;
+      if(data.logoURL){
+        const logoImg=document.getElementById('restoran-logo');
+        const logoPlaceholder=document.getElementById('restoran-logo-placeholder');
+        logoImg.src=data.logoURL; logoImg.style.display='block';
+        logoPlaceholder.style.display='none';
+        document.getElementById('logo-status').textContent='Logo yüklü ✅';
+      }
     } else {
       // No Firestore doc — use UID as restaurant ID (admin/legacy)
       RESTAURANT_ID = user.uid;
@@ -1663,6 +1687,26 @@ onAuthStateChanged(auth, async user=>{
 });
 window.logout=async()=>{
   try{await signOut(auth);window.location.href="restoran-login.html";}catch{}
+};
+
+window.uploadRestoranLogo=async(e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  if(f.size>5*1024*1024){alert('Logo max 5MB olmalı'); return;}
+  document.getElementById('logo-status').textContent='Yükleniyor...';
+  try{
+    const uid=auth.currentUser?.uid; if(!uid) return;
+    const sRef=storageRef(storage,`logos/${uid}/logo.jpg`);
+    await uploadBytes(sRef,f,{contentType:f.type});
+    const url=await getDownloadURL(sRef);
+    const logoImg=document.getElementById('restoran-logo');
+    const logoPlaceholder=document.getElementById('restoran-logo-placeholder');
+    logoImg.src=url; logoImg.style.display='block';
+    logoPlaceholder.style.display='none';
+    await updateDoc(doc(fs,'users',uid),{logoURL:url});
+    document.getElementById('logo-status').textContent='Logo kaydedildi ✅';
+  }catch(err){
+    document.getElementById('logo-status').textContent='Hata: '+err.message;
+  }
 };
 
 // ── Init Firebase ─────────────────────────────────────────────────────────

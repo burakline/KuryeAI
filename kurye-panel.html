@@ -15,7 +15,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
@@ -34,8 +34,10 @@ const app  = initializeApp(firebaseConfig);
 const rtdb = getDatabase(app);
 const fs   = getFirestore(app);
 const auth = getAuth(app);
-window._fb = {db:rtdb, fs, auth, ref, set, onValue, push, serverTimestamp, signOut,
-              doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit};
+const storage = getStorage(app);
+window._fb = {db:rtdb, fs, auth, storage, ref, set, onValue, push, serverTimestamp, signOut,
+              doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy, limit,
+              storageRef, uploadBytes, getDownloadURL};
 
 function generateID(prefix) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -985,7 +987,21 @@ function closeM(id){document.getElementById(id).classList.remove('active');}
 
 // AVATARS
 function updAv(){const n=G.name,init=n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2),url=G.avatar||`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true`;['topAv','sbAv','pAvImg'].forEach(id=>{const e=document.getElementById(id);if(e)e.src=url;});['sbName','pNameDisp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n;});}
-function handleAv(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{G.avatar=ev.target.result;updAv();toast('Fotoğraf güncellendi','success');};r.readAsDataURL(f);}
+async function handleAv(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>5*1024*1024){toast('Fotoğraf max 5MB olmalı','error');return;}
+  toast('Fotoğraf yükleniyor...','info');
+  try{
+    const fb=window._fb;
+    const sRef=fb.storageRef(fb.storage,`avatars/${G.uid}/profile.jpg`);
+    await fb.uploadBytes(sRef,f,{contentType:f.type});
+    const url=await fb.getDownloadURL(sRef);
+    G.avatar=url;
+    updAv();
+    await fb.updateDoc(fb.doc(fb.fs,'users',G.uid),{photoURL:url});
+    toast('Fotoğraf kaydedildi ✓','success');
+  }catch(err){toast('Yükleme hatası: '+err.message,'error');}
+}
 function selV(el,t){document.querySelectorAll('.vc').forEach(c=>c.classList.remove('active'));el.classList.add('active');G.vehicle=t;}
 async function saveProf(){
   const n=document.getElementById('pName').value.trim();
@@ -1190,6 +1206,7 @@ window._initKuryeApp = async function() {
   G.kuryeId = cu.kuryeId || '';
   G.name = cu.displayName || cu.name || 'Kurye';
   G.vehicle = cu.vehicle || 'motosiklet';
+  if(cu.photoURL) G.avatar = cu.photoURL;
 
   // Bakım verilerini yükle
   if(cu.maint_mo!==undefined)G.maint[0].l=cu.maint_mo||0;

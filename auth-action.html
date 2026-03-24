@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KuryeAI — E-posta Doğrulama</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--teal:#00c8d7;--teal2:#009aaa;--black:#0a0e17;--card:#13192a;--border:rgba(255,255,255,.08);--text:#f0f2f5;--text2:#a0a8b8}
+html,body{min-height:100vh;background:var(--black);color:var(--text);font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;padding:2rem 1.2rem}
+
+/* BG */
+.bg-grid{position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px);background-size:52px 52px}
+.bg-glow{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(0,200,215,.08) 0%,transparent 70%);pointer-events:none}
+
+.card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem 2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:2rem}
+.logo-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:28px;height:28px}
+.logo-text{font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
+.logo-text em{font-style:normal;color:var(--teal)}
+
+/* STATUS ICONS */
+.icon-wrap{width:80px;height:80px;border-radius:50%;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center}
+.icon-wrap.success{background:rgba(0,200,215,.12);border:2px solid rgba(0,200,215,.3)}
+.icon-wrap.error{background:rgba(239,68,68,.1);border:2px solid rgba(239,68,68,.25)}
+.icon-wrap.loading{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1)}
+.spinner{width:36px;height:36px;border:3px solid rgba(0,200,215,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+h1{font-size:1.4rem;font-weight:800;margin-bottom:.6rem}
+.sub{font-size:.9rem;color:var(--text2);line-height:1.6;margin-bottom:2rem}
+.sub strong{color:var(--teal);font-weight:600}
+
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;border:none;border-radius:12px;padding:.8rem 1.8rem;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;transition:background .2s}
+.btn:hover{background:var(--teal2)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);margin-top:.8rem}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+
+.footer{margin-top:2rem;font-size:.75rem;color:var(--text2)}
+.footer a{color:var(--teal);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="card" id="card">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="logo-text">Kurye<em>AI</em></div>
+  </div>
+
+  <!-- Loading -->
+  <div id="state-loading">
+    <div class="icon-wrap loading"><div class="spinner"></div></div>
+    <h1>İşleniyor...</h1>
+    <p class="sub">Lütfen bekleyin.</p>
+  </div>
+
+  <!-- Success -->
+  <div id="state-success" style="display:none">
+    <div class="icon-wrap success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" width="36" height="36"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h1>E-posta Doğrulandı! ✅</h1>
+    <p class="sub" id="success-msg">E-posta adresin başarıyla doğrulandı.<br><strong>Hesabın admin onayına alındı.</strong><br>En kısa sürede aktif edilecektir.</p>
+    <a href="/kurye-login" class="btn" id="login-btn">Giriş Sayfasına Git →</a>
+    <div class="footer">Sorun mu yaşıyorsun? <a href="mailto:destek@kuryeai.com">destek@kuryeai.com</a></div>
+  </div>
+
+  <!-- Error -->
+  <div id="state-error" style="display:none">
+    <div class="icon-wrap error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" width="36" height="36"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <h1>Bir Hata Oluştu</h1>
+    <p class="sub" id="error-msg">Doğrulama bağlantısı geçersiz veya süresi dolmuş olabilir.</p>
+    <a href="/kurye-login" class="btn btn-ghost">Giriş Sayfasına Dön</a>
+  </div>
+
+  <!-- Password Reset Success -->
+  <div id="state-reset" style="display:none">
+    <div class="icon-wrap success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" width="36" height="36"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h1>Şifre Güncellendi! ✅</h1>
+    <p class="sub">Şifren başarıyla güncellendi.<br>Yeni şifrenle giriş yapabilirsin.</p>
+    <a href="/kurye-login" class="btn" id="reset-login-btn">Giriş Yap →</a>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, applyActionCode, verifyPasswordResetCode, confirmPasswordReset, checkActionCode }
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
+  authDomain:"kuryeai-99bf9.firebaseapp.com",
+  projectId:"kuryeai-99bf9",
+  storageBucket:"kuryeai-99bf9.firebasestorage.app",
+  messagingSenderId:"1012295004135",
+  appId:"1:1012295004135:web:0cceac0476175e19395742"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const mode   = params.get('mode');
+const code   = params.get('oobCode');
+
+function show(state) {
+  ['loading','success','error','reset'].forEach(s =>
+    document.getElementById('state-'+s).style.display = s===state ? 'block' : 'none'
+  );
+}
+
+async function getUserRole(email) {
+  // Hangi login sayfasına yönlendireceğimizi belirle
+  return 'kurye'; // default
+}
+
+async function handleAction() {
+  if (!code) { show('error'); return; }
+
+  try {
+    if (mode === 'verifyEmail') {
+      // E-postayı doğrula
+      const info = await checkActionCode(auth, code);
+      const email = info.data?.email || '';
+      await applyActionCode(auth, code);
+
+      // Kullanıcı rolüne göre yönlendirme butonu ayarla
+      const loginBtn = document.getElementById('login-btn');
+      if (email) {
+        document.getElementById('success-msg').innerHTML =
+          `<strong>${email}</strong> adresi başarıyla doğrulandı.<br><br>Hesabın admin onayına alındı.<br>En kısa sürede aktif edilecektir.`;
+      }
+      show('success');
+
+    } else if (mode === 'resetPassword') {
+      await verifyPasswordResetCode(auth, code);
+      // Şifre sıfırlama sayfasına yönlendir
+      window.location.href = '/reset-password?oobCode=' + encodeURIComponent(code);
+
+    } else {
+      show('error');
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById('error-msg').textContent =
+      err.code === 'auth/invalid-action-code'
+        ? 'Bu doğrulama bağlantısı daha önce kullanılmış veya süresi dolmuş.'
+        : 'İşlem sırasında bir hata oluştu: ' + err.message;
+    show('error');
+  }
+}
+
+handleAction();
+</script>
+</body>
+</html>

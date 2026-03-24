@@ -17,7 +17,8 @@
     { "source": "/acilkurye-talep-panel",  "destination": "/acilkurye-talep-panel.html" },
     { "source": "/izincikurye",            "destination": "/izincikurye.html" },
     { "source": "/izincikurye-login",      "destination": "/izincikurye-login.html" },
-    { "source": "/izincikurye-panel",      "destination": "/izincikurye-panel.html" }
+    { "source": "/izincikurye-panel",      "destination": "/izincikurye-panel.html" },
+    { "source": "/auth-action",            "destination": "/auth-action.html" }
   ],
   "headers": [
     {

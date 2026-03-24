@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>RestoranAI — Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -42,6 +43,22 @@
   --fh:'Plus Jakarta Sans',sans-serif;
   --fm:'JetBrains Mono',monospace;
 }
+/* ── DARK MODE ── */
+body.dark{
+  --bg:#0f1117;--bg2:#161b24;--surface:#1a1f2e;--surface2:#1e2435;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);
+  --text:#f0f2f5;--text2:#a0a8b8;--text3:#5a6276;--white:#1a1f2e;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --shadow-md:0 4px 24px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.3);
+}
+body.dark .topbar,body.dark .mob-topbar{background:var(--surface);border-color:var(--border)}
+body.dark .sidebar{background:var(--surface);border-color:var(--border)}
+body.dark .nav-item:hover,body.dark .nav-item.active{background:rgba(0,200,215,.1)}
+body.dark .card,body.dark .stat-card,body.dark .section-card{background:var(--surface);border-color:var(--border)}
+body.dark input,body.dark select,body.dark textarea{background:var(--bg2);border-color:var(--border);color:var(--text)}
+.dm-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:13px;cursor:pointer;color:var(--text2);transition:border-color .2s}
+.dm-toggle:hover{border-color:var(--teal);color:var(--teal)}
+
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fh);-webkit-font-smoothing:antialiased}
 
 /* ── LAYOUT ── */
@@ -620,7 +637,8 @@ tbody tr:hover{background:var(--bg)}
 <div class="mob-topbar">
   <div class="mob-menu-btn" onclick="toggleSidebar()">☰</div>
   <div class="mob-brand">Restoran<em>AI</em></div>
-  <div class="mob-status">
+  <div class="mob-status" style="display:flex;align-items:center;gap:6px">
+    <button class="dm-toggle" onclick="toggleDarkMode()" id="dm-btn-mob" title="Karanlık mod">🌙</button>
     <div class="status-pill fb-load" id="fb-status-mob" style="font-size:10px;padding:3px 8px">
       <span class="pill-dot"></span><span id="fb-status-mob-txt">…</span>
     </div>
@@ -718,6 +736,7 @@ tbody tr:hover{background:var(--bg)}
         <div class="status-pill live">
           <span class="pill-dot pulse"></span>Canlı
         </div>
+        <button class="dm-toggle" onclick="toggleDarkMode()" id="dm-btn" title="Karanlık mod">🌙</button>
       </div>
     </div>
 
@@ -1479,7 +1498,7 @@ import { getDatabase, ref, onValue, set, update, get, push, remove }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc }
+import { getFirestore, doc, getDoc, addDoc, collection }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ── Config ────────────────────────────────────────────────────────────────
@@ -2242,7 +2261,32 @@ window.submitManualOrder = async () => {
   };
 
   try{
-    await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), newOrder);
+    const rtdbRef = await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), newOrder);
+    const orderId = rtdbRef.key;
+
+    // Firestore'a da yaz (admin panel & kurye takibi için)
+    try {
+      await addDoc(collection(fs,'orders'), {
+        ...newOrder,
+        orderId,
+        restoranId: RESTAURANT_ID,
+        restoranName: settings.rest_name || RESTAURANT_ID,
+        createdAt: new Date().toISOString()
+      });
+    } catch(fe) { console.error('Firestore order error:', fe); }
+
+    // Atanan kuryeye RTDB bildirimi gönder
+    if (courierId) {
+      try {
+        await set(ref(db,`couriers/${courierId}/pendingOrder`), {
+          ...newOrder,
+          orderId,
+          restoranId: RESTAURANT_ID,
+          restoranName: settings.rest_name || RESTAURANT_ID
+        });
+      } catch(ne) { console.error('Kurye notify error:', ne); }
+    }
+
     showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
     clearManualOrder();
     renderRecentManualOrders();
@@ -2295,10 +2339,30 @@ window.fetchFromPlatform = async (platform, apiKey) => {
 
 // initFirebase() is now called from onAuthStateChanged after user is verified
 
+// ── DARK MODE ──────────────────────────────────────────────────────────────
+(function() {
+  if (localStorage.getItem('restoran_dark') === '1') {
+    document.body.classList.add('dark');
+  }
+})();
+window.toggleDarkMode = function() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('restoran_dark', isDark ? '1' : '0');
+  const icon = isDark ? '☀️' : '🌙';
+  ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=icon; });
+};
+// Sync button icon on load
+document.addEventListener('DOMContentLoaded', ()=>{
+  if (document.body.classList.contains('dark')) {
+    ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='☀️'; });
+  }
+});
+
 </script>
 
 <!-- Sidebar overlay buraya taşındı — tüm içeriğin üstünde render edilir -->
 <div id="sidebar-overlay-fixed" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200" onclick="closeSidebar()"></div>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

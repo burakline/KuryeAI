@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AcilKuryeAI — Talep Paneli</title>
   <style>
@@ -84,6 +85,10 @@
         <label class="form-label">İletişim Telefonu</label>
         <input class="form-input" type="tel" id="t-phone" placeholder="05XX XXX XX XX"/>
       </div>
+      <div class="form-group">
+        <label class="form-label">Tahmini Ücret</label>
+        <div id="fee-estimate" style="background:#f5f5f7;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;font-size:.88rem;color:var(--tx2)">Adres girdikten sonra hesaplanır</div>
+      </div>
       <button class="btn-primary" id="btn-talep" onclick="createTalep()">Talep Gönder →</button>
     </div>
   </div>
@@ -107,7 +112,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, addDoc, collection, query, where, orderBy, onSnapshot }
+  import { getFirestore, doc, getDoc, addDoc, updateDoc, collection, query, where, orderBy, onSnapshot }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -153,9 +158,13 @@
     const el = document.getElementById('talepler-list');
     if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="ico">📭</div><div>Henüz talep oluşturmadınız</div></div>'; return; }
     el.innerHTML = list.map(t => {
-      const stMap = { open:'Bekliyor', accepted:'Kurye Kabul Etti', picked:'Yolda', delivered:'Teslim Edildi' };
-      const stClass = { open:'st-open', accepted:'st-accepted', picked:'st-accepted', delivered:'st-delivered' };
+      const stMap = { open:'⏳ Kurye Bekleniyor', accepted:'✅ Kurye Kabul Etti', picked:'🛵 Yolda', delivered:'📦 Teslim Edildi', cancelled:'❌ İptal Edildi' };
+      const stClass = { open:'st-open', accepted:'st-accepted', picked:'st-accepted', delivered:'st-delivered', cancelled:'st-open' };
       const st = t.status||'open';
+      const fee = t.feeEstimate ? `<br/>💰 Tahmini Ücret: <strong>₺${t.feeEstimate}</strong>` : '';
+      const cancelBtn = st === 'open'
+        ? `<button onclick="cancelTalep('${t.id}')" style="margin-top:.6rem;width:100%;background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:.5rem;font-size:.8rem;font-weight:700;cursor:pointer">✕ Talebi İptal Et</button>`
+        : '';
       return `<div class="talep-item">
         <div class="talep-item-head">
           <span class="talep-id-badge">${t.talepId||t.id}</span>
@@ -163,13 +172,44 @@
         </div>
         <div class="talep-info">
           📍 ${t.fromAddr||'—'} → ${t.toAddr||'—'}<br/>
-          📦 ${t.description||'—'}<br/>
+          📦 ${t.description||'—'}${fee}<br/>
           🕐 ${t.createdAt ? new Date(t.createdAt).toLocaleString('tr-TR') : ''}
         </div>
         ${t.kuryeName ? `<div class="kurye-info">🛵 Kurye: <strong>${t.kuryeName}</strong></div>` : ''}
+        ${cancelBtn}
       </div>`;
     }).join('');
   }
+
+  // Tahmini ücret hesaplama (basit formül: baz ücret + harf sayısı bazlı mesafe tahmini)
+  function estimateFee(from, to) {
+    if (!from || !to) return null;
+    const base = 25;
+    const extra = Math.min(Math.floor((from.length + to.length) / 8), 30);
+    return base + extra;
+  }
+
+  // Adres alanları değişince tahmini ücreti güncelle
+  ['t-from','t-to'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      const f = document.getElementById('t-from').value.trim();
+      const t = document.getElementById('t-to').value.trim();
+      const fee = estimateFee(f, t);
+      const el = document.getElementById('fee-estimate');
+      el.textContent = fee ? `Tahmini: ₺${fee} – ₺${fee + 15}` : 'Adres girdikten sonra hesaplanır';
+      el.style.color = fee ? 'var(--green)' : 'var(--tx2)';
+    });
+  });
+
+  window.cancelTalep = async (talepDocId) => {
+    if (!confirm('Bu talebi iptal etmek istiyor musunuz?')) return;
+    try {
+      await updateDoc(doc(db,'acilTalepler',talepDocId), { status:'cancelled' });
+      toast('Talep iptal edildi.','info');
+    } catch(e) {
+      toast('İptal işlemi başarısız: ' + e.message,'error');
+    }
+  };
 
   window.createTalep = async () => {
     const fromAddr    = document.getElementById('t-from').value.trim();
@@ -185,12 +225,13 @@
       err.textContent = 'Lütfen tüm alanları doldurun.';
       err.style.display = 'block'; return;
     }
+    const feeEstimate = estimateFee(fromAddr, toAddr);
     btn.disabled = true; btn.textContent = 'Gönderiliyor...';
     try {
       const talepId = generateID('SAI');
       await addDoc(collection(db,'acilTalepler'), {
         talepId, userId:currentUser.uid, fromAddr, toAddr, description,
-        customerName, customerPhone, status:'open',
+        customerName, customerPhone, status:'open', feeEstimate,
         createdAt:new Date().toISOString()
       });
       document.getElementById('t-from').value='';
@@ -198,6 +239,8 @@
       document.getElementById('t-desc').value='';
       document.getElementById('t-cust').value='';
       document.getElementById('t-phone').value='';
+      document.getElementById('fee-estimate').textContent='Adres girdikten sonra hesaplanır';
+      document.getElementById('fee-estimate').style.color='var(--tx2)';
       toast('Talebiniz oluşturuldu! 📦','success');
       setTimeout(()=>window.switchTab('taleplerim'),1500);
     } catch(e) {
@@ -221,5 +264,6 @@
     setTimeout(()=>t.classList.remove('show'),3000);
   }
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

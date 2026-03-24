@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>İzinciKuryeAI — Panel</title>
   <style>
@@ -154,6 +155,11 @@
       <div class="empty-state"><div class="ico">📭</div><div>Aktif sipariş yok</div></div>
     </div>
 
+    <div class="sec-title" style="margin-top:1.2rem">Güzergah Eşleşmeleri</div>
+    <div id="route-orders">
+      <div class="empty-state"><div class="ico">🗺️</div><div>Güzergah bilgisi girin (Profil tabı)</div></div>
+    </div>
+
     <div class="sec-title" style="margin-top:1.2rem">Sipariş Geçmişi</div>
     <div id="order-history">
       <div class="empty-state"><div class="ico">📋</div><div>Henüz teslim edilen sipariş yok</div></div>
@@ -207,6 +213,11 @@
       <div class="form-group">
         <label class="form-label">Araç Markası / Modeli</label>
         <input class="form-input" type="text" id="p-vehicle" placeholder="Honda PCX 125"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Güzergah (Bölge / Hat)</label>
+        <input class="form-input" type="text" id="p-route" placeholder="örn. Kadıköy, Beşiktaş, Merkez"/>
+        <div style="font-size:.72rem;color:var(--tx2);margin-top:.3rem">Bu alana girdiğiniz bölgeye ait siparişler size eşleştirilir.</div>
       </div>
       <button class="btn-save" onclick="saveProfile()">Kaydet</button>
     </div>
@@ -294,6 +305,7 @@
     document.getElementById('p-phone').value   = u.phone   || '';
     document.getElementById('p-plate').value   = u.plate   || '';
     document.getElementById('p-vehicle').value = u.vehicle || '';
+    document.getElementById('p-route').value   = u.route   || '';
     document.getElementById('m-oil').value     = u.maintOil    || '';
     document.getElementById('m-filter').value  = u.maintFilter || '';
     document.getElementById('m-km').value      = u.maintKm     || '';
@@ -316,6 +328,47 @@
     loadShiftHistory();
     listenOrders();
     updateStats();
+    if (u.route) listenRouteOrders(u.route);
+  }
+
+  let _unsubRouteOrders = null;
+  function listenRouteOrders(route) {
+    if (_unsubRouteOrders) _unsubRouteOrders();
+    if (!route) return;
+    // Listen to global orders collection where address contains route keyword
+    const q = query(
+      collection(db,'orders'),
+      where('status','==','pending'),
+      orderBy('createdAt','desc')
+    );
+    _unsubRouteOrders = onSnapshot(q, snap => {
+      const routeLower = route.toLowerCase();
+      const matched = snap.docs
+        .map(d=>({id:d.id,...d.data()}))
+        .filter(o => {
+          const addr = ((o.address||'') + ' ' + (o.fromAddr||'') + ' ' + (o.toAddr||'')).toLowerCase();
+          return addr.includes(routeLower);
+        });
+      renderRouteOrders(matched);
+    }, ()=>{});
+  }
+
+  function renderRouteOrders(orders) {
+    const el = document.getElementById('route-orders');
+    if (!el) return;
+    if (!orders.length) { el.innerHTML='<div class="empty-state"><div class="ico">🗺️</div><div>Güzergahınıza ait bekleyen sipariş yok</div></div>'; return; }
+    el.innerHTML = orders.map(o=>`
+      <div class="order-item">
+        <div class="order-head">
+          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="st-badge st-open">Bekliyor</span>
+        </div>
+        <div class="order-info">
+          📍 ${o.address||o.fromAddr||'—'}<br/>
+          🍽️ ${o.restoranName||'—'}<br/>
+          💰 ₺${o.total||0}
+        </div>
+      </div>`).join('');
   }
 
   let _unsubOrders = null;
@@ -496,12 +549,14 @@
       name:    document.getElementById('p-name').value.trim(),
       phone:   document.getElementById('p-phone').value.trim(),
       plate:   document.getElementById('p-plate').value.trim(),
-      vehicle: document.getElementById('p-vehicle').value.trim()
+      vehicle: document.getElementById('p-vehicle').value.trim(),
+      route:   document.getElementById('p-route').value.trim()
     };
     try {
       await updateDoc(doc(db,'users',currentUser.uid), data);
       Object.assign(currentUser, data);
       document.getElementById('s-name').textContent = data.name || 'Kurye';
+      if (data.route) listenRouteOrders(data.route);
       toast('Profil kaydedildi ✅','success');
     } catch(e) { toast('Kayıt başarısız','error'); }
   };
@@ -541,5 +596,6 @@
     setTimeout(()=>t.classList.remove('show'),3000);
   }
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

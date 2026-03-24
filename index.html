@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KuryeAI — Ankara Kurye | Acil Kurye | Havuz Kurye | Sabit Kurye | İzinci Kurye</title>
   <meta name="description" content="Ankara'nın akıllı kurye platformu. Acil kurye, tıbbi kurye, eczane kuryesi, ilaç kuryesi, izinci kurye, sabit kurye, havuz kurye. 7/24 hızlı teslimat. RestoranAI ile sipariş yönetimi."/>
@@ -993,5 +994,6 @@
 
 
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AdminAI — Yönetim Paneli</title>
   <style>
@@ -320,6 +321,19 @@
       <div id="kurye-list"><div class="empty"><div class="empty-ico">🛵</div><p>Yükleniyor...</p></div></div>
     </div>
 
+    <!-- SİPARİŞLER -->
+    <div class="pane" id="pane-siparisler">
+      <p class="page-lbl">Canlı</p>
+      <p class="page-title">Siparişler</p>
+      <div class="ftabs">
+        <button class="ftab active" onclick="fSiparis('hepsi',this)">Hepsi</button>
+        <button class="ftab" onclick="fSiparis('pending',this)">Bekleyen</button>
+        <button class="ftab" onclick="fSiparis('on_the_way',this)">Yolda</button>
+        <button class="ftab" onclick="fSiparis('delivered',this)">Teslim</button>
+      </div>
+      <div id="siparis-list"><div class="empty"><div class="empty-ico">📦</div><p>Yükleniyor...</p></div></div>
+    </div>
+
     <!-- İSTATİSTİK -->
     <div class="pane" id="pane-istatistik">
       <p class="page-lbl">Genel</p>
@@ -365,6 +379,10 @@
     <button class="tbtn" id="tab-kuryeler" onclick="switchTab('kuryeler')">
       <span class="tbtn-icon">🛵</span><span class="tbtn-lbl">Kuryeler</span>
     </button>
+    <button class="tbtn" id="tab-siparisler" onclick="switchTab('siparisler')">
+      <span class="tbtn-icon">📦</span><span class="tbtn-lbl">Siparişler</span>
+      <span class="tbtn-badge" id="badge-sip" style="display:none"></span>
+    </button>
     <button class="tbtn" id="tab-istatistik" onclick="switchTab('istatistik')">
       <span class="tbtn-icon">📊</span><span class="tbtn-lbl">İstatistik</span>
     </button>
@@ -375,7 +393,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, orderBy, serverTimestamp }
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, orderBy, onSnapshot, limit, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const cfg = {
@@ -394,9 +412,10 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 
 // STATE
-let allBasvurular=[], allUsers=[];
-let fBsv='hepsi', fRst='hepsi', fKry='hepsi';
+let allBasvurular=[], allUsers=[], allSiparisler=[];
+let fBsv='hepsi', fRst='hepsi', fKry='hepsi', fSip='hepsi';
 let modalData=null;
+let _unsubSiparisler=null;
 
 // ── AUTH ──
 onAuthStateChanged(auth, async user => {
@@ -747,6 +766,64 @@ function setActive(btn,sel){ document.querySelectorAll(sel).forEach(b=>b.classLi
 function statusLbl(s){ return s==='pending'?'Bekliyor':s==='active'?'Aktif':s==='suspended'?'Askıda':'Reddedildi'; }
 function fmtTime(ts){ if(!ts) return ''; try{ const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){return '';} }
 
+// ── SİPARİŞLER ──────────────────────────────────────────────────────────────
+function listenSiparisler() {
+  if (_unsubSiparisler) return;
+  try {
+    const q = query(collection(db,'orders'), orderBy('createdAt','desc'), limit(100));
+    _unsubSiparisler = onSnapshot(q, snap => {
+      allSiparisler = snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderSiparisler();
+      updateSiparisBadge();
+    }, e=>console.error('orders snap',e));
+  } catch(e){ console.error(e); }
+}
+
+function updateSiparisBadge() {
+  const n = allSiparisler.filter(s=>s.status==='pending').length;
+  const badge = document.getElementById('badge-sip');
+  if(badge){ badge.textContent=n; badge.style.display=n?'flex':'none'; }
+}
+
+window.fSiparis=(f,btn)=>{ fSip=f; setActive(btn,'#pane-siparisler .ftab'); renderSiparisler(); };
+
+function renderSiparisler() {
+  const el = document.getElementById('siparis-list');
+  if(!el) return;
+  let list = [...allSiparisler];
+  if(fSip==='pending') list=list.filter(s=>s.status==='pending');
+  else if(fSip==='on_the_way') list=list.filter(s=>s.status==='on_the_way');
+  else if(fSip==='delivered') list=list.filter(s=>s.status==='delivered');
+  if(!list.length){ el.innerHTML='<div class="empty"><div class="empty-ico">📦</div><p>Sipariş bulunamadı</p></div>'; return; }
+  const stMap = { pending:'Bekliyor', preparing:'Hazırlanıyor', on_the_way:'Yolda', delivered:'Teslim Edildi' };
+  const stCls = { pending:'y', preparing:'t', on_the_way:'t', delivered:'g' };
+  el.innerHTML = list.map(s=>{
+    const st = s.status||'pending';
+    const items = Array.isArray(s.items) ? s.items.join(', ') : (s.items||'');
+    const t = s.createdAt ? fmtTime(s.createdAt) : '';
+    return `<div class="card" style="margin-bottom:.6rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+        <span style="font-size:.72rem;font-weight:700;color:var(--teal)">${s.orderId||s.id}</span>
+        <span class="snum ${stCls[st]||'y'}" style="font-size:.7rem;padding:.2rem .7rem;border-radius:999px;font-weight:700">${stMap[st]||st}</span>
+      </div>
+      <div style="font-size:.86rem;font-weight:600;margin-bottom:.2rem">${s.customer||'—'}</div>
+      <div style="font-size:.78rem;color:var(--gray-lt);line-height:1.5">
+        ${items ? `📦 ${items}<br/>` : ''}
+        ${s.address ? `📍 ${s.address}<br/>` : ''}
+        ${s.restoranName ? `🍽️ ${s.restoranName}<br/>` : ''}
+        💰 ₺${s.total||0} · ${t}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Siparişler tab'ına geçince listener başlat
+const _origSwitch = window.switchTab;
+window.switchTab=(tab)=>{
+  _origSwitch(tab);
+  if(tab==='siparisler') listenSiparisler();
+};
+
 let toastTimer;
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
@@ -755,5 +832,6 @@ function showToast(msg,type='ok'){
   toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
 }
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

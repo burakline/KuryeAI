@@ -1253,5 +1253,6 @@ window.addEventListener('load',()=>{
 });
 document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');}));
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AcilKuryeAI — Kurye Paneli</title>
   <style>
@@ -300,5 +301,6 @@
     setTimeout(()=>t.classList.remove('show'),3000);
   }
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

@@ -303,12 +303,12 @@ async function loadPrices() {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js");
     const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
     const app = initializeApp({
-      apiKey:"AIzaSyAAupWOvjL9ZlW8855_lD52_vkc8BCqGtw",
-      authDomain:"kuryeai.firebaseapp.com",
-      projectId:"kuryeai",
-      storageBucket:"kuryeai.firebasestorage.app",
-      messagingSenderId:"655930514402",
-      appId:"1:655930514402:web:379321cbb83f48daf077bb"
+      apiKey:"AIzaSyBXtgSTExiRz9dTVPoBzI-7vjgcn-yYk3g",
+      authDomain:"kuryeai-69df7.firebaseapp.com",
+      projectId:"kuryeai-69df7",
+      storageBucket:"kuryeai-69df7.firebasestorage.app",
+      messagingSenderId:"926101401499",
+      appId:"1:926101401499:web:171ec0b150587539a9bb3e"
     }, 'price-app');
     const db = getFirestore(app);
     const snap = await getDoc(doc(db, 'ayarlar', 'fiyatlar'));

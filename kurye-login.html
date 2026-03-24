@@ -18,7 +18,16 @@
       --teal-lt:  #33d6e3;
       --teal-dk:  #009aaa;
       --red:      #ff5f57;
+      --green:    #34c759;
     }
+
+    .tabs { display:flex; background:#1a1a1a; border-radius:12px; padding:4px; margin-bottom:1.5rem; }
+    .tab-btn { flex:1; text-align:center; padding:.55rem; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; color:var(--sub); transition:all .2s; border:none; background:none; font-family:Arial,Helvetica,sans-serif; }
+    .tab-btn.active { background:var(--card); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.5); }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:block; }
+    .ok-msg { display:none; background:rgba(52,199,89,.08); border:.5px solid rgba(52,199,89,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--green); margin-bottom:1rem; line-height:1.5; }
+    .ok-msg.show { display:block; }
 
     html, body {
       height: 100%;
@@ -277,59 +286,104 @@
     </div>
   </div>
 
-  <p class="form-title">Vardiyaya Başla 🛵</p>
-  <p class="form-sub">E-posta, telefon veya kurye ID ile giriş yapın.</p>
-
-  <div class="err-msg" id="err-msg"></div>
-  <div class="success-msg" id="success-msg"></div>
-
-  <div class="form-group">
-    <label class="form-label">E-posta / Telefon / ID</label>
-    <input class="form-input" type="text" id="input-email"
-           placeholder="kurye@email.com veya KAI-XXXXXX" autocomplete="username"/>
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
+    <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
   </div>
 
-  <div class="form-group">
-    <label class="form-label">Şifre</label>
-    <div class="pw-wrap">
-      <input class="form-input" type="password" id="input-password"
-             placeholder="••••••••" autocomplete="current-password"/>
-      <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+  <!-- GİRİŞ -->
+  <div class="tab-pane active" id="pane-giris">
+    <p class="form-title">Vardiyaya Başla 🛵</p>
+    <p class="form-sub">E-posta, telefon veya kurye ID ile giriş yapın.</p>
+
+    <div class="err-msg" id="err-msg"></div>
+    <div class="success-msg" id="success-msg"></div>
+
+    <div class="form-group">
+      <label class="form-label">E-posta / Telefon / ID</label>
+      <input class="form-input" type="text" id="input-email"
+             placeholder="kurye@email.com veya KAI-XXXXXX" autocomplete="username"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Şifre</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="input-password"
+               placeholder="••••••••" autocomplete="current-password"/>
+        <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
+        <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
+        Beni hatırla
+      </label>
+      <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
+         onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
+         onclick="doForgot(event)">Şifremi unuttum</a>
+    </div>
+
+    <button class="btn-submit" id="btn-login" onclick="doLogin()">
+      <div class="spinner"></div>
+      <span class="btn-text">Giriş Yap →</span>
+    </button>
+
+    <div class="info-strip" style="margin-top:1.2rem">
+      <div class="info-row"><span class="info-dot"></span>Hesabınız admin onayından sonra aktif olur</div>
+      <div class="info-row"><span class="info-dot"></span>Sorun için: destek@kuryeai.com</div>
     </div>
   </div>
 
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
-      <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
-      Beni hatırla
-    </label>
-    <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
-       onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
-       onclick="doForgot(event)">Şifremi unuttum</a>
-  </div>
+  <!-- KAYIT -->
+  <div class="tab-pane" id="pane-kayit">
+    <p class="form-title">Kurye Kaydı 🛵</p>
+    <p class="form-sub">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
 
-  <button class="btn-submit" id="btn-login" onclick="doLogin()">
-    <div class="spinner"></div>
-    <span class="btn-text">Giriş Yap →</span>
-  </button>
+    <div class="err-msg" id="kayit-err"></div>
+    <div class="ok-msg" id="kayit-ok"></div>
 
-  <div class="info-strip">
-    <div class="info-row"><span class="info-dot"></span>Hesabınız admin onayından sonra aktif olur</div>
-    <div class="info-row"><span class="info-dot"></span>Sorun için: destek@kuryeai.com</div>
-  </div>
+    <div class="form-group">
+      <label class="form-label">Ad Soyad</label>
+      <input class="form-input" type="text" id="k-name" placeholder="Ad Soyad"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Telefon</label>
+      <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">E-posta</label>
+      <input class="form-input" type="email" id="k-email" placeholder="kurye@email.com" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw',this)">Göster</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre Tekrar</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw2',this)">Göster</button>
+      </div>
+    </div>
 
-  <div class="card-footer">
-    <p>Henüz kurye değil misiniz?<br/>
-    <a href="kurye.html#basvuru">Başvuru yapın</a>, ekibimiz sizi arasın.</p>
+    <button class="btn-submit" id="btn-kayit" onclick="doKayit()">
+      <div class="spinner"></div>
+      <span class="btn-text">Kayıt Ol →</span>
+    </button>
   </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail,
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+           sendEmailVerification, onAuthStateChanged, sendPasswordResetEmail, signOut,
            browserLocalPersistence, browserSessionPersistence, setPersistence }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, query, collection, where, getDocs }
+  import { getFirestore, doc, getDoc, setDoc, query, collection, where, getDocs }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -378,11 +432,68 @@
     document.getElementById('success-msg').classList.remove('show');
   }
 
+  function generateID(prefix) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = prefix + '-';
+    for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  window.switchTab = (t) => {
+    document.querySelectorAll('.tab-pane').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+    document.getElementById('pane-'+t).classList.add('active');
+    document.getElementById('tab-'+t).classList.add('active');
+  };
+
   window.togglePw = function() {
     const inp = document.getElementById('input-password');
     const btn = document.getElementById('pw-btn');
     inp.type = inp.type === 'password' ? 'text' : 'password';
     btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
+  };
+
+  window.toggleKayitPw = (id, btn) => {
+    const el = document.getElementById(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+    btn.textContent = el.type === 'password' ? 'Göster' : 'Gizle';
+  };
+
+  window.doKayit = async function() {
+    const name  = document.getElementById('k-name').value.trim();
+    const phone = document.getElementById('k-phone').value.trim();
+    const email = document.getElementById('k-email').value.trim();
+    const pw    = document.getElementById('k-pw').value;
+    const pw2   = document.getElementById('k-pw2').value;
+    const btn   = document.getElementById('btn-kayit');
+    const err   = document.getElementById('kayit-err');
+    const ok    = document.getElementById('kayit-ok');
+    err.classList.remove('show'); ok.classList.remove('show');
+
+    if (!name||!phone||!email||!pw||!pw2) { err.textContent='Tüm alanları doldurun.'; err.classList.add('show'); return; }
+    if (pw !== pw2) { err.textContent='Şifreler eşleşmiyor.'; err.classList.add('show'); return; }
+    if (pw.length < 6) { err.textContent='Şifre en az 6 karakter olmalı.'; err.classList.add('show'); return; }
+
+    btn.classList.add('loading'); btn.disabled = true;
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      const kuryeId = generateID('KAI');
+      await setDoc(doc(db,'users',cred.user.uid), {
+        uid: cred.user.uid, kuryeId, name, phone, email,
+        role: 'kurye', status: 'pending', createdAt: new Date().toISOString()
+      });
+      await sendEmailVerification(cred.user);
+      await signOut(auth);
+      ok.textContent = `✅ Kayıt başarılı! Kurye ID'niz: ${kuryeId}. E-posta doğrulama linki gönderildi. Doğrulama sonrası admin onayı beklemeniz gerekiyor.`;
+      ok.classList.add('show');
+      ['k-name','k-phone','k-email','k-pw','k-pw2'].forEach(id => document.getElementById(id).value='');
+      setTimeout(() => window.switchTab('giris'), 6000);
+    } catch(e) {
+      const msgs = { 'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.', 'auth/invalid-email':'Geçersiz e-posta.', 'auth/weak-password':'Şifre çok zayıf.' };
+      err.textContent = msgs[e.code] || e.message;
+      err.classList.add('show');
+    }
+    btn.classList.remove('loading'); btn.disabled = false;
   };
 
   // Email, telefon veya ID'den email çöz

@@ -393,6 +393,10 @@
     document.getElementById('tab-'+t).classList.add('active');
   };
 
+  // URL'de ?tab=kayit varsa otomatik aç
+  const _urlTab = new URLSearchParams(location.search).get('tab');
+  if (_urlTab === 'kayit') switchTab('kayit');
+
   window.togglePw = function() {
     const inp = document.getElementById('input-password');
     const btn = document.getElementById('pw-btn');

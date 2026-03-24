@@ -227,15 +227,15 @@
   </div>
 
   <p class="form-title">Hoş Geldiniz 👋</p>
-  <p class="form-sub">RestoranAI panelinize giriş yapın.</p>
+  <p class="form-sub">E-posta, telefon veya işletme ID ile giriş yapın.</p>
 
   <div class="err-msg" id="err-msg"></div>
   <div class="success-msg" id="success-msg"></div>
 
   <div class="form-group">
-    <label class="form-label">E-posta</label>
-    <input class="form-input" type="email" id="input-email"
-           placeholder="restoran@email.com" autocomplete="email"/>
+    <label class="form-label">E-posta / Telefon / ID</label>
+    <input class="form-input" type="text" id="input-email"
+           placeholder="restoran@email.com veya RAI-XXXXXX" autocomplete="username"/>
   </div>
 
   <div class="form-group">
@@ -247,12 +247,20 @@
     </div>
   </div>
 
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
+      <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
+      Beni hatırla
+    </label>
+    <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
+       onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
+       onclick="doForgot(event)">Şifremi unuttum</a>
+  </div>
+
   <button class="btn-submit" id="btn-login" onclick="doLogin()">
     <div class="spinner"></div>
     <span class="btn-text">Giriş Yap →</span>
   </button>
-
-  <a href="#" class="forgot" onclick="doForgot(event)">Şifremi unuttum</a>
 
   <div class="card-footer">
     <p>Henüz hesabınız yok mu?<br/>
@@ -262,9 +270,10 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail }
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail,
+           browserLocalPersistence, browserSessionPersistence, setPersistence }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc }
+  import { getFirestore, doc, getDoc, query, collection, where, getDocs }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -278,18 +287,17 @@
     measurementId: "G-1M5VL9Z27Z"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  const app    = initializeApp(firebaseConfig);
+  const auth   = getAuth(app);
+  const db     = getFirestore(app);
   const loader = document.getElementById('page-loader');
 
-  // Zaten giriş yaptıysa yönlendir
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
-        if (snap.exists() && snap.data().role === 'restoran' && snap.data().status === 'active') {
-          window.location.href = 'restoran-panel.html';
+        if (snap.exists() && ['restoran','admin'].includes(snap.data().role) && snap.data().status === 'active') {
+          window.location.href = snap.data().role === 'admin' ? '/admin-panel' : '/restoran-panel';
           return;
         }
       } catch(e) {}
@@ -320,20 +328,40 @@
     btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
   };
 
+  async function resolveEmail(input) {
+    if (input.includes('@')) return input;
+    if (/^RAI-/i.test(input)) {
+      const q = query(collection(db,'users'), where('restoranId','==',input.toUpperCase()));
+      const snap = await getDocs(q);
+      if (!snap.empty) return snap.docs[0].data().email;
+      throw new Error('Bu ID ile kayıtlı restoran bulunamadı.');
+    }
+    if (/^[0-9+\s\-()]{7,}$/.test(input)) {
+      const q = query(collection(db,'users'), where('phone','==',input.replace(/\s/g,'')));
+      const snap = await getDocs(q);
+      if (!snap.empty) return snap.docs[0].data().email;
+      throw new Error('Bu telefon numarasıyla kayıtlı hesap bulunamadı.');
+    }
+    return input;
+  }
+
   window.doLogin = async function() {
-    const email    = document.getElementById('input-email').value.trim();
-    const password = document.getElementById('input-password').value;
-    const btn      = document.getElementById('btn-login');
+    const inputVal  = document.getElementById('input-email').value.trim();
+    const password  = document.getElementById('input-password').value;
+    const remember  = document.getElementById('remember-me').checked;
+    const btn       = document.getElementById('btn-login');
     hideMessages();
 
-    if (!email)    { showError('Lütfen e-posta adresinizi girin.'); return; }
-    if (!password) { showError('Lütfen şifrenizi girin.'); return; }
+    if (!inputVal)  { showError('Lütfen e-posta, telefon veya ID girin.'); return; }
+    if (!password)  { showError('Lütfen şifrenizi girin.'); return; }
 
     btn.classList.add('loading'); btn.disabled = true;
 
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const snap = await getDoc(doc(db, 'users', cred.user.uid));
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+      const email = await resolveEmail(inputVal);
+      const cred  = await signInWithEmailAndPassword(auth, email, password);
+      const snap  = await getDoc(doc(db, 'users', cred.user.uid));
 
       if (!snap.exists()) {
         await auth.signOut();
@@ -359,11 +387,12 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
-      window.location.href = data.role === 'admin' ? 'admin-panel.html' : 'restoran-panel.html';
+      window.location.href = data.role === 'admin' ? '/admin-panel' : '/restoran-panel';
 
     } catch (err) {
       btn.classList.remove('loading'); btn.disabled = false;
       const c = err.code;
+      if (err.message && !c) { showError(err.message); return; }
       if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found') {
         showError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
       } else if (c === 'auth/too-many-requests') {
@@ -380,17 +409,17 @@
 
   window.doForgot = async function(e) {
     e.preventDefault();
-    const email = document.getElementById('input-email').value.trim();
-    if (!email) { showError('Şifre sıfırlamak için önce e-posta adresinizi girin.'); return; }
+    const inputVal = document.getElementById('input-email').value.trim();
+    if (!inputVal) { showError('Şifre sıfırlamak için önce e-posta adresinizi girin.'); return; }
     try {
+      const email = inputVal.includes('@') ? inputVal : await resolveEmail(inputVal);
       await sendPasswordResetEmail(auth, email);
-      showSuccess('Şifre sıfırlama e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin.');
+      showSuccess('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.');
     } catch(err) {
-      showError('E-posta gönderilemedi. Adresinizi kontrol edin.');
+      showError(err.message || 'E-posta gönderilemedi. Adresinizi kontrol edin.');
     }
   };
 
-  // Enter tuşu
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') window.doLogin();
   });

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AcilKuryeAI — Kurye Paneli</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#f5f5f7; --card:#fff; --border:#e5e5ea; --tx:#1c1c1e; --tx2:#636366; --orange:#ff9500; --orange2:#e68a00; --red:#ff3b30; --green:#34c759; --sh:0 2px 12px rgba(0,0,0,0.07); --r:16px; --f:Arial,Helvetica,sans-serif; }
+    html,body { height:100%; background:var(--bg); color:var(--tx); font-family:var(--f); -webkit-font-smoothing:antialiased; }
+    .page-loader { position:fixed; inset:0; z-index:999; background:#fff; display:flex; align-items:center; justify-content:center; }
+    .page-loader.hide { display:none; }
+    .spinner-r { width:32px; height:32px; border:3px solid rgba(255,149,0,.2); border-top-color:var(--orange); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    header { background:var(--card); border-bottom:1px solid var(--border); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+    .hlogo { font-size:1.05rem; font-weight:800; }
+    .hlogo em { font-style:normal; color:var(--orange); }
+    .hright { display:flex; align-items:center; gap:.75rem; }
+    .hid { font-size:.72rem; font-weight:700; color:var(--orange); background:rgba(255,149,0,.1); padding:.3rem .7rem; border-radius:999px; }
+    .hout { font-size:.8rem; color:var(--tx2); cursor:pointer; border:1px solid var(--border); background:var(--card); padding:.4rem .9rem; border-radius:8px; }
+    .hout:hover { color:var(--red); border-color:var(--red); }
+
+    main { max-width:640px; margin:0 auto; padding:1.5rem; }
+    .section { margin-bottom:2rem; }
+    .sec-title { font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--tx2); margin-bottom:.8rem; }
+    .card { background:var(--card); border-radius:var(--r); box-shadow:var(--sh); padding:1.4rem; }
+    .card + .card { margin-top:1rem; }
+
+    /* STATUS */
+    .status-row { display:flex; align-items:center; justify-content:space-between; }
+    .status-label { font-size:.9rem; font-weight:600; }
+    .toggle-switch { position:relative; width:52px; height:28px; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-thumb { position:absolute; inset:0; background:#ccc; border-radius:999px; cursor:pointer; transition:background .3s; }
+    .toggle-thumb::after { content:''; position:absolute; left:4px; top:4px; width:20px; height:20px; background:#fff; border-radius:50%; transition:transform .3s; }
+    .toggle-switch input:checked + .toggle-thumb { background:var(--orange); }
+    .toggle-switch input:checked + .toggle-thumb::after { transform:translateX(24px); }
+    .status-desc { font-size:.78rem; color:var(--tx2); margin-top:.5rem; }
+
+    /* TALEPLER */
+    .talep-card { border:1px solid var(--border); border-radius:var(--r); padding:1.2rem; display:flex; flex-direction:column; gap:.8rem; transition:border-color .2s,box-shadow .2s; }
+    .talep-card:hover { border-color:var(--orange); box-shadow:0 4px 16px rgba(255,149,0,.1); }
+    .talep-header { display:flex; align-items:center; justify-content:space-between; }
+    .talep-id { font-size:.72rem; font-weight:700; color:var(--orange); }
+    .talep-time { font-size:.72rem; color:var(--tx2); }
+    .talep-addr { font-size:.88rem; font-weight:600; }
+    .talep-detail { font-size:.8rem; color:var(--tx2); }
+    .talep-actions { display:flex; gap:.6rem; }
+    .btn-accept { flex:1; background:var(--orange); color:#fff; border:none; border-radius:10px; padding:.7rem; font-size:.85rem; font-weight:700; cursor:pointer; transition:background .2s; font-family:var(--f); }
+    .btn-accept:hover { background:var(--orange2); }
+    .btn-reject { flex:none; background:rgba(255,59,48,.1); color:var(--red); border:none; border-radius:10px; padding:.7rem 1rem; font-size:.85rem; font-weight:700; cursor:pointer; font-family:var(--f); }
+    .empty-state { text-align:center; padding:2.5rem; color:var(--tx2); font-size:.88rem; }
+    .empty-state .ico { font-size:2.5rem; margin-bottom:.8rem; }
+
+    /* AKTIF GÖREV */
+    .aktif-card { background:linear-gradient(135deg,rgba(255,149,0,.08),rgba(255,149,0,.03)); border:1.5px solid rgba(255,149,0,.3); border-radius:var(--r); padding:1.4rem; }
+    .aktif-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+    .aktif-title { font-size:.95rem; font-weight:700; }
+    .aktif-status { font-size:.72rem; font-weight:700; background:var(--orange); color:#fff; padding:.25rem .7rem; border-radius:999px; }
+    .aktif-row { display:flex; gap:.5rem; margin-bottom:.5rem; font-size:.85rem; }
+    .aktif-lbl { color:var(--tx2); flex-shrink:0; }
+    .aktif-val { font-weight:600; }
+    .btn-status { width:100%; margin-top:1rem; background:var(--orange); color:#fff; border:none; border-radius:12px; padding:.85rem; font-size:.9rem; font-weight:700; cursor:pointer; font-family:var(--f); }
+    .btn-status:hover { background:var(--orange2); }
+
+    /* PROFIL */
+    .prow { display:flex; flex-direction:column; gap:.6rem; }
+    .pfield label { display:block; font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--tx2); margin-bottom:.3rem; }
+    .pfield input { width:100%; background:#f5f5f7; border:1px solid var(--border); border-radius:10px; padding:.7rem 1rem; font-size:.9rem; font-family:var(--f); outline:none; transition:border-color .2s; }
+    .pfield input:focus { border-color:var(--orange); }
+    .btn-save { width:100%; margin-top:1rem; background:var(--orange); color:#fff; border:none; border-radius:12px; padding:.85rem; font-size:.9rem; font-weight:700; cursor:pointer; font-family:var(--f); }
+    .btn-save:hover { background:var(--orange2); }
+
+    .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px); background:#1c1c1e; color:#fff; padding:.75rem 1.5rem; border-radius:999px; font-size:.85rem; font-weight:600; z-index:9999; transition:transform .3s; pointer-events:none; }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+
+    .nav-tabs { display:flex; background:var(--card); border-top:1px solid var(--border); position:fixed; bottom:0; left:0; right:0; z-index:100; }
+    .nav-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:.3rem; padding:.8rem .5rem; cursor:pointer; font-size:.65rem; font-weight:600; color:var(--tx2); transition:color .2s; border:none; background:none; font-family:var(--f); }
+    .nav-tab.active { color:var(--orange); }
+    .nav-tab .ico { font-size:1.4rem; }
+
+    .tab-content { display:none; padding-bottom:5rem; }
+    .tab-content.active { display:block; }
+  </style>
+</head>
+<body>
+<div class="page-loader" id="page-loader"><div class="spinner-r"></div></div>
+
+<header>
+  <div class="hlogo">Acil<em>Kurye</em>AI</div>
+  <div class="hright">
+    <span class="hid" id="kurye-id-badge">—</span>
+    <button class="hout" onclick="doLogout()">Çıkış</button>
+  </div>
+</header>
+
+<main>
+  <!-- TALEPLER -->
+  <div class="tab-content active" id="tab-talepler">
+    <div class="section">
+      <div class="sec-title">Müsaitlik Durumu</div>
+      <div class="card">
+        <div class="status-row">
+          <span class="status-label">Müsait</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="musait-toggle" onchange="toggleMusait()"/>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <p class="status-desc" id="status-desc">Şu an müsait değilsiniz. Talepleri görmek için açın.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">Açık Talepler</div>
+      <div id="talepler-list">
+        <div class="empty-state"><div class="ico">📭</div><div>Şu an açık talep yok</div></div>
+      </div>
+    </div>
+
+    <div class="section" id="aktif-section" style="display:none">
+      <div class="sec-title">Aktif Görev</div>
+      <div class="aktif-card">
+        <div class="aktif-header">
+          <span class="aktif-title">Aktif Teslimat</span>
+          <span class="aktif-status" id="aktif-st">Devam Ediyor</span>
+        </div>
+        <div class="aktif-row"><span class="aktif-lbl">Alınacak:</span><span class="aktif-val" id="ak-from">—</span></div>
+        <div class="aktif-row"><span class="aktif-lbl">Teslim:</span><span class="aktif-val" id="ak-to">—</span></div>
+        <div class="aktif-row"><span class="aktif-lbl">Müşteri:</span><span class="aktif-val" id="ak-cust">—</span></div>
+        <div class="aktif-row"><span class="aktif-lbl">Ücret:</span><span class="aktif-val" id="ak-fee" style="color:var(--orange)">—</span></div>
+        <button class="btn-status" id="aktif-btn" onclick="advAktif()">Paketi Teslim Aldım</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFİL -->
+  <div class="tab-content" id="tab-profil">
+    <div class="section">
+      <div class="sec-title">Profilim</div>
+      <div class="card">
+        <div class="prow">
+          <div class="pfield"><label>Ad Soyad</label><input type="text" id="p-name" placeholder="Adınız Soyadınız"/></div>
+          <div class="pfield"><label>Telefon</label><input type="tel" id="p-phone" placeholder="05XX XXX XX XX"/></div>
+          <div class="pfield"><label>E-posta</label><input type="email" id="p-email" placeholder="kurye@email.com" readonly/></div>
+          <div class="pfield"><label>Araç</label><input type="text" id="p-vehicle" placeholder="Motosiklet, Bisiklet..."/></div>
+          <div class="pfield"><label>Plaka</label><input type="text" id="p-plate" placeholder="06 AA 000"/></div>
+          <div class="pfield"><label>IBAN</label><input type="text" id="p-iban" placeholder="TR00 0000..."/></div>
+        </div>
+        <button class="btn-save" onclick="saveProfile()">Bilgileri Kaydet</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" id="nav-talepler" onclick="switchTab('talepler')"><span class="ico">📋</span>Talepler</button>
+  <button class="nav-tab" id="nav-profil" onclick="switchTab('profil')"><span class="ico">👤</span>Profilim</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot, orderBy }
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  let currentUser = null;
+  let activeOrder = null;
+  let unsubTalepler = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user || !user.emailVerified) { window.location.href = '/acilkurye-login'; return; }
+    try {
+      const snap = await getDoc(doc(db,'users',user.uid));
+      if (!snap.exists() || snap.data().role !== 'acil_kurye') {
+        await signOut(auth); window.location.href = '/acilkurye-login'; return;
+      }
+      currentUser = { uid:user.uid, ...snap.data() };
+      initPanel();
+    } catch(e) { window.location.href = '/acilkurye-login'; }
+  });
+
+  function initPanel() {
+    document.getElementById('page-loader').classList.add('hide');
+    document.getElementById('kurye-id-badge').textContent = currentUser.kuryeId || '—';
+    // Profil alanları
+    const pmap = {name:'p-name',phone:'p-phone',email:'p-email',vehicle:'p-vehicle',plate:'p-plate',iban:'p-iban'};
+    Object.entries(pmap).forEach(([k,id])=>{ const el=document.getElementById(id); if(el&&currentUser[k])el.value=currentUser[k]; else if(el&&k==='email')el.value=currentUser.email||''; });
+    listenTalepler();
+  }
+
+  function listenTalepler() {
+    const q = query(collection(db,'acilTalepler'), where('status','==','open'), orderBy('createdAt','desc'));
+    unsubTalepler = onSnapshot(q, snap => {
+      const list = snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderTalepler(list);
+    }, ()=>{});
+  }
+
+  function renderTalepler(list) {
+    const el = document.getElementById('talepler-list');
+    if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="ico">📭</div><div>Şu an açık talep yok</div></div>'; return; }
+    el.innerHTML = list.map(t=>`
+      <div class="talep-card" style="margin-bottom:.8rem">
+        <div class="talep-header">
+          <span class="talep-id">${t.talepId||t.id}</span>
+          <span class="talep-time">${t.createdAt ? new Date(t.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
+        </div>
+        <div class="talep-addr">📍 ${t.toAddr||'—'}</div>
+        <div class="talep-detail">📦 ${t.description||'—'} · ${t.fee?'₺'+t.fee:''}</div>
+        <div class="talep-actions">
+          <button class="btn-accept" onclick="acceptTalep('${t.id}')">Kabul Et</button>
+          <button class="btn-reject" onclick="rejectTalep('${t.id}')">Reddet</button>
+        </div>
+      </div>`).join('');
+  }
+
+  window.acceptTalep = async (id) => {
+    try {
+      await updateDoc(doc(db,'acilTalepler',id), { status:'accepted', kuryeId:currentUser.uid, kuryeName:currentUser.displayName, acceptedAt:new Date().toISOString() });
+      const snap = await getDoc(doc(db,'acilTalepler',id));
+      activeOrder = { id, ...snap.data() };
+      renderAktif();
+      toast('Talep kabul edildi! 🛵','success');
+    } catch(e) { toast('Hata oluştu','error'); }
+  };
+  window.rejectTalep = async (id) => {
+    try { await updateDoc(doc(db,'acilTalepler',id), { rejectedBy: [...(activeOrder?.rejectedBy||[]), currentUser.uid] }); }
+    catch(e) {}
+  };
+
+  function renderAktif() {
+    if (!activeOrder) { document.getElementById('aktif-section').style.display='none'; return; }
+    document.getElementById('aktif-section').style.display='block';
+    document.getElementById('ak-from').textContent = activeOrder.fromAddr||'—';
+    document.getElementById('ak-to').textContent   = activeOrder.toAddr||'—';
+    document.getElementById('ak-cust').textContent = activeOrder.customerName||'—';
+    document.getElementById('ak-fee').textContent  = activeOrder.fee ? '₺'+activeOrder.fee : '—';
+    const st = activeOrder.deliveryStatus||'accepted';
+    if (st==='accepted') { document.getElementById('aktif-st').textContent='Yolda'; document.getElementById('aktif-btn').textContent='Paketi Teslim Aldım'; }
+    else if (st==='picked') { document.getElementById('aktif-st').textContent='Teslimatta'; document.getElementById('aktif-btn').textContent='Teslim Ettim ✓'; }
+    else if (st==='delivered') { document.getElementById('aktif-st').textContent='Tamamlandı'; document.getElementById('aktif-btn').style.display='none'; }
+  }
+
+  window.advAktif = async () => {
+    if (!activeOrder) return;
+    const nst = activeOrder.deliveryStatus==='accepted' ? 'picked' : 'delivered';
+    try {
+      await updateDoc(doc(db,'acilTalepler',activeOrder.id), { deliveryStatus:nst });
+      activeOrder.deliveryStatus = nst;
+      renderAktif();
+      if (nst==='delivered') { toast('Teslimat tamamlandı! ✅','success'); setTimeout(()=>{ activeOrder=null; renderAktif(); },3000); }
+    } catch(e) {}
+  };
+
+  window.toggleMusait = () => {
+    const on = document.getElementById('musait-toggle').checked;
+    document.getElementById('status-desc').textContent = on ? 'Müsaitsiniz. Talepler görüntüleniyor.' : 'Müsait değilsiniz. Talepleri görmek için açın.';
+    if (currentUser) updateDoc(doc(db,'users',currentUser.uid), { musait:on }).catch(()=>{});
+  };
+
+  window.saveProfile = async () => {
+    if (!currentUser) return;
+    const data = {
+      displayName:document.getElementById('p-name').value.trim(),
+      phone:document.getElementById('p-phone').value.trim(),
+      vehicle:document.getElementById('p-vehicle').value.trim(),
+      plate:document.getElementById('p-plate').value.trim(),
+      iban:document.getElementById('p-iban').value.trim(),
+      updatedAt:new Date().toISOString()
+    };
+    try { await updateDoc(doc(db,'users',currentUser.uid), data); toast('Profil kaydedildi ✓','success'); }
+    catch(e) { toast('Kayıt hatası','error'); }
+  };
+
+  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkurye-login'; };
+
+  window.switchTab = (t) => {
+    document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+    document.getElementById('tab-'+t).classList.add('active');
+    document.getElementById('nav-'+t).classList.add('active');
+  };
+
+  function toast(msg,type='info') {
+    const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show';
+    if(type==='success') t.style.background='#34c759'; else if(type==='error') t.style.background='#ff3b30'; else t.style.background='#1c1c1e';
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+</script>
+</body>
+</html>

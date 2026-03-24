@@ -2,10 +2,22 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/restoran", "destination": "/restoran.html" },
-    { "source": "/kurye", "destination": "/kurye.html" },
-    { "source": "/restoran-login", "destination": "/restoran-login.html" },
-    { "source": "/kurye-login", "destination": "/kurye-login.html" }
+    { "source": "/kurye",                  "destination": "/kurye.html" },
+    { "source": "/kurye-login",            "destination": "/kurye-login.html" },
+    { "source": "/kurye-panel",            "destination": "/kurye-panel.html" },
+    { "source": "/restoran",               "destination": "/restoran.html" },
+    { "source": "/restoran-login",         "destination": "/restoran-login.html" },
+    { "source": "/restoran-panel",         "destination": "/restoran-panel.html" },
+    { "source": "/admin",                  "destination": "/admin-login.html" },
+    { "source": "/admin-panel",            "destination": "/admin-panel.html" },
+    { "source": "/acilkurye",              "destination": "/acilkurye.html" },
+    { "source": "/acilkurye-login",        "destination": "/acilkurye-login.html" },
+    { "source": "/acilkurye-panel",        "destination": "/acilkurye-panel.html" },
+    { "source": "/acilkurye-talep-login",  "destination": "/acilkurye-talep-login.html" },
+    { "source": "/acilkurye-talep-panel",  "destination": "/acilkurye-talep-panel.html" },
+    { "source": "/izincikurye",            "destination": "/izincikurye.html" },
+    { "source": "/izincikurye-login",      "destination": "/izincikurye-login.html" },
+    { "source": "/izincikurye-panel",      "destination": "/izincikurye-panel.html" }
   ],
   "headers": [
     {

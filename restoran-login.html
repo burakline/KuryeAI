@@ -465,39 +465,20 @@
     return input;
   }
 
-  // ── DEMO GİRİŞ (otomatik oluştur + seed) ─────────────────────────────────
+  // ── DEMO GİRİŞ (sadece signIn — asla createUser çağrılmaz) ───────────────
   async function doDemoLogin(btn) {
     const DEMO_EMAIL = 'demo@kuryeai.com';
     const DEMO_PW    = '123456';
     console.log('DEMO LOGIN START');
-    showSuccess('Demo hazırlanıyor, lütfen bekleyin…');
+    showSuccess('Demo yükleniyor, lütfen bekleyin…');
     btn.classList.add('loading'); btn.disabled = true;
 
     try {
-      let cred;
-      try {
-        // Önce direkt giriş dene
-        cred = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
-      } catch (e) {
-        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
-          // Kullanıcı yoksa oluştur
-          console.log('DEMO USER CREATED');
-          try {
-            cred = await createUserWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
-          } catch (ce) {
-            if (ce.code === 'auth/email-already-in-use') {
-              // Var ama şifre farklı — sadece giriş tekrar dene
-              cred = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
-            } else { throw ce; }
-          }
-        } else { throw e; }
-      }
-
+      const cred = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
       console.log('DEMO LOGIN SUCCESS');
 
-      // Firestore seed: yoksa oluştur
-      const uid     = cred.user.uid;
-      const userRef = doc(db, 'users', uid);
+      // Firestore doc yoksa seed yaz (ilk girişte)
+      const userRef = doc(db, 'users', cred.user.uid);
       const snap    = await getDoc(userRef);
       if (!snap.exists()) {
         console.log('DEMO SEED CREATED');
@@ -519,7 +500,11 @@
     } catch (e) {
       btn.classList.remove('loading'); btn.disabled = false;
       console.error('DEMO LOGIN FAIL', e);
-      showError('Demo hazırlanamadı: ' + (e.message || 'Bilinmeyen hata'));
+      if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+        showError('Demo hesabı henüz oluşturulmamış. Lütfen admin ile iletişime geçin.');
+      } else {
+        showError('Demo girişi başarısız: ' + (e.message || 'Bilinmeyen hata'));
+      }
     }
   }
 

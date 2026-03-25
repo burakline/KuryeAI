@@ -768,6 +768,7 @@ window.renderRestoranlar=()=>{
   if(fRst==='active')    list=list.filter(u=>u.status==='active');
   if(fRst==='suspended') list=list.filter(u=>u.status==='suspended');
   if(fRst==='odeme')     list=list.filter(u=>u.paymentStatus==='pending');
+  if(fRst==='demo')      list=list.filter(u=>u.demo===true);
   if(fRst==='demo')      list=list.filter(u=>u.demo===true||u.email==='demo@kuryeai.com');
   if(s) list=list.filter(u=>(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s)||(u.company||'').toLowerCase().includes(s));
 

@@ -465,6 +465,64 @@
     return input;
   }
 
+  // ── DEMO GİRİŞ (otomatik oluştur + seed) ─────────────────────────────────
+  async function doDemoLogin(btn) {
+    const DEMO_EMAIL = 'demo@kuryeai.com';
+    const DEMO_PW    = '123456';
+    console.log('DEMO LOGIN START');
+    showSuccess('Demo hazırlanıyor, lütfen bekleyin…');
+    btn.classList.add('loading'); btn.disabled = true;
+
+    try {
+      let cred;
+      try {
+        // Önce direkt giriş dene
+        cred = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
+      } catch (e) {
+        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+          // Kullanıcı yoksa oluştur
+          console.log('DEMO USER CREATED');
+          try {
+            cred = await createUserWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
+          } catch (ce) {
+            if (ce.code === 'auth/email-already-in-use') {
+              // Var ama şifre farklı — sadece giriş tekrar dene
+              cred = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
+            } else { throw ce; }
+          }
+        } else { throw e; }
+      }
+
+      console.log('DEMO LOGIN SUCCESS');
+
+      // Firestore seed: yoksa oluştur
+      const uid     = cred.user.uid;
+      const userRef = doc(db, 'users', uid);
+      const snap    = await getDoc(userRef);
+      if (!snap.exists()) {
+        console.log('DEMO SEED CREATED');
+        await setDoc(userRef, {
+          email:       DEMO_EMAIL,
+          name:        'Demo Restoran',
+          company:     'Demo Restoran',
+          role:        'restoran',
+          status:      'active',
+          demo:        true,
+          plan:        'pro',
+          planActive:  true,
+          planEndDate: 9999999999999,
+          createdAt:   new Date().toISOString(),
+        });
+      }
+
+      window.location.href = '/restoran-panel';
+    } catch (e) {
+      btn.classList.remove('loading'); btn.disabled = false;
+      console.error('DEMO LOGIN FAIL', e);
+      showError('Demo hazırlanamadı: ' + (e.message || 'Bilinmeyen hata'));
+    }
+  }
+
   window.doLogin = async function() {
     const inputVal  = document.getElementById('input-email').value.trim();
     const password  = document.getElementById('input-password').value;
@@ -474,6 +532,12 @@
 
     if (!inputVal)  { showError('Lütfen e-posta, telefon veya ID girin.'); return; }
     if (!password)  { showError('Lütfen şifrenizi girin.'); return; }
+
+    // Demo kullanıcı özel akış
+    if (inputVal.toLowerCase() === 'demo@kuryeai.com') {
+      await doDemoLogin(btn);
+      return;
+    }
 
     btn.classList.add('loading'); btn.disabled = true;
 
@@ -514,7 +578,7 @@
       const c = err.code;
       if (err.message && !c) { showError(err.message); return; }
       if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found') {
-        showError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
+        showError('E-posta veya şifre hatalı. Demo için: demo@kuryeai.com / 123456');
       } else if (c === 'auth/too-many-requests') {
         showError('Çok fazla deneme yapıldı. Lütfen birkaç dakika bekleyin.');
       } else if (c === 'auth/invalid-email') {

@@ -1508,7 +1508,7 @@ window.addEventListener("resize", function(){
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, get, push, remove }
+import { getDatabase, ref, onValue, set, update, get, push, remove, runTransaction }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1561,6 +1561,7 @@ const SEED_SETTINGS = {
   assign_mode:"auto",pricing_mode:"per_package",
   notif_order:true,notif_delay:true,notif_deliver:false,notif_email:true,
   rest_name:"Demo Restoran",rest_address:"Örnek Cad. No:1",rest_phone:"0312 000 00 00",rest_hours:"09:00 — 23:00",
+  rest_lat:39.9334,rest_lng:32.8597,
   custom_base:0,custom_km:0,
 };
 
@@ -2278,6 +2279,78 @@ window.clearManualOrder = () => {
   renderOrderLines();
 };
 
+// ── Haversine (km cinsinden) ──────────────────────────────────────────────
+function hvsDist(a,b,c,d){
+  const R=6371,dA=(c-a)*Math.PI/180,dB=(d-b)*Math.PI/180,
+    x=Math.sin(dA/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dB/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+// ── Otomatik Kurye Atama ──────────────────────────────────────────────────
+// Döner: {courierId, name} veya null (uygun kurye yoksa)
+async function assignCourierAuto(orderId, orderData) {
+  // 1. Müsait kuryeleri yerel state'den al (onValue ile zaten güncel)
+  const available = couriers.filter(c => c.status === "available");
+  if (!available.length) return null;
+
+  // 2. Restoran konumu (ayarlardan, yoksa Ankara merkezi)
+  const restLat = settings.rest_lat || 39.9334;
+  const restLng = settings.rest_lng || 32.8597;
+
+  // 3. Her müsait kuryenin gerçek zamanlı GPS konumunu al ve mesafeyi hesapla
+  const withDist = await Promise.all(available.map(async c => {
+    try {
+      const snap = await get(ref(db, `couriers/${c.id}/location`));
+      const loc  = snap.val();
+      if (loc?.lat && loc?.lng) {
+        return { ...c, dist: hvsDist(restLat, restLng, loc.lat, loc.lng) };
+      }
+    } catch {}
+    return { ...c, dist: Infinity }; // GPS verisi yoksa sona itmek için
+  }));
+
+  // 4. Mesafeye göre sırala (en yakın önce), GPS'siz kuryeler hariç
+  const sorted = withDist.filter(c => c.dist < Infinity).sort((a,b) => a.dist - b.dist);
+  if (!sorted.length) return null;
+
+  // 5. En yakından başla, transaction ile atomik atama yap (çakışma önler)
+  for (const candidate of sorted) {
+    const statusRef = ref(db, `restaurants/${RESTAURANT_ID}/couriers/${candidate.id}/status`);
+    let didAssign = false;
+
+    try {
+      const { committed } = await runTransaction(statusRef, current => {
+        if (current === "available") { didAssign = true; return "busy"; }
+        return current; // Başkası kapıya gitmiş, iptal
+      });
+
+      if (committed && didAssign) {
+        const cid = candidate.id;
+
+        // Kuryeye sipariş bildirimi gönder (RTDB)
+        await set(ref(db, `couriers/${cid}/pendingOrder`), {
+          ...orderData,
+          orderId,
+          restoranId:   RESTAURANT_ID,
+          restoranName: settings.rest_name || RESTAURANT_ID
+        });
+
+        // Siparişin courier alanını güncelle
+        await update(ref(db, `restaurants/${RESTAURANT_ID}/orders/${orderId}`), {
+          courier: cid
+        });
+
+        return { courierId: cid, name: candidate.name, dist: candidate.dist };
+      }
+      // Bu kurye artık müsait değil, bir sonrakine geç
+    } catch(e) {
+      console.error('Atama transaction hatası:', e);
+    }
+  }
+
+  return null; // Hiç kurye atanamadı
+}
+
 window.submitManualOrder = async () => {
   const customer = document.getElementById("mo-customer").value.trim();
   const address  = document.getElementById("mo-address").value.trim();
@@ -2319,8 +2392,9 @@ window.submitManualOrder = async () => {
       });
     } catch(fe) { console.error('Firestore order error:', fe); }
 
-    // Atanan kuryeye RTDB bildirimi gönder
+    // Kurye atama: manuel seçim varsa direkt, yoksa ve auto modundaysa otomatik ata
     if (courierId) {
+      // Manuel seçim: kuryeye bildir ve statusunu güncelle
       try {
         await set(ref(db,`couriers/${courierId}/pendingOrder`), {
           ...newOrder,
@@ -2328,10 +2402,27 @@ window.submitManualOrder = async () => {
           restoranId: RESTAURANT_ID,
           restoranName: settings.rest_name || RESTAURANT_ID
         });
+        await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${courierId}`),{status:"busy"});
       } catch(ne) { console.error('Kurye notify error:', ne); }
+      showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+    } else if (settings.assign_mode === "auto") {
+      // Otomatik atama
+      try {
+        const result = await assignCourierAuto(orderId, newOrder);
+        if (result) {
+          const km = result.dist.toFixed(1);
+          showToast(`✓ Sipariş oluşturuldu · 🛵 ${result.name} atandı (${km} km)`,"success");
+        } else {
+          showToast(`✓ Sipariş oluşturuldu — müsait kurye yok, beklemede`,"info");
+        }
+      } catch(ae) {
+        console.error('Otomatik atama hatası:', ae);
+        showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+      }
+    } else {
+      showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
     }
 
-    showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
     clearManualOrder();
     renderRecentManualOrders();
   }catch{

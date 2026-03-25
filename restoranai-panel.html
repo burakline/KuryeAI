@@ -1894,7 +1894,7 @@ tbody tr:hover{background:var(--bg)}
 <!-- ── DEMO BANNER ── -->
 <div id="demo-banner">
   🎮 Demo Moddasın &nbsp;·&nbsp; <span>Gerçek sipariş oluşturulmaz — veriler örnek</span>
-  &nbsp;&nbsp;<a href="/restoran-login" style="color:#fff;font-size:.75rem;text-decoration:underline;opacity:.8">Çıkış</a>
+  &nbsp;&nbsp;<a href="/restoranai-login" style="color:#fff;font-size:.75rem;text-decoration:underline;opacity:.8">Çıkış</a>
 </div>
 
 <!-- ── ONBOARDING MODAL ── -->
@@ -2165,24 +2165,24 @@ setInterval(updateClock,1000);updateClock();
 
 // ── Auth ──────────────────────────────────────────────────────────────────
 onAuthStateChanged(auth, async user=>{
-  if(!user){ window.location.href="/restoran-login"; return; }
+  if(!user){ window.location.href="/restoranai-login"; return; }
   try {
     const snap = await getDoc(doc(fs,'users',user.uid));
     if(snap.exists()){
       const data = snap.data();
       if(data.status==='pending'){
         await signOut(auth);
-        window.location.href="/restoran-login?msg=pending";
+        window.location.href="/restoranai-login?msg=pending";
         return;
       }
       if(data.status==='rejected'||data.status==='suspended'){
         await signOut(auth);
-        window.location.href="/restoran-login?msg="+data.status;
+        window.location.href="/restoranai-login?msg="+data.status;
         return;
       }
       if(data.role!=='restoran'&&data.role!=='admin'){
         await signOut(auth);
-        window.location.href="/restoran-login";
+        window.location.href="/restoranai-login";
         return;
       }
       // Demo mod kontrolü
@@ -2239,7 +2239,7 @@ onAuthStateChanged(auth, async user=>{
   }
 });
 window.logout=async()=>{
-  try{await signOut(auth);window.location.href="/restoran-login";}catch{}
+  try{await signOut(auth);window.location.href="/restoranai-login";}catch{}
 };
 
 // ── PLAN BİLGİSİ ──────────────────────────────────────────────────────────

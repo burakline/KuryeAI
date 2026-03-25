@@ -355,7 +355,7 @@
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
         if (snap.exists() && ['restoran','admin'].includes(snap.data().role) && snap.data().status === 'active') {
-          window.location.href = snap.data().role === 'admin' ? '/admin-panel' : '/restoran-panel';
+          window.location.href = snap.data().role === 'admin' ? '/adminai' : '/restoranai-panel';
           return;
         }
       } catch(e) {}
@@ -496,7 +496,7 @@
         });
       }
 
-      window.location.href = '/restoran-panel';
+      window.location.href = '/restoranai-panel';
     } catch (e) {
       btn.classList.remove('loading'); btn.disabled = false;
       console.error('DEMO LOGIN FAIL', e);
@@ -556,7 +556,7 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
-      window.location.href = data.role === 'admin' ? '/admin-panel' : '/restoran-panel';
+      window.location.href = data.role === 'admin' ? '/adminai' : '/restoranai-panel';
 
     } catch (err) {
       btn.classList.remove('loading'); btn.disabled = false;

@@ -2,15 +2,16 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/kuryeai",               "destination": "/kuryeai.html" },
-    { "source": "/kurye-login",           "destination": "/kurye-login.html" },
-    { "source": "/kurye-panel",           "destination": "/kurye-panel.html" },
-    { "source": "/restoranai",            "destination": "/restoranai.html" },
-    { "source": "/restoran-login",        "destination": "/restoran-login.html" },
-    { "source": "/restoran-panel",        "destination": "/restoran-panel.html" },
-    { "source": "/adminai",               "destination": "/adminai.html" },
-    { "source": "/admin-panel",           "destination": "/admin-panel.html" },
-    { "source": "/acilkuryeai",                   "destination": "/acilkuryeai.html" },
+    { "source": "/kuryeai",                        "destination": "/kuryeai.html" },
+    { "source": "/kuryeai-login",                  "destination": "/kuryeai-login.html" },
+    { "source": "/kuryeai-panel",                  "destination": "/kuryeai-panel.html" },
+    { "source": "/restoranai",                     "destination": "/restoranai.html" },
+    { "source": "/restoranai-login",               "destination": "/restoranai-login.html" },
+    { "source": "/restoranai-panel",               "destination": "/restoranai-panel.html" },
+    { "source": "/adminai",                        "destination": "/adminai-panel.html" },
+    { "source": "/adminai-login",                  "destination": "/adminai-login.html" },
+    { "source": "/adminai-panel",                  "destination": "/adminai-panel.html" },
+    { "source": "/acilkuryeai",                    "destination": "/acilkuryeai.html" },
     { "source": "/acilkuryeai-kurye-login",        "destination": "/acilkuryeai-kurye-login.html" },
     { "source": "/acilkuryeai-kurye-panel",        "destination": "/acilkuryeai-kurye-panel.html" },
     { "source": "/acilkuryeai-talepeden-login",    "destination": "/acilkuryeai-talepeden-login.html" },
@@ -20,9 +21,9 @@
     { "source": "/izincikuryeai-izinci-panel",     "destination": "/izincikuryeai-izinci-panel.html" },
     { "source": "/izincikuryeai-isveren-login",    "destination": "/izincikuryeai-isveren-login.html" },
     { "source": "/izincikuryeai-isveren-panel",    "destination": "/izincikuryeai-isveren-panel.html" },
-    { "source": "/auth-action",            "destination": "/auth-action.html" },
-    { "source": "/reset-password",         "destination": "/reset-password.html" },
-    { "source": "/acil-kurye",             "destination": "/acil-kurye/index.html" }
+    { "source": "/auth-action",                    "destination": "/auth-action.html" },
+    { "source": "/reset-password",                 "destination": "/reset-password.html" },
+    { "source": "/acil-kurye",                     "destination": "/acil-kurye/index.html" }
   ],
   "headers": [
     {

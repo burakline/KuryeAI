@@ -409,7 +409,7 @@
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
         if (snap.exists() && ['kurye','admin'].includes(snap.data().role) && snap.data().status === 'active') {
-          window.location.href = snap.data().role === 'admin' ? '/admin-panel' : '/kurye-panel';
+          window.location.href = snap.data().role === 'admin' ? '/adminai' : '/kuryeai-panel';
           return;
         }
       } catch(e) {}
@@ -562,7 +562,7 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
-      window.location.href = data.role === 'admin' ? '/admin-panel' : '/kurye-panel';
+      window.location.href = data.role === 'admin' ? '/adminai' : '/kuryeai-panel';
 
     } catch (err) {
       btn.classList.remove('loading'); btn.disabled = false;

@@ -151,7 +151,7 @@
         if (snap.exists()) {
           const role = snap.data().role;
           if (role === 'izinci_isveren') { window.location.href = '/izincikuryeai-isveren-panel'; return; }
-          if (role === 'admin') { window.location.href = '/admin-panel'; return; }
+          if (role === 'admin') { window.location.href = '/adminai'; return; }
         }
       } catch(e) {}
     }
@@ -195,7 +195,7 @@
       if (!snap.exists()) { await signOut(auth); throw new Error('Kullanıcı profili bulunamadı.'); }
       const role = snap.data().role;
       if (role === 'izinci_isveren') { window.location.href = '/izincikuryeai-isveren-panel'; return; }
-      if (role === 'admin') { window.location.href = '/admin-panel'; return; }
+      if (role === 'admin') { window.location.href = '/adminai'; return; }
       await signOut(auth);
       throw new Error('Bu hesap İzinciKurye İşveren sistemine ait değil.');
     } catch(e) {

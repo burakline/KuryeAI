@@ -130,7 +130,7 @@
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
         if (snap.exists() && snap.data().role === 'admin') {
-          window.location.href = '/admin-panel'; return;
+          window.location.href = '/adminai'; return;
         }
       } catch(e) {}
     }
@@ -181,7 +181,7 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
-      window.location.href = '/admin-panel';
+      window.location.href = '/adminai';
 
     } catch (err) {
       btn.classList.remove('loading'); btn.disabled = false;

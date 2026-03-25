@@ -47,14 +47,14 @@ function generateID(prefix) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href = '/kurye-login'; return; }
+  if (!user) { window.location.href = '/kuryeai-login'; return; }
   try {
     const snap = await getDoc(doc(fs, 'users', user.uid));
     if (!snap.exists() || !['kurye','admin'].includes(snap.data().role)) {
-      await signOut(auth); window.location.href = '/kurye-login'; return;
+      await signOut(auth); window.location.href = '/kuryeai-login'; return;
     }
     if (snap.data().status === 'suspended') {
-      await signOut(auth); window.location.href = '/kurye-login'; return;
+      await signOut(auth); window.location.href = '/kuryeai-login'; return;
     }
     const userData = snap.data();
     // KAI ID yoksa oluştur
@@ -64,7 +64,7 @@ onAuthStateChanged(auth, async (user) => {
     }
     window._currentUser = { uid: user.uid, ...userData };
     window._initKuryeApp && window._initKuryeApp();
-  } catch(e) { window.location.href = '/kurye-login'; }
+  } catch(e) { window.location.href = '/kuryeai-login'; }
 });
 </script>
 
@@ -894,7 +894,7 @@ function doLogout(){
   if(G.shift.on){toast('Önce vardiyayı bitir!','error');closeSB();return;}
   stopGPS();if(G.stI)clearInterval(G.stI);
   const fb=window._fb;if(fb)fb.signOut(fb.auth).catch(()=>{});
-  window.location.href='/kurye-login';
+  window.location.href='/kuryeai-login';
 }
 
 // MAP
@@ -1288,7 +1288,7 @@ function renderOrdHistory(){
 // INIT — Firebase auth callback'ten çağrılır
 window._initKuryeApp = async function() {
   const cu = window._currentUser;
-  if(!cu){window.location.href='/kurye-login';return;}
+  if(!cu){window.location.href='/kuryeai-login';return;}
   G.uid = cu.uid;
   G.id  = cu.kuryeId || cu.uid;
   G.kuryeId = cu.kuryeId || '';

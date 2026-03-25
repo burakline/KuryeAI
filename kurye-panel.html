@@ -911,13 +911,18 @@ function mkMarker(){
   const init=G.name.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'K';
   const av=G.avatar||`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128`;
   const ic=L.divIcon({
-    html:`<div style="display:flex;flex-direction:column;align-items:center">
-      <div class="km-circle" id="kurMrkCirc" style="transform:rotate(${G.bearing}deg)">
-        <img src="${av}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128'" />
+    html:`<div style="display:flex;flex-direction:column;align-items:center;gap:0">
+      <div style="position:relative;width:54px;height:54px">
+        <div id="kurMrkArrow" style="position:absolute;inset:0;transform:rotate(${G.bearing}deg);transition:transform 0.4s linear;pointer-events:none;z-index:2">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid #009688;filter:drop-shadow(0 1px 3px rgba(0,0,0,.4))"></div>
+        </div>
+        <div style="position:absolute;inset:4px;border-radius:50%;overflow:hidden;border:3px solid #fff;box-shadow:0 3px 16px rgba(0,150,136,0.55);background:#009688">
+          <img src="${av}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128'" style="width:100%;height:100%;object-fit:cover;display:block" />
+        </div>
       </div>
       <div class="km-label">${G.name}</div>
     </div>`,
-    className:'',iconAnchor:[25,62],iconSize:[50,74]
+    className:'',iconAnchor:[27,70],iconSize:[54,82]
   });
   G.marker=L.marker([G.gps.lat,G.gps.lng],{icon:ic}).addTo(G.map);
 }
@@ -936,25 +941,36 @@ function initGPS(){
   if(!navigator.geolocation){simGPS();return;}
   if(G.gpsW!==null){navigator.geolocation.clearWatch(G.gpsW);G.gpsW=null;}
   G.gpsW=navigator.geolocation.watchPosition(p=>{
-    const{latitude:la,longitude:ln,speed:sp,heading:hd}=p.coords;
+    const{latitude:la,longitude:ln,speed:sp,heading:hd,accuracy:ac}=p.coords;
+    // Accuracy filter: >50m ise güvenilmez, atla
+    if(ac>50)return;
     const pl=G.gps.lat,pn=G.gps.lng;
     const d=hvs(pl,pn,la,ln);
-    // Jitter filter: ignore updates < 8m unless first fix
-    if(d<0.008&&G.gps.lat!==39.9334&&G.gps.lng!==32.8597)return;
-    // Bearing: use device heading if available, else calculate from movement
-    if(d>0.005){G.bearing=typeof hd==='number'&&hd>=0?hd:calcBearing(pl,pn,la,ln);}
-    G.gps={lat:la,lng:ln,speed:sp?sp*3.6:0};
-    document.getElementById('spnum').textContent=Math.round(G.gps.speed);
-    G.stats.speeds.push(G.gps.speed);
-    if(G.shift.on){if(d>0.005&&d<0.5)G.stats.km+=d;G.trail.addLatLng([la,ln]);}
+    const isFirstFix=(G.gps.lat===39.9334&&G.gps.lng===32.8597);
+    // Jitter filter: ilk fix değilse ve hareket <10m ise atla
+    if(!isFirstFix&&d<0.010)return;
+    // Bearing: yalnızca gerçek hareket varsa güncelle
+    if(d>0.010){G.bearing=typeof hd==='number'&&hd>=0?hd:calcBearing(pl,pn,la,ln);}
+    const curSpeed=sp!=null?sp*3.6:0;
+    G.gps={lat:la,lng:ln,speed:curSpeed};
+    document.getElementById('spnum').textContent=Math.round(curSpeed);
+    G.stats.speeds.push(curSpeed);
+    if(G.shift.on){
+      // Km say: sadece gerçek hareket (>10m) ve hız >0.5 km/h ise
+      if(d>0.010&&d<0.5&&curSpeed>0.5)G.stats.km+=d;
+      // Trail: sadece anlamlı hareket varsa nokta ekle
+      if(d>0.010)G.trail.addLatLng([la,ln]);
+    }
     if(G.marker){
       G.marker.setLatLng([la,ln]);
-      const el=document.getElementById('kurMrkCirc');
+      const el=document.getElementById('kurMrkArrow');
       if(el)el.style.transform=`rotate(${G.bearing}deg)`;
     }
     if(G.follow&&G.map)G.map.panTo([la,ln],{animate:true,duration:0.8});
     document.getElementById('gpsDot').style.background='var(--green)';
-  },_=>simGPS(),{enableHighAccuracy:true,maximumAge:0,timeout:10000});
+    // Adaptif push: hareket varsa normal, duruyorsa yavaş
+    G._moving=(curSpeed>0.5);
+  },_=>simGPS(),{enableHighAccuracy:true,maximumAge:3000,timeout:15000});
   if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }
 function simGPS(){
@@ -967,7 +983,7 @@ function simGPS(){
     document.getElementById('spnum').textContent=Math.round(G.gps.speed);
     if(G.marker){
       G.marker.setLatLng([G.gps.lat,G.gps.lng]);
-      const el=document.getElementById('kurMrkCirc');
+      const el=document.getElementById('kurMrkArrow');
       if(el)el.style.transform=`rotate(${G.bearing}deg)`;
     }
     if(G.shift.on){G.stats.km+=0.01;G.trail.addLatLng([G.gps.lat,G.gps.lng]);}
@@ -976,7 +992,12 @@ function simGPS(){
   if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }
 function stopGPS(){if(G.gpsW)navigator.geolocation.clearWatch(G.gpsW);if(G.gpsI)clearInterval(G.gpsI);}
-function pushGPS(){const fb=window._fb;if(!fb)return;try{fb.set(fb.ref(fb.db,`couriers/${G.id}/location`),{lat:G.gps.lat,lng:G.gps.lng,speed:Math.round(G.gps.speed),shiftActive:G.shift.on,name:G.name,updatedAt:fb.serverTimestamp()});}catch(e){}}
+function pushGPS(){
+  const fb=window._fb;if(!fb)return;
+  // Adaptif batarya optimizasyonu: duruyorsa 15s atlama (her 5. çağrıda bir gönder)
+  if(!G._moving){G._skipCnt=(G._skipCnt||0)+1;if(G._skipCnt<5)return;G._skipCnt=0;}else{G._skipCnt=0;}
+  try{fb.set(fb.ref(fb.db,`couriers/${G.id}/location`),{lat:G.gps.lat,lng:G.gps.lng,speed:Math.round(G.gps.speed),shiftActive:G.shift.on,name:G.name,updatedAt:fb.serverTimestamp()});}catch(e){}
+}
 function hvs(a,b,c,d){const R=6371,dA=(c-a)*Math.PI/180,dB=(d-b)*Math.PI/180,x=Math.sin(dA/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dB/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 
 // WAKE LOCK

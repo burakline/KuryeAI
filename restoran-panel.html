@@ -853,6 +853,15 @@ tbody tr:hover{background:var(--bg)}
             </div>
           </div>
         </div>
+
+        <!-- Canlı Harita -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-header">
+            <div class="card-title">🗺️ Canlı Kurye Haritası</div>
+            <button class="btn btn-ghost btn-sm" onclick="goPage('tracking')">Detaylı Görünüm →</button>
+          </div>
+          <div id="map-dash" style="height:320px;border-radius:0 0 var(--radius) var(--radius)"></div>
+        </div>
       </div>
 
       <!-- ═══════════════ ORDERS ═══════════════ -->
@@ -1915,43 +1924,31 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- Sidebar toggle — module dışında, onclick'ten erişilebilir -->
 <script>
-// Overlay'i body'ye ekle
-var _sbOv = document.createElement("div");
-_sbOv.style.cssText = "display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998";
-_sbOv.onclick = function(){ window.closeSidebar(); };
-document.body.appendChild(_sbOv);
-
 window.toggleSidebar = function(){
   var sb = document.querySelector(".sidebar");
+  var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
-  var isOpen = sb.classList.contains("sb-open");
-  if(isOpen){
+  if(sb.classList.contains("open")){
     window.closeSidebar();
   } else {
-    sb.style.transform = "translateX(0)";
-    sb.style.zIndex = "9999";
-    sb.style.transition = "transform .28s ease";
-    sb.classList.add("sb-open");
-    _sbOv.style.display = "block";
+    sb.classList.add("open");
+    if(ov) ov.classList.add("open");
     document.body.style.overflow = "hidden";
   }
 };
 
 window.closeSidebar = function(){
   var sb = document.querySelector(".sidebar");
+  var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
-  sb.style.transform = "translateX(-100%)";
-  sb.classList.remove("sb-open");
-  _sbOv.style.display = "none";
+  sb.classList.remove("open");
+  if(ov) ov.classList.remove("open");
   document.body.style.overflow = "";
 };
 
 window.addEventListener("resize", function(){
   if(window.innerWidth > 768){
-    var sb = document.querySelector(".sidebar");
-    if(sb){ sb.style.transform=""; sb.style.zIndex=""; sb.classList.remove("sb-open"); }
-    _sbOv.style.display = "none";
-    document.body.style.overflow = "";
+    window.closeSidebar();
   }
 });
 
@@ -2042,7 +2039,7 @@ let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
 let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
 
-let mapInstance=null, courierMarkers={};
+let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
 let deleteCourierId=null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -2097,6 +2094,7 @@ window.goPage=page=>{
   document.getElementById(`view-${page}`)?.classList.add("active");
   document.getElementById("page-title").textContent=TITLES[page]||"Panel";
   if(page==="tracking")setTimeout(initMap,100);
+  if(page==="dashboard")setTimeout(initMapDash,100);
   if(page==="reports"){renderReports();renderPerfRanking();}
   if(page==="financials")renderFinancials(currentFinPeriod||"daily");
   if(page==="kitchen")renderKitchen();
@@ -2108,13 +2106,22 @@ document.querySelectorAll(".nav-item[data-page]").forEach(el=>{
   el.addEventListener("click",()=>goPage(el.dataset.page));
 });
 
-// Demo intent: sayfa ziyaretlerine göre skor ekle
+// Sayfa geçiş hook'u: demo intent + manual-order init
 const _origGoPage = window.goPage;
 window.goPage = page => {
   _origGoPage(page);
-  if (!IS_DEMO) return;
-  const pts = { dashboard:1, menu:2, couriers:3 };
-  if (pts[page]) window.DEMO?.addIntent(pts[page]);
+  // Demo intent skoru
+  if (IS_DEMO) {
+    const pts = { dashboard:1, menu:2, couriers:3 };
+    if (pts[page]) window.DEMO?.addIntent(pts[page]);
+  }
+  // Manuel sipariş sayfası init
+  if (page === "manual-order") {
+    renderOrderLines();
+    renderQuickMenu();
+    refreshCourierSelect();
+    renderRecentManualOrders();
+  }
 };
 
 // ── Clock ─────────────────────────────────────────────────────────────────
@@ -2461,7 +2468,7 @@ async function initFirebase(){
       if(snap.val()){
         couriers=objToArr(snap.val());
         renderCouriers();renderTrackingCouriers();renderDashCouriers();
-        updateMapMarkers();updateMetrics();
+        updateMapMarkers();updateMapDashMarkers();updateMetrics();
       }
     });
 
@@ -2715,6 +2722,33 @@ function initMap(){
     attribution:'© OpenStreetMap',maxZoom:18
   }).addTo(mapInstance);
   updateMapMarkers();
+}
+
+function initMapDash(){
+  if(mapDashInstance)return;
+  const el=document.getElementById("map-dash");
+  if(!el)return;
+  mapDashInstance=L.map("map-dash",{zoomControl:false,attributionControl:false}).setView(ANKARA_CENTER,13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(mapDashInstance);
+  updateMapDashMarkers();
+}
+
+function updateMapDashMarkers(){
+  if(!mapDashInstance)return;
+  Object.values(courierMarkersD).forEach(m=>m.remove());
+  courierMarkersD={};
+  couriers.filter(c=>c.status==="busy"||c.status==="available").forEach(c=>{
+    const coords=MOCK_COORDS[c.id]||[ANKARA_CENTER[0]+(Math.random()-.5)*.02,ANKARA_CENTER[1]+(Math.random()-.5)*.02];
+    const color=c.status==="busy"?"#f59e0b":"#00c48c";
+    const icon=L.divIcon({
+      className:"",
+      html:`<div style="width:32px;height:32px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.2)" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
+      iconSize:[32,32],iconAnchor:[16,16],
+    });
+    const marker=L.marker(coords,{icon}).addTo(mapDashInstance);
+    marker.bindPopup(`<b>${c.name}</b><br><small>${c.status==="busy"?"Meşgul":"Müsait"}</small>`);
+    courierMarkersD[c.id]=marker;
+  });
 }
 
 function updateMapMarkers(){
@@ -3197,17 +3231,7 @@ function renderRecentManualOrders(){
   : `<div class="empty-state" style="padding:20px"><div class="empty-icon" style="font-size:20px">📝</div><div class="empty-title" style="font-size:12px">Henüz manuel sipariş yok</div></div>`;
 }
 
-// Manuel sipariş sayfasına geçince render et
-const _origGoPage = window.goPage;
-window.goPage = page => {
-  _origGoPage(page);
-  if(page==="manual-order"){
-    renderOrderLines();
-    renderQuickMenu();
-    refreshCourierSelect();
-    renderRecentManualOrders();
-  }
-};
+// (Manuel sipariş init goPage hook'una taşındı)
 
 // ── PLATFORM ENTEGRASYONu — API GELİNCE DOLDURULACAK FONKSIYONLAR ────────
 // Bu fonksiyonlar API anahtarı geldiğinde içi doldurulacak.
@@ -3696,12 +3720,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (document.body.classList.contains('dark')) {
     ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='☀️'; });
   }
+  // Dashboard map init (dashboard is default active view)
+  setTimeout(initMapDash, 500);
 });
 
 </script>
-
-<!-- Sidebar overlay buraya taşındı — tüm içeriğin üstünde render edilir -->
-<div id="sidebar-overlay-fixed" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200" onclick="closeSidebar()"></div>
 
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 <script type="module" src="/demo.js"></script>

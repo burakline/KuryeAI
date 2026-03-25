@@ -114,7 +114,7 @@
     </div>
   </div>
 
-  <a href="/izincikurye" class="back-link">← İzinciKurye Ana Sayfasına Dön</a>
+  <a href="/izincikuryeai" class="back-link">← İzinciKurye Ana Sayfasına Dön</a>
 </div>
 
 <script type="module">
@@ -150,7 +150,7 @@
         if (snap.exists()) {
           const role = snap.data().role;
           if (role === 'admin') { window.location.href = '/admin-panel'; return; }
-          if (role === 'izinci_kurye') { window.location.href = '/izincikurye-panel'; return; }
+          if (role === 'izinci_kurye') { window.location.href = '/izincikuryeai-izinci-panel'; return; }
         }
       } catch(e) {}
     }
@@ -212,7 +212,7 @@
       const role = snap.data().role;
       if (role === 'admin') { window.location.href = '/admin-panel'; return; }
       if (role !== 'izinci_kurye') { await signOut(auth); throw new Error('Bu hesap İzinciKurye sistemine ait değil.'); }
-      window.location.href = '/izincikurye-panel';
+      window.location.href = '/izincikuryeai-izinci-panel';
     } catch(e) {
       const msgs = { 'auth/invalid-credential':'E-posta veya şifre hatalı.', 'auth/too-many-requests':'Çok fazla deneme. Lütfen bekleyin.' };
       err.textContent = msgs[e.code] || e.message;

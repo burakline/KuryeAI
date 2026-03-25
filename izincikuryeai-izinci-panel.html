@@ -314,16 +314,16 @@
   let shiftTimer = null;
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user || !user.emailVerified) { window.location.href = '/izincikurye-login'; return; }
+    if (!user || !user.emailVerified) { window.location.href = '/izincikuryeai-izinci-login'; return; }
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || (snap.data().role !== 'izinci_kurye' && snap.data().role !== 'admin')) {
-        await signOut(auth); window.location.href = '/izincikurye-login'; return;
+        await signOut(auth); window.location.href = '/izincikuryeai-izinci-login'; return;
       }
       currentUser = { uid:user.uid, ...snap.data() };
       initPanel();
       document.getElementById('page-loader').classList.add('hide');
-    } catch(e) { window.location.href = '/izincikurye-login'; }
+    } catch(e) { window.location.href = '/izincikuryeai-izinci-login'; }
   });
 
   function initPanel() {
@@ -710,7 +710,7 @@
   window.doLogout = async () => {
     clearInterval(shiftTimer);
     await signOut(auth);
-    window.location.href = '/izincikurye-login';
+    window.location.href = '/izincikuryeai-izinci-login';
   };
 
   window.switchTab = (t) => {

@@ -182,15 +182,15 @@
   let unsubTalepler = null;
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user || !user.emailVerified) { window.location.href = '/acilkurye-login'; return; }
+    if (!user || !user.emailVerified) { window.location.href = '/acilkuryeai-kurye-login'; return; }
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || snap.data().role !== 'acil_kurye') {
-        await signOut(auth); window.location.href = '/acilkurye-login'; return;
+        await signOut(auth); window.location.href = '/acilkuryeai-kurye-login'; return;
       }
       currentUser = { uid:user.uid, ...snap.data() };
       initPanel();
-    } catch(e) { window.location.href = '/acilkurye-login'; }
+    } catch(e) { window.location.href = '/acilkuryeai-kurye-login'; }
   });
 
   function initPanel() {
@@ -326,7 +326,7 @@
     } catch(e) { toast('Kayıt hatası','error'); }
   };
 
-  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkurye-login'; };
+  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkuryeai-kurye-login'; };
 
   window.switchTab = (t) => {
     document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));

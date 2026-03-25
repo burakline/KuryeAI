@@ -173,16 +173,16 @@
   }
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user || !user.emailVerified) { window.location.href = '/izincikurye-isveren-login'; return; }
+    if (!user || !user.emailVerified) { window.location.href = '/izincikuryeai-isveren-login'; return; }
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || (snap.data().role !== 'izinci_isveren' && snap.data().role !== 'admin')) {
-        await signOut(auth); window.location.href = '/izincikurye-isveren-login'; return;
+        await signOut(auth); window.location.href = '/izincikuryeai-isveren-login'; return;
       }
       currentUser = { uid:user.uid, ...snap.data() };
       initPanel();
       document.getElementById('page-loader').classList.add('hide');
-    } catch(e) { window.location.href = '/izincikurye-isveren-login'; }
+    } catch(e) { window.location.href = '/izincikuryeai-isveren-login'; }
   });
 
   function initPanel() {
@@ -359,7 +359,7 @@
 
   window.doLogout = async () => {
     await signOut(auth);
-    window.location.href = '/izincikurye-isveren-login';
+    window.location.href = '/izincikuryeai-isveren-login';
   };
 
   window.switchTab = (t) => {

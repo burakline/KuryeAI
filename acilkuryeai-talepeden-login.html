@@ -52,7 +52,7 @@
 <body>
 <div class="bg-grid"></div>
 <div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
-<a href="/acilkurye" class="back-link">← Geri Dön</a>
+<a href="/acilkuryeai" class="back-link">← Geri Dön</a>
 
 <div class="card">
   <div class="logo-name"><span class="acil">Acil</span>Kurye<span class="ai">AI</span></div>
@@ -140,7 +140,7 @@
   const db   = getFirestore(app);
   const loader = document.getElementById('page-loader');
 
-  const backUrl = new URLSearchParams(window.location.search).get('back') || '/acilkurye-talep-panel';
+  const backUrl = new URLSearchParams(window.location.search).get('back') || '/acilkuryeai-talepeden-panel';
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {

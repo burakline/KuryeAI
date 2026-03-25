@@ -133,7 +133,7 @@
     <span class="nav-brand">Kurye<em>AI</em></span>
   </a>
   <a href="/" class="nav-back">← Ana Sayfa</a>
-  <span id="nav-auth-area"><a href="/acilkurye-talep-login" class="btn-wa" style="background:#ff9500;color:#000">🔐 Giriş / Kayıt</a></span>
+  <span id="nav-auth-area"><a href="/acilkuryeai-talepeden-login" class="btn-wa" style="background:#ff9500;color:#000">🔐 Giriş / Kayıt</a></span>
 </nav>
 
 <!-- HERO -->
@@ -276,7 +276,7 @@
 
 <div class="page-footer">
   <a href="/">← Ana Sayfa</a> &nbsp;·&nbsp;
-  <a href="/acilkurye-talep-login">🔐 Giriş / Kayıt</a> &nbsp;·&nbsp;
+  <a href="/acilkuryeai-talepeden-login">🔐 Giriş / Kayıt</a> &nbsp;·&nbsp;
   <a href="tel:+905072171995">📞 0 507 217 19 95</a> &nbsp;·&nbsp;
   <a href="/kvkk">Gizlilik Politikası</a>
 </div>
@@ -335,16 +335,16 @@
               durationMin: (f.sure && f.sure !== '—') ? parseInt(f.sure) : null,
               status: 'open', createdAt: new Date().toISOString()
             });
-            window.location.href = '/acilkurye-talep-panel';
+            window.location.href = '/acilkuryeai-talepeden-panel';
             return;
           }
           // Giriş yapılmış — nav güncelle
-          if (navEl) navEl.innerHTML = '<a href="/acilkurye-talep-panel" class="btn-wa" style="background:#ff9500;color:#000">📦 Panelime Git</a>';
+          if (navEl) navEl.innerHTML = '<a href="/acilkuryeai-talepeden-panel" class="btn-wa" style="background:#ff9500;color:#000">📦 Panelime Git</a>';
           return;
         }
       } catch(e) {}
     }
-    if (navEl) navEl.innerHTML = '<a href="/acilkurye-talep-login" class="btn-wa" style="background:#ff9500;color:#000">🔐 Giriş / Kayıt</a>';
+    if (navEl) navEl.innerHTML = '<a href="/acilkuryeai-talepeden-login" class="btn-wa" style="background:#ff9500;color:#000">🔐 Giriş / Kayıt</a>';
   });
 </script>
 
@@ -510,7 +510,7 @@ function submitForm() {
     ucret: document.getElementById('ms-ucret').textContent
   };
   sessionStorage.setItem('pendingAcilForm', JSON.stringify(formData));
-  window.location.href = '/acilkurye-talep-login?back=/acil-kurye';
+  window.location.href = '/acilkuryeai-talepeden-login?back=/acil-kurye';
 }
 </script>
 </body>

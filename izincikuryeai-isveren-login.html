@@ -115,7 +115,7 @@
     </div>
   </div>
 
-  <a href="/izincikurye" class="back-link">← İzinciKurye Ana Sayfasına Dön</a>
+  <a href="/izincikuryeai" class="back-link">← İzinciKurye Ana Sayfasına Dön</a>
 </div>
 
 <script type="module">
@@ -150,7 +150,7 @@
         const snap = await getDoc(doc(db,'users',user.uid));
         if (snap.exists()) {
           const role = snap.data().role;
-          if (role === 'izinci_isveren') { window.location.href = '/izincikurye-isveren-panel'; return; }
+          if (role === 'izinci_isveren') { window.location.href = '/izincikuryeai-isveren-panel'; return; }
           if (role === 'admin') { window.location.href = '/admin-panel'; return; }
         }
       } catch(e) {}
@@ -194,7 +194,7 @@
       const snap = await getDoc(doc(db,'users',cred.user.uid));
       if (!snap.exists()) { await signOut(auth); throw new Error('Kullanıcı profili bulunamadı.'); }
       const role = snap.data().role;
-      if (role === 'izinci_isveren') { window.location.href = '/izincikurye-isveren-panel'; return; }
+      if (role === 'izinci_isveren') { window.location.href = '/izincikuryeai-isveren-panel'; return; }
       if (role === 'admin') { window.location.href = '/admin-panel'; return; }
       await signOut(auth);
       throw new Error('Bu hesap İzinciKurye İşveren sistemine ait değil.');

@@ -134,16 +134,16 @@
   }
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user || !user.emailVerified) { window.location.href = '/acilkurye-talep-login'; return; }
+    if (!user || !user.emailVerified) { window.location.href = '/acilkuryeai-talepeden-login'; return; }
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || snap.data().role !== 'acil_talep') {
-        await signOut(auth); window.location.href = '/acilkurye-talep-login'; return;
+        await signOut(auth); window.location.href = '/acilkuryeai-talepeden-login'; return;
       }
       currentUser = { uid:user.uid, ...snap.data() };
       document.getElementById('page-loader').classList.add('hide');
       listenTaleplerim();
-    } catch(e) { window.location.href = '/acilkurye-talep-login'; }
+    } catch(e) { window.location.href = '/acilkuryeai-talepeden-login'; }
   });
 
   function listenTaleplerim() {
@@ -250,7 +250,7 @@
     btn.disabled = false; btn.textContent = 'Talep Gönder →';
   };
 
-  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkurye-talep-login'; };
+  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkuryeai-talepeden-login'; };
   window.switchTab = (t) => {
     document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));

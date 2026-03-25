@@ -6,9 +6,9 @@
   <title>AcilKuryeAI — Talep Girişi</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black:#000; --card:#111; --border:rgba(255,255,255,0.08); --text:#fff; --sub:#888; --orange:#ff9500; --red:#ff5f57; }
-    html,body { height:100%; background:var(--black); color:var(--text); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
-    body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100svh; padding:2rem 1.2rem; position:relative; overflow:hidden; }
+    :root { --black:#000; --card:#111; --border:rgba(255,255,255,0.08); --text:#fff; --sub:#888; --orange:#ff9500; --red:#ff5f57; --teal:#00c8d7; }
+    html,body { background:var(--black); color:var(--text); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
+    body { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100svh; padding:5rem 1.2rem 3rem; position:relative; }
     .bg-grid { position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,149,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,149,0,.04) 1px,transparent 1px); background-size:52px 52px; mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%); }
     .back-link { position:fixed; top:1.4rem; left:1.8rem; font-size:.8rem; color:var(--sub); text-decoration:none; transition:color .2s; z-index:10; }
     .back-link:hover { color:var(--text); }
@@ -16,7 +16,8 @@
     .card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
     @keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     .logo-name { font-size:1.25rem; font-weight:800; text-align:center; margin-bottom:.3rem; }
-    .logo-name em { font-style:normal; color:var(--orange); }
+    .logo-name .acil { color:var(--red); }
+    .logo-name .ai   { color:var(--teal); }
     .logo-sub { font-size:.75rem; color:var(--sub); text-align:center; margin-bottom:2rem; }
     .tabs { display:flex; gap:.5rem; margin-bottom:1.8rem; background:rgba(255,255,255,.05); border-radius:12px; padding:.3rem; }
     .tab { flex:1; text-align:center; padding:.55rem; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; transition:background .2s,color .2s; color:var(--sub); }
@@ -54,7 +55,7 @@
 <a href="/acilkurye" class="back-link">← Geri Dön</a>
 
 <div class="card">
-  <div class="logo-name">Acil<em>Kurye</em>AI</div>
+  <div class="logo-name"><span class="acil">Acil</span>Kurye<span class="ai">AI</span></div>
   <div class="logo-sub">Talep Paneli</div>
 
   <div class="tabs">

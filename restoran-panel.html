@@ -3630,8 +3630,20 @@ function updatePlatformAvg(d){
 let _pricingCourierId=null;
 window.openCourierPricing=(id,name)=>{
   _pricingCourierId=id;
+  const c=couriers.find(x=>x.id===id);
   document.getElementById("cp-courier-name").textContent=name;
+  const sel=document.getElementById("cp-type");
+  if(c?.pricingType) sel.value=c.pricingType;
+  else sel.value="per_package";
   renderCourierPricingFields();
+  if(c?.pricingBase){
+    const b=document.getElementById("cp-base");
+    if(b) b.value=c.pricingBase;
+  }
+  if(c?.pricingKm){
+    const k=document.getElementById("cp-km");
+    if(k) k.value=c.pricingKm;
+  }
   document.getElementById("modal-courier-pricing").classList.add("open");
 };
 window.renderCourierPricingFields=()=>{

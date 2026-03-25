@@ -555,12 +555,18 @@ function watchDemoSessions() {
       return;
     }
     listEl.innerHTML = online.map(s => {
-      const ago = Math.floor((now - s.lastActive) / 1000);
-      const pageLabel = { 'restoran-panel':'Restoran Panel', 'dashboard':'Dashboard',
-        'orders':'Siparişler', 'couriers':'Kuryeler', 'menu':'Menü', 'settings':'Ayarlar' }[s.page] || s.page || '—';
+      const ago       = Math.floor((now - s.lastActive) / 1000);
+      const score     = s.intentScore || 0;
+      const isHot     = score >= 5;
+      const pageLabel = { 'restoran-panel':'Restoran Panel', dashboard:'Dashboard',
+        orders:'Siparişler', couriers:'Kuryeler', menu:'Menü', settings:'Ayarlar',
+        'manual-order':'Manuel Sipariş', reports:'Raporlar' }[s.page] || s.page || '—';
       return `<div class="act-item">
-        <div class="act-dot" style="background:var(--green)"></div>
-        <div class="act-text"><strong>${pageLabel}</strong> <span style="color:var(--gray-lt);font-size:.72rem">· ${s.sessionId?.slice(-8)||''}</span></div>
+        <div class="act-dot" style="background:${isHot?'var(--orange)':'var(--green)'}"></div>
+        <div class="act-text">
+          <strong>${pageLabel}</strong>${isHot?' <span style="font-size:.7rem">🔥</span>':''}
+          <span style="color:var(--gray-lt);font-size:.7rem"> · ${s.sessionId?.slice(-8)||''} · 🎯${score}</span>
+        </div>
         <div class="act-time">${ago}sn</div>
       </div>`;
     }).join('');

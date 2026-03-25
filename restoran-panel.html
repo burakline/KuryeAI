@@ -620,6 +620,20 @@ tbody tr:hover{background:var(--bg)}
   .radio-grid{grid-template-columns:1fr!important}
   .metrics-grid{grid-template-columns:repeat(2,1fr)!important}
 }
+
+/* ── DEMO BANNER ── */
+#demo-banner{display:none;position:sticky;top:0;z-index:200;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;text-align:center;padding:.45rem 1rem;font-size:.8rem;font-weight:600;letter-spacing:.02em}
+#demo-banner span{opacity:.75;font-weight:400}
+
+/* ── ONBOARDING MODAL ── */
+#onboarding-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center}
+#onboarding-overlay.show{display:flex}
+#onboarding-box{background:var(--surface);border-radius:20px;padding:2rem;max-width:460px;width:calc(100% - 2rem);box-shadow:var(--shadow-lg)}
+.ob-steps{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.ob-step{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.ob-step.done{background:var(--teal)}
+.ob-step.active{background:var(--teal);opacity:.5}
+.ob-step-body{min-height:100px}
 </style>
 </head>
 <body>
@@ -700,28 +714,67 @@ tbody tr:hover{background:var(--bg)}
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Raporlar
       </div>
+      <div class="nav-item" data-page="financials">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Finansal Analiz
+      </div>
+
+      <div class="nav-section">Operasyon</div>
+      <div class="nav-item" data-page="kitchen">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+        Mutfak Ekranı
+      </div>
+      <div class="nav-item" data-page="earnings">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Kurye Hakedişleri
+      </div>
+      <div class="nav-item" data-page="staff">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Personel
+      </div>
 
       <div class="nav-section">Sistem</div>
       <div class="nav-item" data-page="settings">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Sistem Ayarları
       </div>
+      <div class="nav-item" onclick="window.logout && window.logout()" style="color:var(--red,#ef4444)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Oturumu Kapat
+      </div>
     </div>
 
-    <div class="sb-footer">
-      <div class="user-card" id="user-info">
+    <div class="sb-footer" style="position:relative">
+      <div class="user-card" id="user-info" onclick="toggleUserMenu()" style="cursor:pointer">
         <div class="user-avatar" id="user-avatar">R</div>
-        <div>
+        <div style="flex:1;min-width:0">
           <div class="user-name" id="user-display">Restoran</div>
-          <div class="user-role" id="rest-id-label">demo_restoran_001</div>
+          <div class="user-role" id="rest-id-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">demo_restoran_001</div>
         </div>
-        <div class="user-chevron">⌄</div>
+        <div class="user-chevron" id="user-chevron-icon">⌄</div>
+      </div>
+      <div id="user-dropdown" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);overflow:hidden;z-index:100">
+        <div onclick="goPage('settings');toggleUserMenu()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+          <span>⚙️</span> Sistem Ayarları
+        </div>
+        <div onclick="goPage('financials');toggleUserMenu()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+          <span>💹</span> Finansal Analiz
+        </div>
+        <div style="height:1px;background:var(--border);margin:4px 0"></div>
+        <div onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:var(--red);font-weight:600;transition:background .1s" onmouseover="this.style.background='var(--red-bg)'" onmouseout="this.style.background='transparent'">
+          <span>🚪</span> Oturumu Kapat
+        </div>
       </div>
     </div>
   </aside>
 
   <!-- ── MAIN ── -->
   <div class="main">
+    <!-- Demo Banner (inside main so it scrolls with layout) -->
+    <div id="demo-banner-inner" style="display:none;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;text-align:center;padding:.4rem 1rem;font-size:.79rem;font-weight:600">
+      🎮 Demo Moddasın &nbsp;·&nbsp; <span style="opacity:.75;font-weight:400">Gerçek sipariş oluşturulmaz</span>
+    </div>
+
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-title" id="page-title">Genel Bakış</div>
@@ -803,6 +856,15 @@ tbody tr:hover{background:var(--bg)}
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Canlı Harita -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-header">
+            <div class="card-title">🗺️ Canlı Kurye Haritası</div>
+            <button class="btn btn-ghost btn-sm" onclick="goPage('tracking')">Detaylı Görünüm →</button>
+          </div>
+          <div id="map-dash" style="height:320px;border-radius:0 0 var(--radius) var(--radius)"></div>
         </div>
       </div>
 
@@ -893,14 +955,28 @@ tbody tr:hover{background:var(--bg)}
 
       <!-- ═══════════════ COURIERS ═══════════════ -->
       <div class="view" id="view-couriers">
+        <!-- Email ile kurye arama -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-header">
+            <div class="card-title">🔍 KuryeAI Sisteminden Kurye Ekle</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">KuryeAI'ye kayıtlı ve admin tarafından onaylanmış kurye mail adresini girin.</div>
+            <div style="display:flex;gap:10px;align-items:flex-end">
+              <div class="form-group" style="flex:1;margin-bottom:0">
+                <label class="form-label">Kurye Mail Adresi</label>
+                <input class="form-input" id="courier-email-lookup" type="email" placeholder="kurye@example.com"/>
+              </div>
+              <button class="btn btn-primary" onclick="lookupCourierByEmail()">Kurye Bul & Ekle</button>
+            </div>
+            <div id="courier-lookup-result" style="margin-top:10px;display:none"></div>
+          </div>
+        </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Kurye Yönetimi</div>
+            <div class="card-title">Kayıtlı Kuryeler</div>
             <div class="card-actions">
-              <button class="btn btn-primary btn-sm" onclick="openAddCourierModal()">
-                <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Kurye Ekle
-              </button>
+              <button class="btn btn-ghost btn-sm" onclick="openAddCourierModal()">+ Manuel Ekle</button>
             </div>
           </div>
           <div class="table-wrap" id="couriers-table-wrap">
@@ -918,6 +994,10 @@ tbody tr:hover{background:var(--bg)}
               <div id="menu-filter-tabs" class="tabs" style="margin-bottom:0">
                 <button class="tab active" data-mfilter="all">Tümü</button>
               </div>
+              <button class="btn btn-primary btn-sm" onclick="openAddMenuItemModal()">
+                <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ürün Ekle
+              </button>
             </div>
           </div>
           <div class="card-body">
@@ -960,6 +1040,12 @@ tbody tr:hover{background:var(--bg)}
 
       <!-- ═══════════════ SETTINGS ═══════════════ -->
       <div class="view" id="view-settings">
+        <!-- Plan Bilgisi -->
+        <div class="card" id="plan-info-card" style="margin-bottom:16px">
+          <div style="color:var(--text3);font-size:.84rem">Yükleniyor…</div>
+        </div>
+        <!-- Ödeme / IBAN -->
+        <div class="card" id="payment-section-card" style="margin-bottom:16px"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <!-- Sol -->
           <div style="display:flex;flex-direction:column;gap:14px">
@@ -1151,7 +1237,10 @@ tbody tr:hover{background:var(--bg)}
 
               <!-- Müşteri bilgileri -->
               <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px">
-                <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Müşteri Bilgileri</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px">Müşteri Bilgileri</div>
+                  <button class="btn btn-ghost btn-sm" onclick="openCustomerBook()" style="font-size:11px">📖 Adres Defteri</button>
+                </div>
                 <div class="form-row">
                   <div class="form-group" style="margin-bottom:0">
                     <label class="form-label">Müşteri Adı *</label>
@@ -1159,12 +1248,16 @@ tbody tr:hover{background:var(--bg)}
                   </div>
                   <div class="form-group" style="margin-bottom:0">
                     <label class="form-label">Telefon</label>
-                    <input class="form-input" id="mo-phone" placeholder="05XX XXX XX XX" style="background:var(--white)"/>
+                    <input class="form-input" id="mo-phone" placeholder="05XX XXX XX XX" style="background:var(--white)" oninput="lookupCustomerByPhone(this.value)"/>
                   </div>
                 </div>
                 <div class="form-group" style="margin-top:10px;margin-bottom:0">
                   <label class="form-label">Teslimat Adresi *</label>
                   <input class="form-input" id="mo-address" placeholder="Cadde, mahalle, kapı no…" style="background:var(--white)"/>
+                </div>
+                <div id="customer-suggestion" style="display:none;margin-top:8px;padding:10px;background:var(--teal-bg);border:1px solid rgba(0,200,215,.2);border-radius:8px;font-size:12px;cursor:pointer" onclick="applyCustomerSuggestion()">
+                  <span style="color:var(--teal-dk);font-weight:600">🔍 Geçmiş Müşteri:</span>
+                  <span id="customer-suggestion-text"></span>
                 </div>
               </div>
 
@@ -1387,18 +1480,223 @@ tbody tr:hover{background:var(--bg)}
 
         </div>
 
-        <!-- Geliştirici notu -->
-        <div class="card">
-          <div class="card-body" style="display:flex;gap:16px;align-items:flex-start">
-            <div style="width:40px;height:40px;border-radius:10px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👨‍💻</div>
-            <div>
-              <div style="font-size:13px;font-weight:700;margin-bottom:6px">Geliştirici Notu — API Entegrasyon Mimarisi</div>
-              <div style="font-size:12px;color:var(--text3);line-height:1.8">
-                Her platform için <code style="background:var(--bg2);padding:1px 6px;border-radius:4px;font-family:var(--fm);font-size:11px">fetchFromPlatform(platform, apiKey)</code> fonksiyonu tanımlı ve Firebase'e yazma altyapısı hazır.<br/>
-                API anahtarı geldiğinde sadece Settings → Platform Entegrasyon sekmesine yapıştırıp "Bağlantıyı Test Et" butonuna basman yeterli.<br/>
-                Sipariş objesi normalizer tüm platformlar için standart <code style="background:var(--bg2);padding:1px 6px;border-radius:4px;font-family:var(--fm);font-size:11px">{ customer, items, total, status, address, platform, platformOrderId }</code> formatına çeviriyor.
+        <!-- Platform Puan & Yorum Takibi -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-header">
+            <div class="card-title">⭐ Platform Puan & Yorum Takibi</div>
+            <button class="btn btn-primary btn-sm" onclick="savePlatformLinks()">Kaydet</button>
+          </div>
+          <div class="card-body">
+            <div style="font-size:12px;color:var(--text3);margin-bottom:14px">Her platform için restoran sayfanızın linkini girin. Anlık puan ortalamaları ve son yorumlar buradan takip edilir.</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px" id="platform-links-grid">
+              <div style="background:var(--bg);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <span style="font-size:20px">🍽️</span>
+                  <span style="font-weight:700;font-size:13px">Yemeksepeti</span>
+                  <span id="ys-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
+                </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
+                <input class="form-input" id="ys-link" placeholder="https://www.yemeksepeti.com/restaurant/..." style="margin-bottom:8px"/>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="ys-rating" type="number" min="0" max="10" step="0.1" placeholder="9.2"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="ys-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="ys-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
+              </div>
+              <div style="background:var(--bg);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <span style="font-size:20px">🟠</span>
+                  <span style="font-weight:700;font-size:13px">Trendyol Yemek</span>
+                  <span id="ty-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
+                </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
+                <input class="form-input" id="ty-link" placeholder="https://www.trendyol.com/restoran/..." style="margin-bottom:8px"/>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="ty-rating" type="number" min="0" max="10" step="0.1" placeholder="8.8"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="ty-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="ty-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
+              </div>
+              <div style="background:var(--bg);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <span style="font-size:20px">🔵</span>
+                  <span style="font-weight:700;font-size:13px">Getir Yemek</span>
+                  <span id="gr-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
+                </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
+                <input class="form-input" id="gr-link" placeholder="https://getir.com/yemek/..." style="margin-bottom:8px"/>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="gr-rating" type="number" min="0" max="10" step="0.1" placeholder="9.5"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="gr-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="gr-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
+              </div>
+              <div style="background:var(--bg);border-radius:10px;padding:14px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                  <span style="font-size:20px">🛒</span>
+                  <span style="font-weight:700;font-size:13px">Migros Yemek</span>
+                  <span id="mg-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
+                </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
+                <input class="form-input" id="mg-link" placeholder="https://www.migros.com.tr/lezzet/..." style="margin-bottom:8px"/>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="mg-rating" type="number" min="0" max="10" step="0.1" placeholder="9.0"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="mg-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="mg-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
               </div>
             </div>
+            <div id="platform-avg-score" style="margin-top:14px;padding:12px;background:var(--teal-bg);border:1px solid rgba(0,200,215,.2);border-radius:10px;text-align:center;display:none">
+              <span style="font-size:13px;color:var(--text2)">Tüm Platformlar Ortalama Puanı</span>
+              <div style="font-size:28px;font-weight:800;color:var(--teal-dk)" id="platform-avg-val">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ FİNANSAL ANALİZ ═══════════════ -->
+      <div class="view" id="view-financials">
+        <!-- Period selector -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="tabs" style="margin-bottom:0">
+            <button class="tab active" data-period="daily" onclick="setFinPeriod(this,'daily')">Günlük</button>
+            <button class="tab" data-period="weekly" onclick="setFinPeriod(this,'weekly')">Haftalık</button>
+            <button class="tab" data-period="monthly" onclick="setFinPeriod(this,'monthly')">Aylık</button>
+            <button class="tab" data-period="yearly" onclick="setFinPeriod(this,'yearly')">Yıllık</button>
+          </div>
+          <div style="font-size:12px;color:var(--text3)" id="fin-period-label">Bugün</div>
+        </div>
+
+        <!-- Top stat cards -->
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-icon green">💰</div></div>
+            <div class="stat-value" id="fin-total-rev">₺0</div>
+            <div class="stat-label">Toplam Ciro</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-icon teal">📦</div></div>
+            <div class="stat-value" id="fin-delivery-rev">₺0</div>
+            <div class="stat-label">Paket Cirosu</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-icon blue">🪑</div></div>
+            <div class="stat-value" id="fin-table-rev">₺0</div>
+            <div class="stat-label">Masa Cirosu</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-icon red">🛵</div></div>
+            <div class="stat-value" id="fin-courier-cost">₺0</div>
+            <div class="stat-label">Kurye Gideri</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <!-- Kurye maliyet analizi -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">📊 Kurye Maliyet Analizi</div></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="font-size:13px;color:var(--text2)">Paket Cirosuna Kurye Maliyeti</span>
+                    <span style="font-weight:800;font-size:20px;color:var(--teal-dk)" id="fin-cost-pct-delivery">—%</span>
+                  </div>
+                  <div style="height:8px;background:var(--bg2);border-radius:999px;overflow:hidden">
+                    <div id="fin-bar-delivery" style="height:100%;background:var(--teal);border-radius:999px;transition:width .5s;width:0%"></div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+                    <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Net Kâr (Paket)</div>
+                    <div style="font-size:18px;font-weight:800;color:var(--green)" id="fin-net-delivery">₺0</div>
+                  </div>
+                  <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+                    <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Sipariş Başı Maliyet</div>
+                    <div style="font-size:18px;font-weight:800;color:var(--yellow)" id="fin-cost-per-order">₺0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- En çok satılan ürünler -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">🏆 En Çok Satılan Ürünler</div></div>
+            <div class="card-body" style="padding:0">
+              <div id="fin-top-products"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <!-- En yoğun saatler -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">⏰ En Yoğun Saatler</div></div>
+            <div class="card-body">
+              <div id="fin-busy-hours" class="hourly-chart"></div>
+            </div>
+          </div>
+
+          <!-- Saatlik / Haftalık özet -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📈 Ciro Dağılımı</div>
+            </div>
+            <div class="card-body" id="fin-breakdown"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ MUTFAK EKRANI ═══════════════ -->
+      <div class="view" id="view-kitchen">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:22px;font-weight:800">👨‍🍳 Mutfak Ekranı</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px">Hazırlanması gereken siparişler</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="status-pill live"><span class="pill-dot pulse"></span>Canlı Güncelleniyor</div>
+            <button class="btn btn-ghost btn-sm" onclick="renderKitchen()">↻ Yenile</button>
+          </div>
+        </div>
+        <div id="kitchen-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px"></div>
+      </div>
+
+      <!-- ═══════════════ KURYE HAKEDİŞLERİ ═══════════════ -->
+      <div class="view" id="view-earnings">
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon green">💰</div></div><div class="stat-value" id="earn-total">₺0</div><div class="stat-label">Toplam Hakediş</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon red">⏳</div></div><div class="stat-value" id="earn-unpaid">₺0</div><div class="stat-label">Ödenmemiş</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">✅</div></div><div class="stat-value" id="earn-paid">₺0</div><div class="stat-label">Ödenen</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue">🛵</div></div><div class="stat-value" id="earn-couriers">0</div><div class="stat-label">Aktif Kurye</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Kurye Hakediş Tablosu</div>
+            <div class="card-actions">
+              <span style="font-size:12px;color:var(--text3)">💡 "Ödendi" işaretlenince kuryeye bildirim gider</span>
+            </div>
+          </div>
+          <div class="table-wrap" id="earnings-table-wrap">
+            <div class="loading-box"><div class="spinner"></div><span>Yükleniyor…</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ PERSONEL ═══════════════ -->
+      <div class="view" id="view-staff">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">👥 Personel Yönetimi</div>
+            <button class="btn btn-primary btn-sm" onclick="openAddStaffModal()">+ Personel Ekle</button>
+          </div>
+          <div class="table-wrap" id="staff-table-wrap">
+            <div class="loading-box"><div class="spinner"></div><span>Yükleniyor…</span></div>
           </div>
         </div>
       </div>
@@ -1456,6 +1754,172 @@ tbody tr:hover{background:var(--bg)}
   </div>
 </div>
 
+<!-- ── MENÜ ÜRÜN EKLE MODAL ── -->
+<div class="modal-overlay" id="modal-add-menu-item">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Yeni Ürün Ekle</div>
+      <div class="modal-close" onclick="closeModal('modal-add-menu-item')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Ürün Adı *</label>
+        <input class="form-input" id="mi-name" placeholder="Örn: Adana Kebap"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Fiyat (₺) *</label>
+          <input class="form-input" id="mi-price" type="number" placeholder="0"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Kategori</label>
+          <input class="form-input" id="mi-category" placeholder="Ana Yemek, Pizza…"/>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="form-label">Açıklama</label>
+        <textarea class="form-input" id="mi-desc" placeholder="Ürün açıklaması…" rows="2" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-menu-item')">İptal</button>
+      <button class="btn btn-primary" onclick="addMenuItem()">Ürün Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MÜŞTERİ ADRES DEFTERİ MODAL ── -->
+<div class="modal-overlay" id="modal-customer-book">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">📖 Müşteri Adres Defteri</div>
+      <div class="modal-close" onclick="closeModal('modal-customer-book')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Telefon ile ara</label>
+        <input class="form-input" id="book-search" placeholder="05XX…" oninput="renderCustomerBook(this.value)"/>
+      </div>
+      <div id="customer-book-list" style="max-height:300px;overflow-y:auto"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-customer-book')">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── KURYE ÜCRET AYARLARI MODAL ── -->
+<div class="modal-overlay" id="modal-courier-pricing">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💰 Kurye Ücret Ayarları</div>
+      <div class="modal-close" onclick="closeModal('modal-courier-pricing')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div id="cp-courier-name" style="font-weight:700;margin-bottom:14px;font-size:15px"></div>
+      <div class="form-group">
+        <label class="form-label">Ücretlendirme Türü</label>
+        <select class="form-input" id="cp-type" onchange="renderCourierPricingFields()">
+          <option value="per_package">Paket Başı</option>
+          <option value="per_package_km">Paket Başı + KM</option>
+          <option value="hourly">Saatlik</option>
+          <option value="hourly_km">Saatlik + KM</option>
+        </select>
+      </div>
+      <div id="cp-fields"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-courier-pricing')">İptal</button>
+      <button class="btn btn-primary" onclick="saveCourierPricing()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ÖDENDİ CONFIRM MODAL ── -->
+<div class="modal-overlay" id="modal-mark-paid">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✅ Ödemeyi Onayla</div>
+      <div class="modal-close" onclick="closeModal('modal-mark-paid')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div id="mp-info" style="margin-bottom:10px;font-size:14px"></div>
+      <div style="background:var(--green-bg);border:1px solid rgba(0,196,140,.2);border-radius:10px;padding:12px;font-size:13px;color:var(--text2)">
+        Ödendi olarak işaretlenince kuryeye şu bildirim gönderilecek:<br/>
+        <span style="font-style:italic;color:var(--text3);margin-top:6px;display:block">"Ödemeniz sistemde kayıtlı IBAN numaranıza yapılmıştır. Emeğiniz için teşekkür eder, iyi çalışmalar dileriz."</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-mark-paid')">İptal</button>
+      <button class="btn btn-primary" onclick="confirmMarkPaid()" style="background:var(--green)">✅ Ödendi Olarak İşaretle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PERSONEL EKLE MODAL ── -->
+<div class="modal-overlay" id="modal-add-staff">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Personel Ekle</div>
+      <div class="modal-close" onclick="closeModal('modal-add-staff')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Ad Soyad *</label>
+        <input class="form-input" id="staff-name" placeholder="Ad Soyad"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Rol</label>
+          <select class="form-input" id="staff-role">
+            <option value="kitchen">Mutfak Personeli</option>
+            <option value="cashier">Kasiyer</option>
+            <option value="waiter">Garson</option>
+            <option value="manager">Müdür</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Telefon</label>
+          <input class="form-input" id="staff-phone" placeholder="05XX XXX XX XX"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-staff')">İptal</button>
+      <button class="btn btn-primary" onclick="addStaff()">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DEMO BANNER ── -->
+<div id="demo-banner">
+  🎮 Demo Moddasın &nbsp;·&nbsp; <span>Gerçek sipariş oluşturulmaz — veriler örnek</span>
+  &nbsp;&nbsp;<a href="/restoran-login" style="color:#fff;font-size:.75rem;text-decoration:underline;opacity:.8">Çıkış</a>
+</div>
+
+<!-- ── ONBOARDING MODAL ── -->
+<div id="onboarding-overlay">
+  <div id="onboarding-box">
+    <div style="text-align:center;margin-bottom:1.2rem">
+      <div style="font-size:2rem;margin-bottom:.4rem">👋</div>
+      <div style="font-size:1.2rem;font-weight:700">KuryeAI'ye Hoş Geldin!</div>
+      <div style="font-size:.85rem;color:var(--text3);margin-top:.3rem" id="ob-sub">Başlamak için 3 adım</div>
+    </div>
+    <div class="ob-steps">
+      <div class="ob-step active" id="ob-s1"></div>
+      <div class="ob-step" id="ob-s2"></div>
+      <div class="ob-step" id="ob-s3"></div>
+    </div>
+    <div class="ob-step-body" id="ob-body">
+      <!-- step content injected by JS -->
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;gap:.7rem">
+      <button id="ob-skip" onclick="closeOnboarding()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;padding:.3rem .5rem">Atla</button>
+      <button id="ob-next" onclick="obNext()" style="flex:1;max-width:160px;padding:.65rem 1.2rem;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:.9rem">Devam →</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- Leaflet (Ücretsiz OpenStreetMap harita) -->
@@ -1464,43 +1928,77 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- Sidebar toggle — module dışında, onclick'ten erişilebilir -->
 <script>
-// Overlay'i body'ye ekle
-var _sbOv = document.createElement("div");
-_sbOv.style.cssText = "display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998";
-_sbOv.onclick = function(){ window.closeSidebar(); };
-document.body.appendChild(_sbOv);
-
 window.toggleSidebar = function(){
   var sb = document.querySelector(".sidebar");
+  var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
-  var isOpen = sb.classList.contains("sb-open");
-  if(isOpen){
+  if(sb.classList.contains("open")){
     window.closeSidebar();
   } else {
+    sb.classList.add("open");
     sb.style.transform = "translateX(0)";
     sb.style.zIndex = "9999";
-    sb.style.transition = "transform .28s ease";
-    sb.classList.add("sb-open");
-    _sbOv.style.display = "block";
+    if(ov){ ov.classList.add("open"); ov.style.zIndex = "9998"; }
     document.body.style.overflow = "hidden";
   }
 };
 
 window.closeSidebar = function(){
   var sb = document.querySelector(".sidebar");
+  var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
-  sb.style.transform = "translateX(-100%)";
-  sb.classList.remove("sb-open");
-  _sbOv.style.display = "none";
+  sb.classList.remove("open");
+  sb.style.transform = "";
+  sb.style.zIndex = "";
+  if(ov){ ov.classList.remove("open"); ov.style.zIndex = ""; }
   document.body.style.overflow = "";
 };
 
 window.addEventListener("resize", function(){
-  if(window.innerWidth > 768){
-    var sb = document.querySelector(".sidebar");
-    if(sb){ sb.style.transform=""; sb.style.zIndex=""; sb.classList.remove("sb-open"); }
-    _sbOv.style.display = "none";
-    document.body.style.overflow = "";
+  if(window.innerWidth > 768) window.closeSidebar();
+});
+
+// Nav item tıklama — modül dışında, güvenilir çalışması için
+document.addEventListener("DOMContentLoaded", function(){
+  document.querySelector(".sb-nav")?.addEventListener("click", function(e){
+    var item = e.target.closest(".nav-item[data-page]");
+    if(item && window.goPage) window.goPage(item.dataset.page);
+  });
+});
+
+// Dark mode toggle — modül dışında tanımlandı
+(function(){
+  if(localStorage.getItem('restoran_dark')==='1') document.body.classList.add('dark');
+})();
+window.toggleDarkMode = function(){
+  var isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('restoran_dark', isDark ? '1' : '0');
+  var icon = isDark ? '☀️' : '🌙';
+  ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=icon; });
+};
+// İkon senkronizasyonu
+document.addEventListener('DOMContentLoaded', function(){
+  if(document.body.classList.contains('dark')){
+    ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent='☀️'; });
+  }
+});
+
+// User dropdown toggle
+var _udOpen = false;
+window.toggleUserMenu = function(){
+  _udOpen = !_udOpen;
+  var dd = document.getElementById("user-dropdown");
+  var ch = document.getElementById("user-chevron-icon");
+  if(dd) dd.style.display = _udOpen ? "block" : "none";
+  if(ch) ch.textContent = _udOpen ? "⌃" : "⌄";
+};
+document.addEventListener("click", function(e){
+  if(_udOpen && !document.getElementById("user-info")?.contains(e.target)){
+    _udOpen = false;
+    var dd = document.getElementById("user-dropdown");
+    var ch = document.getElementById("user-chevron-icon");
+    if(dd) dd.style.display = "none";
+    if(ch) ch.textContent = "⌄";
   }
 });
 </script>
@@ -1508,7 +2006,7 @@ window.addEventListener("resize", function(){
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, get, push, remove }
+import { getDatabase, ref, onValue, set, update, get, push, remove, runTransaction }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1561,13 +2059,18 @@ const SEED_SETTINGS = {
   assign_mode:"auto",pricing_mode:"per_package",
   notif_order:true,notif_delay:true,notif_deliver:false,notif_email:true,
   rest_name:"Demo Restoran",rest_address:"Örnek Cad. No:1",rest_phone:"0312 000 00 00",rest_hours:"09:00 — 23:00",
+  rest_lat:39.9334,rest_lng:32.8597,
   custom_base:0,custom_km:0,
+  commission_rate:5,
 };
 
 // ── State ─────────────────────────────────────────────────────────────────
 let orders=[], menu=[], couriers=[], settings={...SEED_SETTINGS};
+let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
+let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
-let mapInstance=null, courierMarkers={};
+
+let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
 let deleteCourierId=null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -1611,9 +2114,10 @@ const setFbStatus=s=>{
 };
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-const TITLES={dashboard:"Genel Bakış",orders:"Siparişler",tracking:"Canlı Takip",couriers:"Kurye Yönetimi",menu:"Menü Yönetimi",reports:"Raporlar",settings:"Sistem Ayarları","manual-order":"Manuel Sipariş",platforms:"Platform Entegrasyonları"};
+const TITLES={dashboard:"Genel Bakış",orders:"Siparişler",tracking:"Canlı Takip",couriers:"Kurye Yönetimi",menu:"Menü Yönetimi",reports:"Raporlar",financials:"Finansal Analiz",kitchen:"Mutfak Ekranı",earnings:"Kurye Hakedişleri",staff:"Personel Yönetimi",settings:"Sistem Ayarları","manual-order":"Manuel Sipariş",platforms:"Platform Entegrasyonları"};
 window.goPage=page=>{
   currentPage=page;
+  window.currentPage=page;
   if(window.closeSidebar) window.closeSidebar();
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add("active");
@@ -1621,11 +2125,35 @@ window.goPage=page=>{
   document.getElementById(`view-${page}`)?.classList.add("active");
   document.getElementById("page-title").textContent=TITLES[page]||"Panel";
   if(page==="tracking")setTimeout(initMap,100);
+  if(page==="dashboard")setTimeout(initMapDash,100);
   if(page==="reports"){renderReports();renderPerfRanking();}
+  if(page==="financials")renderFinancials(currentFinPeriod||"daily");
+  if(page==="kitchen")renderKitchen();
+  if(page==="earnings")renderEarnings();
+  if(page==="staff")renderStaff();
+  if(page==="platforms")loadPlatformLinks();
 };
 document.querySelectorAll(".nav-item[data-page]").forEach(el=>{
   el.addEventListener("click",()=>goPage(el.dataset.page));
 });
+
+// Sayfa geçiş hook'u: demo intent + manual-order init
+const _origGoPage = window.goPage;
+window.goPage = page => {
+  _origGoPage(page);
+  // Demo intent skoru
+  if (IS_DEMO) {
+    const pts = { dashboard:1, menu:2, couriers:3 };
+    if (pts[page]) window.DEMO?.addIntent(pts[page]);
+  }
+  // Manuel sipariş sayfası init
+  if (page === "manual-order") {
+    renderOrderLines();
+    renderQuickMenu();
+    refreshCourierSelect();
+    renderRecentManualOrders();
+  }
+};
 
 // ── Clock ─────────────────────────────────────────────────────────────────
 const updateClock=()=>{
@@ -1657,6 +2185,30 @@ onAuthStateChanged(auth, async user=>{
         window.location.href="restoran-login.html";
         return;
       }
+      // Demo mod kontrolü
+      IS_DEMO = !!(data.demo || user.email === 'demo@kuryeai.com');
+      window.IS_DEMO = IS_DEMO;
+      if (IS_DEMO) {
+        document.getElementById('demo-banner-inner').style.display = 'block';
+        // Demo: plan engelini kaldır (sınırsız deneme)
+        currentPlan = { plan:'pro', planStartDate:Date.now(), planEndDate:Date.now()+365*86400000, planActive:true };
+      } else {
+        // Abonelik plan bilgisini yükle
+        currentPlan = {
+          plan:          data.plan          || 'trial',
+          planStartDate: data.planStartDate || Date.now(),
+          planEndDate:   data.planEndDate   || (Date.now() + 7 * 86400000),
+          planActive:    data.planActive    !== false,
+        };
+      }
+      renderPlanInfo();
+
+      // İlk giriş onboarding (demo değilse)
+      if (!IS_DEMO && data.firstLogin !== false) {
+        await updateDoc(doc(fs,'users',user.uid),{ firstLogin: false });
+        setTimeout(showOnboarding, 800);
+      }
+
       // Set dynamic restaurant ID
       RESTAURANT_ID = data.restoranId || user.uid;
       const n = data.name||user.displayName||user.email?.split("@")[0]||"Restoran";
@@ -1679,6 +2231,7 @@ onAuthStateChanged(auth, async user=>{
     }
     // Start Firebase RTDB connection with real restaurant ID
     initFirebase();
+    listenExtras();
   } catch(e){
     console.error("Auth hata:",e);
     // Fallback: use seed data already rendered
@@ -1687,6 +2240,199 @@ onAuthStateChanged(auth, async user=>{
 });
 window.logout=async()=>{
   try{await signOut(auth);window.location.href="restoran-login.html";}catch{}
+};
+
+// ── PLAN BİLGİSİ ──────────────────────────────────────────────────────────
+const PLAN_LABELS = { trial:'Deneme (7 gün)', basic:'Basic — 1.499₺/ay', pro:'Pro — 9.999₺/yıl' };
+const PLAN_COLORS = { trial:'#888', basic:'#00c8d7', pro:'#ffd60a' };
+
+function renderPlanInfo() {
+  const el = document.getElementById('plan-info-card');
+  if (!el || !currentPlan) return;
+  const { plan, planEndDate, planActive } = currentPlan;
+  const now = Date.now();
+  const expired = !planActive || now > planEndDate;
+  const daysLeft = Math.max(0, Math.ceil((planEndDate - now) / 86400000));
+  const label = PLAN_LABELS[plan] || plan;
+  const color = PLAN_COLORS[plan] || '#888';
+  const endStr = new Date(planEndDate).toLocaleDateString('tr-TR');
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)">Abonelik Planı</div>
+      <span style="font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:8px;background:rgba(0,0,0,.3);color:${color};border:1px solid ${color}">${label}</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.84rem">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Durum</span>
+        <span style="font-weight:700;color:${expired?'#ff5f57':'#30d158'}">${expired?'⚠ Süresi Doldu':'● Aktif'}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Bitiş Tarihi</span><span style="font-weight:600">${endStr}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Kalan Süre</span>
+        <span style="font-weight:700;color:${daysLeft<=3?'#ff5f57':daysLeft<=7?'#ffd60a':'#30d158'}">${expired?'—':daysLeft+' gün'}</span></div>
+    </div>
+    ${expired ? `<div style="margin-top:.9rem;padding:.7rem;background:rgba(255,95,87,.1);border:1px solid rgba(255,95,87,.3);border-radius:10px;font-size:.8rem;color:#ff5f57;text-align:center">
+      ⚠ Planınız sona erdi. Sipariş oluşturamazsınız. Lütfen admin ile iletişime geçin.
+    </div>` : ''}
+  `;
+  renderPaymentSection();
+}
+
+// ── ONBOARDING ────────────────────────────────────────────────────────────
+let obStep = 1;
+const OB_STEPS = [
+  {
+    title:'Restoran Bilgilerini Tamamla',
+    icon:'🏪',
+    desc:'Restoran adın, adresi ve iletişim bilgilerini güncelle. Kuryeler ve müşteriler bu bilgileri görecek.',
+    action:'Ayarlara Git',
+    fn: ()=>{ closeOnboarding(); goPage('settings'); },
+  },
+  {
+    title:'İlk Siparişini Oluştur',
+    icon:'📦',
+    desc:'Manuel sipariş ekranından deneme siparişi oluştur. Tüm özellikleri keşfet.',
+    action:'Sipariş Ekranına Git',
+    fn: ()=>{ closeOnboarding(); goPage('manual-order'); },
+  },
+  {
+    title:'Kurye Ata',
+    icon:'🛵',
+    desc:'Kurye yönetimi ekranından kuryelerini yönet ve siparişlerine atama yap.',
+    action:'Kuryeler',
+    fn: ()=>{ closeOnboarding(); goPage('couriers'); },
+  },
+];
+
+function showOnboarding() {
+  obStep = 1;
+  renderObStep();
+  document.getElementById('onboarding-overlay').classList.add('show');
+}
+
+function renderObStep() {
+  const s = OB_STEPS[obStep - 1];
+  ['ob-s1','ob-s2','ob-s3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'ob-step' + (i + 1 < obStep ? ' done' : i + 1 === obStep ? ' active' : '');
+  });
+  document.getElementById('ob-sub').textContent = `Adım ${obStep} / ${OB_STEPS.length}`;
+  document.getElementById('ob-body').innerHTML = `
+    <div style="text-align:center;padding:.5rem 0">
+      <div style="font-size:2.5rem;margin-bottom:.6rem">${s.icon}</div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:.5rem">${s.title}</div>
+      <div style="font-size:.85rem;color:var(--text2);line-height:1.65">${s.desc}</div>
+    </div>
+    <button onclick="OB_STEPS[${obStep-1}].fn()" style="width:100%;margin-top:1.1rem;padding:.6rem;background:var(--teal-bg);border:1px solid var(--teal);border-radius:10px;color:var(--teal);font-weight:700;cursor:pointer;font-size:.85rem">${s.action} →</button>
+  `;
+  const nextBtn = document.getElementById('ob-next');
+  nextBtn.textContent = obStep < OB_STEPS.length ? 'Sonraki →' : 'Başla 🚀';
+}
+
+window.obNext = () => {
+  if (obStep < OB_STEPS.length) { obStep++; renderObStep(); }
+  else closeOnboarding();
+};
+
+window.closeOnboarding = () => {
+  document.getElementById('onboarding-overlay').classList.remove('show');
+};
+
+// ── ÖDEME / IBAN ──────────────────────────────────────────────────────────
+let selectedDekontFile = null;
+
+function renderPaymentSection() {
+  const el = document.getElementById('payment-section-card');
+  if (!el) return;
+  const restId   = RESTAURANT_ID || '—';
+  const restName = document.getElementById('user-display')?.textContent || 'Restoranınız';
+  const alreadySent = currentPlan && false; // reset her render'da
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)">Plan Ödemesi & IBAN</div>
+    </div>
+
+    <div style="background:rgba(0,200,215,.07);border:1px solid rgba(0,200,215,.22);border-radius:12px;padding:.9rem;margin-bottom:.85rem">
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:.55rem;font-weight:600">🏦 Banka Havale / EFT Bilgileri</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem">
+        <div>
+          <div style="font-size:.65rem;color:var(--text3);margin-bottom:.15rem">IBAN</div>
+          <div style="font-size:.9rem;font-weight:700;letter-spacing:.04em;color:#00c8d7;font-family:monospace">TR71 0015 7000 0000 0154 8330 53</div>
+        </div>
+        <button id="copy-iban-btn" onclick="copyIBAN()" style="flex-shrink:0;background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.35);border-radius:8px;color:#00c8d7;font-size:.72rem;padding:.35rem .65rem;cursor:pointer;white-space:nowrap">📋 Kopyala</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.83rem">
+        <span style="color:var(--text3)">Alıcı Adı</span>
+        <span style="font-weight:600">Burak Hasköy</span>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,214,10,.07);border:1px solid rgba(255,214,10,.22);border-radius:10px;padding:.75rem;margin-bottom:.85rem">
+      <div style="font-size:.75rem;font-weight:700;color:#ffd60a;margin-bottom:.35rem">⚠ Açıklama kısmına mutlaka yazınız</div>
+      <div style="font-size:.82rem;color:var(--text2)">Restoran Adı / RestoranID</div>
+      <div style="font-family:monospace;font-size:.78rem;color:#00c8d7;margin-top:.3rem;word-break:break-all">${restName} / ${restId}</div>
+    </div>
+
+    <div style="margin-bottom:.7rem">
+      <label style="font-size:.72rem;color:var(--text3);display:block;margin-bottom:.3rem">Ödeme Notu <span style="color:var(--text3)">(isteğe bağlı)</span></label>
+      <input id="payment-note" type="text" placeholder="Örn: Basic plan 1 aylık ödeme yaptım" style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:.84rem;color:var(--white);outline:none">
+    </div>
+
+    <div style="margin-bottom:.9rem">
+      <label style="font-size:.72rem;color:var(--text3);display:block;margin-bottom:.3rem">Dekont <span style="color:#ff5f57;font-weight:700">*</span> <span style="color:var(--text3)">(JPG / PNG / PDF, max 5 MB)</span></label>
+      <div onclick="document.getElementById('dekont-input').click()" style="background:var(--bg2);border:2px dashed var(--border);border-radius:10px;padding:.85rem;text-align:center;cursor:pointer">
+        <div id="dekont-label" style="font-size:.82rem;color:var(--text3)">📎 Dekont seçmek için tıkla</div>
+      </div>
+      <input type="file" id="dekont-input" accept="image/*,.pdf" style="display:none" onchange="onDekontSelect(event)">
+    </div>
+
+    <button id="payment-notify-btn" onclick="submitPaymentNotification()" style="width:100%;padding:.7rem;background:linear-gradient(135deg,#00c8d7,#009aaa);border:none;border-radius:10px;color:#fff;font-size:.88rem;font-weight:700;cursor:pointer;transition:opacity .2s">
+      ✓ Ödeme Bildirdim
+    </button>
+    <div id="payment-status-row" style="display:none;margin-top:.55rem;text-align:center;font-size:.78rem;color:#ffd60a">⏳ Ödeme doğrulaması bekleniyor…</div>
+  `;
+}
+
+window.copyIBAN = () => {
+  navigator.clipboard.writeText('TR710015700000000154833053').then(() => {
+    const btn = document.getElementById('copy-iban-btn');
+    if (btn) { btn.textContent = '✓ Kopyalandı'; setTimeout(() => { btn.textContent = '📋 Kopyala'; }, 2200); }
+  }).catch(() => showToast('Kopyalama desteklenmiyor', 'error'));
+};
+
+window.onDekontSelect = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { showToast('Dekont max 5MB olmalı', 'error'); return; }
+  selectedDekontFile = f;
+  const lbl = document.getElementById('dekont-label');
+  if (lbl) lbl.textContent = '✅ ' + f.name;
+};
+
+window.submitPaymentNotification = async () => {
+  if (!selectedDekontFile) { showToast('Lütfen dekont dosyası seçin', 'error'); return; }
+  const note = document.getElementById('payment-note')?.value.trim() || '';
+  const btn  = document.getElementById('payment-notify-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Gönderiliyor…'; }
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) throw new Error('Giriş yapılmamış');
+    const ext  = selectedDekontFile.name.split('.').pop();
+    const sRef = storageRef(storage, `dekontlar/${uid}/${Date.now()}.${ext}`);
+    await uploadBytes(sRef, selectedDekontFile, { contentType: selectedDekontFile.type });
+    const dekontURL = await getDownloadURL(sRef);
+    await updateDoc(doc(fs, 'users', uid), {
+      paymentStatus:    'pending',
+      paymentNote:      note,
+      paymentDekontURL: dekontURL,
+      paymentDate:      Date.now(),
+    });
+    showToast('✓ Ödeme bildirimi gönderildi! Admin onayı bekleniyor.', 'success');
+    if (btn) { btn.textContent = '✓ Bildirim Gönderildi'; }
+    const row = document.getElementById('payment-status-row');
+    if (row) row.style.display = 'block';
+    selectedDekontFile = null;
+  } catch (e) {
+    showToast('Hata: ' + e.message, 'error');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '✓ Ödeme Bildirdim'; }
+  }
 };
 
 window.uploadRestoranLogo=async(e)=>{
@@ -1753,7 +2499,7 @@ async function initFirebase(){
       if(snap.val()){
         couriers=objToArr(snap.val());
         renderCouriers();renderTrackingCouriers();renderDashCouriers();
-        updateMapMarkers();updateMetrics();
+        updateMapMarkers();updateMapDashMarkers();updateMetrics();
       }
     });
 
@@ -1770,6 +2516,8 @@ function renderAll(){
   renderCouriers();renderTrackingCouriers();
   renderQuickMenu();refreshCourierSelect();renderRecentManualOrders();
   if(currentPage==="reports")renderReports();
+  if(currentPage==="kitchen")renderKitchen();
+  if(currentPage==="earnings")renderEarnings();
 }
 
 // ── DASHBOARD ──────────────────────────────────────────────────────────────
@@ -1827,7 +2575,17 @@ function renderOrders(){
   document.getElementById("order-count-label").textContent=`${filtered.length} sipariş`;
 
   if(!filtered.length){
-    document.getElementById("orders-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Bu kategoride sipariş yok</div></div>`;
+    const isAll = (orderFilter||'all') === 'all';
+    document.getElementById("orders-table-wrap").innerHTML = isAll
+      ? `<div class="empty-state">
+           <div class="empty-icon">📭</div>
+           <div class="empty-title">Henüz sipariş yok</div>
+           <div style="font-size:.84rem;color:var(--text3);margin-top:.4rem">İlk siparişini oluşturmak için aşağıya tıkla</div>
+           <button onclick="goPage('manual-order')" style="margin-top:1rem;padding:.6rem 1.4rem;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:.88rem">
+             + İlk Siparişini Oluştur
+           </button>
+         </div>`
+      : `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Bu kategoride sipariş yok</div></div>`;
     return;
   }
   document.getElementById("orders-table-wrap").innerHTML=`
@@ -1866,6 +2624,7 @@ document.querySelectorAll(".tab[data-ofilter]").forEach(btn=>{
 window.advanceOrder=async(id,next)=>{
   orders=orders.map(o=>o.id===id?{...o,status:next}:o);
   renderOrders();renderDashboard();
+  if(currentPage==="kitchen")renderKitchen();
   try{
     await update(ref(db,`restaurants/${RESTAURANT_ID}/orders/${id}`),{status:next});
     showToast(`✓ ${STATUS[next].label}`);
@@ -1891,7 +2650,7 @@ function renderMenu(){
           <button class="toggle ${item.available?"on":"off"}"></button>
           <span class="toggle-label">${item.available?"Aktif":"Pasif"}</span>
         </div>
-        <span style="font-size:10px;color:var(--text3);font-family:var(--fm)">${item.id.slice(-4)}</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteMenuItem('${item.id}')" style="padding:3px 9px;font-size:11px">Sil</button>
       </div>
     </div>`).join("");
 }
@@ -1916,12 +2675,13 @@ function renderCouriers(){
   document.getElementById("couriers-table-wrap").innerHTML=`
     <table><thead><tr>
       <th>#</th><th>Kurye</th><th>Telefon</th><th>Araç</th><th>Durum</th><th>Bölge</th>
-      <th>Teslimat</th><th>Puan</th><th>Toplam KM</th><th>Kazanç</th><th>Performans</th><th></th>
+      <th>Teslimat</th><th>Puan</th><th>Toplam KM</th><th>Kazanç</th><th>Performans</th><th>Ücret</th><th></th>
     </tr></thead><tbody>
     ${sorted.map((c,i)=>{
       const maxD=Math.max(...couriers.map(x=>x.deliveries||0))||1;
       const pct=Math.round(((c.deliveries||0)/maxD)*100);
       const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+      const pricingLabel=c.pricingBase?`₺${c.pricingBase}${c.pricingType==="per_package"||c.pricingType==="per_package_km"?"/paket":"/sa"}`:"—";
       return`<tr>
         <td><span style="font-weight:700;color:var(--text3);font-size:13px">${medal||`#${i+1}`}</span></td>
         <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div></div></div></td>
@@ -1934,6 +2694,7 @@ function renderCouriers(){
         <td><span style="font-family:var(--fm);font-size:13px">${c.km||0} km</span></td>
         <td><span style="font-family:var(--fm);font-weight:700;font-size:13px;color:var(--green)">₺${(c.earnings||0).toLocaleString()}</span></td>
         <td><div style="display:flex;align-items:center;gap:8px"><div class="perf-bar"><div class="perf-fill" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--text3);font-family:var(--fm)">${pct}%</span></div></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openCourierPricing('${c.id}','${c.name}')" title="Ücret ayarları">${pricingLabel}</button></td>
         <td><button class="btn btn-danger btn-sm" onclick="openDeleteCourier('${c.id}','${c.name}')">Sil</button></td>
       </tr>`;
     }).join("")}
@@ -1992,6 +2753,33 @@ function initMap(){
     attribution:'© OpenStreetMap',maxZoom:18
   }).addTo(mapInstance);
   updateMapMarkers();
+}
+
+function initMapDash(){
+  if(mapDashInstance)return;
+  const el=document.getElementById("map-dash");
+  if(!el)return;
+  mapDashInstance=L.map("map-dash",{zoomControl:false,attributionControl:false}).setView(ANKARA_CENTER,13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(mapDashInstance);
+  updateMapDashMarkers();
+}
+
+function updateMapDashMarkers(){
+  if(!mapDashInstance)return;
+  Object.values(courierMarkersD).forEach(m=>m.remove());
+  courierMarkersD={};
+  couriers.filter(c=>c.status==="busy"||c.status==="available").forEach(c=>{
+    const coords=MOCK_COORDS[c.id]||[ANKARA_CENTER[0]+(Math.random()-.5)*.02,ANKARA_CENTER[1]+(Math.random()-.5)*.02];
+    const color=c.status==="busy"?"#f59e0b":"#00c48c";
+    const icon=L.divIcon({
+      className:"",
+      html:`<div style="width:32px;height:32px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.2)" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
+      iconSize:[32,32],iconAnchor:[16,16],
+    });
+    const marker=L.marker(coords,{icon}).addTo(mapDashInstance);
+    marker.bindPopup(`<b>${c.name}</b><br><small>${c.status==="busy"?"Meşgul":"Müsait"}</small>`);
+    courierMarkersD[c.id]=marker;
+  });
 }
 
 function updateMapMarkers(){
@@ -2278,12 +3066,93 @@ window.clearManualOrder = () => {
   renderOrderLines();
 };
 
+// ── Haversine (km cinsinden) ──────────────────────────────────────────────
+function hvsDist(a,b,c,d){
+  const R=6371,dA=(c-a)*Math.PI/180,dB=(d-b)*Math.PI/180,
+    x=Math.sin(dA/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dB/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+// ── Otomatik Kurye Atama ──────────────────────────────────────────────────
+// Döner: {courierId, name} veya null (uygun kurye yoksa)
+async function assignCourierAuto(orderId, orderData) {
+  // 1. Müsait kuryeleri yerel state'den al (onValue ile zaten güncel)
+  const available = couriers.filter(c => c.status === "available");
+  if (!available.length) return null;
+
+  // 2. Restoran konumu (ayarlardan, yoksa Ankara merkezi)
+  const restLat = settings.rest_lat || 39.9334;
+  const restLng = settings.rest_lng || 32.8597;
+
+  // 3. Her müsait kuryenin gerçek zamanlı GPS konumunu al ve mesafeyi hesapla
+  const withDist = await Promise.all(available.map(async c => {
+    try {
+      const snap = await get(ref(db, `couriers/${c.id}/location`));
+      const loc  = snap.val();
+      if (loc?.lat && loc?.lng) {
+        return { ...c, dist: hvsDist(restLat, restLng, loc.lat, loc.lng) };
+      }
+    } catch {}
+    return { ...c, dist: Infinity }; // GPS verisi yoksa sona itmek için
+  }));
+
+  // 4. Mesafeye göre sırala (en yakın önce), GPS'siz kuryeler hariç
+  const sorted = withDist.filter(c => c.dist < Infinity).sort((a,b) => a.dist - b.dist);
+  if (!sorted.length) return null;
+
+  // 5. En yakından başla, transaction ile atomik atama yap (çakışma önler)
+  for (const candidate of sorted) {
+    const statusRef = ref(db, `restaurants/${RESTAURANT_ID}/couriers/${candidate.id}/status`);
+    let didAssign = false;
+
+    try {
+      const { committed } = await runTransaction(statusRef, current => {
+        if (current === "available") { didAssign = true; return "busy"; }
+        return current; // Başkası kapıya gitmiş, iptal
+      });
+
+      if (committed && didAssign) {
+        const cid = candidate.id;
+
+        // Kuryeye sipariş bildirimi gönder (RTDB)
+        await set(ref(db, `couriers/${cid}/pendingOrder`), {
+          ...orderData,
+          orderId,
+          restoranId:   RESTAURANT_ID,
+          restoranName: settings.rest_name || RESTAURANT_ID
+        });
+
+        // Siparişin courier alanını güncelle
+        await update(ref(db, `restaurants/${RESTAURANT_ID}/orders/${orderId}`), {
+          courier: cid
+        });
+
+        return { courierId: cid, name: candidate.name, dist: candidate.dist };
+      }
+      // Bu kurye artık müsait değil, bir sonrakine geç
+    } catch(e) {
+      console.error('Atama transaction hatası:', e);
+    }
+  }
+
+  return null; // Hiç kurye atanamadı
+}
+
 window.submitManualOrder = async () => {
+  // Demo intent: sipariş oluşturma denemesi → +5
+  if (IS_DEMO) { window.DEMO?.addIntent(5); window.DEMO?.showPopup('orderAttempt'); }
+
   const customer = document.getElementById("mo-customer").value.trim();
   const address  = document.getElementById("mo-address").value.trim();
   const payment  = document.getElementById("mo-payment").value;
   const courierId= document.getElementById("mo-courier").value;
   const note     = document.getElementById("mo-note").value.trim();
+
+  // Abonelik plan kontrolü
+  if (currentPlan && (!currentPlan.planActive || Date.now() > currentPlan.planEndDate)) {
+    showToast("⚠ Abonelik planınız sona ermiş. Sipariş oluşturamazsınız.", "error");
+    return;
+  }
 
   if(!customer){ showToast("Müşteri adı boş olamaz","error"); return; }
   if(!address){  showToast("Teslimat adresi boş olamaz","error"); return; }
@@ -2292,10 +3161,16 @@ window.submitManualOrder = async () => {
   const total = orderLines.reduce((s,l)=>s+(l.qty*(l.price||0)),0);
   const itemsArr = orderLines.map(l=>`${l.name}${l.qty>1?` x${l.qty}`:""}`);
 
+  const commissionRate   = settings.commission_rate ?? 5;
+  const commissionAmount = Math.round(total * commissionRate) / 100;
+
   const newOrder = {
     customer, address, payment, note,
     items: itemsArr,
     total,
+    orderPrice:       total,
+    commissionRate,
+    commissionAmount,
     status: "pending",
     source: selectedSource,
     platform: "manual",
@@ -2303,6 +3178,18 @@ window.submitManualOrder = async () => {
     phone: document.getElementById("mo-phone").value.trim(),
     createdAt: Date.now(),
   };
+
+  // Demo mod: yazma işlemlerini atla, sadece yerel state güncelle
+  if (IS_DEMO) {
+    const demoId = 'demo_' + Date.now();
+    orders = [{ id: demoId, ...newOrder }, ...orders];
+    renderOrders();
+    showToast('🎮 Demo sipariş oluşturuldu (kaydedilmedi)', 'success');
+    document.getElementById("manual-order-form")?.reset?.();
+    orderLines = [];
+    renderOrderLines();
+    return;
+  }
 
   try{
     const rtdbRef = await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), newOrder);
@@ -2319,8 +3206,9 @@ window.submitManualOrder = async () => {
       });
     } catch(fe) { console.error('Firestore order error:', fe); }
 
-    // Atanan kuryeye RTDB bildirimi gönder
+    // Kurye atama: manuel seçim varsa direkt, yoksa ve auto modundaysa otomatik ata
     if (courierId) {
+      // Manuel seçim: kuryeye bildir ve statusunu güncelle
       try {
         await set(ref(db,`couriers/${courierId}/pendingOrder`), {
           ...newOrder,
@@ -2328,10 +3216,27 @@ window.submitManualOrder = async () => {
           restoranId: RESTAURANT_ID,
           restoranName: settings.rest_name || RESTAURANT_ID
         });
+        await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${courierId}`),{status:"busy"});
       } catch(ne) { console.error('Kurye notify error:', ne); }
+      showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+    } else if (settings.assign_mode === "auto") {
+      // Otomatik atama
+      try {
+        const result = await assignCourierAuto(orderId, newOrder);
+        if (result) {
+          const km = result.dist.toFixed(1);
+          showToast(`✓ Sipariş oluşturuldu · 🛵 ${result.name} atandı (${km} km)`,"success");
+        } else {
+          showToast(`✓ Sipariş oluşturuldu — müsait kurye yok, beklemede`,"info");
+        }
+      } catch(ae) {
+        console.error('Otomatik atama hatası:', ae);
+        showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+      }
+    } else {
+      showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
     }
 
-    showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
     clearManualOrder();
     renderRecentManualOrders();
   }catch{
@@ -2357,17 +3262,7 @@ function renderRecentManualOrders(){
   : `<div class="empty-state" style="padding:20px"><div class="empty-icon" style="font-size:20px">📝</div><div class="empty-title" style="font-size:12px">Henüz manuel sipariş yok</div></div>`;
 }
 
-// Manuel sipariş sayfasına geçince render et
-const _origGoPage = window.goPage;
-window.goPage = page => {
-  _origGoPage(page);
-  if(page==="manual-order"){
-    renderOrderLines();
-    renderQuickMenu();
-    refreshCourierSelect();
-    renderRecentManualOrders();
-  }
-};
+// (Manuel sipariş init goPage hook'una taşındı)
 
 // ── PLATFORM ENTEGRASYONu — API GELİNCE DOLDURULACAK FONKSIYONLAR ────────
 // Bu fonksiyonlar API anahtarı geldiğinde içi doldurulacak.
@@ -2383,30 +3278,486 @@ window.fetchFromPlatform = async (platform, apiKey) => {
 
 // initFirebase() is now called from onAuthStateChanged after user is verified
 
-// ── DARK MODE ──────────────────────────────────────────────────────────────
-(function() {
-  if (localStorage.getItem('restoran_dark') === '1') {
-    document.body.classList.add('dark');
-  }
-})();
-window.toggleDarkMode = function() {
-  const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('restoran_dark', isDark ? '1' : '0');
-  const icon = isDark ? '☀️' : '🌙';
-  ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=icon; });
+// ── FİNANSAL ANALİZ ──────────────────────────────────────────────────────
+let currentFinPeriod = "daily";
+let _customerSuggestion = null;
+
+window.setFinPeriod = (el, period) => {
+  currentFinPeriod = period;
+  document.querySelectorAll("[data-period]").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  const labels = {daily:"Bugün",weekly:"Bu Hafta",monthly:"Bu Ay",yearly:"Bu Yıl"};
+  document.getElementById("fin-period-label").textContent = labels[period]||"";
+  renderFinancials(period);
 };
-// Sync button icon on load
-document.addEventListener('DOMContentLoaded', ()=>{
-  if (document.body.classList.contains('dark')) {
-    ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='☀️'; });
+
+function renderFinancials(period="daily") {
+  const now = Date.now();
+  const cutoffs = { daily: now-86400000, weekly: now-7*86400000, monthly: now-30*86400000, yearly: now-365*86400000 };
+  const since = cutoffs[period] || cutoffs.daily;
+
+  const filtered = orders.filter(o => (o.createdAt||0) >= since);
+  const delivery  = filtered.filter(o => !o.tableOrder);
+  const tableOrds = filtered.filter(o => o.tableOrder);
+
+  const totalRev    = filtered.reduce((s,o)=>s+(o.total||0),0);
+  const deliveryRev = delivery.reduce((s,o)=>s+(o.total||0),0);
+  const tableRev    = tableOrds.reduce((s,o)=>s+(o.total||0),0);
+
+  // Kurye maliyeti: tüm kuryelerin earnings toplamı (demo için sabit)
+  const courierCost = couriers.reduce((s,c)=>s+(c.earnings||0),0);
+  const courierCostToday = Math.round(courierCost / 30);
+  const periodCost = period==="daily"?courierCostToday:period==="weekly"?courierCostToday*7:period==="monthly"?courierCost:courierCost*12;
+
+  document.getElementById("fin-total-rev").textContent   = `₺${totalRev.toLocaleString("tr-TR")}`;
+  document.getElementById("fin-delivery-rev").textContent= `₺${deliveryRev.toLocaleString("tr-TR")}`;
+  document.getElementById("fin-table-rev").textContent   = `₺${tableRev.toLocaleString("tr-TR")}`;
+  document.getElementById("fin-courier-cost").textContent= `₺${periodCost.toLocaleString("tr-TR")}`;
+
+  const pct = deliveryRev > 0 ? Math.round((periodCost/deliveryRev)*100) : 0;
+  const net  = deliveryRev - periodCost;
+  const perOrder = delivery.length > 0 ? Math.round(periodCost/delivery.length) : 0;
+  document.getElementById("fin-cost-pct-delivery").textContent = `${pct}%`;
+  document.getElementById("fin-bar-delivery").style.width = `${Math.min(pct,100)}%`;
+  document.getElementById("fin-net-delivery").textContent = `₺${net.toLocaleString("tr-TR")}`;
+  document.getElementById("fin-cost-per-order").textContent = `₺${perOrder}`;
+
+  // En çok satılan ürünler
+  const productCount = {};
+  filtered.forEach(o=>{
+    const items = Array.isArray(o.items)?o.items:(o.items?[o.items]:[]);
+    items.forEach(item=>{
+      const name = String(item).replace(/ x\d+$/,"");
+      productCount[name]=(productCount[name]||0)+1;
+    });
+  });
+  const topProducts = Object.entries(productCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxCnt = topProducts[0]?.[1]||1;
+  document.getElementById("fin-top-products").innerHTML = topProducts.length
+    ? topProducts.map(([name,cnt],i)=>`
+      <div class="bar-chart-row" style="padding:10px 20px;${i<topProducts.length-1?'border-bottom:1px solid var(--border)':''}">
+        <div class="bar-label" style="width:130px;font-size:12px;font-weight:600">${name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((cnt/maxCnt)*100)}%;background:var(--teal)"></div></div>
+        <div class="bar-val">${cnt}</div>
+      </div>`).join("")
+    : `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Veri yok</div></div>`;
+
+  // Saatlik yoğunluk
+  const hourCounts = Array(24).fill(0);
+  filtered.forEach(o=>{ const h=new Date(o.createdAt||0).getHours(); hourCounts[h]++; });
+  const maxH = Math.max(...hourCounts)||1;
+  document.getElementById("fin-busy-hours").innerHTML = hourCounts.map((cnt,h)=>`
+    <div class="h-bar-wrap">
+      <div class="h-bar" style="height:${Math.round((cnt/maxH)*100)}%;background:${cnt===Math.max(...hourCounts)?"var(--teal)":"var(--border2)"}"></div>
+      <div class="h-lbl">${h}</div>
+    </div>`).join("");
+
+  // Ciro dağılımı
+  document.getElementById("fin-breakdown").innerHTML = `
+    <div class="bar-chart-row" style="margin-bottom:12px">
+      <div class="bar-label">Paket</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${totalRev?Math.round(deliveryRev/totalRev*100):0}%;background:var(--teal)"></div></div>
+      <div class="bar-val">₺${deliveryRev.toLocaleString("tr-TR")}</div>
+    </div>
+    <div class="bar-chart-row" style="margin-bottom:12px">
+      <div class="bar-label">Masa</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${totalRev?Math.round(tableRev/totalRev*100):0}%;background:var(--blue)"></div></div>
+      <div class="bar-val">₺${tableRev.toLocaleString("tr-TR")}</div>
+    </div>
+    <div class="bar-chart-row">
+      <div class="bar-label">Kurye Gid.</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${totalRev?Math.min(Math.round(periodCost/totalRev*100),100):0}%;background:var(--red)"></div></div>
+      <div class="bar-val">₺${periodCost.toLocaleString("tr-TR")}</div>
+    </div>`;
+}
+
+// ── MUTFAK EKRANI ─────────────────────────────────────────────────────────
+function renderKitchen() {
+  const active = orders.filter(o=>o.status==="pending"||o.status==="preparing");
+  const el = document.getElementById("kitchen-grid");
+  if(!el) return;
+  if(!active.length){
+    el.innerHTML=`<div style="grid-column:span 3;text-align:center;padding:40px;color:var(--text3)"><div style="font-size:48px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700">Hazırlanacak sipariş yok</div></div>`;
+    return;
   }
+  el.innerHTML = active.map(o=>{
+    const st = STATUS[o.status]||STATUS.pending;
+    const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
+    const urgent = elapsed > 20;
+    const items = Array.isArray(o.items)?o.items.join("<br>"):o.items;
+    return `<div style="background:var(--white);border:${urgent?"2px solid var(--red)":"1px solid var(--border)"};border-radius:16px;padding:20px;position:relative">
+      ${urgent?`<div style="position:absolute;top:12px;right:12px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px">⚠ ${elapsed}dk</div>`:`<div style="position:absolute;top:12px;right:12px;font-size:11px;color:var(--text3)">${elapsed}dk</div>`}
+      <div style="font-size:12px;font-family:var(--fm);color:var(--text3);margin-bottom:6px">#${o.id.slice(-5).toUpperCase()}</div>
+      <div style="font-size:16px;font-weight:800;margin-bottom:4px">${o.customer}</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">📍 ${o.address}</div>
+      <div style="background:var(--bg);border-radius:10px;padding:10px;margin-bottom:14px;font-size:13px;line-height:1.7">${items}</div>
+      <div style="display:flex;gap:8px">
+        ${st.next?`<button onclick="advanceOrder('${o.id}','${st.next}')" style="flex:1;padding:10px;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:13px">${STATUS[st.next].label} →</button>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── KURYE HAKEDİŞLERİ ────────────────────────────────────────────────────
+let _markPaidCourierId = null;
+
+function renderEarnings() {
+  const total = couriers.reduce((s,c)=>s+(c.earnings||0),0);
+  const paid  = couriers.reduce((s,c)=>s+(c.paidEarnings||0),0);
+  const unpaid= total - paid;
+  document.getElementById("earn-total").textContent   = `₺${total.toLocaleString("tr-TR")}`;
+  document.getElementById("earn-unpaid").textContent  = `₺${unpaid.toLocaleString("tr-TR")}`;
+  document.getElementById("earn-paid").textContent    = `₺${paid.toLocaleString("tr-TR")}`;
+  document.getElementById("earn-couriers").textContent= couriers.length;
+
+  const el = document.getElementById("earnings-table-wrap");
+  if(!couriers.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛵</div><div class="empty-title">Kurye yok</div></div>`;
+    return;
+  }
+  el.innerHTML=`<table><thead><tr>
+    <th>Kurye</th><th>Araç</th><th>Toplam Teslimat</th><th>Toplam KM</th>
+    <th>Toplam Hakediş</th><th>Ödenen</th><th>Kalan</th><th></th>
+  </tr></thead><tbody>
+  ${couriers.map((c,i)=>{
+    const total=c.earnings||0;
+    const paid=c.paidEarnings||0;
+    const kalan=total-paid;
+    return`<tr>
+      <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div><div class="phone">${c.phone||"—"}</div></div></div></td>
+      <td>${vehicleIcon[c.vehicle]||"🛵"}</td>
+      <td><span style="font-family:var(--fm);font-weight:700">${c.deliveries||0}</span></td>
+      <td><span style="font-family:var(--fm)">${c.km||0} km</span></td>
+      <td><span style="font-family:var(--fm);font-weight:700;color:var(--green)">₺${total.toLocaleString("tr-TR")}</span></td>
+      <td><span style="font-family:var(--fm);color:var(--text3)">₺${paid.toLocaleString("tr-TR")}</span></td>
+      <td><span style="font-family:var(--fm);font-weight:700;color:${kalan>0?"var(--yellow)":"var(--text3)"}">₺${kalan.toLocaleString("tr-TR")}</span></td>
+      <td>${kalan>0?`<button class="btn btn-primary btn-sm" onclick="openMarkPaid('${c.id}','${c.name}',${kalan})">✅ Ödendi</button>`:`<span style="font-size:11px;color:var(--green)">✓ Ödendi</span>`}</td>
+    </tr>`;
+  }).join("")}
+  </tbody></table>`;
+}
+
+window.openMarkPaid=(id,name,amount)=>{
+  _markPaidCourierId={id,name,amount};
+  document.getElementById("mp-info").innerHTML=`<strong>${name}</strong> için <strong style="color:var(--teal)">₺${amount.toLocaleString("tr-TR")}</strong> hakediş ödemesi onaylanacak.`;
+  document.getElementById("modal-mark-paid").classList.add("open");
+};
+
+window.confirmMarkPaid=async()=>{
+  if(!_markPaidCourierId) return;
+  const {id,name,amount}=_markPaidCourierId;
+  const c=couriers.find(x=>x.id===id);
+  if(!c) return;
+  const newPaid=(c.paidEarnings||0)+amount;
+  try{
+    await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${id}`),{paidEarnings:newPaid});
+    // Kuryeye RTDB üzerinden bildirim
+    await set(ref(db,`couriers/${id}/paymentNotification`),{
+      message:"Ödemeniz sistemde kayıtlı IBAN numaranıza yapılmıştır. Emeğiniz için teşekkür eder, iyi çalışmalar dileriz.",
+      amount,restoranName:settings.rest_name||RESTAURANT_ID,createdAt:Date.now(),read:false
+    });
+    closeModal("modal-mark-paid");
+    showToast(`✓ ${name} için ₺${amount.toLocaleString("tr-TR")} ödendi olarak işaretlendi`,"success");
+    _markPaidCourierId=null;
+  }catch{showToast("İşlem başarısız","error");}
+};
+
+// ── PERSONEL ─────────────────────────────────────────────────────────────
+let staff=[];
+const STAFF_ROLES={kitchen:"Mutfak",cashier:"Kasiyer",waiter:"Garson",manager:"Müdür"};
+
+function renderStaff(){
+  if(!staff.length){
+    document.getElementById("staff-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Henüz personel yok</div><div class="empty-desc">Yukarıdan ekle</div></div>`;
+    return;
+  }
+  document.getElementById("staff-table-wrap").innerHTML=`<table><thead><tr><th>Ad Soyad</th><th>Rol</th><th>Telefon</th><th>Eklenme</th><th></th></tr></thead><tbody>
+  ${staff.map(s=>`<tr>
+    <td><div style="font-weight:600">${s.name}</div></td>
+    <td><span class="badge preparing">${STAFF_ROLES[s.role]||s.role}</span></td>
+    <td><span style="font-family:var(--fm);font-size:12px;color:var(--text3)">${s.phone||"—"}</span></td>
+    <td><span style="font-size:11px;color:var(--text3)">${timeAgo(s.createdAt)}</span></td>
+    <td><button class="btn btn-danger btn-sm" onclick="removeStaff('${s.id}')">Sil</button></td>
+  </tr>`).join("")}
+  </tbody></table>`;
+}
+
+window.openAddStaffModal=()=>document.getElementById("modal-add-staff").classList.add("open");
+window.addStaff=async()=>{
+  const name=document.getElementById("staff-name").value.trim();
+  const role=document.getElementById("staff-role").value;
+  const phone=document.getElementById("staff-phone").value.trim();
+  if(!name){showToast("Ad Soyad boş olamaz","error");return;}
+  try{
+    await push(ref(db,`restaurants/${RESTAURANT_ID}/staff`),{name,role,phone,createdAt:Date.now()});
+    closeModal("modal-add-staff");
+    document.getElementById("staff-name").value="";document.getElementById("staff-phone").value="";
+    showToast(`✓ ${name} eklendi`);
+  }catch{showToast("Personel eklenemedi","error");}
+};
+window.removeStaff=async(id)=>{
+  if(!confirm("Personel silinsin mi?"))return;
+  try{await remove(ref(db,`restaurants/${RESTAURANT_ID}/staff/${id}`));showToast("✓ Silindi");}
+  catch{showToast("Silinemedi","error");}
+};
+
+// ── MENü ÜRÜN EKLE/SİL ───────────────────────────────────────────────────
+window.openAddMenuItemModal=()=>{
+  document.getElementById("mi-name").value="";
+  document.getElementById("mi-price").value="";
+  document.getElementById("mi-category").value="";
+  document.getElementById("mi-desc").value="";
+  document.getElementById("modal-add-menu-item").classList.add("open");
+};
+window.addMenuItem=async()=>{
+  const name=document.getElementById("mi-name").value.trim();
+  const price=parseFloat(document.getElementById("mi-price").value)||0;
+  const category=document.getElementById("mi-category").value.trim()||"Genel";
+  const description=document.getElementById("mi-desc").value.trim();
+  if(!name){showToast("Ürün adı boş olamaz","error");return;}
+  try{
+    await push(ref(db,`restaurants/${RESTAURANT_ID}/menu`),{name,price,category,description,available:true,createdAt:Date.now()});
+    closeModal("modal-add-menu-item");
+    showToast(`✓ ${name} menüye eklendi`);
+  }catch{showToast("Ürün eklenemedi","error");}
+};
+window.deleteMenuItem=async(id)=>{
+  if(!confirm("Ürün silinsin mi?"))return;
+  try{await remove(ref(db,`restaurants/${RESTAURANT_ID}/menu/${id}`));showToast("✓ Ürün silindi");}
+  catch{showToast("Silinemedi","error");}
+};
+
+// ── MÜŞTERİ ADRES DEFTERİ ────────────────────────────────────────────────
+let _customerBook={};
+
+async function loadCustomerBook(){
+  try{
+    const snap=await get(ref(db,`restaurants/${RESTAURANT_ID}/customers`));
+    if(snap.exists()) _customerBook=snap.val()||{};
+  }catch{}
+}
+
+window.lookupCustomerByPhone=(phone)=>{
+  const clean=phone.replace(/\D/g,"");
+  if(clean.length<7){document.getElementById("customer-suggestion").style.display="none";return;}
+  const match=Object.values(_customerBook).find(c=>c.phone?.replace(/\D/g,"").includes(clean));
+  if(match){
+    _customerSuggestion=match;
+    document.getElementById("customer-suggestion-text").textContent=` ${match.name} — ${match.address}`;
+    document.getElementById("customer-suggestion").style.display="block";
+  }else{
+    document.getElementById("customer-suggestion").style.display="none";
+  }
+};
+window.applyCustomerSuggestion=()=>{
+  if(!_customerSuggestion)return;
+  document.getElementById("mo-customer").value=_customerSuggestion.name||"";
+  document.getElementById("mo-address").value=_customerSuggestion.address||"";
+  document.getElementById("customer-suggestion").style.display="none";
+};
+window.openCustomerBook=()=>{
+  renderCustomerBook("");
+  document.getElementById("book-search").value="";
+  document.getElementById("modal-customer-book").classList.add("open");
+};
+window.renderCustomerBook=(filter="")=>{
+  const list=Object.values(_customerBook).filter(c=>
+    !filter||c.phone?.includes(filter)||c.name?.toLowerCase().includes(filter.toLowerCase())
+  );
+  document.getElementById("customer-book-list").innerHTML=list.length?list.map(c=>`
+    <div onclick="selectFromBook('${c.phone}')" style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+      <div style="font-weight:600;font-size:13px">${c.name}</div>
+      <div style="font-size:12px;color:var(--text3)">${c.phone} · ${c.address}</div>
+    </div>`).join("")
+  :`<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Kayıtlı müşteri yok</div>`;
+};
+window.selectFromBook=(phone)=>{
+  const c=Object.values(_customerBook).find(x=>x.phone===phone);
+  if(!c)return;
+  document.getElementById("mo-customer").value=c.name||"";
+  document.getElementById("mo-phone").value=c.phone||"";
+  document.getElementById("mo-address").value=c.address||"";
+  closeModal("modal-customer-book");
+};
+
+// Sipariş oluşturulduğunda müşteriyi kaydet
+const _origSubmit=window.submitManualOrder;
+window.submitManualOrder=async()=>{
+  const name=document.getElementById("mo-customer").value.trim();
+  const phone=document.getElementById("mo-phone").value.trim();
+  const address=document.getElementById("mo-address").value.trim();
+  if(name&&phone&&!IS_DEMO){
+    const key=phone.replace(/\D/g,"")||`cust_${Date.now()}`;
+    set(ref(db,`restaurants/${RESTAURANT_ID}/customers/${key}`),{name,phone,address,lastOrder:Date.now()}).catch(()=>{});
+    _customerBook[key]={name,phone,address};
+  }
+  return _origSubmit();
+};
+
+// ── KURYE EMAIL ARAMA ────────────────────────────────────────────────────
+window.lookupCourierByEmail=async()=>{
+  const email=document.getElementById("courier-email-lookup").value.trim();
+  if(!email||!email.includes("@")){showToast("Geçerli bir e-mail girin","error");return;}
+  const res=document.getElementById("courier-lookup-result");
+  res.style.display="block";
+  res.innerHTML=`<div style="font-size:13px;color:var(--text3)">🔍 Aranıyor…</div>`;
+  try{
+    const {getDocs,collection,query,where}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const q=query(collection(fs,"users"),where("email","==",email),where("role","==","kurye"),where("status","==","active"));
+    const snap=await getDocs(q);
+    if(snap.empty){
+      res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Onaylı kurye bulunamadı. Kurye KuryeAI'ye kayıtlı ve admin tarafından onaylanmış olmalı.</div>`;
+      return;
+    }
+    const data=snap.docs[0].data();
+    res.innerHTML=`<div style="padding:12px;background:var(--green-bg);border:1px solid rgba(0,196,140,.2);border-radius:8px">
+      <div style="font-weight:700;margin-bottom:4px">✅ ${data.name||email} bulundu</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">${data.email} · ${data.vehicle||"Araç belirtilmemiş"}</div>
+      <button class="btn btn-primary btn-sm" onclick="addCourierFromSystem('${snap.docs[0].id}')">Restorana Ekle</button>
+    </div>`;
+    window._pendingCourierAdd=data;window._pendingCourierUid=snap.docs[0].id;
+  }catch(e){
+    res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">Hata: ${e.message}</div>`;
+  }
+};
+window.addCourierFromSystem=async(uid)=>{
+  const d=window._pendingCourierAdd;
+  if(!d)return;
+  const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:uid,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
+  try{
+    await push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
+    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${d.name||d.email} sisteme eklendi</div>`;
+    document.getElementById("courier-email-lookup").value="";
+    showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
+  }catch{showToast("Eklenemedi","error");}
+};
+
+// ── PLATFORM LİNKLERİ ─────────────────────────────────────────────────────
+async function loadPlatformLinks(){
+  try{
+    const snap=await get(ref(db,`restaurants/${RESTAURANT_ID}/platforms`));
+    if(snap.exists()){
+      const d=snap.val();
+      ["ys","ty","gr","mg"].forEach(k=>{
+        const lnk=document.getElementById(`${k}-link`);
+        if(lnk&&d[k]?.link) lnk.value=d[k].link;
+        const rt=document.getElementById(`${k}-rating`);
+        if(rt&&d[k]?.rating) rt.value=d[k].rating;
+        const ri=document.getElementById(`${k}-review-inp`);
+        if(ri&&d[k]?.lastReview) ri.value=d[k].lastReview;
+        const rb=document.getElementById(`${k}-rating-badge`);
+        if(rb&&d[k]?.rating) rb.textContent=`⭐ ${d[k].rating}`;
+        const rv=document.getElementById(`${k}-reviews`);
+        if(rv&&d[k]?.lastReview) rv.textContent=`"${d[k].lastReview}"`;
+      });
+      updatePlatformAvg(d);
+    }
+  }catch{}
+}
+window.savePlatformLinks=async()=>{
+  const getData=k=>({
+    link:document.getElementById(`${k}-link`)?.value||"",
+    rating:parseFloat(document.getElementById(`${k}-rating`)?.value)||null,
+    lastReview:document.getElementById(`${k}-review-inp`)?.value||"",
+  });
+  const data={ys:getData("ys"),ty:getData("ty"),gr:getData("gr"),mg:getData("mg")};
+  try{
+    await set(ref(db,`restaurants/${RESTAURANT_ID}/platforms`),data);
+    showToast("✓ Platform bilgileri kaydedildi");
+    updatePlatformAvg(data);
+    ["ys","ty","gr","mg"].forEach(k=>{
+      const rb=document.getElementById(`${k}-rating-badge`);
+      if(rb) rb.textContent=data[k].rating?`⭐ ${data[k].rating}`:"";
+      const rv=document.getElementById(`${k}-reviews`);
+      if(rv&&data[k].lastReview) rv.textContent=`"${data[k].lastReview}"`;
+    });
+  }catch{showToast("Kayıt başarısız","error");}
+};
+function updatePlatformAvg(d){
+  const ratings=["ys","ty","gr","mg"].map(k=>parseFloat(d[k]?.rating)).filter(r=>!isNaN(r));
+  if(!ratings.length){document.getElementById("platform-avg-score").style.display="none";return;}
+  const avg=(ratings.reduce((s,r)=>s+r,0)/ratings.length).toFixed(1);
+  document.getElementById("platform-avg-val").textContent=`⭐ ${avg}`;
+  document.getElementById("platform-avg-score").style.display="block";
+}
+
+// ── KURYE ÜCRET AYARLARI ──────────────────────────────────────────────────
+let _pricingCourierId=null;
+window.openCourierPricing=(id,name)=>{
+  _pricingCourierId=id;
+  const c=couriers.find(x=>x.id===id);
+  document.getElementById("cp-courier-name").textContent=name;
+  const sel=document.getElementById("cp-type");
+  if(c?.pricingType) sel.value=c.pricingType;
+  else sel.value="per_package";
+  renderCourierPricingFields();
+  if(c?.pricingBase){
+    const b=document.getElementById("cp-base");
+    if(b) b.value=c.pricingBase;
+  }
+  if(c?.pricingKm){
+    const k=document.getElementById("cp-km");
+    if(k) k.value=c.pricingKm;
+  }
+  document.getElementById("modal-courier-pricing").classList.add("open");
+};
+window.renderCourierPricingFields=()=>{
+  const type=document.getElementById("cp-type").value;
+  const fields={
+    per_package:`<div class="form-group"><label class="form-label">Paket Başı Ücret (₺)</label><input class="form-input" id="cp-base" type="number" placeholder="170"/></div>`,
+    per_package_km:`<div class="form-row"><div class="form-group" style="margin-bottom:0"><label class="form-label">Paket Başı (₺)</label><input class="form-input" id="cp-base" type="number" placeholder="170"/></div><div class="form-group" style="margin-bottom:0"><label class="form-label">KM Başı (₺)</label><input class="form-input" id="cp-km" type="number" placeholder="12"/></div></div>`,
+    hourly:`<div class="form-group"><label class="form-label">Saatlik Ücret (₺)</label><input class="form-input" id="cp-base" type="number" placeholder="250"/></div>`,
+    hourly_km:`<div class="form-row"><div class="form-group" style="margin-bottom:0"><label class="form-label">Saatlik (₺)</label><input class="form-input" id="cp-base" type="number" placeholder="250"/></div><div class="form-group" style="margin-bottom:0"><label class="form-label">KM Başı (₺)</label><input class="form-input" id="cp-km" type="number" placeholder="12"/></div></div>`,
+  };
+  document.getElementById("cp-fields").innerHTML=fields[type]||"";
+};
+window.saveCourierPricing=async()=>{
+  if(!_pricingCourierId)return;
+  const type=document.getElementById("cp-type").value;
+  const base=parseFloat(document.getElementById("cp-base")?.value)||0;
+  const km=parseFloat(document.getElementById("cp-km")?.value)||0;
+  try{
+    await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${_pricingCourierId}`),{pricingType:type,pricingBase:base,pricingKm:km});
+    closeModal("modal-courier-pricing");
+    showToast("✓ Ücret ayarları kaydedildi");
+  }catch{showToast("Kayıt başarısız","error");}
+};
+
+// ── Firebase staff listener ───────────────────────────────────────────────
+const _origInitFB=window.initFirebase||undefined;
+// staff + customer listeners eklenir initFirebase içinde değil, onAuthStateChanged sonrasında
+function listenExtras(){
+  onValue(ref(db,`restaurants/${RESTAURANT_ID}/staff`),snap=>{
+    staff=snap.exists()?objToArr(snap.val()):[];
+    if(currentPage==="staff")renderStaff();
+  });
+  loadCustomerBook();
+}
+
+// Dashboard map init
+document.addEventListener('DOMContentLoaded', ()=>{
+  setTimeout(initMapDash, 500);
 });
 
 </script>
 
-<!-- Sidebar overlay buraya taşındı — tüm içeriğin üstünde render edilir -->
-<div id="sidebar-overlay-fixed" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200" onclick="closeSidebar()"></div>
-
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
+<!-- Vercel toolbar'ı kaldır -->
+<script>
+(function removeVercelToolbar(){
+  function tryRemove(){
+    var sel = ['vercel-toolbar','#vercel-toolbar','[data-vercel-toolbar]',
+               '#__vercel-toolbar__','.__vercel-toolbar','iframe[src*="vercel"]',
+               'script[src*="vercel.live"]'];
+    sel.forEach(function(s){
+      document.querySelectorAll(s).forEach(function(el){ el.remove(); });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', tryRemove);
+  setTimeout(tryRemove, 1000);
+  setTimeout(tryRemove, 3000);
+})();
+</script>
+<script type="module" src="/demo.js"></script>
 </body>
 </html>

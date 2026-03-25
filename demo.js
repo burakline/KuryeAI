@@ -71,10 +71,16 @@ function injectUI() {
   bar.id = 'demo-cta-bar';
   bar.style.cssText = 'display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;padding:.55rem 1rem;z-index:998;align-items:center;justify-content:space-between;gap:.5rem';
   bar.innerHTML = `
-    <span style="font-size:.8rem;font-weight:600">🎮 Demo modu aktif &nbsp;·&nbsp; <span id="demo-countdown" style="font-weight:700"></span></span>
-    <button id="demo-cta-btn" style="flex-shrink:0;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);border-radius:9px;color:#fff;font-size:.8rem;font-weight:700;padding:.35rem .85rem;cursor:pointer">🚀 Şimdi Başla — 1.499₺</button>`;
+    <span style="font-size:.8rem;font-weight:600">🎮 Demo modu &nbsp;·&nbsp; <span id="demo-countdown" style="font-weight:700"></span></span>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <button id="demo-logout-btn" style="flex-shrink:0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:9px;color:rgba(255,255,255,.8);font-size:.75rem;padding:.3rem .7rem;cursor:pointer">🚪 Çıkış</button>
+      <button id="demo-cta-btn" style="flex-shrink:0;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);border-radius:9px;color:#fff;font-size:.8rem;font-weight:700;padding:.35rem .85rem;cursor:pointer">🚀 Şimdi Başla — 1.499₺</button>
+    </div>`;
   document.body.appendChild(bar);
   bar.querySelector('#demo-cta-btn').addEventListener('click', buy);
+  bar.querySelector('#demo-logout-btn').addEventListener('click', () => {
+    if (window.logout) window.logout();
+  });
   bar.style.display = 'flex';
 }
 
@@ -216,8 +222,16 @@ function closePopup() {
 
 // ─── Satın alma ───────────────────────────────────────────────────────────────
 function buy() {
-  window.open('restoran-login.html?tab=kayit', '_blank');
   closePopup();
+  // Settings sayfasındaki ödeme bölümüne yönlendir
+  if (window.goPage) {
+    window.goPage('settings');
+    // Ödeme kartına scroll et
+    setTimeout(() => {
+      const el = document.getElementById('payment-section-card');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }
 }
 
 // ─── Exit intent ─────────────────────────────────────────────────────────────

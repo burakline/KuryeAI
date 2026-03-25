@@ -139,12 +139,14 @@
   const db   = getFirestore(app);
   const loader = document.getElementById('page-loader');
 
+  const backUrl = new URLSearchParams(window.location.search).get('back') || '/acilkurye-talep-panel';
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       try {
         const snap = await getDoc(doc(db,'users',user.uid));
         if (snap.exists() && snap.data().role === 'acil_talep' && user.emailVerified) {
-          window.location.href = '/acilkurye-talep-panel'; return;
+          window.location.href = backUrl; return;
         }
       } catch(e) {}
     }
@@ -197,7 +199,7 @@
         await auth.signOut(); showErr('Bu hesap talep paneli için tanımlı değil.');
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
-      window.location.href = '/acilkurye-talep-panel';
+      window.location.href = backUrl;
     } catch(err) {
       btn.classList.remove('loading'); btn.disabled = false;
       const c = err.code;

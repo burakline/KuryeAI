@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Acil Kurye Ankara | KuryeAI — 7/24 Hızlı Teslimat</title>
-  <meta name="description" content="Ankara acil kurye hizmeti. Tıbbi kurye, eczane kuryesi, evrak kuryesi, VIP kurye. 350₺/saat + 12₺/km. Formu doldurun, WhatsApp'tan anında iletişim."/>
-  <meta name="keywords" content="ankara acil kurye, acil kurye, tıbbi kurye, eczane kuryesi, ilaç kuryesi, evrak kuryesi, vip kurye, express kurye, anlık kurye"/>
+  <title>Acil Kurye | KuryeAI — 7/24 Hızlı Teslimat</title>
+  <meta name="description" content="Türkiye acil kurye hizmeti. Tıbbi kurye, eczane kuryesi, evrak kuryesi, VIP kurye. 350₺/saat + 12₺/km. Formu doldurun, kurye atanınca panelden takip edin."/>
+  <meta name="keywords" content="acil kurye, türkiye acil kurye, tıbbi kurye, eczane kuryesi, ilaç kuryesi, evrak kuryesi, vip kurye, express kurye, anlık kurye"/>
   <link rel="icon" type="image/png" href="/1000414615.png"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
@@ -133,15 +133,15 @@
     <span class="nav-brand">Kurye<em>AI</em></span>
   </a>
   <a href="/" class="nav-back">← Ana Sayfa</a>
-  <a href="https://wa.me/905072171995" target="_blank" class="btn-wa">💬 WhatsApp</a>
+  <span id="nav-auth-area"><a href="/acilkurye-talep-login" class="btn-wa" style="background:#ff9500;color:#000">🔐 Giriş / Kayıt</a></span>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge"><span class="bdot"></span>7/24 Aktif · Ankara</div>
+  <div class="hero-badge"><span class="bdot"></span>7/24 Aktif · Türkiye</div>
   <h1>Acil Kurye<br/><span>İhtiyacınız mı Var?</span></h1>
-  <p class="hero-sub">Formu doldurun, mesafe ve ücreti otomatik hesaplayalım. WhatsApp üzerinden anında iletişime geçelim.</p>
+  <p class="hero-sub">Formu doldurun, mesafe ve ücreti otomatik hesaplayalım. Talebinizi gönderin, kurye atanınca panelden anlık takip edin.</p>
   <div class="price-pills">
     <span class="price-pill">⏱ 350₺ / Saat</span>
     <span class="price-pill">📍 +12₺ / KM</span>
@@ -202,7 +202,7 @@
     <div class="fg">
       <label class="fl">📍 Gönderim Adresi (Paketin Alınacağı Yer)</label>
       <div class="addr-wrap">
-        <input class="fi" id="f-adres1" placeholder="Örn: Keçiören Ayvalı Mah. 197. Sok. 5/1" oninput="debounceGeocode('adres1')"/>
+        <input class="fi" id="f-adres1" placeholder="Örn: Ankamall AVM" oninput="debounceGeocode('adres1')"/>
       </div>
     </div>
 
@@ -249,9 +249,9 @@
 
     <button class="btn-submit" id="btn-submit" onclick="submitForm()">
       <div class="spin"></div>
-      <span class="btxt">💬 WhatsApp'a Gönder →</span>
+      <span class="btxt">🚀 Talep Gönder →</span>
     </button>
-    <p class="form-note">Formu gönderdikten sonra WhatsApp açılacak. Mesajı gönderin, anında dönüş yapacağız.</p>
+    <p class="form-note">Talep göndermek için giriş / kayıt gereklidir. Kurye atanınca panelden anlık takip edebilirsiniz.</p>
   </div>
 
   <!-- HARİTA -->
@@ -274,10 +274,77 @@
 
 <div class="page-footer">
   <a href="/">← Ana Sayfa</a> &nbsp;·&nbsp;
-  <a href="https://wa.me/905072171995">💬 WhatsApp</a> &nbsp;·&nbsp;
+  <a href="/acilkurye-talep-login">🔐 Giriş / Kayıt</a> &nbsp;·&nbsp;
   <a href="tel:+905072171995">📞 0 507 217 19 95</a> &nbsp;·&nbsp;
   <a href="/kvkk">Gizlilik Politikası</a>
 </div>
+
+<!-- Firebase Auth + Auto-submit -->
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const FC = {
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  };
+  const app = getApps().find(a=>a.name==='acil-auth') || initializeApp(FC,'acil-auth');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  function genId() {
+    const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let id='SAI-';
+    for(let i=0;i<6;i++) id+=c[Math.floor(Math.random()*c.length)]; return id;
+  }
+
+  // Fiyatları yükle
+  try {
+    const psnap = await getDoc(doc(db,'ayarlar','fiyatlar'));
+    if (psnap.exists()) {
+      const d = psnap.data();
+      if (d.acilSaatUcreti) { window.SAAT_UCRETI = d.acilSaatUcreti; document.querySelectorAll('.price-pill')[0].textContent = `⏱ ${d.acilSaatUcreti}₺ / Saat`; }
+      if (d.acilKmUcreti)   { window.KM_UCRETI   = d.acilKmUcreti;   document.querySelectorAll('.price-pill')[1].textContent = `📍 +${d.acilKmUcreti}₺ / KM`; }
+    }
+  } catch(e) {}
+
+  onAuthStateChanged(auth, async (user) => {
+    const navEl = document.getElementById('nav-auth-area');
+    if (user && user.emailVerified) {
+      try {
+        const snap = await getDoc(doc(db,'users',user.uid));
+        if (snap.exists() && snap.data().role === 'acil_talep') {
+          // Bekleyen form var mı?
+          const pending = sessionStorage.getItem('pendingAcilForm');
+          if (pending) {
+            sessionStorage.removeItem('pendingAcilForm');
+            const f = JSON.parse(pending);
+            await addDoc(collection(db,'acilTalepler'), {
+              talepId: genId(),
+              userId: user.uid,
+              fromAddr: f.adres1, toAddr: f.adres2,
+              description: f.detay || '',
+              customerName: f.ad + ' ' + f.soyad,
+              customerPhone: f.tel, customerEmail: f.email || '',
+              tur: f.tur, odeme: f.odeme, zaman: f.zaman || '',
+              feeEstimate: (f.ucret && f.ucret !== '—') ? parseInt(f.ucret) : null,
+              distanceKm: (f.mesafe && f.mesafe !== '—') ? parseFloat(f.mesafe) : null,
+              durationMin: (f.sure && f.sure !== '—') ? parseInt(f.sure) : null,
+              status: 'open', createdAt: new Date().toISOString()
+            });
+            window.location.href = '/acilkurye-talep-panel';
+            return;
+          }
+          // Giriş yapılmış — nav güncelle
+          if (navEl) navEl.innerHTML = '<a href="/acilkurye-talep-panel" class="btn-wa" style="background:#ff9500;color:#000">📦 Panelime Git</a>';
+          return;
+        }
+      } catch(e) {}
+    }
+    if (navEl) navEl.innerHTML = '<a href="/acilkurye-talep-login" class="btn-wa" style="background:#ff9500;color:#000">🔐 Giriş / Kayıt</a>';
+  });
+</script>
 
 <!-- Leaflet.js -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -293,36 +360,11 @@ let marker1 = null, marker2 = null, routeLine = null;
 let coord1 = null, coord2 = null;
 let debounceTimer = null;
 
-// Fiyat ayarları — Firebase'den çekilir, yoksa default
-let SAAT_UCRETI = 350;
-let KM_UCRETI = 12;
+// Fiyat ayarları — Firebase modülünden güncellenir, yoksa default
+var SAAT_UCRETI = 350;
+var KM_UCRETI = 12;
 
-// Firebase'den fiyat çek
-async function loadPrices() {
-  try {
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js");
-    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
-    const app = initializeApp({
-      apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
-      authDomain:"kuryeai-99bf9.firebaseapp.com",
-      projectId:"kuryeai-99bf9",
-      storageBucket:"kuryeai-99bf9.firebasestorage.app",
-      messagingSenderId:"1012295004135",
-      appId:"1:1012295004135:web:0cceac0476175e19395742"
-    }, 'price-app');
-    const db = getFirestore(app);
-    const snap = await getDoc(doc(db, 'ayarlar', 'fiyatlar'));
-    if(snap.exists()) {
-      const d = snap.data();
-      if(d.acilSaatUcreti) SAAT_UCRETI = d.acilSaatUcreti;
-      if(d.acilKmUcreti) KM_UCRETI = d.acilKmUcreti;
-      // Fiyat kutusunu güncelle
-      document.querySelectorAll('.price-pill')[0].textContent = `⏱ ${SAAT_UCRETI}₺ / Saat`;
-      document.querySelectorAll('.price-pill')[1].textContent = `📍 +${KM_UCRETI}₺ / KM`;
-    }
-  } catch(e) { /* default fiyat kullanılır */ }
-}
-loadPrices();
+// Fiyatlar Firebase auth modülü tarafından yüklenir (yukarıdaki <script type="module">)
 
 // ── KATEGORİ SEÇ ──
 function selectCategory(cat) {
@@ -343,19 +385,12 @@ async function geocodeAddress(field) {
   const query = input.value.trim();
   if(query.length < 5) return;
 
-  // Adrese Ankara ekle eğer yoksa
-  const searchQuery = query.toLowerCase().includes('ankara') ? query : query + ', Ankara, Türkiye';
+  const searchQuery = query + (query.toLowerCase().includes('türkiye') ? '' : ', Türkiye');
 
   try {
     const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=tr&countrycodes=tr`);
     const data = await res.json();
-    if(!data.length) {
-      // İkinci deneme - sadece şehir ile
-      const res2 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Ankara')}&limit=1&accept-language=tr`);
-      const data2 = await res2.json();
-      if(!data2.length) return;
-      data.push(data2[0]);
-    }
+    if(!data.length) return;
 
     const lat = parseFloat(data[0].lat);
     const lon = parseFloat(data[0].lon);
@@ -406,7 +441,7 @@ async function drawRoute() {
     map.fitBounds(bounds, {padding:[40,40]});
 
     // Harita stats güncelle
-    const tahminiUcret = hesaplaToplamUcret(parseFloat(mesafeKm));
+    const tahminiUcret = hesaplaToplamUcret(parseFloat(mesafeKm), sureDk);
     document.getElementById('ms-mesafe').textContent = mesafeKm;
     document.getElementById('ms-sure').textContent = sureDk;
     document.getElementById('ms-ucret').textContent = tahminiUcret;
@@ -417,17 +452,21 @@ async function drawRoute() {
   } catch(e) { console.error('Rota hata:', e); }
 }
 
-function hesaplaToplamUcret(km) {
+function hesaplaToplamUcret(km, sureDk) {
   const kmUcret = km * KM_UCRETI;
-  return Math.round(SAAT_UCRETI + kmUcret);
+  // Minimum 1 saat; 60 dk üstündeyse saat miktarı × SAAT_UCRETI
+  const saatSayisi = sureDk <= 60 ? 1 : Math.ceil(sureDk / 60);
+  const saatUcret = saatSayisi * SAAT_UCRETI;
+  return Math.round(saatUcret + kmUcret);
 }
 
 function gosterHesap(km, dk, toplam) {
+  const saatSayisi = dk <= 60 ? 1 : Math.ceil(dk / 60);
   document.getElementById('hesap-box').classList.add('show');
   document.getElementById('h-mesafe').textContent = km + ' km';
   document.getElementById('h-sure').textContent = dk + ' dakika';
   document.getElementById('h-km').textContent = (parseFloat(km) * KM_UCRETI).toFixed(0) + ' ₺ (' + km + ' km × ' + KM_UCRETI + '₺)';
-  document.getElementById('h-saat').textContent = SAAT_UCRETI + ' ₺ (min. 1 saat)';
+  document.getElementById('h-saat').textContent = (saatSayisi * SAAT_UCRETI) + ' ₺ (' + saatSayisi + ' saat × ' + SAAT_UCRETI + '₺' + (dk <= 60 ? ' · min. 1 saat' : '') + ')';
   document.getElementById('h-toplam').textContent = toplam + ' ₺';
 }
 
@@ -440,7 +479,7 @@ function hesaplaUcret() {
   drawRoute();
 }
 
-// ── FORM SUBMIT → WHATSAPP ──
+// ── FORM SUBMIT → Panel akışı ──
 function submitForm() {
   const ad = document.getElementById('f-ad').value.trim();
   const soyad = document.getElementById('f-soyad').value.trim();
@@ -461,39 +500,15 @@ function submitForm() {
   const btn = document.getElementById('btn-submit');
   btn.classList.add('loading'); btn.disabled = true;
 
-  const mesafe = document.getElementById('ms-mesafe').textContent;
-  const ucret = document.getElementById('ms-ucret').textContent;
-  const zamanStr = zaman ? new Date(zaman).toLocaleString('tr-TR') : 'Belirtilmedi';
-
-  const msg = `🚨 *ACİL KURYE TALEBİ — KuryeAI*
-
-👤 *Müşteri Bilgileri:*
-• Ad Soyad: ${ad} ${soyad}
-• Telefon: ${tel}
-• E-posta: ${email || 'Belirtilmedi'}
-
-📦 *Gönderi Bilgileri:*
-• Gönderi Türü: ${tur}
-• Gönderim Adresi: ${adres1}
-• Teslimat Adresi: ${adres2}
-• Mesafe: ${mesafe !== '—' ? mesafe + ' km' : 'Hesaplanmadı'}
-• Tahmini Ücret: ${ucret !== '—' ? ucret + ' ₺' : 'Hesaplanmadı'}
-
-⏰ *Teslimat Zamanı:* ${zamanStr}
-💳 *Ödeme:* ${odeme}
-
-📝 *Detay:*
-${detay || 'Belirtilmedi'}
-
----
-_KuryeAI Acil Kurye Talep Formu_
-_www.kuryeai.com/acil-kurye_`;
-
-  setTimeout(() => {
-    const waUrl = `https://wa.me/905072171995?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, '_blank');
-    btn.classList.remove('loading'); btn.disabled = false;
-  }, 800);
+  // Form verisini sessionStorage'a kaydet, login sayfasına yönlendir
+  const formData = {
+    ad, soyad, tel, email, tur, adres1, adres2, zaman, detay, odeme,
+    mesafe: document.getElementById('ms-mesafe').textContent,
+    sure: document.getElementById('ms-sure').textContent,
+    ucret: document.getElementById('ms-ucret').textContent
+  };
+  sessionStorage.setItem('pendingAcilForm', JSON.stringify(formData));
+  window.location.href = '/acilkurye-talep-login?back=/acil-kurye';
 }
 </script>
 </body>

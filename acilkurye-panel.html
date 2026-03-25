@@ -199,7 +199,32 @@
     // Profil alanları
     const pmap = {name:'p-name',phone:'p-phone',email:'p-email',vehicle:'p-vehicle',plate:'p-plate',iban:'p-iban'};
     Object.entries(pmap).forEach(([k,id])=>{ const el=document.getElementById(id); if(el&&currentUser[k])el.value=currentUser[k]; else if(el&&k==='email')el.value=currentUser.email||''; });
+    checkProfileComplete();
     listenTalepler();
+  }
+
+  function checkProfileComplete() {
+    if (currentUser.vehicle && currentUser.plate && currentUser.iban) return;
+    // Profil eksik — talepler sekmesine banner ekle ve profil sekmesine yönlendir
+    const banner = document.createElement('div');
+    banner.id = 'profile-warning';
+    banner.style.cssText = 'background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.3);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem;font-size:.84rem;color:#ff9500;line-height:1.5';
+    banner.innerHTML = '⚠️ <strong>Talep havuzuna erişmek için profilinizi tamamlayın.</strong><br/>Araç türü, plaka ve IBAN bilgilerini doldurun.';
+    const taleperSection = document.querySelector('#tab-talepler .section');
+    if (taleperSection) taleperSection.insertBefore(banner, taleperSection.firstChild);
+    // Talepler sekmesini devre dışı bırak
+    const navT = document.getElementById('nav-talepler');
+    navT.style.opacity = '0.45';
+    navT.style.pointerEvents = 'none';
+    // Profil sekmesine geç ve uyarı ekle
+    switchTab('profil');
+    const profBanner = document.createElement('div');
+    profBanner.id = 'profil-prompt';
+    profBanner.style.cssText = 'background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.25);border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1rem;font-size:.84rem;color:#ff9500';
+    profBanner.textContent = '👇 Talep havuzuna erişmek için Araç, Plaka ve IBAN alanlarını doldurun.';
+    const profSection = document.querySelector('#tab-profil .section');
+    if (profSection) profSection.insertBefore(profBanner, profSection.firstChild);
+    window._profileIncomplete = true;
   }
 
   function listenTalepler() {
@@ -274,16 +299,31 @@
 
   window.saveProfile = async () => {
     if (!currentUser) return;
+    const vehicle = document.getElementById('p-vehicle').value.trim();
+    const plate   = document.getElementById('p-plate').value.trim();
+    const iban    = document.getElementById('p-iban').value.trim();
     const data = {
       displayName:document.getElementById('p-name').value.trim(),
       phone:document.getElementById('p-phone').value.trim(),
-      vehicle:document.getElementById('p-vehicle').value.trim(),
-      plate:document.getElementById('p-plate').value.trim(),
-      iban:document.getElementById('p-iban').value.trim(),
+      vehicle, plate, iban,
       updatedAt:new Date().toISOString()
     };
-    try { await updateDoc(doc(db,'users',currentUser.uid), data); toast('Profil kaydedildi ✓','success'); }
-    catch(e) { toast('Kayıt hatası','error'); }
+    try {
+      await updateDoc(doc(db,'users',currentUser.uid), data);
+      toast('Profil kaydedildi ✓','success');
+      // Profil tamamlandıysa talepler sekmesini aç
+      if (window._profileIncomplete && vehicle && plate && iban) {
+        window._profileIncomplete = false;
+        const w = document.getElementById('profile-warning');
+        const p = document.getElementById('profil-prompt');
+        if (w) w.remove();
+        if (p) p.remove();
+        const navT = document.getElementById('nav-talepler');
+        navT.style.opacity = '';
+        navT.style.pointerEvents = '';
+        switchTab('talepler');
+      }
+    } catch(e) { toast('Kayıt hatası','error'); }
   };
 
   window.doLogout = async () => { await signOut(auth); window.location.href='/acilkurye-login'; };

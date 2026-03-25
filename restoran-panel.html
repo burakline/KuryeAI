@@ -960,6 +960,10 @@ tbody tr:hover{background:var(--bg)}
 
       <!-- ═══════════════ SETTINGS ═══════════════ -->
       <div class="view" id="view-settings">
+        <!-- Plan Bilgisi -->
+        <div class="card" id="plan-info-card" style="margin-bottom:16px">
+          <div style="color:var(--text3);font-size:.84rem">Yükleniyor…</div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <!-- Sol -->
           <div style="display:flex;flex-direction:column;gap:14px">
@@ -1568,6 +1572,7 @@ const SEED_SETTINGS = {
 
 // ── State ─────────────────────────────────────────────────────────────────
 let orders=[], menu=[], couriers=[], settings={...SEED_SETTINGS};
+let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
 let mapInstance=null, courierMarkers={};
 let deleteCourierId=null;
@@ -1659,6 +1664,15 @@ onAuthStateChanged(auth, async user=>{
         window.location.href="restoran-login.html";
         return;
       }
+      // Abonelik plan bilgisini yükle
+      currentPlan = {
+        plan:          data.plan          || 'trial',
+        planStartDate: data.planStartDate || Date.now(),
+        planEndDate:   data.planEndDate   || (Date.now() + 7 * 86400000),
+        planActive:    data.planActive    !== false,
+      };
+      renderPlanInfo();
+
       // Set dynamic restaurant ID
       RESTAURANT_ID = data.restoranId || user.uid;
       const n = data.name||user.displayName||user.email?.split("@")[0]||"Restoran";
@@ -1690,6 +1704,38 @@ onAuthStateChanged(auth, async user=>{
 window.logout=async()=>{
   try{await signOut(auth);window.location.href="restoran-login.html";}catch{}
 };
+
+// ── PLAN BİLGİSİ ──────────────────────────────────────────────────────────
+const PLAN_LABELS = { trial:'Deneme (7 gün)', basic:'Basic — 1.499₺/ay', pro:'Pro — 9.999₺/yıl' };
+const PLAN_COLORS = { trial:'#888', basic:'#00c8d7', pro:'#ffd60a' };
+
+function renderPlanInfo() {
+  const el = document.getElementById('plan-info-card');
+  if (!el || !currentPlan) return;
+  const { plan, planEndDate, planActive } = currentPlan;
+  const now = Date.now();
+  const expired = !planActive || now > planEndDate;
+  const daysLeft = Math.max(0, Math.ceil((planEndDate - now) / 86400000));
+  const label = PLAN_LABELS[plan] || plan;
+  const color = PLAN_COLORS[plan] || '#888';
+  const endStr = new Date(planEndDate).toLocaleDateString('tr-TR');
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)">Abonelik Planı</div>
+      <span style="font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:8px;background:rgba(0,0,0,.3);color:${color};border:1px solid ${color}">${label}</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.84rem">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Durum</span>
+        <span style="font-weight:700;color:${expired?'#ff5f57':'#30d158'}">${expired?'⚠ Süresi Doldu':'● Aktif'}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Bitiş Tarihi</span><span style="font-weight:600">${endStr}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Kalan Süre</span>
+        <span style="font-weight:700;color:${daysLeft<=3?'#ff5f57':daysLeft<=7?'#ffd60a':'#30d158'}">${expired?'—':daysLeft+' gün'}</span></div>
+    </div>
+    ${expired ? `<div style="margin-top:.9rem;padding:.7rem;background:rgba(255,95,87,.1);border:1px solid rgba(255,95,87,.3);border-radius:10px;font-size:.8rem;color:#ff5f57;text-align:center">
+      ⚠ Planınız sona erdi. Sipariş oluşturamazsınız. Lütfen admin ile iletişime geçin.
+    </div>` : ''}
+  `;
+}
 
 window.uploadRestoranLogo=async(e)=>{
   const f=e.target.files[0]; if(!f) return;
@@ -2358,6 +2404,12 @@ window.submitManualOrder = async () => {
   const payment  = document.getElementById("mo-payment").value;
   const courierId= document.getElementById("mo-courier").value;
   const note     = document.getElementById("mo-note").value.trim();
+
+  // Abonelik plan kontrolü
+  if (currentPlan && (!currentPlan.planActive || Date.now() > currentPlan.planEndDate)) {
+    showToast("⚠ Abonelik planınız sona ermiş. Sipariş oluşturamazsınız.", "error");
+    return;
+  }
 
   if(!customer){ showToast("Müşteri adı boş olamaz","error"); return; }
   if(!address){  showToast("Teslimat adresi boş olamaz","error"); return; }

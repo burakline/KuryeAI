@@ -1624,6 +1624,50 @@ let orders=[], menu=[], couriers=[], settings={...SEED_SETTINGS};
 let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
 let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
+
+// ── DEMO LIVE TRACKING ────────────────────────────────────────────────────
+let _demoSessionId  = null;
+let _demoIntervalId = null;
+
+function startDemoSession() {
+  if (!IS_DEMO) return;
+
+  // localStorage'dan sessionId al veya yeni oluştur
+  _demoSessionId = localStorage.getItem('demoSessionId');
+  if (!_demoSessionId) {
+    _demoSessionId = 'demo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    localStorage.setItem('demoSessionId', _demoSessionId);
+  }
+
+  set(ref(db, `demoSessions/${_demoSessionId}`), {
+    sessionId:  _demoSessionId,
+    startAt:    Date.now(),
+    lastActive: Date.now(),
+    page:       'restoran-panel',
+    isOnline:   true,
+  });
+  console.log('DEMO SESSION STARTED', _demoSessionId);
+
+  // 5 saniyede bir lastActive + page güncelle
+  if (_demoIntervalId) clearInterval(_demoIntervalId);
+  _demoIntervalId = setInterval(() => {
+    if (!_demoSessionId) return;
+    update(ref(db, `demoSessions/${_demoSessionId}`), {
+      lastActive: Date.now(),
+      page:       currentPage || 'restoran-panel',
+      isOnline:   true,
+    });
+    console.log('DEMO SESSION UPDATED');
+  }, 5000);
+
+  // Sekme/pencere kapanınca offline işaretle
+  window.addEventListener('beforeunload', () => {
+    if (_demoSessionId) {
+      // sendBeacon kullanılamaz, sync olarak dene (best-effort)
+      update(ref(db, `demoSessions/${_demoSessionId}`), { isOnline: false });
+    }
+  });
+}
 let mapInstance=null, courierMarkers={};
 let deleteCourierId=null;
 
@@ -1718,6 +1762,7 @@ onAuthStateChanged(auth, async user=>{
       IS_DEMO = !!(data.demo || user.email === 'demo@kuryeai.com');
       if (IS_DEMO) {
         document.getElementById('demo-banner-inner').style.display = 'block';
+        startDemoSession();
         // Demo: plan engelini kaldır (sınırsız deneme)
         currentPlan = { plan:'pro', planStartDate:Date.now(), planEndDate:Date.now()+365*86400000, planActive:true };
       } else {

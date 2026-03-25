@@ -286,6 +286,14 @@
         </div>
       </div>
       <div class="card">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>👀 Canlı Demo Kullanıcıları</span>
+          <span id="d-demo-count" style="font-size:1.4rem;font-weight:700;color:var(--green)">0</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--gray-lt);margin-bottom:.6rem">Son 30 saniye içinde aktif olanlar</div>
+        <div id="d-demo-list"><div class="empty"><div class="empty-ico">🎮</div><p>Demo kullanan yok</p></div></div>
+      </div>
+      <div class="card">
         <div class="card-title">Son Başvurular</div>
         <div id="d-activity"><div class="empty"><div class="empty-ico">📋</div><p>Yükleniyor...</p></div></div>
       </div>
@@ -487,6 +495,8 @@ import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, creat
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, orderBy, onSnapshot, limit, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue }
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
 const cfg = {
   apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
@@ -502,6 +512,7 @@ const cfg = {
 const app  = initializeApp(cfg);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+const rtdb = getDatabase(app);
 
 // STATE
 let allBasvurular=[], allUsers=[], allSiparisler=[];
@@ -521,11 +532,40 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('admin-email').textContent = user.email;
     showApp();
     await loadAll();
+    watchDemoSessions();
   } catch(e) { showLogin(); }
   hideLoader(loader);
 });
 
 function hideLoader(el) { el.classList.add('hide'); setTimeout(()=>el.style.display='none',400); }
+
+// ── DEMO LIVE TRACKING ────────────────────────────────────────────────────
+function watchDemoSessions() {
+  const TIMEOUT_MS = 30 * 1000; // 30 saniye inaktif → offline say
+  rtdbOnValue(rtdbRef(rtdb, 'demoSessions'), snap => {
+    const all = snap.val() || {};
+    const now = Date.now();
+    const online = Object.values(all).filter(s => s.isOnline && (now - s.lastActive) < TIMEOUT_MS);
+
+    document.getElementById('d-demo-count').textContent = online.length;
+
+    const listEl = document.getElementById('d-demo-list');
+    if (!online.length) {
+      listEl.innerHTML = '<div class="empty"><div class="empty-ico">🎮</div><p>Demo kullanan yok</p></div>';
+      return;
+    }
+    listEl.innerHTML = online.map(s => {
+      const ago = Math.floor((now - s.lastActive) / 1000);
+      const pageLabel = { 'restoran-panel':'Restoran Panel', 'dashboard':'Dashboard',
+        'orders':'Siparişler', 'couriers':'Kuryeler', 'menu':'Menü', 'settings':'Ayarlar' }[s.page] || s.page || '—';
+      return `<div class="act-item">
+        <div class="act-dot" style="background:var(--green)"></div>
+        <div class="act-text"><strong>${pageLabel}</strong> <span style="color:var(--gray-lt);font-size:.72rem">· ${s.sessionId?.slice(-8)||''}</span></div>
+        <div class="act-time">${ago}sn</div>
+      </div>`;
+    }).join('');
+  });
+}
 function showLogin() { document.getElementById('login-view').style.display='flex'; document.getElementById('admin-app').style.display='none'; }
 function showApp()  { document.getElementById('login-view').style.display='none'; document.getElementById('admin-app').style.display='flex'; }
 

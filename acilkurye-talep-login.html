@@ -6,14 +6,14 @@
   <title>AcilKuryeAI — Talep Girişi</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black:#000; --card:#111; --border:rgba(255,255,255,0.08); --text:#fff; --sub:#888; --orange:#ff9500; --red:#ff5f57; --teal:#00c8d7; }
+    :root { --black:#000; --card:#111; --border:rgba(255,255,255,0.08); --text:#fff; --sub:#888; --teal:#00c8d7; --teal-lt:#33d6e3; --red:#ff5f57; }
     html,body { background:var(--black); color:var(--text); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
     body { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100svh; padding:5rem 1.2rem 3rem; position:relative; }
-    .bg-grid { position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,149,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,149,0,.04) 1px,transparent 1px); background-size:52px 52px; mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%); }
+    .bg-grid { position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px); background-size:52px 52px; mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%); }
     .back-link { position:fixed; top:1.4rem; left:1.8rem; font-size:.8rem; color:var(--sub); text-decoration:none; transition:color .2s; z-index:10; }
     .back-link:hover { color:var(--text); }
     .card { width:100%; max-width:420px; background:var(--card); border:.5px solid var(--border); border-radius:20px; padding:2.8rem 2.5rem; position:relative; overflow:hidden; animation:up .65s cubic-bezier(.16,1,.3,1) forwards; }
-    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
+    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--teal),transparent); }
     @keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     .logo-name { font-size:1.25rem; font-weight:800; text-align:center; margin-bottom:.3rem; }
     .logo-name .acil { color:var(--red); }
@@ -21,23 +21,23 @@
     .logo-sub { font-size:.75rem; color:var(--sub); text-align:center; margin-bottom:2rem; }
     .tabs { display:flex; gap:.5rem; margin-bottom:1.8rem; background:rgba(255,255,255,.05); border-radius:12px; padding:.3rem; }
     .tab { flex:1; text-align:center; padding:.55rem; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; transition:background .2s,color .2s; color:var(--sub); }
-    .tab.active { background:var(--orange); color:#000; }
+    .tab.active { background:var(--teal); color:#000; }
     .form-title { font-size:1rem; font-weight:700; margin-bottom:.25rem; }
     .form-sub { font-size:.8rem; color:var(--sub); margin-bottom:1.4rem; }
     .form-group { margin-bottom:.9rem; }
     .form-label { display:block; font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sub); margin-bottom:.4rem; }
     .form-input { width:100%; background:rgba(255,255,255,.05); border:.5px solid rgba(255,255,255,.1); border-radius:10px; padding:.78rem 1rem; color:var(--text); font-family:Arial,Helvetica,sans-serif; font-size:.9rem; outline:none; transition:border-color .2s,box-shadow .2s; }
     .form-input::placeholder { color:#444; }
-    .form-input:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(255,149,0,.1); }
+    .form-input:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(0,200,215,.1); }
     .pw-wrap { position:relative; }
     .pw-toggle { position:absolute; right:.9rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--sub); font-size:.78rem; font-family:Arial,Helvetica,sans-serif; padding:0; }
-    .pw-toggle:hover { color:var(--orange); }
+    .pw-toggle:hover { color:var(--teal); }
     .err-msg { display:none; background:rgba(255,95,87,.08); border:.5px solid rgba(255,95,87,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--red); margin-bottom:1rem; }
     .err-msg.show { display:block; }
-    .success-msg { display:none; background:rgba(255,149,0,.07); border:.5px solid rgba(255,149,0,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--orange); margin-bottom:1rem; }
+    .success-msg { display:none; background:rgba(0,200,215,.07); border:.5px solid rgba(0,200,215,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--teal); margin-bottom:1rem; }
     .success-msg.show { display:block; }
-    .btn-submit { width:100%; margin-top:.3rem; background:var(--orange); color:#000; font-size:.92rem; font-weight:700; padding:.88rem; border-radius:999px; border:none; cursor:pointer; font-family:Arial,Helvetica,sans-serif; transition:background .2s,transform .15s; display:flex; align-items:center; justify-content:center; gap:.5rem; box-shadow:0 4px 20px rgba(255,149,0,.25); }
-    .btn-submit:hover:not(:disabled) { background:#ffaa33; transform:scale(1.02); }
+    .btn-submit { width:100%; margin-top:.3rem; background:var(--teal); color:#000; font-size:.92rem; font-weight:700; padding:.88rem; border-radius:999px; border:none; cursor:pointer; font-family:Arial,Helvetica,sans-serif; transition:background .2s,transform .15s; display:flex; align-items:center; justify-content:center; gap:.5rem; box-shadow:0 4px 20px rgba(0,200,215,.25); }
+    .btn-submit:hover:not(:disabled) { background:#33d6e3; transform:scale(1.02); }
     .btn-submit:disabled { opacity:.55; cursor:not-allowed; }
     .spinner { width:16px; height:16px; border:2px solid rgba(0,0,0,.2); border-top-color:#000; border-radius:50%; animation:spin .7s linear infinite; display:none; }
     .btn-submit.loading .spinner { display:block; }
@@ -45,7 +45,7 @@
     @keyframes spin { to{transform:rotate(360deg)} }
     .page-loader { position:fixed; inset:0; z-index:999; background:var(--black); display:flex; align-items:center; justify-content:center; transition:opacity .4s; }
     .page-loader.hide { opacity:0; pointer-events:none; }
-    .loader-ring { width:34px; height:34px; border:2px solid rgba(255,149,0,.15); border-top-color:var(--orange); border-radius:50%; animation:spin .8s linear infinite; }
+    .loader-ring { width:34px; height:34px; border:2px solid rgba(0,200,215,.15); border-top-color:var(--teal); border-radius:50%; animation:spin .8s linear infinite; }
     .info-note { margin-top:1rem; font-size:.76rem; color:var(--sub); text-align:center; line-height:1.6; }
   </style>
 </head>
@@ -82,7 +82,7 @@
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
       <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
-        <input type="checkbox" id="l-remember" style="width:15px;height:15px;accent-color:var(--orange)"/> Beni hatırla
+        <input type="checkbox" id="l-remember" style="width:15px;height:15px;accent-color:var(--teal)"/> Beni hatırla
       </label>
       <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none" onclick="doForgot(event)">Şifremi unuttum</a>
     </div>

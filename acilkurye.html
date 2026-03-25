@@ -8,7 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --black:#000; --dark:#0c0c0c; --card:#111; --border:rgba(255,255,255,0.08);
-      --text:#fff; --sub:#888; --teal:#00c8d7; --teal-lt:#33d6e3; --orange:#ff9500;
+      --text:#fff; --sub:#888; --teal:#00c8d7; --teal-lt:#33d6e3; --red:#ff5f57;
     }
     html,body { background:var(--black); color:var(--text); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
     .bg-grid { position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -18,7 +18,8 @@
     /* NAV */
     nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1rem 2rem; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); border-bottom:.5px solid var(--border); }
     .nav-logo { font-size:1.1rem; font-weight:800; letter-spacing:-.02em; }
-    .nav-logo em { font-style:normal; color:var(--orange); }
+    .nav-logo .acil { color:var(--red); }
+    .nav-logo .ai   { color:var(--teal); }
     .nav-links { display:flex; gap:1rem; align-items:center; }
     .nav-link { font-size:.8rem; color:var(--sub); text-decoration:none; transition:color .2s; }
     .nav-link:hover { color:var(--text); }
@@ -27,11 +28,11 @@
 
     /* HERO */
     .hero { position:relative; z-index:1; min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6rem 1.5rem 4rem; text-align:center; }
-    .hero-badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(255,149,0,.1); border:.5px solid rgba(255,149,0,.25); border-radius:999px; padding:.4rem 1rem; font-size:.75rem; font-weight:700; color:var(--orange); letter-spacing:.06em; text-transform:uppercase; margin-bottom:1.5rem; }
-    .hero-badge span { width:6px; height:6px; border-radius:50%; background:var(--orange); animation:blink 1.5s infinite; display:inline-block; }
+    .hero-badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(0,200,215,.1); border:.5px solid rgba(0,200,215,.25); border-radius:999px; padding:.4rem 1rem; font-size:.75rem; font-weight:700; color:var(--teal); letter-spacing:.06em; text-transform:uppercase; margin-bottom:1.5rem; }
+    .hero-badge span { width:6px; height:6px; border-radius:50%; background:var(--teal); animation:blink 1.5s infinite; display:inline-block; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     h1 { font-size:clamp(2rem,7vw,3.8rem); font-weight:900; letter-spacing:-.04em; line-height:1.05; margin-bottom:1.2rem; }
-    h1 em { font-style:normal; color:var(--orange); }
+    h1 em { font-style:normal; color:var(--teal); }
     .hero-sub { font-size:clamp(.95rem,2.5vw,1.15rem); color:var(--sub); max-width:560px; line-height:1.7; margin-bottom:3rem; }
 
     /* CARDS */
@@ -41,16 +42,16 @@
     .choice-card:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,0,0,0.4); }
     .choice-card.kurye { border-color:rgba(0,200,215,.2); }
     .choice-card.kurye:hover { border-color:rgba(0,200,215,.5); box-shadow:0 20px 60px rgba(0,200,215,.1); }
-    .choice-card.talep { border-color:rgba(255,149,0,.2); }
-    .choice-card.talep:hover { border-color:rgba(255,149,0,.5); box-shadow:0 20px 60px rgba(255,149,0,.1); }
+    .choice-card.talep { border-color:rgba(0,200,215,.2); }
+    .choice-card.talep:hover { border-color:rgba(0,200,215,.5); box-shadow:0 20px 60px rgba(0,200,215,.1); }
     .card-icon { font-size:3.5rem; line-height:1; }
     .card-title { font-size:1.15rem; font-weight:800; letter-spacing:-.02em; }
     .card-desc { font-size:.85rem; color:var(--sub); line-height:1.6; }
     .card-btn { margin-top:.5rem; padding:.75rem 1.8rem; border-radius:999px; font-size:.88rem; font-weight:700; border:none; cursor:pointer; transition:background .2s,transform .15s; }
     .choice-card.kurye .card-btn { background:var(--teal); color:#000; }
     .choice-card.kurye .card-btn:hover { background:var(--teal-lt); }
-    .choice-card.talep .card-btn { background:var(--orange); color:#000; }
-    .choice-card.talep .card-btn:hover { background:#ffaa33; }
+    .choice-card.talep .card-btn { background:var(--teal); color:#000; }
+    .choice-card.talep .card-btn:hover { background:var(--teal-lt); }
 
     /* FEATURES */
     .features { position:relative; z-index:1; padding:5rem 1.5rem; max-width:900px; margin:0 auto; }
@@ -70,7 +71,7 @@
 <div class="bg-grid"></div>
 
 <nav>
-  <div class="nav-logo">Acil<em>Kurye</em>AI</div>
+  <div class="nav-logo"><span class="acil">Acil</span>Kurye<span class="ai">AI</span></div>
   <div class="nav-links">
     <a href="/" class="nav-link">Ana Sayfa</a>
     <a href="/acilkurye-login" class="nav-btn">Kurye Girişi</a>

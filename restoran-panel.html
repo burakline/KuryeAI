@@ -1480,37 +1480,61 @@ tbody tr:hover{background:var(--bg)}
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                   <span style="font-size:20px">🍽️</span>
                   <span style="font-weight:700;font-size:13px">Yemeksepeti</span>
-                  <span id="ys-rating-badge" style="margin-left:auto;font-size:12px;font-weight:700;color:var(--yellow)"></span>
+                  <span id="ys-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
                 </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
                 <input class="form-input" id="ys-link" placeholder="https://www.yemeksepeti.com/restaurant/..." style="margin-bottom:8px"/>
-                <div id="ys-reviews" style="font-size:11px;color:var(--text3)"></div>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="ys-rating" type="number" min="0" max="10" step="0.1" placeholder="9.2"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="ys-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="ys-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
               </div>
               <div style="background:var(--bg);border-radius:10px;padding:14px">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                   <span style="font-size:20px">🟠</span>
                   <span style="font-weight:700;font-size:13px">Trendyol Yemek</span>
-                  <span id="ty-rating-badge" style="margin-left:auto;font-size:12px;font-weight:700;color:var(--yellow)"></span>
+                  <span id="ty-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
                 </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
                 <input class="form-input" id="ty-link" placeholder="https://www.trendyol.com/restoran/..." style="margin-bottom:8px"/>
-                <div id="ty-reviews" style="font-size:11px;color:var(--text3)"></div>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="ty-rating" type="number" min="0" max="10" step="0.1" placeholder="8.8"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="ty-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="ty-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
               </div>
               <div style="background:var(--bg);border-radius:10px;padding:14px">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                   <span style="font-size:20px">🔵</span>
                   <span style="font-weight:700;font-size:13px">Getir Yemek</span>
-                  <span id="gr-rating-badge" style="margin-left:auto;font-size:12px;font-weight:700;color:var(--yellow)"></span>
+                  <span id="gr-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
                 </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
                 <input class="form-input" id="gr-link" placeholder="https://getir.com/yemek/..." style="margin-bottom:8px"/>
-                <div id="gr-reviews" style="font-size:11px;color:var(--text3)"></div>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="gr-rating" type="number" min="0" max="10" step="0.1" placeholder="9.5"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="gr-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="gr-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
               </div>
               <div style="background:var(--bg);border-radius:10px;padding:14px">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                   <span style="font-size:20px">🛒</span>
                   <span style="font-weight:700;font-size:13px">Migros Yemek</span>
-                  <span id="mg-rating-badge" style="margin-left:auto;font-size:12px;font-weight:700;color:var(--yellow)"></span>
+                  <span id="mg-rating-badge" style="margin-left:auto;font-size:14px;font-weight:800;color:var(--yellow)"></span>
                 </div>
+                <label class="form-label">Restoran Sayfası Linki</label>
                 <input class="form-input" id="mg-link" placeholder="https://www.migros.com.tr/lezzet/..." style="margin-bottom:8px"/>
-                <div id="mg-reviews" style="font-size:11px;color:var(--text3)"></div>
+                <div style="display:flex;gap:8px;margin-bottom:6px">
+                  <div style="flex:1"><label class="form-label" style="font-size:10px">Güncel Puan (0-10)</label><input class="form-input" id="mg-rating" type="number" min="0" max="10" step="0.1" placeholder="9.0"/></div>
+                </div>
+                <label class="form-label" style="font-size:10px">Son Müşteri Yorumu</label>
+                <input class="form-input" id="mg-review-inp" placeholder="Müşteri yorumu giriniz…"/>
+                <div id="mg-reviews" style="font-size:11px;color:var(--text3);margin-top:6px;font-style:italic"></div>
               </div>
             </div>
             <div id="platform-avg-score" style="margin-top:14px;padding:12px;background:var(--teal-bg);border:1px solid rgba(0,200,215,.2);border-radius:10px;text-align:center;display:none">
@@ -2613,12 +2637,13 @@ function renderCouriers(){
   document.getElementById("couriers-table-wrap").innerHTML=`
     <table><thead><tr>
       <th>#</th><th>Kurye</th><th>Telefon</th><th>Araç</th><th>Durum</th><th>Bölge</th>
-      <th>Teslimat</th><th>Puan</th><th>Toplam KM</th><th>Kazanç</th><th>Performans</th><th></th>
+      <th>Teslimat</th><th>Puan</th><th>Toplam KM</th><th>Kazanç</th><th>Performans</th><th>Ücret</th><th></th>
     </tr></thead><tbody>
     ${sorted.map((c,i)=>{
       const maxD=Math.max(...couriers.map(x=>x.deliveries||0))||1;
       const pct=Math.round(((c.deliveries||0)/maxD)*100);
       const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+      const pricingLabel=c.pricingBase?`₺${c.pricingBase}${c.pricingType==="per_package"||c.pricingType==="per_package_km"?"/paket":"/sa"}`:"—";
       return`<tr>
         <td><span style="font-weight:700;color:var(--text3);font-size:13px">${medal||`#${i+1}`}</span></td>
         <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div></div></div></td>
@@ -2631,6 +2656,7 @@ function renderCouriers(){
         <td><span style="font-family:var(--fm);font-size:13px">${c.km||0} km</span></td>
         <td><span style="font-family:var(--fm);font-weight:700;font-size:13px;color:var(--green)">₺${(c.earnings||0).toLocaleString()}</span></td>
         <td><div style="display:flex;align-items:center;gap:8px"><div class="perf-bar"><div class="perf-fill" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--text3);font-family:var(--fm)">${pct}%</span></div></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openCourierPricing('${c.id}','${c.name}')" title="Ücret ayarları">${pricingLabel}</button></td>
         <td><button class="btn btn-danger btn-sm" onclick="openDeleteCourier('${c.id}','${c.name}')">Sil</button></td>
       </tr>`;
     }).join("")}
@@ -3558,8 +3584,12 @@ async function loadPlatformLinks(){
     if(snap.exists()){
       const d=snap.val();
       ["ys","ty","gr","mg"].forEach(k=>{
-        const el=document.getElementById(`${k}-link`);
-        if(el&&d[k]?.link) el.value=d[k].link;
+        const lnk=document.getElementById(`${k}-link`);
+        if(lnk&&d[k]?.link) lnk.value=d[k].link;
+        const rt=document.getElementById(`${k}-rating`);
+        if(rt&&d[k]?.rating) rt.value=d[k].rating;
+        const ri=document.getElementById(`${k}-review-inp`);
+        if(ri&&d[k]?.lastReview) ri.value=d[k].lastReview;
         const rb=document.getElementById(`${k}-rating-badge`);
         if(rb&&d[k]?.rating) rb.textContent=`⭐ ${d[k].rating}`;
         const rv=document.getElementById(`${k}-reviews`);
@@ -3570,15 +3600,22 @@ async function loadPlatformLinks(){
   }catch{}
 }
 window.savePlatformLinks=async()=>{
-  const data={
-    ys:{link:document.getElementById("ys-link")?.value||""},
-    ty:{link:document.getElementById("ty-link")?.value||""},
-    gr:{link:document.getElementById("gr-link")?.value||""},
-    mg:{link:document.getElementById("mg-link")?.value||""},
-  };
+  const getData=k=>({
+    link:document.getElementById(`${k}-link`)?.value||"",
+    rating:parseFloat(document.getElementById(`${k}-rating`)?.value)||null,
+    lastReview:document.getElementById(`${k}-review-inp`)?.value||"",
+  });
+  const data={ys:getData("ys"),ty:getData("ty"),gr:getData("gr"),mg:getData("mg")};
   try{
     await set(ref(db,`restaurants/${RESTAURANT_ID}/platforms`),data);
-    showToast("✓ Platform linkleri kaydedildi");
+    showToast("✓ Platform bilgileri kaydedildi");
+    updatePlatformAvg(data);
+    ["ys","ty","gr","mg"].forEach(k=>{
+      const rb=document.getElementById(`${k}-rating-badge`);
+      if(rb) rb.textContent=data[k].rating?`⭐ ${data[k].rating}`:"";
+      const rv=document.getElementById(`${k}-reviews`);
+      if(rv&&data[k].lastReview) rv.textContent=`"${data[k].lastReview}"`;
+    });
   }catch{showToast("Kayıt başarısız","error");}
 };
 function updatePlatformAvg(d){

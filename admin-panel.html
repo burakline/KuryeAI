@@ -321,6 +321,7 @@
         <button class="ftab" onclick="fRestoran('active',this)">Aktif</button>
         <button class="ftab" onclick="fRestoran('suspended',this)">Askıda</button>
         <button class="ftab" id="tab-odeme" onclick="fRestoran('odeme',this)">💳 Ödeme <span id="badge-odeme" style="display:none;background:var(--yellow);color:#000;border-radius:99px;font-size:.62rem;padding:.05rem .35rem;margin-left:.25rem">0</span></button>
+        <button class="ftab" onclick="fRestoran('demo',this)">🎮 Demo</button>
       </div>
       <input class="sbox" id="s-restoran" placeholder="🔍  Restoran ara..." oninput="renderRestoranlar()"/>
       <div id="restoran-list"><div class="empty"><div class="empty-ico">🍽️</div><p>Yükleniyor...</p></div></div>
@@ -767,6 +768,7 @@ window.renderRestoranlar=()=>{
   if(fRst==='active')    list=list.filter(u=>u.status==='active');
   if(fRst==='suspended') list=list.filter(u=>u.status==='suspended');
   if(fRst==='odeme')     list=list.filter(u=>u.paymentStatus==='pending');
+  if(fRst==='demo')      list=list.filter(u=>u.demo===true||u.email==='demo@kuryeai.com');
   if(s) list=list.filter(u=>(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s)||(u.company||'').toLowerCase().includes(s));
 
   // Ödeme bekleyen badge güncelle
@@ -795,6 +797,8 @@ window.renderKuryeler=()=>{
 
 function userCard(u) {
   const isRest = u.role === 'restoran';
+  const isDemo = u.demo === true || u.email === 'demo@kuryeai.com';
+  const demoBadge = isDemo ? `<span style="font-size:.62rem;font-weight:700;padding:.1rem .45rem;border-radius:6px;background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.4);margin-left:.3rem">🎮 Demo</span>` : '';
   const planExpired = isRest && u.planEndDate && Date.now() > u.planEndDate;
   const planDaysLeft = isRest && u.planEndDate
     ? Math.max(0, Math.ceil((u.planEndDate - Date.now()) / 86400000))
@@ -832,7 +836,7 @@ function userCard(u) {
   return `<div class="litem ${u.status}">
     <div class="litem-top">
       <div>
-        <div class="litem-name">${u.name||'—'}</div>
+        <div class="litem-name">${u.name||'—'}${demoBadge}</div>
         <div class="litem-sub">${u.email||''} ${u.phone?'· '+u.phone:''}</div>
       </div>
       <span class="badge b-${u.status}">${statusLbl(u.status)}</span>

@@ -543,6 +543,13 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') window.doLogin();
   });
+
+  // Demo otomatik giriş
+  if (new URLSearchParams(window.location.search).get('demo') === '1') {
+    document.getElementById('input-email').value    = 'demo@kuryeai.com';
+    document.getElementById('input-password').value = '123456';
+    setTimeout(() => window.doLogin(), 600);
+  }
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>

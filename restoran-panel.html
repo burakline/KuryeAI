@@ -620,6 +620,20 @@ tbody tr:hover{background:var(--bg)}
   .radio-grid{grid-template-columns:1fr!important}
   .metrics-grid{grid-template-columns:repeat(2,1fr)!important}
 }
+
+/* ── DEMO BANNER ── */
+#demo-banner{display:none;position:sticky;top:0;z-index:200;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;text-align:center;padding:.45rem 1rem;font-size:.8rem;font-weight:600;letter-spacing:.02em}
+#demo-banner span{opacity:.75;font-weight:400}
+
+/* ── ONBOARDING MODAL ── */
+#onboarding-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center}
+#onboarding-overlay.show{display:flex}
+#onboarding-box{background:var(--surface);border-radius:20px;padding:2rem;max-width:460px;width:calc(100% - 2rem);box-shadow:var(--shadow-lg)}
+.ob-steps{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.ob-step{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.ob-step.done{background:var(--teal)}
+.ob-step.active{background:var(--teal);opacity:.5}
+.ob-step-body{min-height:100px}
 </style>
 </head>
 <body>
@@ -722,6 +736,10 @@ tbody tr:hover{background:var(--bg)}
 
   <!-- ── MAIN ── -->
   <div class="main">
+    <!-- Demo Banner (inside main so it scrolls with layout) -->
+    <div id="demo-banner-inner" style="display:none;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;text-align:center;padding:.4rem 1rem;font-size:.79rem;font-weight:600">
+      🎮 Demo Moddasın &nbsp;·&nbsp; <span style="opacity:.75;font-weight:400">Gerçek sipariş oluşturulmaz</span>
+    </div>
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-title" id="page-title">Genel Bakış</div>
@@ -1462,6 +1480,35 @@ tbody tr:hover{background:var(--bg)}
   </div>
 </div>
 
+<!-- ── DEMO BANNER ── -->
+<div id="demo-banner">
+  🎮 Demo Moddasın &nbsp;·&nbsp; <span>Gerçek sipariş oluşturulmaz — veriler örnek</span>
+  &nbsp;&nbsp;<a href="/restoran-login" style="color:#fff;font-size:.75rem;text-decoration:underline;opacity:.8">Çıkış</a>
+</div>
+
+<!-- ── ONBOARDING MODAL ── -->
+<div id="onboarding-overlay">
+  <div id="onboarding-box">
+    <div style="text-align:center;margin-bottom:1.2rem">
+      <div style="font-size:2rem;margin-bottom:.4rem">👋</div>
+      <div style="font-size:1.2rem;font-weight:700">KuryeAI'ye Hoş Geldin!</div>
+      <div style="font-size:.85rem;color:var(--text3);margin-top:.3rem" id="ob-sub">Başlamak için 3 adım</div>
+    </div>
+    <div class="ob-steps">
+      <div class="ob-step active" id="ob-s1"></div>
+      <div class="ob-step" id="ob-s2"></div>
+      <div class="ob-step" id="ob-s3"></div>
+    </div>
+    <div class="ob-step-body" id="ob-body">
+      <!-- step content injected by JS -->
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;gap:.7rem">
+      <button id="ob-skip" onclick="closeOnboarding()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;padding:.3rem .5rem">Atla</button>
+      <button id="ob-next" onclick="obNext()" style="flex:1;max-width:160px;padding:.65rem 1.2rem;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:.9rem">Devam →</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- Leaflet (Ücretsiz OpenStreetMap harita) -->
@@ -1575,6 +1622,7 @@ const SEED_SETTINGS = {
 // ── State ─────────────────────────────────────────────────────────────────
 let orders=[], menu=[], couriers=[], settings={...SEED_SETTINGS};
 let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
+let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
 let mapInstance=null, courierMarkers={};
 let deleteCourierId=null;
@@ -1666,14 +1714,28 @@ onAuthStateChanged(auth, async user=>{
         window.location.href="restoran-login.html";
         return;
       }
-      // Abonelik plan bilgisini yükle
-      currentPlan = {
-        plan:          data.plan          || 'trial',
-        planStartDate: data.planStartDate || Date.now(),
-        planEndDate:   data.planEndDate   || (Date.now() + 7 * 86400000),
-        planActive:    data.planActive    !== false,
-      };
+      // Demo mod kontrolü
+      IS_DEMO = !!(data.demo || user.email === 'demo@kuryeai.com');
+      if (IS_DEMO) {
+        document.getElementById('demo-banner-inner').style.display = 'block';
+        // Demo: plan engelini kaldır (sınırsız deneme)
+        currentPlan = { plan:'pro', planStartDate:Date.now(), planEndDate:Date.now()+365*86400000, planActive:true };
+      } else {
+        // Abonelik plan bilgisini yükle
+        currentPlan = {
+          plan:          data.plan          || 'trial',
+          planStartDate: data.planStartDate || Date.now(),
+          planEndDate:   data.planEndDate   || (Date.now() + 7 * 86400000),
+          planActive:    data.planActive    !== false,
+        };
+      }
       renderPlanInfo();
+
+      // İlk giriş onboarding (demo değilse)
+      if (!IS_DEMO && data.firstLogin !== false) {
+        await updateDoc(doc(fs,'users',user.uid),{ firstLogin: false });
+        setTimeout(showOnboarding, 800);
+      }
 
       // Set dynamic restaurant ID
       RESTAURANT_ID = data.restoranId || user.uid;
@@ -1739,6 +1801,66 @@ function renderPlanInfo() {
   `;
   renderPaymentSection();
 }
+
+// ── ONBOARDING ────────────────────────────────────────────────────────────
+let obStep = 1;
+const OB_STEPS = [
+  {
+    title:'Restoran Bilgilerini Tamamla',
+    icon:'🏪',
+    desc:'Restoran adın, adresi ve iletişim bilgilerini güncelle. Kuryeler ve müşteriler bu bilgileri görecek.',
+    action:'Ayarlara Git',
+    fn: ()=>{ closeOnboarding(); goPage('settings'); },
+  },
+  {
+    title:'İlk Siparişini Oluştur',
+    icon:'📦',
+    desc:'Manuel sipariş ekranından deneme siparişi oluştur. Tüm özellikleri keşfet.',
+    action:'Sipariş Ekranına Git',
+    fn: ()=>{ closeOnboarding(); goPage('manual-order'); },
+  },
+  {
+    title:'Kurye Ata',
+    icon:'🛵',
+    desc:'Kurye yönetimi ekranından kuryelerini yönet ve siparişlerine atama yap.',
+    action:'Kuryeler',
+    fn: ()=>{ closeOnboarding(); goPage('couriers'); },
+  },
+];
+
+function showOnboarding() {
+  obStep = 1;
+  renderObStep();
+  document.getElementById('onboarding-overlay').classList.add('show');
+}
+
+function renderObStep() {
+  const s = OB_STEPS[obStep - 1];
+  ['ob-s1','ob-s2','ob-s3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'ob-step' + (i + 1 < obStep ? ' done' : i + 1 === obStep ? ' active' : '');
+  });
+  document.getElementById('ob-sub').textContent = `Adım ${obStep} / ${OB_STEPS.length}`;
+  document.getElementById('ob-body').innerHTML = `
+    <div style="text-align:center;padding:.5rem 0">
+      <div style="font-size:2.5rem;margin-bottom:.6rem">${s.icon}</div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:.5rem">${s.title}</div>
+      <div style="font-size:.85rem;color:var(--text2);line-height:1.65">${s.desc}</div>
+    </div>
+    <button onclick="OB_STEPS[${obStep-1}].fn()" style="width:100%;margin-top:1.1rem;padding:.6rem;background:var(--teal-bg);border:1px solid var(--teal);border-radius:10px;color:var(--teal);font-weight:700;cursor:pointer;font-size:.85rem">${s.action} →</button>
+  `;
+  const nextBtn = document.getElementById('ob-next');
+  nextBtn.textContent = obStep < OB_STEPS.length ? 'Sonraki →' : 'Başla 🚀';
+}
+
+window.obNext = () => {
+  if (obStep < OB_STEPS.length) { obStep++; renderObStep(); }
+  else closeOnboarding();
+};
+
+window.closeOnboarding = () => {
+  document.getElementById('onboarding-overlay').classList.remove('show');
+};
 
 // ── ÖDEME / IBAN ──────────────────────────────────────────────────────────
 let selectedDekontFile = null;
@@ -1978,7 +2100,17 @@ function renderOrders(){
   document.getElementById("order-count-label").textContent=`${filtered.length} sipariş`;
 
   if(!filtered.length){
-    document.getElementById("orders-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Bu kategoride sipariş yok</div></div>`;
+    const isAll = (orderFilter||'all') === 'all';
+    document.getElementById("orders-table-wrap").innerHTML = isAll
+      ? `<div class="empty-state">
+           <div class="empty-icon">📭</div>
+           <div class="empty-title">Henüz sipariş yok</div>
+           <div style="font-size:.84rem;color:var(--text3);margin-top:.4rem">İlk siparişini oluşturmak için aşağıya tıkla</div>
+           <button onclick="goPage('manual-order')" style="margin-top:1rem;padding:.6rem 1.4rem;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:.88rem">
+             + İlk Siparişini Oluştur
+           </button>
+         </div>`
+      : `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Bu kategoride sipariş yok</div></div>`;
     return;
   }
   document.getElementById("orders-table-wrap").innerHTML=`
@@ -2538,6 +2670,18 @@ window.submitManualOrder = async () => {
     phone: document.getElementById("mo-phone").value.trim(),
     createdAt: Date.now(),
   };
+
+  // Demo mod: yazma işlemlerini atla, sadece yerel state güncelle
+  if (IS_DEMO) {
+    const demoId = 'demo_' + Date.now();
+    orders = [{ id: demoId, ...newOrder }, ...orders];
+    renderOrders();
+    showToast('🎮 Demo sipariş oluşturuldu (kaydedilmedi)', 'success');
+    document.getElementById("manual-order-form")?.reset?.();
+    orderLines = [];
+    renderOrderLines();
+    return;
+  }
 
   try{
     const rtdbRef = await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), newOrder);

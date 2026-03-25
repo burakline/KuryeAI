@@ -16,4 +16,7 @@ GitHub push sonrası Vercel otomatik deploy eder.
 
 ## Geliştirme Dalı
 
-Ana branch: `claude/connect-github-repo-0uL6U`
+Tek branch: `claude/connect-github-repo-0uL6U`
+
+Tüm değişiklikler doğrudan bu branch'e commit edilip push edilir.
+`main` branch silinmiştir — merge adımı gerekmez.

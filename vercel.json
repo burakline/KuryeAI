@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "injectContentSecurityPolicy": false,
   "rewrites": [
     { "source": "/kurye",                  "destination": "/kurye.html" },
     { "source": "/kurye-login",            "destination": "/kurye-login.html" },

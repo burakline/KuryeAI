@@ -1563,6 +1563,7 @@ const SEED_SETTINGS = {
   rest_name:"Demo Restoran",rest_address:"Örnek Cad. No:1",rest_phone:"0312 000 00 00",rest_hours:"09:00 — 23:00",
   rest_lat:39.9334,rest_lng:32.8597,
   custom_base:0,custom_km:0,
+  commission_rate:5,
 };
 
 // ── State ─────────────────────────────────────────────────────────────────
@@ -2365,10 +2366,16 @@ window.submitManualOrder = async () => {
   const total = orderLines.reduce((s,l)=>s+(l.qty*(l.price||0)),0);
   const itemsArr = orderLines.map(l=>`${l.name}${l.qty>1?` x${l.qty}`:""}`);
 
+  const commissionRate   = settings.commission_rate ?? 5;
+  const commissionAmount = Math.round(total * commissionRate) / 100;
+
   const newOrder = {
     customer, address, payment, note,
     items: itemsArr,
     total,
+    orderPrice:       total,
+    commissionRate,
+    commissionAmount,
     status: "pending",
     source: selectedSource,
     platform: "manual",

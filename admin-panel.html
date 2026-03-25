@@ -269,6 +269,23 @@
         <div class="scard g"><div class="snum g" id="d-restoran">—</div><div class="slbl">Aktif Restoran</div></div>
       </div>
       <div class="card">
+        <div class="card-title">Bugünkü Gelir</div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem">
+          <div style="flex:1;min-width:80px;background:var(--dark);border-radius:10px;padding:.7rem;text-align:center">
+            <div style="font-size:1.25rem;font-weight:700;color:var(--green)" id="d-gun-komisyon">—</div>
+            <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.25rem">Komisyon</div>
+          </div>
+          <div style="flex:1;min-width:80px;background:var(--dark);border-radius:10px;padding:.7rem;text-align:center">
+            <div style="font-size:1.25rem;font-weight:700;color:var(--teal)" id="d-gun-tutar">—</div>
+            <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.25rem">Sipariş Tutarı</div>
+          </div>
+          <div style="flex:1;min-width:80px;background:var(--dark);border-radius:10px;padding:.7rem;text-align:center">
+            <div style="font-size:1.25rem;font-weight:700;color:var(--yellow)" id="d-gun-siparis">—</div>
+            <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.25rem">Sipariş</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
         <div class="card-title">Son Başvurular</div>
         <div id="d-activity"><div class="empty"><div class="empty-ico">📋</div><p>Yükleniyor...</p></div></div>
       </div>
@@ -349,6 +366,36 @@
         <div style="display:flex;flex-direction:column;gap:.8rem">
           <div style="display:flex;justify-content:space-between;font-size:.86rem"><span style="color:var(--gray-lt)">🍽️ Restoran</span><span id="i-r" style="font-weight:700">—</span></div>
           <div style="display:flex;justify-content:space-between;font-size:.86rem"><span style="color:var(--gray-lt)">🛵 Kurye</span><span id="i-k" style="font-weight:700">—</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Gelir Özeti</div>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
+            <span style="color:var(--gray-lt)">Bugün — Komisyon</span>
+            <span id="g-gun" style="font-weight:700;color:var(--green)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
+            <span style="color:var(--gray-lt)">Bu Hafta — Komisyon</span>
+            <span id="g-hafta" style="font-weight:700;color:var(--teal)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
+            <span style="color:var(--gray-lt)">Bu Ay — Komisyon</span>
+            <span id="g-ay" style="font-weight:700;color:var(--teal)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
+            <span style="color:var(--gray-lt)">Bu Ay — Toplam Sipariş Tutarı</span>
+            <span id="g-toplam-tutar" style="font-weight:700">—</span>
+          </div>
+          <div style="height:1px;background:var(--border);margin:.1rem 0"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
+            <span style="color:var(--gray-lt)">SaaS Abonelik (Aktif × 10.000₺/yıl)</span>
+            <span id="g-saas" style="font-weight:700;color:var(--yellow)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
+            <span style="color:var(--gray-lt)">Tahmini Toplam Yıllık Gelir</span>
+            <span id="g-yillik" style="font-weight:700;color:var(--orange)">—</span>
+          </div>
         </div>
       </div>
       <div class="card">
@@ -508,12 +555,45 @@ function updateBadge() {
   b.textContent=n; b.style.display=n?'flex':'none';
 }
 
+// ── GELİR HESAPLAMA YARDIMCISI ──────────────────────────────────────────
+function calcRevenue() {
+  const now      = new Date();
+  const todayMs  = new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  const dayOfWk  = now.getDay() === 0 ? 6 : now.getDay() - 1; // Pzt=0
+  const weekMs   = todayMs - dayOfWk * 86400000;
+  const monthMs  = new Date(now.getFullYear(),now.getMonth(),1).getTime();
+  const fmt = v  => '₺' + v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  let gunKomis=0, gunTutar=0, gunSip=0;
+  let haftaKomis=0, ayKomis=0, ayTutar=0;
+
+  for (const s of allSiparisler) {
+    const raw = s.createdAt;
+    const t   = typeof raw === 'string' ? new Date(raw).getTime() : (raw || 0);
+    const komis = s.commissionAmount ?? ((s.total || 0) * (s.commissionRate ?? 5) / 100);
+    const tutar = s.total || 0;
+    if (t >= todayMs)  { gunKomis += komis; gunTutar += tutar; gunSip++; }
+    if (t >= weekMs)   { haftaKomis += komis; }
+    if (t >= monthMs)  { ayKomis += komis; ayTutar += tutar; }
+  }
+
+  const restSaas = allUsers.filter(u=>u.role==='restoran'&&u.status==='active').length * 10000;
+  const yillik   = restSaas + ayKomis * 12;
+
+  return { gunKomis, gunTutar, gunSip, haftaKomis, ayKomis, ayTutar, restSaas, yillik, fmt };
+}
+
 // ── DASHBOARD ──
 function renderDash() {
   document.getElementById('d-basvuru').textContent=allBasvurular.length + allUsers.filter(u=>u.status==='pending').length;
   document.getElementById('d-bekleyen').textContent=allBasvurular.filter(b=>b.status==='pending').length + allUsers.filter(u=>u.status==='pending').length;
   document.getElementById('d-kurye').textContent=allUsers.filter(u=>u.role==='kurye'&&u.status==='active').length;
   document.getElementById('d-restoran').textContent=allUsers.filter(u=>u.role==='restoran'&&u.status==='active').length;
+
+  const {gunKomis,gunTutar,gunSip,fmt} = calcRevenue();
+  document.getElementById('d-gun-komisyon').textContent = fmt(gunKomis);
+  document.getElementById('d-gun-tutar').textContent    = fmt(gunTutar);
+  document.getElementById('d-gun-siparis').textContent  = gunSip;
 
   const recent=allBasvurular.slice(0,5);
   const el=document.getElementById('d-activity');
@@ -682,6 +762,14 @@ function renderIstatistik() {
   document.getElementById('i-ask').textContent=ask;
   document.getElementById('i-r').textContent=allUsers.filter(u=>u.role==='restoran').length;
   document.getElementById('i-k').textContent=allUsers.filter(u=>u.role==='kurye').length;
+
+  const {gunKomis,haftaKomis,ayKomis,ayTutar,restSaas,yillik,fmt} = calcRevenue();
+  document.getElementById('g-gun').textContent          = fmt(gunKomis);
+  document.getElementById('g-hafta').textContent        = fmt(haftaKomis);
+  document.getElementById('g-ay').textContent           = fmt(ayKomis);
+  document.getElementById('g-toplam-tutar').textContent = fmt(ayTutar);
+  document.getElementById('g-saas').textContent         = fmt(restSaas);
+  document.getElementById('g-yillik').textContent       = fmt(yillik);
 }
 
 // ── CREATE USER MODAL ──
@@ -775,6 +863,8 @@ function listenSiparisler() {
       allSiparisler = snap.docs.map(d=>({id:d.id,...d.data()}));
       renderSiparisler();
       updateSiparisBadge();
+      renderDash();
+      renderIstatistik();
     }, e=>console.error('orders snap',e));
   } catch(e){ console.error(e); }
 }

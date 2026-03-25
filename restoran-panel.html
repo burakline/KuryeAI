@@ -964,6 +964,8 @@ tbody tr:hover{background:var(--bg)}
         <div class="card" id="plan-info-card" style="margin-bottom:16px">
           <div style="color:var(--text3);font-size:.84rem">Yükleniyor…</div>
         </div>
+        <!-- Ödeme / IBAN -->
+        <div class="card" id="payment-section-card" style="margin-bottom:16px"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <!-- Sol -->
           <div style="display:flex;flex-direction:column;gap:14px">
@@ -1735,7 +1737,108 @@ function renderPlanInfo() {
       ⚠ Planınız sona erdi. Sipariş oluşturamazsınız. Lütfen admin ile iletişime geçin.
     </div>` : ''}
   `;
+  renderPaymentSection();
 }
+
+// ── ÖDEME / IBAN ──────────────────────────────────────────────────────────
+let selectedDekontFile = null;
+
+function renderPaymentSection() {
+  const el = document.getElementById('payment-section-card');
+  if (!el) return;
+  const restId   = RESTAURANT_ID || '—';
+  const restName = document.getElementById('user-display')?.textContent || 'Restoranınız';
+  const alreadySent = currentPlan && false; // reset her render'da
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)">Plan Ödemesi & IBAN</div>
+    </div>
+
+    <div style="background:rgba(0,200,215,.07);border:1px solid rgba(0,200,215,.22);border-radius:12px;padding:.9rem;margin-bottom:.85rem">
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:.55rem;font-weight:600">🏦 Banka Havale / EFT Bilgileri</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem">
+        <div>
+          <div style="font-size:.65rem;color:var(--text3);margin-bottom:.15rem">IBAN</div>
+          <div style="font-size:.9rem;font-weight:700;letter-spacing:.04em;color:#00c8d7;font-family:monospace">TR71 0015 7000 0000 0154 8330 53</div>
+        </div>
+        <button id="copy-iban-btn" onclick="copyIBAN()" style="flex-shrink:0;background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.35);border-radius:8px;color:#00c8d7;font-size:.72rem;padding:.35rem .65rem;cursor:pointer;white-space:nowrap">📋 Kopyala</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.83rem">
+        <span style="color:var(--text3)">Alıcı Adı</span>
+        <span style="font-weight:600">Burak Hasköy</span>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,214,10,.07);border:1px solid rgba(255,214,10,.22);border-radius:10px;padding:.75rem;margin-bottom:.85rem">
+      <div style="font-size:.75rem;font-weight:700;color:#ffd60a;margin-bottom:.35rem">⚠ Açıklama kısmına mutlaka yazınız</div>
+      <div style="font-size:.82rem;color:var(--text2)">Restoran Adı / RestoranID</div>
+      <div style="font-family:monospace;font-size:.78rem;color:#00c8d7;margin-top:.3rem;word-break:break-all">${restName} / ${restId}</div>
+    </div>
+
+    <div style="margin-bottom:.7rem">
+      <label style="font-size:.72rem;color:var(--text3);display:block;margin-bottom:.3rem">Ödeme Notu <span style="color:var(--text3)">(isteğe bağlı)</span></label>
+      <input id="payment-note" type="text" placeholder="Örn: Basic plan 1 aylık ödeme yaptım" style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:.84rem;color:var(--white);outline:none">
+    </div>
+
+    <div style="margin-bottom:.9rem">
+      <label style="font-size:.72rem;color:var(--text3);display:block;margin-bottom:.3rem">Dekont <span style="color:#ff5f57;font-weight:700">*</span> <span style="color:var(--text3)">(JPG / PNG / PDF, max 5 MB)</span></label>
+      <div onclick="document.getElementById('dekont-input').click()" style="background:var(--bg2);border:2px dashed var(--border);border-radius:10px;padding:.85rem;text-align:center;cursor:pointer">
+        <div id="dekont-label" style="font-size:.82rem;color:var(--text3)">📎 Dekont seçmek için tıkla</div>
+      </div>
+      <input type="file" id="dekont-input" accept="image/*,.pdf" style="display:none" onchange="onDekontSelect(event)">
+    </div>
+
+    <button id="payment-notify-btn" onclick="submitPaymentNotification()" style="width:100%;padding:.7rem;background:linear-gradient(135deg,#00c8d7,#009aaa);border:none;border-radius:10px;color:#fff;font-size:.88rem;font-weight:700;cursor:pointer;transition:opacity .2s">
+      ✓ Ödeme Bildirdim
+    </button>
+    <div id="payment-status-row" style="display:none;margin-top:.55rem;text-align:center;font-size:.78rem;color:#ffd60a">⏳ Ödeme doğrulaması bekleniyor…</div>
+  `;
+}
+
+window.copyIBAN = () => {
+  navigator.clipboard.writeText('TR710015700000000154833053').then(() => {
+    const btn = document.getElementById('copy-iban-btn');
+    if (btn) { btn.textContent = '✓ Kopyalandı'; setTimeout(() => { btn.textContent = '📋 Kopyala'; }, 2200); }
+  }).catch(() => showToast('Kopyalama desteklenmiyor', 'error'));
+};
+
+window.onDekontSelect = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { showToast('Dekont max 5MB olmalı', 'error'); return; }
+  selectedDekontFile = f;
+  const lbl = document.getElementById('dekont-label');
+  if (lbl) lbl.textContent = '✅ ' + f.name;
+};
+
+window.submitPaymentNotification = async () => {
+  if (!selectedDekontFile) { showToast('Lütfen dekont dosyası seçin', 'error'); return; }
+  const note = document.getElementById('payment-note')?.value.trim() || '';
+  const btn  = document.getElementById('payment-notify-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Gönderiliyor…'; }
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) throw new Error('Giriş yapılmamış');
+    const ext  = selectedDekontFile.name.split('.').pop();
+    const sRef = storageRef(storage, `dekontlar/${uid}/${Date.now()}.${ext}`);
+    await uploadBytes(sRef, selectedDekontFile, { contentType: selectedDekontFile.type });
+    const dekontURL = await getDownloadURL(sRef);
+    await updateDoc(doc(fs, 'users', uid), {
+      paymentStatus:    'pending',
+      paymentNote:      note,
+      paymentDekontURL: dekontURL,
+      paymentDate:      Date.now(),
+    });
+    showToast('✓ Ödeme bildirimi gönderildi! Admin onayı bekleniyor.', 'success');
+    if (btn) { btn.textContent = '✓ Bildirim Gönderildi'; }
+    const row = document.getElementById('payment-status-row');
+    if (row) row.style.display = 'block';
+    selectedDekontFile = null;
+  } catch (e) {
+    showToast('Hata: ' + e.message, 'error');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '✓ Ödeme Bildirdim'; }
+  }
+};
 
 window.uploadRestoranLogo=async(e)=>{
   const f=e.target.files[0]; if(!f) return;

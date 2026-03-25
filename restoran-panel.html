@@ -738,6 +738,10 @@ tbody tr:hover{background:var(--bg)}
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Sistem Ayarları
       </div>
+      <div class="nav-item" onclick="window.logout && window.logout()" style="color:var(--red,#ef4444)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Oturumu Kapat
+      </div>
     </div>
 
     <div class="sb-footer" style="position:relative">
@@ -1932,7 +1936,9 @@ window.toggleSidebar = function(){
     window.closeSidebar();
   } else {
     sb.classList.add("open");
-    if(ov) ov.classList.add("open");
+    sb.style.transform = "translateX(0)";
+    sb.style.zIndex = "9999";
+    if(ov){ ov.classList.add("open"); ov.style.zIndex = "9998"; }
     document.body.style.overflow = "hidden";
   }
 };
@@ -1942,13 +1948,38 @@ window.closeSidebar = function(){
   var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
   sb.classList.remove("open");
-  if(ov) ov.classList.remove("open");
+  sb.style.transform = "";
+  sb.style.zIndex = "";
+  if(ov){ ov.classList.remove("open"); ov.style.zIndex = ""; }
   document.body.style.overflow = "";
 };
 
 window.addEventListener("resize", function(){
-  if(window.innerWidth > 768){
-    window.closeSidebar();
+  if(window.innerWidth > 768) window.closeSidebar();
+});
+
+// Nav item tıklama — modül dışında, güvenilir çalışması için
+document.addEventListener("DOMContentLoaded", function(){
+  document.querySelector(".sb-nav")?.addEventListener("click", function(e){
+    var item = e.target.closest(".nav-item[data-page]");
+    if(item && window.goPage) window.goPage(item.dataset.page);
+  });
+});
+
+// Dark mode toggle — modül dışında tanımlandı
+(function(){
+  if(localStorage.getItem('restoran_dark')==='1') document.body.classList.add('dark');
+})();
+window.toggleDarkMode = function(){
+  var isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('restoran_dark', isDark ? '1' : '0');
+  var icon = isDark ? '☀️' : '🌙';
+  ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=icon; });
+};
+// İkon senkronizasyonu
+document.addEventListener('DOMContentLoaded', function(){
+  if(document.body.classList.contains('dark')){
+    ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent='☀️'; });
   }
 });
 
@@ -3703,30 +3734,30 @@ function listenExtras(){
   loadCustomerBook();
 }
 
-// ── DARK MODE ──────────────────────────────────────────────────────────────
-(function() {
-  if (localStorage.getItem('restoran_dark') === '1') {
-    document.body.classList.add('dark');
-  }
-})();
-window.toggleDarkMode = function() {
-  const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('restoran_dark', isDark ? '1' : '0');
-  const icon = isDark ? '☀️' : '🌙';
-  ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=icon; });
-};
-// Sync button icon on load
+// Dashboard map init
 document.addEventListener('DOMContentLoaded', ()=>{
-  if (document.body.classList.contains('dark')) {
-    ['dm-btn','dm-btn-mob'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='☀️'; });
-  }
-  // Dashboard map init (dashboard is default active view)
   setTimeout(initMapDash, 500);
 });
 
 </script>
 
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
+<!-- Vercel toolbar'ı kaldır -->
+<script>
+(function removeVercelToolbar(){
+  function tryRemove(){
+    var sel = ['vercel-toolbar','#vercel-toolbar','[data-vercel-toolbar]',
+               '#__vercel-toolbar__','.__vercel-toolbar','iframe[src*="vercel"]',
+               'script[src*="vercel.live"]'];
+    sel.forEach(function(s){
+      document.querySelectorAll(s).forEach(function(el){ el.remove(); });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', tryRemove);
+  setTimeout(tryRemove, 1000);
+  setTimeout(tryRemove, 3000);
+})();
+</script>
 <script type="module" src="/demo.js"></script>
 </body>
 </html>

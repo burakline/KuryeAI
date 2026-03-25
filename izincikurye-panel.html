@@ -198,6 +198,16 @@
     <div class="sec-title" style="margin-top:.5rem">Profilim</div>
     <div class="card">
       <div id="kuryeIdBadge" class="id-badge" style="display:none"></div>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.2rem">
+        <div style="position:relative;width:88px;height:88px;margin-bottom:.6rem">
+          <img id="iz-avatar" src="https://ui-avatars.com/api/?name=K&background=a855f7&color=fff&bold=true" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid var(--purple)">
+          <div onclick="document.getElementById('iz-av-inp').click()" style="position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="14" height="14"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <input type="file" id="iz-av-inp" accept="image/*" style="display:none" onchange="uploadIzAvatar(event)">
+        </div>
+        <div id="iz-av-status" style="font-size:.75rem;color:var(--tx2)">Fotoğraf yüklemek için tıkla</div>
+      </div>
       <div class="form-group">
         <label class="form-label">Ad Soyad</label>
         <input class="form-input" type="text" id="p-name" placeholder="Ad Soyad"/>
@@ -266,6 +276,7 @@
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, getDocs }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
@@ -273,9 +284,10 @@
     messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  const app     = initializeApp(firebaseConfig);
+  const auth    = getAuth(app);
+  const db      = getFirestore(app);
+  const storage = getStorage(app);
   let currentUser = null;
   let shiftStart = null;
   let shiftTimer = null;
@@ -306,6 +318,10 @@
     document.getElementById('p-plate').value   = u.plate   || '';
     document.getElementById('p-vehicle').value = u.vehicle || '';
     document.getElementById('p-route').value   = u.route   || '';
+    if(u.photoURL) {
+      document.getElementById('iz-avatar').src = u.photoURL;
+      document.getElementById('iz-av-status').textContent = 'Fotoğraf yüklü';
+    }
     document.getElementById('m-oil').value     = u.maintOil    || '';
     document.getElementById('m-filter').value  = u.maintFilter || '';
     document.getElementById('m-km').value      = u.maintKm     || '';
@@ -543,6 +559,25 @@
     update();
     shiftTimer = setInterval(update, 1000);
   }
+
+  window.uploadIzAvatar = async (e) => {
+    const f = e.target.files[0]; if(!f) return;
+    if(f.size > 5*1024*1024){ toast('Fotoğraf max 5MB olmalı','error'); return; }
+    document.getElementById('iz-av-status').textContent = 'Yükleniyor...';
+    try {
+      const sRef = storageRef(storage, `avatars/${currentUser.uid}/profile.jpg`);
+      await uploadBytes(sRef, f, {contentType: f.type});
+      const url = await getDownloadURL(sRef);
+      document.getElementById('iz-avatar').src = url;
+      await updateDoc(doc(db,'users',currentUser.uid), {photoURL: url});
+      currentUser.photoURL = url;
+      document.getElementById('iz-av-status').textContent = 'Fotoğraf kaydedildi ✅';
+      toast('Profil fotoğrafı güncellendi ✓','success');
+    } catch(err) {
+      document.getElementById('iz-av-status').textContent = 'Hata: ' + err.message;
+      toast('Yükleme hatası','error');
+    }
+  };
 
   window.saveProfile = async () => {
     const data = {

@@ -741,23 +741,6 @@ tbody tr:hover{background:var(--bg)}
       🎮 Demo Moddasın &nbsp;·&nbsp; <span style="opacity:.75;font-weight:400">Gerçek sipariş oluşturulmaz</span>
     </div>
 
-    <!-- Demo Conversion Modal -->
-    <div id="demo-conversion-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:center;justify-content:center;padding:1.25rem">
-      <div style="background:var(--surface);border-radius:20px;padding:2rem 1.75rem;max-width:380px;width:100%;box-shadow:var(--shadow-lg);text-align:center">
-        <div id="dcm-icon" style="font-size:2.6rem;margin-bottom:.65rem">🎯</div>
-        <div id="dcm-title" style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.5rem;line-height:1.3"></div>
-        <div id="dcm-desc" style="font-size:.85rem;color:var(--text2);margin-bottom:1.5rem;line-height:1.6"></div>
-        <button id="dcm-btn" onclick="demoConvertClick()" style="width:100%;padding:.75rem;background:linear-gradient(135deg,#00c8d7,#009aaa);border:none;border-radius:12px;color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:.55rem">🚀 Şimdi Başla</button>
-        <button onclick="closeDemoPopup()" style="width:100%;padding:.6rem;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text3);font-size:.82rem;cursor:pointer">Daha Sonra</button>
-      </div>
-    </div>
-
-    <!-- Demo Sabit CTA Bar -->
-    <div id="demo-cta-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;padding:.55rem 1rem;z-index:998;align-items:center;justify-content:space-between;gap:.5rem">
-      <span style="font-size:.8rem;font-weight:600">🎮 Demo modu aktif</span>
-      <button onclick="demoConvertClick()" style="flex-shrink:0;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);border-radius:9px;color:#fff;font-size:.8rem;font-weight:700;padding:.35rem .85rem;cursor:pointer">🚀 Şimdi Başla — 1.499₺</button>
-    </div>
-
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-title" id="page-title">Genel Bakış</div>
@@ -1643,103 +1626,6 @@ let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
 let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
 
-// ── DEMO LIVE TRACKING ────────────────────────────────────────────────────
-let _demoSessionId   = null;
-let _demoIntervalId  = null;
-let _demoStartAt     = 0;
-let _intentScore     = 0;
-let _popupShownTypes = {};
-
-function startDemoSession() {
-  if (!IS_DEMO) return;
-
-  _demoSessionId = localStorage.getItem('demoSessionId');
-  if (!_demoSessionId) {
-    _demoSessionId = 'demo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-    localStorage.setItem('demoSessionId', _demoSessionId);
-  }
-  _demoStartAt = Date.now();
-
-  set(ref(db, `demoSessions/${_demoSessionId}`), {
-    sessionId:   _demoSessionId,
-    startAt:     _demoStartAt,
-    lastActive:  _demoStartAt,
-    page:        currentPage || 'dashboard',
-    intentScore: 0,
-    isOnline:    true,
-  });
-  console.log('DEMO SESSION STARTED', _demoSessionId);
-
-  if (_demoIntervalId) clearInterval(_demoIntervalId);
-  _demoIntervalId = setInterval(() => {
-    if (!_demoSessionId) return;
-    update(ref(db, `demoSessions/${_demoSessionId}`), {
-      lastActive:  Date.now(),
-      page:        currentPage || 'dashboard',
-      intentScore: _intentScore,
-      isOnline:    true,
-    });
-    console.log('DEMO SESSION UPDATED');
-  }, 5000);
-
-  // Zaman bazlı popup'lar
-  setTimeout(() => { if (IS_DEMO) showConversionPopup('timer5min');  },  5 * 60 * 1000);
-  setTimeout(() => { if (IS_DEMO) showConversionPopup('demoExpired'); }, 7 * 60 * 1000);
-
-  // Sabit CTA bar
-  const ctaBar = document.getElementById('demo-cta-bar');
-  if (ctaBar) ctaBar.style.display = 'flex';
-
-  window.addEventListener('beforeunload', () => {
-    if (_demoSessionId)
-      update(ref(db, `demoSessions/${_demoSessionId}`), { isOnline: false });
-  });
-}
-
-// ── INTENT SCORE ──────────────────────────────────────────────────────────
-function addIntent(pts) {
-  if (!IS_DEMO || !_demoSessionId) return;
-  _intentScore += pts;
-  update(ref(db, `demoSessions/${_demoSessionId}`), { intentScore: _intentScore });
-  if (_intentScore >= 5 && !_popupShownTypes.intentHigh) {
-    console.log('SICAK LEAD', _demoSessionId, 'score:', _intentScore);
-    showConversionPopup('intentHigh');
-  }
-}
-
-// ── CONVERSION POPUP ──────────────────────────────────────────────────────
-const _POPUP_CFG = {
-  intentHigh:   { icon:'🎯', title:'Bu sistem sana uygun!',         desc:'Şimdi başla ve gerçek sipariş almaya başla. Kurye yönetimi + anlık takip + entegrasyonlar.', btn:'🚀 Şimdi Başla — 1.499₺/ay' },
-  timer5min:    { icon:'⏳', title:'Demo bitmek üzere!',            desc:'5 dakikalık demo süren dolmak üzere. Devam etmek için bir plan seç.', btn:'🚀 Planı Seç — 1.499₺/ay' },
-  orderAttempt: { icon:'🚀', title:'Gerçek siparişler için plan!',  desc:'Demo\'da deneyebilirsin ama gerçek kurye ataması ve müşteri bildirimleri için plan gerekli.', btn:'🚀 Hemen Başla — 1.499₺/ay' },
-  demoExpired:  { icon:'⚠️', title:'Demo süren doldu!',             desc:'Gerçek kullanım için bir plan seçmen gerekiyor. Hemen başla, ilk ay ücretsiz deneme.', btn:'🚀 Planları Gör' },
-};
-
-function showConversionPopup(type) {
-  if (!IS_DEMO) return;
-  if (type !== 'demoExpired' && _popupShownTypes[type]) return;
-  _popupShownTypes[type] = true;
-
-  const cfg = _POPUP_CFG[type];
-  if (!cfg) return;
-  const modal = document.getElementById('demo-conversion-modal');
-  if (!modal) return;
-  modal.querySelector('#dcm-icon').textContent  = cfg.icon;
-  modal.querySelector('#dcm-title').textContent = cfg.title;
-  modal.querySelector('#dcm-desc').textContent  = cfg.desc;
-  modal.querySelector('#dcm-btn').textContent   = cfg.btn;
-  modal.style.display = 'flex';
-}
-
-window.closeDemoPopup = () => {
-  const el = document.getElementById('demo-conversion-modal');
-  if (el) el.style.display = 'none';
-};
-window.demoConvertClick = () => {
-  window.open('restoran-login.html?tab=kayit', '_blank');
-  closeDemoPopup();
-};
-
 let mapInstance=null, courierMarkers={};
 let deleteCourierId=null;
 
@@ -1806,7 +1692,7 @@ window.goPage = page => {
   _origGoPage(page);
   if (!IS_DEMO) return;
   const pts = { dashboard:1, menu:2, couriers:3 };
-  if (pts[page]) addIntent(pts[page]);
+  if (pts[page]) window.DEMO?.addIntent(pts[page]);
 };
 
 // ── Clock ─────────────────────────────────────────────────────────────────
@@ -1841,9 +1727,9 @@ onAuthStateChanged(auth, async user=>{
       }
       // Demo mod kontrolü
       IS_DEMO = !!(data.demo || user.email === 'demo@kuryeai.com');
+      window.IS_DEMO = IS_DEMO;
       if (IS_DEMO) {
         document.getElementById('demo-banner-inner').style.display = 'block';
-        startDemoSession();
         // Demo: plan engelini kaldır (sınırsız deneme)
         currentPlan = { plan:'pro', planStartDate:Date.now(), planEndDate:Date.now()+365*86400000, planActive:true };
       } else {
@@ -2761,7 +2647,7 @@ async function assignCourierAuto(orderId, orderData) {
 
 window.submitManualOrder = async () => {
   // Demo intent: sipariş oluşturma denemesi → +5
-  if (IS_DEMO) { addIntent(5); showConversionPopup('orderAttempt'); }
+  if (IS_DEMO) { window.DEMO?.addIntent(5); window.DEMO?.showPopup('orderAttempt'); }
 
   const customer = document.getElementById("mo-customer").value.trim();
   const address  = document.getElementById("mo-address").value.trim();
@@ -2934,5 +2820,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <div id="sidebar-overlay-fixed" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200" onclick="closeSidebar()"></div>
 
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
+<script type="module" src="/demo.js"></script>
 </body>
 </html>

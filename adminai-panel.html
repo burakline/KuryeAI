@@ -1425,6 +1425,8 @@ function initMap(){
   // Zone çizimi - mousedown+mousemove+mouseup
   mapObj.on('mousedown',e=>{
     if(!_zoneMode)return;
+    e.originalEvent.preventDefault();
+    mapObj.dragging.disable();
     _zoneStart=e.latlng;
     if(_zoneDrawing){mapObj.removeLayer(_zoneDrawing);_zoneDrawing=null;}
   });
@@ -1441,9 +1443,10 @@ function initMap(){
     if(id)id.textContent=`Çap: ${(r*2/1000).toFixed(2)} km · Alan: ${alan} km²`;
     document.getElementById('zone-info-name').textContent='Bölge Çiziliyor...';
   });
-  mapObj.on('mouseup',e=>{
+  // mouseup document üzerinde dinleniyor — fare harita dışına çıksa bile tetiklenir
+  document.addEventListener('mouseup',()=>{
     if(!_zoneMode||!_zoneStart||!_zoneDrawing)return;
-    const r=e.latlng.distanceTo(_zoneStart);
+    const r=_zoneDrawing.getRadius();
     const km=(r/1000).toFixed(2);
     const alan=(Math.PI*r*r/1000000).toFixed(3);
     document.getElementById('zone-info-name').textContent=`Yarıçap: ${km} km · Alan: ${alan} km²`;

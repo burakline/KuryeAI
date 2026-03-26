@@ -1123,7 +1123,7 @@ window.switchTab=(tab)=>{
 
 // ── HELPERS ──
 function setActive(btn,sel){ document.querySelectorAll(sel).forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
-function statusLbl(s){ return s==='pending'?'Bekliyor':s==='active'?'Aktif':s==='suspended'?'Askıda':'Reddedildi'; }
+function statusLbl(s){ return s==='active'?'Aktif':s==='suspended'?'Askıda':s==='rejected'?'Reddedildi':'Bekliyor'; }
 function fmtTime(ts){ if(!ts) return ''; try{ const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){return '';} }
 
 // ── SİPARİŞLER ──────────────────────────────────────────────────────────────

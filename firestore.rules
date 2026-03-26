@@ -33,7 +33,7 @@ service cloud.firestore {
     // Kullanıcı kendi profilini okur/yazar; admin hepsini okuyabilir
     match /users/{userId} {
       allow read:  if isOwner(userId) || isAdmin();
-      allow write: if isOwner(userId);
+      allow write: if isOwner(userId) || isAdmin();
 
       match /shifts/{doc} {
         allow read, write: if isOwner(userId) || isAdmin();

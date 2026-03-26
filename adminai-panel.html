@@ -451,7 +451,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             <div class="card-header"><div class="card-title">🗺️ Yeni Bölge Kaydet</div></div>
             <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div class="fg" style="margin:0"><label class="fl">Bölge Adı</label><input class="fi" id="zone-name-input" placeholder="Örn: Kadıköy"/></div>
-              <div class="fg" style="margin:0"><label class="fl">Kurye Fiyatı (₺/km)</label><input class="fi" type="number" id="zone-price-input" placeholder="5.00" min="0" step="0.5"/></div>
+              <div class="fg" style="margin:0">
+                <label class="fl">Fiyat Modeli</label>
+                <select class="fsel" id="zone-price-model" onchange="updateZonePricePlaceholder()">
+                  <option value="kmBasi">📍 Km Başı (₺/km)</option>
+                  <option value="paketBasi">📦 Paket Başı (₺/paket)</option>
+                </select>
+              </div>
+              <div class="fg" style="margin:0"><label class="fl" id="zone-price-label">Tutar (₺/km)</label><input class="fi" type="number" id="zone-price-input" placeholder="5.00" min="0" step="0.5"/></div>
               <div class="fg" style="margin:0"><label class="fl">Renk</label>
                 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
                   <span class="zone-color-opt" data-color="#00c8d7" style="width:24px;height:24px;border-radius:50%;background:#00c8d7;cursor:pointer;border:2px solid transparent" onclick="selectZoneColor(this)"></span>
@@ -1491,15 +1498,23 @@ window.selectZoneColor=(el)=>{
   _zoneColor=el.dataset.color;
   if(_zoneDrawing)_zoneDrawing.setStyle({color:_zoneColor});
 };
+window.updateZonePricePlaceholder=()=>{
+  const model=document.getElementById('zone-price-model')?.value;
+  const lbl=document.getElementById('zone-price-label');
+  const inp=document.getElementById('zone-price-input');
+  if(model==='kmBasi'){if(lbl)lbl.textContent='Tutar (₺/km)';if(inp)inp.placeholder='5.00';}
+  else{if(lbl)lbl.textContent='Tutar (₺/paket)';if(inp)inp.placeholder='15.00';}
+};
 window.saveZone=async()=>{
   if(!_zoneDrawing||!_zoneStart)return;
   const name=document.getElementById('zone-name-input').value.trim();
-  const price=parseFloat(document.getElementById('zone-price-input').value)||0;
+  const priceModel=document.getElementById('zone-price-model')?.value||'kmBasi';
+  const priceAmount=parseFloat(document.getElementById('zone-price-input').value)||0;
   if(!name){showToast('Bölge adı zorunlu','err');return;}
   const latlng=_zoneDrawing.getLatLng();
   const radius=_zoneDrawing.getRadius();
   try{
-    await addDoc(collection(db,'zones'),{name,center:{lat:latlng.lat,lng:latlng.lng},radius,color:_zoneColor,pricePerKm:price,createdAt:serverTimestamp()});
+    await addDoc(collection(db,'zones'),{name,center:{lat:latlng.lat,lng:latlng.lng},radius,color:_zoneColor,priceModel,priceAmount,createdAt:serverTimestamp()});
     showToast('✓ Bölge kaydedildi','ok');
     _zoneMode=false;
     document.getElementById('zone-mode-btn').textContent='⬤ Bölge Çiz';
@@ -1515,8 +1530,10 @@ async function loadZones(){
     const snap=await getDocs(collection(db,'zones'));
     _zones=snap.docs.map(d=>({id:d.id,...d.data()}));
     _zones.forEach(z=>{
+      const priceLbl=z.priceModel==='paketBasi'?`₺${z.priceAmount||0}/paket`:`₺${z.priceAmount||z.pricePerKm||0}/km`;
+      const modelLbl=z.priceModel==='paketBasi'?'📦 Paket Başı':'📍 Km Başı';
       L.circle([z.center.lat,z.center.lng],{radius:z.radius,color:z.color||'#00c8d7',fillOpacity:.1,weight:1.5})
-        .addTo(mapObj).bindPopup(`<b>${esc(z.name)}</b><br/>Çap: ${(z.radius/500).toFixed(2)} km<br/>Fiyat: ₺${z.pricePerKm||0}/km`);
+        .addTo(mapObj).bindPopup(`<b>${esc(z.name)}</b><br/>Çap: ${(z.radius*2/1000).toFixed(2)} km<br/>${modelLbl}: ${priceLbl}`);
     });
   }catch(e){console.error('zones',e);}
 }

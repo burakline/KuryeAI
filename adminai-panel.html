@@ -901,7 +901,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/fireba
 import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
-         query, orderBy, onSnapshot, limit, serverTimestamp, where }
+         query, orderBy, onSnapshot, limit, serverTimestamp, where, arrayUnion, arrayRemove }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
@@ -1646,6 +1646,97 @@ async function loadBroadcasts(){
   }catch(e){console.error('broadcasts',e);}
 }
 if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
+
+// ── BÖLGELER ──
+let _zoneList=[];
+async function loadZoneList(){
+  try{
+    const snap=await getDocs(collection(db,'zones'));
+    _zoneList=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderZoneList();
+  }catch(e){console.error('loadZoneList',e);showToast('Bölgeler yüklenemedi','err');}
+}
+function renderZoneList(){
+  const el=document.getElementById('bolge-list');if(!el)return;
+  if(!_zoneList.length){el.innerHTML='<div class="empty"><div class="empty-ico">🗺️</div><p>Henüz bölge yok. Dashboard\'dan bölge çizin.</p></div>';return;}
+  const priceLbl=z=>z.priceModel==='paketBasi'?`₺${z.priceAmount||0}/paket`:`₺${z.priceAmount||z.pricePerKm||0}/km`;
+  const modelLbl=z=>z.priceModel==='paketBasi'?'📦 Paket Başı':'📍 Km Başı';
+  el.innerHTML=_zoneList.map(z=>{
+    const kuryeler=allUsers.filter(u=>u.role==='kurye'&&(z.couriers||[]).includes(u.id));
+    const restoranlar=allUsers.filter(u=>u.role==='restoran'&&(z.restorans||[]).includes(u.id));
+    const availKuryeler=allUsers.filter(u=>u.role==='kurye'&&!(z.couriers||[]).includes(u.id));
+    const availRestoranlar=allUsers.filter(u=>u.role==='restoran'&&!(z.restorans||[]).includes(u.id));
+    const chief=allUsers.find(u=>u.id===z.chiefId);
+    return `<div class="bolge-card">
+      <div class="bolge-card-header">
+        <span class="bolge-renk" style="background:${z.color||'#00c8d7'}"></span>
+        <span class="bolge-card-title">${esc(z.name)}</span>
+        <span class="bolge-card-meta">${modelLbl(z)} · ${priceLbl(z)} · Çap: ${(z.radius*2/1000).toFixed(1)} km</span>
+        <button class="bsm b-reject" style="font-size:.6rem" onclick="deleteZone('${z.id}')">🗑 Sil</button>
+      </div>
+      <div class="bolge-section">
+        <div class="bolge-section-title">⭐ Bölge Kurye Şefi</div>
+        ${chief?`<div class="bolge-user-row"><span class="bolge-user-name">⭐ ${esc(chief.name||chief.email)}</span><button class="bsm b-reject" style="font-size:.6rem" onclick="removeZoneChief('${z.id}','${chief.id}')">Şefliği Kaldır</button></div>`:'<div style="font-size:12px;color:var(--text3);padding:4px 0">Henüz şef atanmadı</div>'}
+        ${kuryeler.length&&!chief?`<div class="bolge-add-row"><select class="fsel" id="chief-sel-${z.id}"><option value="">Şef seç…</option>${kuryeler.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('')}</select><button class="bsm b-approve" onclick="setZoneChief('${z.id}')">⭐ Ata</button></div>`:''}
+      </div>
+      <div class="bolge-section">
+        <div class="bolge-section-title">🛵 Kuryeler (${kuryeler.length})</div>
+        ${kuryeler.map(u=>`<div class="bolge-user-row"><span class="bolge-user-name">${u.id===z.chiefId?'⭐ ':''}${esc(u.name||u.email)}</span><button class="bsm b-reject" style="font-size:.6rem" onclick="removeUserFromZone('${z.id}','${u.id}','couriers')">Çıkar</button></div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:4px 0">Kurye yok</div>'}
+        ${availKuryeler.length?`<div class="bolge-add-row"><select class="fsel" id="kurye-sel-${z.id}"><option value="">Kurye ekle…</option>${availKuryeler.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('')}</select><button class="bsm b-activate" onclick="addUserToZone('${z.id}','kurye-sel-${z.id}','couriers')">+ Ekle</button></div>`:''}
+      </div>
+      <div class="bolge-section">
+        <div class="bolge-section-title">🍽️ Restoranlar (${restoranlar.length})</div>
+        ${restoranlar.map(u=>`<div class="bolge-user-row"><span class="bolge-user-name">${esc(u.name||u.email)}</span><button class="bsm b-reject" style="font-size:.6rem" onclick="removeUserFromZone('${z.id}','${u.id}','restorans')">Çıkar</button></div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:4px 0">Restoran yok</div>'}
+        ${availRestoranlar.length?`<div class="bolge-add-row"><select class="fsel" id="resto-sel-${z.id}"><option value="">Restoran ekle…</option>${availRestoranlar.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('')}</select><button class="bsm b-activate" onclick="addUserToZone('${z.id}','resto-sel-${z.id}','restorans')">+ Ekle</button></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+window.addUserToZone=async(zoneId,selId,field)=>{
+  const uid=document.getElementById(selId)?.value;if(!uid)return;
+  try{
+    await updateDoc(doc(db,'zones',zoneId),{[field]:arrayUnion(uid)});
+    _zoneList=_zoneList.map(z=>z.id===zoneId?{...z,[field]:[...(z[field]||[]),uid]}:z);
+    renderZoneList();showToast('✓ Eklendi','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.removeUserFromZone=async(zoneId,uid,field)=>{
+  try{
+    await updateDoc(doc(db,'zones',zoneId),{[field]:arrayRemove(uid)});
+    const z=_zoneList.find(z=>z.id===zoneId);
+    if(z&&z.chiefId===uid){await updateDoc(doc(db,'zones',zoneId),{chiefId:null});await updateDoc(doc(db,'users',uid),{isZoneChief:false,bolgeId:null});allUsers=allUsers.map(u=>u.id===uid?{...u,isZoneChief:false,bolgeId:null}:u);}
+    _zoneList=_zoneList.map(z=>z.id===zoneId?{...z,[field]:(z[field]||[]).filter(id=>id!==uid)}:z);
+    renderZoneList();showToast('✓ Çıkarıldı','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.setZoneChief=async(zoneId)=>{
+  const uid=document.getElementById('chief-sel-'+zoneId)?.value;if(!uid)return;
+  try{
+    await updateDoc(doc(db,'zones',zoneId),{chiefId:uid});
+    await updateDoc(doc(db,'users',uid),{isZoneChief:true,bolgeId:zoneId});
+    allUsers=allUsers.map(u=>u.id===uid?{...u,isZoneChief:true,bolgeId:zoneId}:u);
+    _zoneList=_zoneList.map(z=>z.id===zoneId?{...z,chiefId:uid}:z);
+    renderZoneList();renderKuryeler();showToast('⭐ Bölge şefi atandı','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.removeZoneChief=async(zoneId,uid)=>{
+  try{
+    await updateDoc(doc(db,'zones',zoneId),{chiefId:null});
+    await updateDoc(doc(db,'users',uid),{isZoneChief:false,bolgeId:null});
+    allUsers=allUsers.map(u=>u.id===uid?{...u,isZoneChief:false,bolgeId:null}:u);
+    _zoneList=_zoneList.map(z=>z.id===zoneId?{...z,chiefId:null}:z);
+    renderZoneList();renderKuryeler();showToast('Şeflik kaldırıldı','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.deleteZone=async(zoneId)=>{
+  if(!confirm('Bu bölgeyi silmek istediğinize emin misiniz?'))return;
+  try{
+    await deleteDoc(doc(db,'zones',zoneId));
+    _zoneList=_zoneList.filter(z=>z.id!==zoneId);
+    renderZoneList();showToast('Bölge silindi','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+
 // ── BAŞVURULAR ──
 window.fBasvuru=(f,btn)=>{fBsv=f;setActive(btn,'#pane-basvurular .ftab');renderBasvurular();};
 function renderBasvurular(){
@@ -1716,6 +1807,7 @@ function userCard(u){
   const isRest=u.role==='restoran';
   const isDemo=u.demo===true||u.email==='demo@kuryeai.com';
   const demoBadge=isDemo?'<span style="font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:6px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);margin-left:.3rem">🎮 Demo</span>':'';
+  const chiefBadge=u.isZoneChief?'<span style="font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:6px;background:rgba(245,158,11,.15);color:var(--yellow);border:1px solid rgba(245,158,11,.3);margin-left:.3rem">⭐ Bölge Şefi</span>':'';
   const planExpired=isRest&&u.planEndDate&&Date.now()>u.planEndDate;
   const daysLeft=isRest&&u.planEndDate?Math.max(0,Math.ceil((u.planEndDate-Date.now())/86400000)):null;
   const planRow=isRest?`<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem;flex-wrap:wrap">
@@ -1733,7 +1825,7 @@ function userCard(u){
         <button class="bsm b-reject" style="font-size:.68rem;padding:.2rem .5rem" onclick="rejectPayment('${u.id}')">✕ Reddet</button>
       </div></div></div>`:'';
   return `<div class="litem ${u.status}">
-    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}</div><div class="litem-sub">${esc(u.email||'')}${u.phone?' · '+esc(u.phone):''}</div></div>
+    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}${chiefBadge}</div><div class="litem-sub">${esc(u.email||'')}${u.phone?' · '+esc(u.phone):''}</div></div>
     <span class="badge b-${u.status}">${statusLbl(u.status)}</span></div>
     <div class="litem-meta">${u.company?`<span style="font-size:.72rem;color:var(--text3)">🏪 ${esc(u.company)}</span>`:''}</div>
     ${planRow}${payRow}

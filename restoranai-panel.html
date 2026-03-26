@@ -2477,6 +2477,9 @@ async function initFirebase(){
     updateMapMarkers();updateMapDashMarkers();updateMetrics();
   },(err)=>{ console.error("couriers onValue err:",err); renderCouriers(); });
 
+  // RTDB bağlanamıyorsa 5 sn sonra REST fallback ile kuryeler yükle
+  setTimeout(()=>{ if(!couriers.length) loadCouriersREST(); }, 5000);
+
   // Seed verisi yükleme (opsiyonel — hata olursa sadece log)
   try{
     const ms=await get(ref(db,`restaurants/${RESTAURANT_ID}/menu`));
@@ -2643,6 +2646,21 @@ window.toggleMenuItem=async(id,val)=>{
     showToast(val?"✓ Ürün aktif":"✓ Ürün pasif");
   }catch{showToast("Menü güncellenemedi","error")}
 };
+
+// ── REST fallback: RTDB SDK bağlanamadığında kullan ───────────────────────
+async function loadCouriersREST(){
+  try{
+    if(!auth.currentUser) return;
+    const token=await auth.currentUser.getIdToken();
+    const rtdbBase="https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app";
+    const res=await fetch(`${rtdbBase}/restaurants/${encodeURIComponent(RESTAURANT_ID)}/couriers.json?auth=${token}`);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const val=await res.json();
+    couriers=objToArr(val);
+    renderCouriers();renderTrackingCouriers();renderDashCouriers();
+    updateMapMarkers();updateMapDashMarkers();updateMetrics();
+  }catch(e){ console.error("loadCouriersREST err:",e); }
+}
 
 // ── COURIERS ───────────────────────────────────────────────────────────────
 function renderCouriers(){
@@ -3599,16 +3617,27 @@ window.addCourierFromSystem=async()=>{
   }
   const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:uid,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
   const resultDiv=document.getElementById("courier-lookup-result");
-  resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor… (Restoran ID: ${esc(RESTAURANT_ID)})</div>`;
+  resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor… (REST API)</div>`;
   try{
-    const pushPromise=push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
-    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('RTDB bağlantı zaman aşımı — sunucuya ulaşılamıyor')),8000));
-    await Promise.race([pushPromise,timeout]);
+    // Firebase SDK bağlanamıyor — REST API ile yaz
+    const token=await auth.currentUser.getIdToken();
+    const rtdbBase="https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app";
+    const res=await fetch(`${rtdbBase}/restaurants/${encodeURIComponent(RESTAURANT_ID)}/couriers.json?auth=${token}`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(newCourier)
+    });
+    if(!res.ok){const txt=await res.text();throw new Error(`HTTP ${res.status}: ${txt}`);}
+    const {name:newKey}=await res.json();
+    console.log("Kurye REST ile eklendi, key:",newKey);
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
+    window._pendingCourierAdd=null;window._pendingCourierUid=null;
     showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
+    // Kurye listesini REST ile de yenile
+    loadCouriersREST();
   }catch(e){
-    console.error("Kurye ekle RTDB hatası:",e);
+    console.error("Kurye ekle hatası:",e);
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Eklenemedi: ${esc(e.message||String(e))}</div>`;
     showToast("Eklenemedi: "+(e.message||e),"error");
   }

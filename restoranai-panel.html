@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
   <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" href="/1000417933.png" type="image/png"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>RestoranAI — Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -1215,22 +1216,30 @@ tbody tr:hover{background:var(--bg)}
               <!-- Kaynak -->
               <div class="form-group">
                 <label class="form-label">Sipariş Kaynağı</label>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
                   <div class="source-btn active" data-src="whatsapp" onclick="selectSource(this)">
                     <div style="font-size:20px;margin-bottom:4px">💬</div>
                     <div style="font-size:11px;font-weight:600">WhatsApp</div>
                   </div>
-                  <div class="source-btn" data-src="phone" onclick="selectSource(this)">
-                    <div style="font-size:20px;margin-bottom:4px">📞</div>
-                    <div style="font-size:11px;font-weight:600">Telefon</div>
+                  <div class="source-btn" data-src="trendyol" onclick="selectSource(this)">
+                    <div style="font-size:20px;margin-bottom:4px">🍕</div>
+                    <div style="font-size:11px;font-weight:600">Trendyol Yemek</div>
                   </div>
-                  <div class="source-btn" data-src="door" onclick="selectSource(this)">
-                    <div style="font-size:20px;margin-bottom:4px">🚪</div>
-                    <div style="font-size:11px;font-weight:600">Kapı</div>
+                  <div class="source-btn" data-src="yemeksepeti" onclick="selectSource(this)">
+                    <div style="font-size:20px;margin-bottom:4px">🧺</div>
+                    <div style="font-size:11px;font-weight:600">Yemeksepeti</div>
                   </div>
-                  <div class="source-btn" data-src="other" onclick="selectSource(this)">
-                    <div style="font-size:20px;margin-bottom:4px">📝</div>
-                    <div style="font-size:11px;font-weight:600">Diğer</div>
+                  <div class="source-btn" data-src="getir" onclick="selectSource(this)">
+                    <div style="font-size:20px;margin-bottom:4px">⚡</div>
+                    <div style="font-size:11px;font-weight:600">Getiryemek</div>
+                  </div>
+                  <div class="source-btn" data-src="migros" onclick="selectSource(this)">
+                    <div style="font-size:20px;margin-bottom:4px">🛒</div>
+                    <div style="font-size:11px;font-weight:600">Migros Yemek</div>
+                  </div>
+                  <div class="source-btn" data-src="alopaket" onclick="selectSource(this)">
+                    <div style="font-size:20px;margin-bottom:4px">📦</div>
+                    <div style="font-size:11px;font-weight:600">ALO PAKET</div>
                   </div>
                 </div>
               </div>
@@ -1287,15 +1296,23 @@ tbody tr:hover{background:var(--bg)}
                 <div class="form-group">
                   <label class="form-label">Ödeme Yöntemi</label>
                   <select class="form-select" id="mo-payment">
-                    <option value="cash">Nakit</option>
-                    <option value="card">Kart</option>
                     <option value="online">Online</option>
+                    <option value="cash">Nakit</option>
+                    <option value="card">Kredi Kartı</option>
+                    <option value="card_qr">Kredi Kartı QR ile Ödeme</option>
+                    <option value="transfer">Havale / EFT</option>
+                    <option value="meal_card_qr">Yemek Kartı QR ile Ödeme</option>
+                    <option value="meal_card_nfc">Yemek Kartı NFC ile Ödeme</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label">Not (İsteğe Bağlı)</label>
+                <div style="display:flex;gap:6px;margin-bottom:6px">
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="addDeliveryNote('🔔 Zili çalınız.')" style="font-size:11px;flex:1">🔔 Zili Çal</button>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="addDeliveryNote('📞 Müşteriyi arayınız.')" style="font-size:11px;flex:1">📞 Aranacak</button>
+                </div>
                 <textarea class="form-textarea" id="mo-note" placeholder="Kapı zili çalışmıyor, 3. kat…" style="min-height:60px"></textarea>
               </div>
 
@@ -2462,25 +2479,14 @@ const hideLoader=()=>{
   if(l) l.style.display="none";
 };
 
-// ── ÖNCE SEED DATA GÖSTER ─────────────────────────────────────────────────
-try{
-  orders   = objToArr(SEED_ORDERS);
-  menu     = objToArr(SEED_MENU);
-  couriers = objToArr(SEED_COURIERS);
-  renderAll();
-}catch(e){ console.error("renderAll hatası:",e); }
 // Loader CSS ile 2sn'de kapanıyor, JS de 2.5sn'de kapatır
 setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
   try{
-    const os=await get(ref(db,`restaurants/${RESTAURANT_ID}/orders`));
-    if(!os.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/orders`),SEED_ORDERS);
     const ms=await get(ref(db,`restaurants/${RESTAURANT_ID}/menu`));
     if(!ms.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/menu`),SEED_MENU);
-    const cs=await get(ref(db,`restaurants/${RESTAURANT_ID}/couriers`));
-    if(!cs.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),SEED_COURIERS);
     const ss=await get(ref(db,`restaurants/${RESTAURANT_ID}/settings`));
     if(!ss.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),SEED_SETTINGS);
     else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
@@ -2733,7 +2739,7 @@ window.confirmDeleteCourier=async()=>{
     closeModal("modal-delete-courier");
     showToast("✓ Kurye silindi");
     deleteCourierId=null;
-  }catch{showToast("Silinemedi","error")}
+  }catch(e){showToast("Silinemedi: "+(e.message||e),"error");console.error("Kurye sil:",e);}
 };
 
 // ── TRACKING ───────────────────────────────────────────────────────────────
@@ -2979,6 +2985,14 @@ window.confirmReset=async()=>{
 // ── MANUEL SİPARİŞ ────────────────────────────────────────────────────────
 let orderLines = []; // [{name, qty, price}]
 let selectedSource = "whatsapp";
+
+window.addDeliveryNote = (text) => {
+  const ta = document.getElementById('mo-note');
+  if(!ta) return;
+  const cur = ta.value.trim();
+  ta.value = cur ? cur + ' ' + text : text;
+  showToast('✓ Not eklendi', 'info');
+};
 
 window.selectSource = el => {
   document.querySelectorAll(".source-btn").forEach(b=>b.classList.remove("active"));
@@ -3602,7 +3616,7 @@ window.lookupCourierByEmail=async()=>{
   res.style.display="block";
   res.innerHTML=`<div style="font-size:13px;color:var(--text3)">🔍 Aranıyor…</div>`;
   try{
-    const {getDocs,collection,query,where}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const {getDocs,collection,query,where}=await import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js");
     const q=query(collection(fs,"users"),where("email","==",email),where("role","==","kurye"),where("status","==","active"));
     const snap=await getDocs(q);
     if(snap.empty){

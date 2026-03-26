@@ -36,7 +36,9 @@ service cloud.firestore {
 
     // ─── users/{userId} ──────────────────────────────────────────────────────
     match /users/{userId} {
-      allow read:  if isOwner(userId) || isAdmin() || isBolgeSefi();
+      // Restoran: kendi bölgesindeki kuryeleri (Kurye Bul & Ekle) okuyabilir
+      allow read:  if isOwner(userId) || isAdmin() || isBolgeSefi()
+                   || (isRestoran() && resource.data.role == 'kurye' && resource.data.status == 'active');
       allow write: if isOwner(userId) || isAdmin();
 
       match /shifts/{doc} {

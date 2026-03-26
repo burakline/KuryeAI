@@ -1726,7 +1726,7 @@ function renderZoneList(){
       <div class="bolge-section">
         <div class="bolge-section-title">⭐ Bölge Kurye Şefi</div>
         ${chief?`<div class="bolge-user-row"><span class="bolge-user-name">⭐ ${esc(chief.name||chief.email)}</span><button class="bsm b-reject" style="font-size:.6rem" onclick="removeZoneChief('${z.id}','${chief.id}')">Şefliği Kaldır</button></div>`:'<div style="font-size:12px;color:var(--text3);padding:4px 0">Henüz şef atanmadı</div>'}
-        ${kuryeler.length&&!chief?`<div class="bolge-add-row"><select class="fsel" id="chief-sel-${z.id}"><option value="">Şef seç…</option>${kuryeler.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('')}</select><button class="bsm b-approve" onclick="setZoneChief('${z.id}')">⭐ Ata</button></div>`:''}
+        ${!chief?`<div class="bolge-add-row"><select class="fsel" id="chief-sel-${z.id}"><option value="">Şef seç…</option>${allUsers.filter(u=>u.status==='active').map(u=>`<option value="${u.id}">${esc(u.name||u.email)} (${u.role||'—'})</option>`).join('')}</select><button class="bsm b-approve" onclick="setZoneChief('${z.id}')">⭐ Ata</button></div>`:''}
       </div>
       <div class="bolge-section">
         <div class="bolge-section-title">🛵 Kuryeler (${kuryeler.length})</div>

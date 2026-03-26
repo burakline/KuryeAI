@@ -1375,9 +1375,155 @@ window.deleteGider=async(id)=>{
   }catch(e){showToast('Hata: '+e.message,'err');}
 };
 
+// ── HARİTA ──
+let _courierMarkers={}, _restoMarkers=[], _showRestoranPins=false;
+let _zoneMode=false, _zoneDrawing=null, _zoneStart=null, _zoneColor='#00c8d7';
+let _zones=[], _zoneLayer=null;
+
+function initMap(){
+  if(mapObj)return;
+  mapObj=L.map('map',{zoomControl:true,attributionControl:false,center:[39.92,32.85],zoom:12});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
+
+  // Kurye GPS - RTDB dinle
+  rtdbOnValue(rtdbRef(rtdb,'couriers'),snap=>{
+    const all=snap.val()||{};
+    const now=Date.now();
+    let count=0;
+    Object.entries(all).forEach(([uid,data])=>{
+      const loc=data.location;
+      if(!loc||!loc.lat||!loc.lng)return;
+      const age=loc.updatedAt?now-loc.updatedAt:0;
+      if(age>300000)return; // 5 dk'dan eski = gizle
+      count++;
+      const isActive=data.shift?.active||loc.shiftActive;
+      const icon=L.divIcon({
+        html:`<div style="width:36px;height:36px;border-radius:50%;background:${isActive?'#00c8d7':'#9ca3af'};border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.25)">🛵</div>`,
+        className:'',iconAnchor:[18,18],iconSize:[36,36]
+      });
+      if(_courierMarkers[uid]){
+        _courierMarkers[uid].setLatLng([loc.lat,loc.lng]);
+        _courierMarkers[uid].setIcon(icon);
+      } else {
+        const m=L.marker([loc.lat,loc.lng],{icon}).addTo(mapObj);
+        m.bindPopup(`<b>${esc(loc.name||uid.slice(-6))}</b><br/>Hız: ${loc.speed||0} km/h<br/>Vardiya: ${isActive?'✅ Aktif':'⏸ Pasif'}`);
+        _courierMarkers[uid]=m;
+      }
+    });
+    const countEl=document.getElementById('map-courier-count');
+    if(countEl)countEl.textContent=count;
+  });
+
+  // Zone çizimi - mousedown+mousemove+mouseup
+  mapObj.on('mousedown',e=>{
+    if(!_zoneMode)return;
+    _zoneStart=e.latlng;
+    if(_zoneDrawing){mapObj.removeLayer(_zoneDrawing);_zoneDrawing=null;}
+  });
+  mapObj.on('mousemove',e=>{
+    if(!_zoneMode||!_zoneStart)return;
+    const r=e.latlng.distanceTo(_zoneStart);
+    if(_zoneDrawing)mapObj.removeLayer(_zoneDrawing);
+    _zoneDrawing=L.circle(_zoneStart,{radius:r,color:_zoneColor,fillOpacity:.15,weight:2}).addTo(mapObj);
+    const km=(r/1000).toFixed(2);
+    const alan=(Math.PI*r*r/1000000).toFixed(3);
+    const ib=document.getElementById('zone-info-box');
+    const id=document.getElementById('zone-info-detail');
+    if(ib){ib.style.display='block';}
+    if(id)id.textContent=`Çap: ${(r*2/1000).toFixed(2)} km · Alan: ${alan} km²`;
+    document.getElementById('zone-info-name').textContent='Bölge Çiziliyor...';
+  });
+  mapObj.on('mouseup',e=>{
+    if(!_zoneMode||!_zoneStart||!_zoneDrawing)return;
+    const r=e.latlng.distanceTo(_zoneStart);
+    const km=(r/1000).toFixed(2);
+    const alan=(Math.PI*r*r/1000000).toFixed(3);
+    document.getElementById('zone-info-name').textContent=`Yarıçap: ${km} km · Alan: ${alan} km²`;
+    document.getElementById('zone-save-panel').style.display='block';
+    mapObj.dragging.enable();
+  });
+
+  loadZones();
+}
+
+window.toggleZoneMode=()=>{
+  _zoneMode=!_zoneMode;
+  const btn=document.getElementById('zone-mode-btn');
+  if(_zoneMode){
+    btn.textContent='✕ Çizimi İptal';btn.classList.add('active');
+    mapObj.dragging.disable();
+    mapObj.getContainer().style.cursor='crosshair';
+  } else {
+    btn.textContent='⬤ Bölge Çiz';btn.classList.remove('active');
+    mapObj.dragging.enable();
+    mapObj.getContainer().style.cursor='';
+    clearZoneDrawing();
+  }
+};
+window.clearZoneDrawing=()=>{
+  if(_zoneDrawing){mapObj.removeLayer(_zoneDrawing);_zoneDrawing=null;}
+  _zoneStart=null;
+  document.getElementById('zone-info-box').style.display='none';
+  document.getElementById('zone-save-panel').style.display='none';
+};
+window.cancelZoneSave=()=>clearZoneDrawing();
+window.selectZoneColor=(el)=>{
+  document.querySelectorAll('.zone-color-opt').forEach(o=>o.style.border='2px solid transparent');
+  el.style.border='2px solid var(--text)';
+  _zoneColor=el.dataset.color;
+  if(_zoneDrawing)_zoneDrawing.setStyle({color:_zoneColor});
+};
+window.saveZone=async()=>{
+  if(!_zoneDrawing||!_zoneStart)return;
+  const name=document.getElementById('zone-name-input').value.trim();
+  const price=parseFloat(document.getElementById('zone-price-input').value)||0;
+  if(!name){showToast('Bölge adı zorunlu','err');return;}
+  const latlng=_zoneDrawing.getLatLng();
+  const radius=_zoneDrawing.getRadius();
+  try{
+    await addDoc(collection(db,'zones'),{name,center:{lat:latlng.lat,lng:latlng.lng},radius,color:_zoneColor,pricePerKm:price,createdAt:serverTimestamp()});
+    showToast('✓ Bölge kaydedildi','ok');
+    _zoneMode=false;
+    document.getElementById('zone-mode-btn').textContent='⬤ Bölge Çiz';
+    document.getElementById('zone-mode-btn').classList.remove('active');
+    mapObj.dragging.enable();
+    mapObj.getContainer().style.cursor='';
+    clearZoneDrawing();
+    loadZones();
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+async function loadZones(){
+  try{
+    const snap=await getDocs(collection(db,'zones'));
+    _zones=snap.docs.map(d=>({id:d.id,...d.data()}));
+    _zones.forEach(z=>{
+      L.circle([z.center.lat,z.center.lng],{radius:z.radius,color:z.color||'#00c8d7',fillOpacity:.1,weight:1.5})
+        .addTo(mapObj).bindPopup(`<b>${esc(z.name)}</b><br/>Çap: ${(z.radius/500).toFixed(2)} km<br/>Fiyat: ₺${z.pricePerKm||0}/km`);
+    });
+  }catch(e){console.error('zones',e);}
+}
+window.toggleRestoPins=()=>{
+  _showRestoranPins=!_showRestoranPins;
+  const btn=document.getElementById('resto-pin-btn');
+  if(btn){btn.textContent=_showRestoranPins?'📍 Restoranlar Gizle':'📍 Restoranlar';btn.classList.toggle('active',_showRestoranPins);}
+  if(_showRestoranPins){
+    allUsers.filter(u=>u.role==='restoran'&&u.lat&&u.lng).forEach(u=>{
+      const icon=L.divIcon({html:`<div style="background:#00c8d7;color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)">🍽️ ${esc(u.name||'Restoran')}</div>`,className:'',iconAnchor:[0,0]});
+      const m=L.marker([u.lat,u.lng],{icon}).addTo(mapObj).bindPopup(`<b>${esc(u.name||'—')}</b><br/>${esc(u.email||'')}`);
+      _restoMarkers.push(m);
+    });
+  } else {
+    _restoMarkers.forEach(m=>mapObj.removeLayer(m));
+    _restoMarkers=[];
+  }
+};
+window.centerMapAll=()=>{
+  const pts=Object.values(_courierMarkers).map(m=>m.getLatLng());
+  if(pts.length)mapObj.fitBounds(L.latLngBounds(pts),{padding:[40,40]});
+};
+
 // ── STUBS ──
 function loadBroadcasts(){}
-function initMap(){}
 function updateNotifTargetList(){}
 // ── BAŞVURULAR ──
 window.fBasvuru=(f,btn)=>{fBsv=f;setActive(btn,'#pane-basvurular .ftab');renderBasvurular();};

@@ -2456,33 +2456,31 @@ setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
+  // onValue listeners her zaman kurulur — seed/settings hatasına bağlı değil
+  onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
+    orders=objToArr(snap.val()); renderAll();
+  },(err)=>{ console.error("orders onValue err:",err); });
+  onValue(ref(db,`restaurants/${RESTAURANT_ID}/menu`),snap=>{
+    menu=objToArr(snap.val()); renderMenu();
+  },(err)=>{ console.error("menu onValue err:",err); });
+  onValue(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),snap=>{
+    couriers=objToArr(snap.val());
+    renderCouriers();renderTrackingCouriers();renderDashCouriers();
+    updateMapMarkers();updateMapDashMarkers();updateMetrics();
+  },(err)=>{ console.error("couriers onValue err:",err); renderCouriers(); });
+
+  // Seed verisi yükleme (opsiyonel — hata olursa sadece log)
   try{
     const ms=await get(ref(db,`restaurants/${RESTAURANT_ID}/menu`));
     if(!ms.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/menu`),SEED_MENU);
     const ss=await get(ref(db,`restaurants/${RESTAURANT_ID}/settings`));
     if(!ss.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),SEED_SETTINGS);
     else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
-
     setFbStatus("connected");
     showToast("Firebase bağlantısı kuruldu ✓");
-
-    // Realtime listeners — data gelince UI güncellenir
-    onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
-      orders=objToArr(snap.val()); renderAll();
-    });
-    onValue(ref(db,`restaurants/${RESTAURANT_ID}/menu`),snap=>{
-      menu=objToArr(snap.val()); renderMenu();
-    });
-    onValue(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),snap=>{
-      couriers=objToArr(snap.val());
-      renderCouriers();renderTrackingCouriers();renderDashCouriers();
-      updateMapMarkers();updateMapDashMarkers();updateMetrics();
-    });
-
   }catch(err){
-    console.error("Firebase hatası:",err);
+    console.error("Firebase seed hatası:",err);
     setFbStatus("error");
-    // Seed data zaten gösteriliyor, sadece status güncelle
   }
 }
 

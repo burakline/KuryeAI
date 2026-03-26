@@ -1042,9 +1042,80 @@ function planColor(p){return p==='basic'?'var(--teal)':p==='pro'?'var(--yellow)'
 const PLANS={trial:{label:'Deneme (7 gün)',price:0,days:7},basic:{label:'Basic',price:1499,days:30},pro:{label:'Pro',price:9999/12,days:365}};
 const fmt=v=>'₺'+v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
 
-// ── STUB'lar (diğer modüller yüklenince override edilir) ──
-function loadAll(){return Promise.resolve();}
-function watchDemoSessions(){}
+let mapObj=null;
+
+// ── VERİ YÜKLEME ──
+async function loadAll(){
+  await Promise.all([loadBasvurular(), loadUsers()]);
+  renderDash();
+}
+
+async function loadBasvurular(){
+  try{
+    const q=query(collection(db,'basvurular'),orderBy('createdAt','desc'));
+    const snap=await getDocs(q);
+    allBasvurular=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderBasvurular(); updateBadge();
+  }catch(e){console.error('loadBasvurular',e);}
+}
+
+async function loadUsers(){
+  try{
+    const snap=await getDocs(collection(db,'users'));
+    allUsers=snap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role!=='admin');
+    renderRestoranlar(); renderKuryeler(); updateBadge();
+  }catch(e){console.error('loadUsers',e);}
+}
+
+function updateBadge(){
+  const n=allBasvurular.filter(b=>b.status==='pending').length
+         +allUsers.filter(u=>u.status==='pending').length;
+  const b=document.getElementById('badge-bsv');
+  if(b){b.textContent=n;b.style.display=n?'flex':'none';}
+}
+
+function updateSiparisBadge(){
+  const n=allSiparisler.filter(s=>s.status==='pending').length;
+  const b=document.getElementById('badge-sip');
+  if(b){b.textContent=n;b.style.display=n?'flex':'none';}
+}
+
+// ── DEMO TAKİBİ ──
+function watchDemoSessions(){
+  const TIMEOUT=30000;
+  rtdbOnValue(rtdbRef(rtdb,'demoSessions'),snap=>{
+    const all=snap.val()||{};
+    const now=Date.now();
+    const online=Object.values(all).filter(s=>s.isOnline&&(now-s.lastActive)<TIMEOUT);
+    document.getElementById('d-demo-count').textContent=online.length;
+    const listEl=document.getElementById('d-demo-list');
+    if(!online.length){listEl.innerHTML='<div class="empty"><div class="empty-ico">🎮</div><p>Demo kullanan yok</p></div>';return;}
+    const pageLabel=p=>({'restoran-panel':'Restoran Panel',dashboard:'Dashboard',orders:'Siparişler',couriers:'Kuryeler'}[p]||p||'—');
+    listEl.innerHTML=online.map(s=>{
+      const ago=Math.floor((now-s.lastActive)/1000);
+      const isHot=(s.intentScore||0)>=5;
+      return `<div class="act-item"><div class="act-dot" style="background:${isHot?'var(--orange)':'var(--green)'}"></div><div class="act-text"><strong>${pageLabel(s.page)}</strong>${isHot?' 🔥':''}<span style="color:var(--text3);font-size:.7rem"> · 🎯${s.intentScore||0}</span></div><div class="act-time">${ago}sn</div></div>`;
+    }).join('');
+  });
+}
+
+// ── DASHBOARD ──
+function renderDash(){
+  const aktifKurye=allUsers.filter(u=>u.role==='kurye'&&u.status==='active').length;
+  const aktifResto=allUsers.filter(u=>u.role==='restoran'&&u.status==='active').length;
+  const bekleyen=allBasvurular.filter(b=>b.status==='pending').length+allUsers.filter(u=>u.status==='pending').length;
+  document.getElementById('d-basvuru').textContent=allBasvurular.length+allUsers.filter(u=>u.status==='pending').length;
+  document.getElementById('d-bekleyen').textContent=bekleyen;
+  document.getElementById('d-kurye').textContent=aktifKurye;
+  document.getElementById('d-restoran').textContent=aktifResto;
+  const recent=allBasvurular.slice(0,5);
+  const el=document.getElementById('d-activity');
+  if(!el)return;
+  if(!recent.length){el.innerHTML='<div class="empty"><div class="empty-ico">📋</div><p>Henüz başvuru yok</p></div>';return;}
+  el.innerHTML=recent.map(b=>`<div class="act-item"><div class="act-dot" style="background:${b.status==='pending'?'var(--yellow)':b.status==='active'?'var(--green)':'var(--text3)'}"></div><div class="act-text"><strong>${esc(b.name||'—')}</strong> · ${b.type==='restoran'?'🍽️':'🛵'}</div><div class="act-time">${fmtTime(b.createdAt)}</div></div>`).join('');
+}
+
+// ── STUBS (sonraki commit'lerde doldurulacak) ──
 function listenSiparisler(){}
 function listenAcilTalepler(){}
 function listenIzinciTalepler(){}
@@ -1053,11 +1124,9 @@ function loadBroadcasts(){}
 function initMap(){}
 function renderIstatistik(){}
 function updateNotifTargetList(){}
-function renderBasvurular(){}
-function renderRestoranlar(){}
-function renderKuryeler(){}
-
-let mapObj=null;
+function renderBasvurular(){document.getElementById('basvuru-list').innerHTML='<div class="empty"><div class="empty-ico">📥</div><p>Yakında...</p></div>';}
+function renderRestoranlar(){document.getElementById('restoran-list').innerHTML='<div class="empty"><div class="empty-ico">🍽️</div><p>Yakında...</p></div>';}
+function renderKuryeler(){document.getElementById('kurye-list').innerHTML='<div class="empty"><div class="empty-ico">🛵</div><p>Yakında...</p></div>';}
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}</script>
 </body>

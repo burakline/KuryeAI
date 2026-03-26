@@ -446,6 +446,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
               <button class="btn btn-ghost btn-sm" onclick="centerMapAll()">🎯 Tüm Kuryeler</button>
             </div>
           </div>
+          <!-- Pin modu banner -->
+          <div id="pin-mode-banner" style="display:none;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:8px 14px;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--yellow);display:none;align-items:center;gap:10px">
+            📍 <span id="pin-mode-label">Haritaya tıklayarak konumu belirleyin</span>
+            <button class="bsm b-reject" style="margin-left:auto" onclick="cancelPinMode()">İptal</button>
+          </div>
           <div style="position:relative">
             <div id="map" style="width:100%;height:420px;background:#e8edf2;border-radius:0 0 var(--radius) var(--radius)"></div>
             <!-- Harita üst köşe bilgi kutusu -->
@@ -1498,6 +1503,7 @@ function initMap(){
   mc.addEventListener('touchend',e=>{if(!_zoneMode||!_zoneStart||!_zoneDrawing)return;const r=_zoneDrawing.getRadius();const km=(r/1000).toFixed(2);const alan=(Math.PI*r*r/1000000).toFixed(3);document.getElementById('zone-info-name').textContent=`Yarıçap: ${km} km · Alan: ${alan} km²`;document.getElementById('zone-save-panel').style.display='block';},{passive:false});
 
   loadZones();
+  initPinClick();
 }
 
 window.toggleZoneMode=()=>{
@@ -1585,6 +1591,49 @@ window.centerMapAll=()=>{
   const pts=Object.values(_courierMarkers).map(m=>m.getLatLng());
   if(pts.length)mapObj.fitBounds(L.latLngBounds(pts),{padding:[40,40]});
 };
+
+// ── RESTORAN KONUM PİNLEME ──
+let _pinMode=false, _pinUid=null, _pinMarker=null;
+window.startPinMode=(uid,name)=>{
+  _pinMode=true; _pinUid=uid;
+  switchTab('dash');
+  setTimeout(()=>{
+    const banner=document.getElementById('pin-mode-banner');
+    const lbl=document.getElementById('pin-mode-label');
+    if(banner){banner.style.display='flex';}
+    if(lbl)lbl.textContent=`"${name}" için haritaya tıklayın`;
+    mapObj.getContainer().style.cursor='crosshair';
+    // Mevcut konumu göster
+    const u=allUsers.find(u=>u.id===uid);
+    if(u?.lat&&u?.lng){
+      if(_pinMarker)mapObj.removeLayer(_pinMarker);
+      _pinMarker=L.marker([u.lat,u.lng],{icon:L.divIcon({html:'<div style="background:#3b82f6;color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)">📍 Mevcut Konum</div>',className:'',iconAnchor:[0,0]})}).addTo(mapObj);
+    }
+  },300);
+};
+window.cancelPinMode=()=>{
+  _pinMode=false; _pinUid=null;
+  if(_pinMarker){mapObj.removeLayer(_pinMarker);_pinMarker=null;}
+  const banner=document.getElementById('pin-mode-banner');
+  if(banner)banner.style.display='none';
+  mapObj.getContainer().style.cursor='';
+};
+// Harita click — pin modu aktifse kaydet
+function initPinClick(){
+  mapObj.on('click',async e=>{
+    if(!_pinMode||!_pinUid)return;
+    const {lat,lng}=e.latlng;
+    try{
+      await updateDoc(doc(db,'users',_pinUid),{lat,lng});
+      allUsers=allUsers.map(u=>u.id===_pinUid?{...u,lat,lng}:u);
+      if(_pinMarker)mapObj.removeLayer(_pinMarker);
+      _pinMarker=L.marker([lat,lng],{icon:L.divIcon({html:'<div style="background:#00c8d7;color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓ Kaydedildi</div>',className:'',iconAnchor:[0,0]})}).addTo(mapObj);
+      showToast('✓ Restoran konumu kaydedildi','ok');
+      setTimeout(()=>cancelPinMode(),1500);
+      renderRestoranlar();
+    }catch(err){showToast('Hata: '+err.message,'err');}
+  });
+}
 
 // ── SESLİ BİLDİRİMLER (Web Audio API) ──
 let _audioCtx=null;
@@ -1833,6 +1882,7 @@ function userCard(u){
       ${u.status==='active'?`<button class="bsm b-suspend" onclick="toggleStatus('${u.id}','suspended')">⏸ Askıya Al</button>`
         :u.status==='pending'?`<button class="bsm b-approve" onclick="approveUser('${u.id}')">✓ Onayla</button><button class="bsm b-reject" onclick="rejectUser('${u.id}')">✕ Reddet</button>`
         :`<button class="bsm b-activate" onclick="toggleStatus('${u.id}','active')">▶ Aktif Et</button>`}
+      ${isRest?`<button class="bsm" style="background:var(--blue-bg);color:var(--blue);border-color:rgba(59,130,246,.25)" onclick="startPinMode('${u.id}','${esc(u.name||u.email)}')">${u.lat&&u.lng?'📍 Konumu Güncelle':'📍 Konum Seç'}</button>`:''}
     </div></div>`;
 }
 window.toggleStatus=async(uid,status)=>{

@@ -3587,15 +3587,21 @@ window.lookupCourierByEmail=async()=>{
 window.addCourierFromSystem=async()=>{
   const d=window._pendingCourierAdd;
   const uid=window._pendingCourierUid;
-  if(!d||!uid)return;
+  if(!d||!uid){
+    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Hata: Kurye verisi bulunamadı. Lütfen tekrar arayın.</div>`;
+    return;
+  }
   const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:uid,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
+  const resultDiv=document.getElementById("courier-lookup-result");
+  resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor… (Restoran ID: ${esc(RESTAURANT_ID)})</div>`;
   try{
     await push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
-    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
+    resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
   }catch(e){
     console.error("Kurye ekle RTDB hatası:",e);
+    resultDiv.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Eklenemedi: ${esc(e.message||String(e))}</div>`;
     showToast("Eklenemedi: "+(e.message||e),"error");
   }
 };

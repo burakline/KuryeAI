@@ -2477,8 +2477,11 @@ async function initFirebase(){
     updateMapMarkers();updateMapDashMarkers();updateMetrics();
   },(err)=>{ console.error("couriers onValue err:",err); renderCouriers(); });
 
-  // RTDB bağlanamıyorsa 5 sn sonra REST fallback ile kuryeler yükle
-  setTimeout(()=>{ if(!couriers.length) loadCouriersREST(); }, 5000);
+  // RTDB bağlanamıyorsa 3 sn sonra REST ile yükle, sonra her 15 sn'de güncelle
+  setTimeout(async()=>{
+    await loadCouriersREST();
+    setInterval(loadCouriersREST, 15000);
+  }, 3000);
 
   // Seed verisi yükleme (opsiyonel — hata olursa sadece log)
   try{

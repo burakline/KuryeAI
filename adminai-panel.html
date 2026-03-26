@@ -1,187 +1,303 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8"/>
-  <link rel="manifest" href="/manifest.json"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AdminAI — Yönetim Paneli</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --black:  #000; --dark: #0c0c0c; --card: #111; --border: rgba(255,255,255,.08);
-      --gray:   #555; --gray-lt: #888; --white: #fff;
-      --teal:   #00c8d7; --teal-lt: #33d6e3; --teal-dk: #009aaa;
-      --red:    #ff5f57; --green: #30d158; --yellow: #ffd60a; --orange: #ff9f0a;
-    }
-    html,body { height:100%; background:var(--black); color:var(--white); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
+<meta charset="UTF-8"/>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AdminAI — Yönetim Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    /* LOADER */
-    .loader { position:fixed; inset:0; z-index:9999; background:var(--black); display:flex; align-items:center; justify-content:center; transition:opacity .4s; }
-    .loader.hide { opacity:0; pointer-events:none; }
-    .ring { width:36px; height:36px; border:2px solid rgba(0,200,215,.2); border-top-color:var(--teal); border-radius:50%; animation:spin .8s linear infinite; }
-    @keyframes spin { to{transform:rotate(360deg)} }
+/* ── TEMA DEĞİŞKENLERİ ── */
+:root{
+  --bg:#f5f6f8;
+  --bg2:#eef0f3;
+  --surface:#ffffff;
+  --surface2:#f9fafb;
+  --border:#e8eaed;
+  --border2:#d1d5db;
+  --teal:#00c8d7;
+  --teal-dk:#009aaa;
+  --teal-lt:#33d6e3;
+  --teal-bg:rgba(0,200,215,.07);
+  --teal-bg2:rgba(0,200,215,.14);
+  --text:#0f1117;
+  --text2:#4b5563;
+  --text3:#9ca3af;
+  --green:#00c48c;
+  --green-bg:rgba(0,196,140,.08);
+  --yellow:#f59e0b;
+  --yellow-bg:rgba(245,158,11,.08);
+  --red:#ef4444;
+  --red-bg:rgba(239,68,68,.08);
+  --orange:#ff9f0a;
+  --blue:#3b82f6;
+  --blue-bg:rgba(59,130,246,.08);
+  --radius:16px;
+  --radius-sm:10px;
+  --radius-xs:7px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shadow-md:0 4px 24px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 48px rgba(0,0,0,.12);
+  --fh:'Plus Jakarta Sans',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+}
+/* Karanlık tema */
+body.dark{
+  --bg:#0f1117;
+  --bg2:#161b24;
+  --surface:#1a1f2e;
+  --surface2:#1e2435;
+  --border:rgba(255,255,255,.08);
+  --border2:rgba(255,255,255,.12);
+  --text:#f0f2f5;
+  --text2:#a0a8b8;
+  --text3:#5a6276;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --shadow-md:0 4px 24px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.3);
+}
 
-    /* TOAST */
-    .toast { position:fixed; bottom:76px; left:50%; transform:translateX(-50%); background:var(--card); border:.5px solid var(--border); border-radius:10px; padding:.7rem 1.4rem; font-size:.82rem; font-weight:700; z-index:8000; white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; }
-    .toast.show { opacity:1; }
-    .toast.ok  { border-color:rgba(48,209,88,.4); color:var(--green); }
-    .toast.err { border-color:rgba(255,95,87,.4); color:var(--red); }
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fh);-webkit-font-smoothing:antialiased}
 
-    /* MODAL */
-    .overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.88); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:1.2rem; }
-    .overlay.show { display:flex; }
-    .modal { background:var(--card); border:.5px solid var(--border); border-radius:18px; padding:2rem; width:100%; max-width:400px; position:relative; }
-    .modal::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--teal); border-radius:18px 18px 0 0; }
-    .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--gray-lt); font-size:1.2rem; cursor:pointer; }
-    .modal-title { font-size:1rem; font-weight:700; margin-bottom:.25rem; }
-    .modal-sub { font-size:.78rem; color:var(--gray-lt); margin-bottom:1.4rem; }
+/* ── LOADER ── */
+.loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s}
+.loader.hide{opacity:0;pointer-events:none}
+.ring{width:36px;height:36px;border:2px solid rgba(0,200,215,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    /* LAYOUT */
-    .app { display:flex; flex-direction:column; min-height:100svh; }
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.65rem 1.4rem;font-size:.82rem;font-weight:700;z-index:8000;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:var(--shadow-md);color:var(--text)}
+.toast.show{opacity:1}
+.toast.ok{border-color:rgba(0,196,140,.4);color:var(--green)}
+.toast.err{border-color:rgba(239,68,68,.4);color:var(--red)}
 
-    /* TOP NAV */
-    .topnav { position:fixed; top:0; left:0; right:0; z-index:100; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 1.2rem; background:rgba(0,0,0,.93); backdrop-filter:blur(20px); border-bottom:.5px solid var(--border); }
-    .topnav-logo { display:flex; align-items:center; gap:.6rem; text-decoration:none; }
-    .topnav-logo img { height:30px; width:30px; border-radius:50%; object-fit:cover; }
-    .topnav-brand { font-size:.98rem; font-weight:700; letter-spacing:-.03em; color:var(--white); }
-    .topnav-brand em { font-style:normal; color:var(--teal); }
-    .topnav-badge { font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; background:rgba(0,200,215,.1); border:.5px solid rgba(0,200,215,.25); color:var(--teal); padding:.18rem .6rem; border-radius:999px; margin-left:.4rem; }
-    .topnav-right { display:flex; align-items:center; gap:.7rem; }
-    .admin-email { font-size:.72rem; color:var(--gray-lt); display:none; }
-    @media(min-width:480px){ .admin-email{display:block} }
-    .btn-logout { font-size:.72rem; font-weight:700; color:var(--gray-lt); background:none; border:.5px solid var(--border); border-radius:6px; padding:.28rem .7rem; cursor:pointer; font-family:Arial; transition:all .2s; }
-    .btn-logout:hover { color:var(--red); border-color:rgba(255,95,87,.3); }
+/* ── MODAL / OVERLAY ── */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1.2rem}
+.overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;width:100%;max-width:440px;position:relative;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);border-radius:18px 18px 0 0}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer}
+.modal-close:hover{color:var(--text)}
+.modal-title{font-size:1rem;font-weight:700;margin-bottom:.25rem;color:var(--text)}
+.modal-sub{font-size:.78rem;color:var(--text3);margin-bottom:1.4rem}
 
-    /* CONTENT */
-    .content { flex:1; padding:60px 0 68px; }
-    .pane { display:none; padding:1.2rem; }
-    .pane.active { display:block; }
-    @media(min-width:600px){ .pane{padding:1.5rem 2rem;} }
+/* ── FORM ── */
+.fg{margin-bottom:.9rem}
+.fl{display:block;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.38rem}
+.fi,.fsel{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;color:var(--text);font-family:var(--fh);font-size:.88rem;outline:none;transition:border-color .2s;appearance:none}
+.fi::placeholder{color:var(--text3)}
+.fi:focus,.fsel:focus{border-color:var(--teal)}
+.fsel option{background:var(--surface)}
+.fbtn{width:100%;padding:.8rem;border-radius:999px;font-size:.88rem;font-weight:700;border:none;cursor:pointer;font-family:var(--fh);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.3rem}
+.fbtn-teal{background:var(--teal);color:#fff}
+.fbtn-teal:hover{background:var(--teal-dk)}
+.fbtn:disabled{opacity:.5;cursor:not-allowed}
+.fspin{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.fbtn.loading .fspin{display:block}
+.fbtn.loading .fbtxt{display:none}
 
-    /* BOTTOM TABS */
-    .bottomtabs { position:fixed; bottom:0; left:0; right:0; z-index:100; height:64px; display:flex; background:rgba(0,0,0,.96); backdrop-filter:blur(20px); border-top:.5px solid var(--border); }
-    .tbtn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.22rem; background:none; border:none; cursor:pointer; font-family:Arial; color:var(--gray); transition:color .2s; position:relative; }
-    .tbtn.active { color:var(--teal); }
-    .tbtn.active::before { content:''; position:absolute; top:0; left:22%; right:22%; height:2px; background:var(--teal); border-radius:0 0 3px 3px; }
-    .tbtn-icon { font-size:1.25rem; line-height:1; }
-    .tbtn-lbl { font-size:.56rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
-    .tbtn-badge { position:absolute; top:7px; right:18%; background:var(--red); color:#fff; font-size:.52rem; font-weight:700; min-width:15px; height:15px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.1px;white-space:nowrap}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.b-pending,.badge.pending{color:#d97706;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.2)}
+.b-active,.badge.active{color:var(--green);background:var(--green-bg);border:1px solid rgba(0,196,140,.2)}
+.b-suspended,.badge.suspended{color:var(--red);background:var(--red-bg);border:1px solid rgba(239,68,68,.2)}
+.b-rejected,.badge.rejected{color:var(--text3);background:var(--bg2);border:1px solid var(--border)}
+.b-restoran{color:var(--teal);background:var(--teal-bg);border:1px solid rgba(0,200,215,.2)}
+.b-kurye{color:var(--orange);background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.2)}
 
-    /* HELPERS */
-    .page-lbl { font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); margin-bottom:.4rem; }
-    .page-title { font-size:1.3rem; font-weight:700; letter-spacing:-.03em; margin-bottom:1.2rem; }
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .15s;border:none;font-family:var(--fh);white-space:nowrap}
+.btn-primary{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(0,200,215,.25)}
+.btn-primary:hover{background:var(--teal-dk)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:rgba(239,68,68,.14)}
+.btn-sm{padding:5px 10px;font-size:11.5px;border-radius:var(--radius-xs)}
+.bsm{font-size:.71rem;font-weight:700;padding:.35rem .8rem;border-radius:6px;border:1px solid transparent;cursor:pointer;font-family:var(--fh);transition:all .2s}
+.b-approve{background:var(--green-bg);color:var(--green);border-color:rgba(0,196,140,.3)}
+.b-approve:hover{background:rgba(0,196,140,.15)}
+.b-reject{background:var(--red-bg);color:var(--red);border-color:rgba(239,68,68,.25)}
+.b-reject:hover{background:rgba(239,68,68,.15)}
+.b-suspend{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.25)}
+.b-suspend:hover{background:rgba(245,158,11,.15)}
+.b-activate{background:var(--teal-bg);color:var(--teal-dk);border-color:rgba(0,200,215,.25)}
+.b-activate:hover{background:var(--teal-bg2)}
+.b-create{background:var(--teal);color:#fff;border:none}
+.b-create:hover{background:var(--teal-dk)}
 
-    /* STAT GRID */
-    .sgrid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-bottom:1.2rem; }
-    @media(min-width:600px){ .sgrid{grid-template-columns:repeat(4,1fr);} }
-    .scard { background:var(--card); border:.5px solid var(--border); border-radius:12px; padding:1rem; position:relative; overflow:hidden; }
-    .scard::before { content:''; position:absolute; top:0; left:0; right:0; height:1.5px; }
-    .scard.t::before{background:var(--teal)} .scard.g::before{background:var(--green)} .scard.y::before{background:var(--yellow)} .scard.r::before{background:var(--red)}
-    .snum { font-size:2rem; font-weight:700; letter-spacing:-.04em; line-height:1; }
-    .snum.t{color:var(--teal)} .snum.g{color:var(--green)} .snum.y{color:var(--yellow)} .snum.r{color:var(--red)}
-    .slbl { font-size:.68rem; color:var(--gray-lt); margin-top:.3rem; }
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.card-title{font-size:13.5px;font-weight:700;letter-spacing:-.2px;color:var(--text)}
+.card-actions{display:flex;gap:8px;align-items:center}
+.card-body{padding:18px}
 
-    /* CARD */
-    .card { background:var(--card); border:.5px solid var(--border); border-radius:14px; padding:1.1rem; margin-bottom:.8rem; }
-    .card-title { font-size:.62rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gray-lt); margin-bottom:.9rem; }
+/* ── STAT CARDS ── */
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+@media(min-width:800px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:box-shadow .2s;position:relative;overflow:hidden}
+.scard:hover{box-shadow:var(--shadow-md)}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.scard.t::before{background:var(--teal)} .scard.g::before{background:var(--green)} .scard.y::before{background:var(--yellow)} .scard.r::before{background:var(--red)}
+.snum{font-size:1.9rem;font-weight:800;letter-spacing:-.04em;line-height:1}
+.snum.t{color:var(--teal)} .snum.g{color:var(--green)} .snum.y{color:var(--yellow)} .snum.r{color:var(--red)}
+.slbl{font-size:.68rem;color:var(--text3);margin-top:.3rem;font-weight:500}
 
-    /* LIST ITEM */
-    .litem { background:var(--card); border:.5px solid var(--border); border-radius:12px; padding:1rem; margin-bottom:.6rem; position:relative; overflow:hidden; }
-    .litem::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2.5px; }
-    .litem.pending::before{background:var(--yellow)} .litem.active::before{background:var(--green)} .litem.suspended::before{background:var(--red)} .litem.rejected::before{background:var(--gray)}
-    .litem-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:.5rem; }
-    .litem-name { font-size:.92rem; font-weight:700; }
-    .litem-sub { font-size:.74rem; color:var(--gray-lt); margin-top:.15rem; }
-    .litem-meta { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.75rem; }
-    .litem-actions { display:flex; gap:.4rem; flex-wrap:wrap; }
+/* ── LIST ITEM ── */
+.litem{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.litem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.litem.pending::before{background:var(--yellow)}
+.litem.active::before{background:var(--green)}
+.litem.suspended::before{background:var(--red)}
+.litem.rejected::before{background:var(--text3)}
+.litem-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.5rem}
+.litem-name{font-size:.9rem;font-weight:700;color:var(--text)}
+.litem-sub{font-size:.74rem;color:var(--text3);margin-top:.15rem}
+.litem-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem}
+.litem-actions{display:flex;gap:.4rem;flex-wrap:wrap}
 
-    /* BADGES */
-    .badge { font-size:.58rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:.2rem .6rem; border-radius:999px; }
-    .b-pending  { background:rgba(255,214,10,.12); color:var(--yellow); }
-    .b-active   { background:rgba(48,209,88,.12);  color:var(--green); }
-    .b-suspended{ background:rgba(255,95,87,.12);  color:var(--red); }
-    .b-rejected { background:rgba(136,136,136,.12);color:var(--gray-lt); }
-    .b-restoran { background:rgba(0,200,215,.1);   color:var(--teal); }
-    .b-kurye    { background:rgba(255,159,10,.12); color:var(--orange); }
+/* ── SEARCH + FILTER ── */
+.sbox{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.65rem 1rem;color:var(--text);font-family:var(--fh);font-size:.88rem;outline:none;margin-bottom:.9rem;transition:border-color .2s;box-shadow:var(--shadow)}
+.sbox:focus{border-color:var(--teal)}
+.sbox::placeholder{color:var(--text3)}
+.ftabs{display:flex;gap:.35rem;margin-bottom:.9rem;flex-wrap:wrap}
+.ftab{font-size:.66rem;font-weight:600;padding:.28rem .75rem;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--fh);transition:all .2s}
+.ftab.active{background:var(--teal-bg);border-color:rgba(0,200,215,.3);color:var(--teal-dk)}
 
-    /* BUTTONS */
-    .bsm { font-size:.71rem; font-weight:700; padding:.38rem .85rem; border-radius:6px; border:none; cursor:pointer; font-family:Arial; transition:all .2s; }
-    .b-approve  { background:rgba(48,209,88,.12);  color:var(--green);  border:.5px solid rgba(48,209,88,.3); }
-    .b-approve:hover { background:rgba(48,209,88,.22); }
-    .b-reject   { background:rgba(255,95,87,.1);   color:var(--red);    border:.5px solid rgba(255,95,87,.25); }
-    .b-reject:hover  { background:rgba(255,95,87,.2); }
-    .b-suspend  { background:rgba(255,214,10,.1);  color:var(--yellow); border:.5px solid rgba(255,214,10,.25); }
-    .b-suspend:hover { background:rgba(255,214,10,.2); }
-    .b-activate { background:rgba(0,200,215,.1);   color:var(--teal);   border:.5px solid rgba(0,200,215,.25); }
-    .b-activate:hover{ background:rgba(0,200,215,.2); }
-    .b-create   { background:var(--teal); color:#000; border:none; }
-    .b-create:hover { background:var(--teal-lt); }
-    .b-ghost    { background:rgba(255,255,255,.07); color:var(--white); border:.5px solid var(--border); }
-    .b-ghost:hover{ background:rgba(255,255,255,.12); }
+/* ── ACTIVITY ITEM ── */
+.act-item{display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.act-text{font-size:.8rem;color:var(--text2);flex:1;line-height:1.4}
+.act-time{font-size:.68rem;color:var(--text3);white-space:nowrap}
 
-    /* FORM */
-    .fg { margin-bottom:.9rem; }
-    .fl { display:block; font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-lt); margin-bottom:.38rem; }
-    .fi, .fsel { width:100%; background:rgba(255,255,255,.05); border:.5px solid rgba(255,255,255,.1); border-radius:8px; padding:.7rem .9rem; color:var(--white); font-family:Arial; font-size:.88rem; outline:none; transition:border-color .2s; appearance:none; }
-    .fi::placeholder { color:var(--gray); }
-    .fi:focus,.fsel:focus { border-color:var(--teal); }
-    .fsel option { background:#111; }
-    .fbtn { width:100%; padding:.8rem; border-radius:999px; font-size:.88rem; font-weight:700; border:none; cursor:pointer; font-family:Arial; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:.5rem; margin-top:.3rem; }
-    .fbtn-teal { background:var(--teal); color:#000; }
-    .fbtn-teal:hover { background:var(--teal-lt); }
-    .fbtn:disabled { opacity:.5; cursor:not-allowed; }
-    .fspin { width:14px; height:14px; border:2px solid rgba(0,0,0,.2); border-top-color:#000; border-radius:50%; animation:spin .7s linear infinite; display:none; }
-    .fbtn.loading .fspin { display:block; }
-    .fbtn.loading .fbtxt { display:none; }
+/* ── EMPTY ── */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
+.empty-ico{font-size:2.2rem;margin-bottom:.6rem}
+.empty p{font-size:.86rem}
 
-    /* SEARCH + FILTER */
-    .sbox { width:100%; background:var(--card); border:.5px solid var(--border); border-radius:10px; padding:.68rem 1rem; color:var(--white); font-family:Arial; font-size:.88rem; outline:none; margin-bottom:.9rem; transition:border-color .2s; }
-    .sbox:focus { border-color:var(--teal); }
-    .sbox::placeholder { color:var(--gray); }
-    .ftabs { display:flex; gap:.4rem; margin-bottom:.9rem; flex-wrap:wrap; }
-    .ftab { font-size:.66rem; font-weight:700; padding:.28rem .75rem; border-radius:999px; border:.5px solid var(--border); background:transparent; color:var(--gray-lt); cursor:pointer; font-family:Arial; transition:all .2s; }
-    .ftab.active { background:rgba(0,200,215,.1); border-color:rgba(0,200,215,.3); color:var(--teal); }
+/* ── PAGE LABELS ── */
+.page-lbl{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:.35rem}
+.page-title{font-size:1.3rem;font-weight:800;letter-spacing:-.03em;margin-bottom:1.2rem;color:var(--text)}
 
-    /* ACTIVITY */
-    .act-item { display:flex; align-items:center; gap:.8rem; padding:.65rem 0; border-bottom:.5px solid rgba(255,255,255,.04); }
-    .act-item:last-child { border-bottom:none; }
-    .act-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-    .act-text { font-size:.8rem; color:var(--gray-lt); flex:1; line-height:1.4; }
-    .act-time { font-size:.68rem; color:var(--gray); white-space:nowrap; }
+/* ── LOGIN PAGE ── */
+.login-wrap{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--bg);position:relative}
+.login-wrap::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+.login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;position:relative;overflow:hidden;animation:up .65s cubic-bezier(.16,1,.3,1) forwards;box-shadow:var(--shadow-lg)}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal)}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{display:flex;flex-direction:column;align-items:center;margin-bottom:1.8rem}
+.login-logo img{height:68px;width:68px;border-radius:50%;object-fit:cover;box-shadow:0 0 40px rgba(0,200,215,.2);margin-bottom:.8rem}
+.login-name{font-size:1.1rem;font-weight:800;letter-spacing:-.03em;color:var(--text)}
+.login-name em{font-style:normal;color:var(--teal)}
+.login-sub{font-size:.72rem;color:var(--text3);margin-top:.2rem}
+.err-box{display:none;background:var(--red-bg);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:.65rem .9rem;font-size:.8rem;color:var(--red);margin-bottom:.9rem;line-height:1.5}
+.err-box.show{display:block}
+.pw-wrap{position:relative}
+.pw-tog{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:.76rem;font-family:var(--fh);padding:0;transition:color .2s}
+.pw-tog:hover{color:var(--teal)}
+.login-footer{margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border);text-align:center;font-size:.72rem;color:var(--text3);line-height:1.6}
 
-    /* EMPTY */
-    .empty { text-align:center; padding:3rem 1rem; color:var(--gray-lt); }
-    .empty-ico { font-size:2.5rem; margin-bottom:.7rem; }
-    .empty p { font-size:.86rem; }
+/* ── APP LAYOUT ── */
+.app{display:flex;min-height:100svh}
 
-    /* LOGIN PAGE */
-    .login-wrap { min-height:100svh; display:flex; align-items:center; justify-content:center; padding:1.5rem; background:var(--black); position:relative; }
-    .login-wrap::before { content:''; position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px); background-size:52px 52px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%); }
-    .login-card { width:100%; max-width:380px; background:var(--card); border:.5px solid var(--border); border-radius:20px; padding:2.5rem 2rem; position:relative; overflow:hidden; animation:up .65s cubic-bezier(.16,1,.3,1) forwards; }
-    .login-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--teal); }
-    @keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-    .login-logo { display:flex; flex-direction:column; align-items:center; margin-bottom:1.8rem; }
-    .login-logo img { height:68px; width:68px; border-radius:50%; object-fit:cover; box-shadow:0 0 40px rgba(0,200,215,.2); margin-bottom:.8rem; }
-    .login-name { font-size:1.1rem; font-weight:700; letter-spacing:-.03em; }
-    .login-name em { font-style:normal; color:var(--teal); }
-    .login-sub { font-size:.72rem; color:var(--gray-lt); margin-top:.2rem; }
-    .err-box { display:none; background:rgba(255,95,87,.08); border:.5px solid rgba(255,95,87,.25); border-radius:8px; padding:.65rem .9rem; font-size:.8rem; color:var(--red); margin-bottom:.9rem; line-height:1.5; }
-    .err-box.show { display:block; }
-    .pw-wrap { position:relative; }
-    .pw-tog { position:absolute; right:.9rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--gray-lt); font-size:.76rem; font-family:Arial; padding:0; transition:color .2s; }
-    .pw-tog:hover { color:var(--teal); }
-    .login-footer { margin-top:1.5rem; padding-top:1.2rem; border-top:.5px solid var(--border); text-align:center; font-size:.72rem; color:var(--gray-lt); line-height:1.6; }
-  </style>
+/* ── SIDEBAR ── */
+.sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;
+  z-index:50;transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:1px 0 0 var(--border);
+}
+.sb-header{padding:20px 16px 14px;border-bottom:1px solid var(--border)}
+.sb-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sb-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--teal),var(--teal-dk));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,200,215,.3);flex-shrink:0}
+.sb-name{font-size:16px;font-weight:800;letter-spacing:-.4px;color:var(--text)}
+.sb-name em{font-style:normal;color:var(--teal)}
+.sb-tagline{font-size:9px;color:var(--text3);letter-spacing:.5px;margin-top:1px;padding-left:44px;font-weight:500}
+.sb-nav{flex:1;padding:10px;overflow-y:auto;padding-bottom:12px}
+.nav-section{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);padding:14px 8px 6px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .15s;
+  color:var(--text2);font-size:13.5px;font-weight:500;
+  margin-bottom:1px;border:1px solid transparent;
+  user-select:none;text-decoration:none;
+}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--teal-bg);color:var(--teal-dk);border-color:rgba(0,200,215,.15);font-weight:600}
+.nav-ico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;font-family:var(--fm)}
+.nav-badge.teal{background:var(--teal)}
+.sb-footer{padding:10px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--bg);cursor:pointer;transition:background .15s}
+.sb-user:hover{background:var(--bg2)}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dk));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-uname{font-size:12px;font-weight:600;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-logout{font-size:11px;color:var(--text3);cursor:pointer;padding:4px;border-radius:4px;background:none;border:none;font-family:var(--fh);transition:color .15s;flex-shrink:0}
+.sb-logout:hover{color:var(--red)}
+
+/* ── MAIN AREA ── */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  height:56px;
+  display:flex;align-items:center;
+  padding:0 24px;gap:10px;
+  position:sticky;top:0;z-index:45;
+  box-shadow:0 1px 0 var(--border);
+}
+.topbar-title{font-size:16px;font-weight:700;letter-spacing:-.3px;flex:1;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.topbar-btn{height:32px;padding:0 12px;border-radius:var(--radius-xs);border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fh);transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.topbar-btn:hover{border-color:var(--teal);color:var(--teal)}
+.topbar-btn.active{background:var(--teal-bg);border-color:rgba(0,200,215,.3);color:var(--teal-dk)}
+
+/* ── MOBİL TOPBAR ── */
+.mob-topbar{display:none;align-items:center;height:52px;padding:0 16px;gap:12px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:45}
+.mob-menu-btn{width:36px;height:36px;border-radius:var(--radius-xs);border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.mob-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:49;backdrop-filter:blur(2px)}
+.sidebar-overlay.show{display:block}
+
+/* ── CONTENT ── */
+.content{padding:20px 24px;flex:1}
+.pane{display:none;animation:fadeUp .2s ease}
+.pane.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.15)}
+  .main{margin-left:0}
+  .topbar{display:none}
+  .mob-topbar{display:flex}
+  .content{padding:14px 16px}
+  .sgrid{grid-template-columns:repeat(2,1fr)!important;gap:10px}
+}
+</style>
 </head>
 <body>
 
-<!-- PAGE LOADER -->
+<!-- LOADER -->
 <div class="loader" id="loader"><div class="ring"></div></div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ══ LOGIN VIEW ══ -->
+<!-- ══ LOGIN ══ -->
 <div class="login-wrap" id="login-view" style="display:none">
   <div class="login-card">
     <div class="login-logo">
@@ -189,13 +305,8 @@
       <div class="login-name">Admin<em>AI</em></div>
       <div class="login-sub">Yönetim Paneli Girişi</div>
     </div>
-
     <div class="err-box" id="login-err"></div>
-
-    <div class="fg">
-      <label class="fl">E-posta</label>
-      <input class="fi" type="email" id="l-email" placeholder="admin@kuryeai.com" autocomplete="email"/>
-    </div>
+    <div class="fg"><label class="fl">E-posta</label><input class="fi" type="email" id="l-email" placeholder="admin@kuryeai.com" autocomplete="email"/></div>
     <div class="fg">
       <label class="fl">Şifre</label>
       <div class="pw-wrap">
@@ -203,298 +314,557 @@
         <button class="pw-tog" id="pw-tog" onclick="togglePw()">Göster</button>
       </div>
     </div>
-
     <button class="fbtn fbtn-teal" id="login-btn" onclick="doLogin()">
-      <div class="fspin"></div>
-      <span class="fbtxt">Giriş Yap →</span>
+      <div class="fspin"></div><span class="fbtxt">Giriş Yap →</span>
     </button>
-
-    <div class="login-footer">
-      Sadece yetkili admin hesapları giriş yapabilir.<br/>
-      <a href="/" style="color:var(--teal);text-decoration:none;">← Ana Sayfaya Dön</a>
-    </div>
+    <div class="login-footer">Sadece yetkili admin hesapları giriş yapabilir.<br/><a href="/" style="color:var(--teal);text-decoration:none">← Ana Sayfaya Dön</a></div>
   </div>
 </div>
 
 <!-- ══ ADMIN APP ══ -->
 <div class="app" id="admin-app" style="display:none">
 
-  <!-- CREATE USER MODAL -->
-  <div class="overlay" id="modal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <p class="modal-title" id="modal-title">Kullanıcı Oluştur</p>
-      <p class="modal-sub" id="modal-sub">Hesap bilgilerini girin.</p>
-      <div class="fg"><label class="fl">Ad Soyad</label><input class="fi" id="m-name" placeholder="Ad Soyad"/></div>
-      <div class="fg"><label class="fl">E-posta</label><input class="fi" id="m-email" type="email" placeholder="kullanici@email.com"/></div>
-      <div class="fg"><label class="fl">Şifre (en az 6 karakter)</label><input class="fi" id="m-pw" type="text" placeholder="Güçlü bir şifre girin"/></div>
-      <div class="fg">
-        <label class="fl">Rol</label>
-        <select class="fsel" id="m-role">
-          <option value="restoran">🍽️ Restoran</option>
-          <option value="kurye">🛵 Kurye</option>
-        </select>
-      </div>
-      <div class="fg"><label class="fl">İşletme / Kişi Adı</label><input class="fi" id="m-company" placeholder="Restoran veya kurye adı"/></div>
-      <div class="fg"><label class="fl">Telefon</label><input class="fi" id="m-phone" type="tel" placeholder="05XX XXX XX XX"/></div>
-      <button class="fbtn fbtn-teal" id="create-btn" onclick="createUser()">
-        <div class="fspin"></div><span class="fbtxt">Hesap Oluştur →</span>
-      </button>
+  <!-- MOBİL OVERLAY -->
+  <div class="sidebar-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <a href="/" class="sb-brand">
+        <div class="sb-logo">🚀</div>
+        <div>
+          <div class="sb-name">Admin<em>AI</em></div>
+          <div class="sb-tagline">YÖNETIM PANELİ</div>
+        </div>
+      </a>
     </div>
+
+    <nav class="sb-nav">
+      <div class="nav-section">Ana</div>
+      <div class="nav-item active" id="nav-dash" onclick="switchTab('dash')">
+        <span class="nav-ico">🏠</span>Dashboard
+        <span class="nav-badge teal" id="badge-bsv" style="display:none">0</span>
+      </div>
+      <div class="nav-item" id="nav-siparisler" onclick="switchTab('siparisler')">
+        <span class="nav-ico">📦</span>Siparişler
+        <span class="nav-badge" id="badge-sip" style="display:none">0</span>
+      </div>
+
+      <div class="nav-section">Kullanıcılar</div>
+      <div class="nav-item" id="nav-basvurular" onclick="switchTab('basvurular')">
+        <span class="nav-ico">📥</span>Başvurular
+      </div>
+      <div class="nav-item" id="nav-restoranlar" onclick="switchTab('restoranlar')">
+        <span class="nav-ico">🍽️</span>Restoranlar
+      </div>
+      <div class="nav-item" id="nav-kuryeler" onclick="switchTab('kuryeler')">
+        <span class="nav-ico">🛵</span>Kuryeler
+      </div>
+
+      <div class="nav-section">Analiz</div>
+      <div class="nav-item" id="nav-istatistik" onclick="switchTab('istatistik')">
+        <span class="nav-ico">📊</span>İstatistikler
+      </div>
+      <div class="nav-item" id="nav-bildirimler" onclick="switchTab('bildirimler')">
+        <span class="nav-ico">🔔</span>Bildirimler
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">A</div>
+        <span class="sb-uname" id="admin-email">admin</span>
+        <button class="sb-logout" onclick="doLogout()" title="Çıkış">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main" id="main">
+
+    <!-- Mobil topbar -->
+    <div class="mob-topbar">
+      <button class="mob-menu-btn" onclick="openSidebar()">☰</button>
+      <span class="mob-title" id="mob-page-title">Dashboard</span>
+      <button class="topbar-btn" id="mob-theme-btn" onclick="toggleTheme()" title="Tema">🌙</button>
+    </div>
+
+    <!-- Desktop topbar -->
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="wakelock-btn" onclick="toggleWakeLock()" title="Sürekli Açık Ekran">🔆 Wake Lock</button>
+        <button class="topbar-btn" id="sound-btn" onclick="toggleSound()" title="Sesli Bildirim">🔊 Ses Açık</button>
+        <button class="topbar-btn" id="theme-btn" onclick="toggleTheme()">🌙 Karanlık</button>
+        <button class="topbar-btn btn-primary" onclick="openModal(null)">+ Yeni Kullanıcı</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ════════════ DASHBOARD ════════════ -->
+      <div class="pane active" id="pane-dash">
+        <p class="page-lbl">Genel Bakış</p>
+        <p class="page-title">Dashboard</p>
+
+        <!-- Stat kartları -->
+        <div class="sgrid">
+          <div class="scard t"><div class="snum t" id="d-basvuru">—</div><div class="slbl">Toplam Başvuru</div></div>
+          <div class="scard y"><div class="snum y" id="d-bekleyen">—</div><div class="slbl">Bekleyen</div></div>
+          <div class="scard g"><div class="snum g" id="d-kurye">—</div><div class="slbl">Aktif Kurye</div></div>
+          <div class="scard g"><div class="snum g" id="d-restoran">—</div><div class="slbl">Aktif Restoran</div></div>
+        </div>
+
+        <!-- 🗺️ CANLI HARİTA -->
+        <div class="card" style="margin-bottom:16px;position:relative;z-index:0;isolation:isolate">
+          <div class="card-header">
+            <div class="card-title">🗺️ Canlı Harita</div>
+            <div class="card-actions">
+              <button class="btn btn-ghost btn-sm" id="zone-mode-btn" onclick="toggleZoneMode()" title="Bölge Çiz">⬤ Bölge Çiz</button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleRestoPins()" id="resto-pin-btn">📍 Restoranlar</button>
+              <button class="btn btn-ghost btn-sm" onclick="centerMapAll()">🎯 Tüm Kuryeler</button>
+            </div>
+          </div>
+          <div style="position:relative">
+            <div id="map" style="width:100%;height:420px;background:#e8edf2;border-radius:0 0 var(--radius) var(--radius)"></div>
+            <!-- Harita üst köşe bilgi kutusu -->
+            <div style="position:absolute;top:10px;left:10px;z-index:10;display:flex;flex-direction:column;gap:6px">
+              <div style="background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;box-shadow:var(--shadow-md)">
+                <div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Online Kurye</div>
+                <div style="font-size:20px;font-weight:800;color:var(--teal)" id="map-courier-count">0</div>
+              </div>
+            </div>
+            <!-- Zone bilgi kutusu (gizli) -->
+            <div id="zone-info-box" style="display:none;position:absolute;bottom:10px;left:10px;z-index:10;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;box-shadow:var(--shadow-md);max-width:220px">
+              <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:4px" id="zone-info-name">Bölge</div>
+              <div style="font-size:11px;color:var(--text3)" id="zone-info-detail">—</div>
+              <button class="bsm b-reject" style="margin-top:6px;font-size:.65rem" onclick="clearZoneDrawing()">✕ İptal</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölge Kaydet Modal Alanı (harita altında) -->
+        <div id="zone-save-panel" style="display:none;margin-bottom:16px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">🗺️ Yeni Bölge Kaydet</div></div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="fg" style="margin:0"><label class="fl">Bölge Adı</label><input class="fi" id="zone-name-input" placeholder="Örn: Kadıköy"/></div>
+              <div class="fg" style="margin:0"><label class="fl">Kurye Fiyatı (₺/km)</label><input class="fi" type="number" id="zone-price-input" placeholder="5.00" min="0" step="0.5"/></div>
+              <div class="fg" style="margin:0"><label class="fl">Renk</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+                  <span class="zone-color-opt" data-color="#00c8d7" style="width:24px;height:24px;border-radius:50%;background:#00c8d7;cursor:pointer;border:2px solid transparent" onclick="selectZoneColor(this)"></span>
+                  <span class="zone-color-opt" data-color="#00c48c" style="width:24px;height:24px;border-radius:50%;background:#00c48c;cursor:pointer;border:2px solid transparent" onclick="selectZoneColor(this)"></span>
+                  <span class="zone-color-opt" data-color="#f59e0b" style="width:24px;height:24px;border-radius:50%;background:#f59e0b;cursor:pointer;border:2px solid transparent" onclick="selectZoneColor(this)"></span>
+                  <span class="zone-color-opt" data-color="#ef4444" style="width:24px;height:24px;border-radius:50%;background:#ef4444;cursor:pointer;border:2px solid transparent" onclick="selectZoneColor(this)"></span>
+                  <span class="zone-color-opt" data-color="#8b5cf6" style="width:24px;height:24px;border-radius:50%;background:#8b5cf6;cursor:pointer;border:2px solid transparent" onclick="selectZoneColor(this)"></span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:flex-end;gap:8px">
+                <button class="btn btn-primary btn-sm" onclick="saveZone()">💾 Kaydet</button>
+                <button class="btn btn-ghost btn-sm" onclick="cancelZoneSave()">İptal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 📦 SİPARİŞ HAVUZU -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">📦 Sipariş Havuzu</div>
+            <div style="font-size:11px;color:var(--text3)" id="siparis-havuz-count">—</div>
+          </div>
+          <div class="card-body" style="padding:0;max-height:320px;overflow-y:auto" id="siparis-havuz-list">
+            <div class="empty"><div class="empty-ico">📦</div><p>Yükleniyor...</p></div>
+          </div>
+        </div>
+
+        <!-- 🚨 ACİL KURYE TALEP HAVUZU -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">🚨 AcilKurye Talep Havuzu</div>
+            <div style="font-size:11px;color:var(--text3)" id="acil-havuz-count">—</div>
+          </div>
+          <div class="card-body" style="padding:0;max-height:280px;overflow-y:auto" id="acil-havuz-list">
+            <div class="empty"><div class="empty-ico">🚨</div><p>Yükleniyor...</p></div>
+          </div>
+        </div>
+
+        <!-- 🤝 İZİNCİ KURYE TALEP HAVUZU -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">🤝 İzinciKurye Talep Havuzu</div>
+            <div style="font-size:11px;color:var(--text3)" id="izinci-havuz-count">—</div>
+          </div>
+          <div class="card-body" style="padding:0;max-height:280px;overflow-y:auto" id="izinci-havuz-list">
+            <div class="empty"><div class="empty-ico">🤝</div><p>Yükleniyor...</p></div>
+          </div>
+        </div>
+
+        <!-- 📅 GÜNLÜK İSTATİSTİK -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">📅 Günlük İstatistikler</div></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--teal)" id="gun-siparis">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Sipariş</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--green)" id="gun-komisyon">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Komisyon</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--yellow)" id="gun-tutar">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Ciro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 📆 HAFTALIK İSTATİSTİK -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">📆 Haftalık İstatistikler</div></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--teal)" id="hafta-siparis">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Sipariş</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--green)" id="hafta-komisyon">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Komisyon</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--yellow)" id="hafta-tutar">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Ciro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 📊 AYLIK İSTATİSTİK -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">📊 Aylık İstatistikler</div></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--teal)" id="ay-siparis">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Sipariş</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--green)" id="ay-komisyon">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Komisyon</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--yellow)" id="ay-tutar">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Ciro</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="font-size:1.5rem;font-weight:800;color:var(--orange)" id="ay-abonelik">—</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px">Abonelik Geliri</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo Kullanıcılar -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">🎮 Canlı Demo Kullanıcıları</div>
+            <span id="d-demo-count" style="font-size:1.2rem;font-weight:800;color:var(--green)">0</span>
+          </div>
+          <div class="card-body" style="padding:12px" id="d-demo-list">
+            <div class="empty"><div class="empty-ico">🎮</div><p>Demo kullanan yok</p></div>
+          </div>
+        </div>
+
+        <!-- Son Başvurular -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">📋 Son Başvurular</div></div>
+          <div class="card-body" style="padding:0 16px" id="d-activity">
+            <div class="empty"><div class="empty-ico">📋</div><p>Yükleniyor...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ BAŞVURULAR ════════════ -->
+      <div class="pane" id="pane-basvurular">
+        <p class="page-lbl">Yönet</p>
+        <p class="page-title">Başvurular</p>
+        <div class="ftabs">
+          <button class="ftab active" onclick="fBasvuru('hepsi',this)">Hepsi</button>
+          <button class="ftab" onclick="fBasvuru('pending',this)">Bekleyen</button>
+          <button class="ftab" onclick="fBasvuru('restoran',this)">Restoran</button>
+          <button class="ftab" onclick="fBasvuru('kurye',this)">Kurye</button>
+        </div>
+        <input class="sbox" id="s-basvuru" placeholder="🔍  Ad, e-posta, şehir ara..." oninput="renderBasvurular()"/>
+        <div id="basvuru-list"><div class="empty"><div class="empty-ico">📥</div><p>Yükleniyor...</p></div></div>
+      </div>
+
+      <!-- ════════════ RESTORANLAR ════════════ -->
+      <div class="pane" id="pane-restoranlar">
+        <p class="page-lbl">Kayıtlı</p>
+        <p class="page-title">Restoranlar</p>
+        <div class="ftabs">
+          <button class="ftab active" onclick="fRestoran('hepsi',this)">Hepsi</button>
+          <button class="ftab" onclick="fRestoran('active',this)">Aktif</button>
+          <button class="ftab" onclick="fRestoran('suspended',this)">Askıda</button>
+          <button class="ftab" id="tab-odeme" onclick="fRestoran('odeme',this)">💳 Ödeme <span id="badge-odeme" style="display:none;background:var(--yellow);color:#000;border-radius:99px;font-size:.62rem;padding:.05rem .35rem;margin-left:.25rem">0</span></button>
+          <button class="ftab" onclick="fRestoran('demo',this)">🎮 Demo</button>
+        </div>
+        <input class="sbox" id="s-restoran" placeholder="🔍  Restoran ara..." oninput="renderRestoranlar()"/>
+        <div id="restoran-list"><div class="empty"><div class="empty-ico">🍽️</div><p>Yükleniyor...</p></div></div>
+      </div>
+
+      <!-- ════════════ KURYELER ════════════ -->
+      <div class="pane" id="pane-kuryeler">
+        <p class="page-lbl">Kayıtlı</p>
+        <p class="page-title">Kuryeler</p>
+        <div class="ftabs">
+          <button class="ftab active" onclick="fKurye('hepsi',this)">Hepsi</button>
+          <button class="ftab" onclick="fKurye('active',this)">Aktif</button>
+          <button class="ftab" onclick="fKurye('suspended',this)">Askıda</button>
+        </div>
+        <input class="sbox" id="s-kurye" placeholder="🔍  Kurye ara..." oninput="renderKuryeler()"/>
+        <div id="kurye-list"><div class="empty"><div class="empty-ico">🛵</div><p>Yükleniyor...</p></div></div>
+      </div>
+
+      <!-- ════════════ SİPARİŞLER ════════════ -->
+      <div class="pane" id="pane-siparisler">
+        <p class="page-lbl">Canlı</p>
+        <p class="page-title">Siparişler</p>
+        <div class="ftabs">
+          <button class="ftab active" onclick="fSiparis('hepsi',this)">Hepsi</button>
+          <button class="ftab" onclick="fSiparis('pending',this)">Bekleyen</button>
+          <button class="ftab" onclick="fSiparis('on_the_way',this)">Yolda</button>
+          <button class="ftab" onclick="fSiparis('delivered',this)">Teslim</button>
+        </div>
+        <div id="siparis-list"><div class="empty"><div class="empty-ico">📦</div><p>Yükleniyor...</p></div></div>
+      </div>
+
+      <!-- ════════════ İSTATİSTİK ════════════ -->
+      <div class="pane" id="pane-istatistik">
+        <p class="page-lbl">Genel</p>
+        <p class="page-title">İstatistikler</p>
+        <div class="sgrid">
+          <div class="scard t"><div class="snum t" id="i-toplam">—</div><div class="slbl">Toplam Kullanıcı</div></div>
+          <div class="scard g"><div class="snum g" id="i-aktif">—</div><div class="slbl">Aktif Hesap</div></div>
+          <div class="scard y"><div class="snum y" id="i-bek">—</div><div class="slbl">Onay Bekleyen</div></div>
+          <div class="scard r"><div class="snum r" id="i-ask">—</div><div class="slbl">Askıdaki Hesap</div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header"><div class="card-title">Kullanıcı Dağılımı</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between;font-size:.86rem"><span style="color:var(--text3)">🍽️ Restoran</span><span id="i-r" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.86rem"><span style="color:var(--text3)">🛵 Kurye</span><span id="i-k" style="font-weight:700">—</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header"><div class="card-title">Abonelik Özeti</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Trial (Deneme)</span><span id="ab-trial" style="font-weight:700;color:var(--text3)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--teal)">Basic</span><span id="ab-basic" style="font-weight:700;color:var(--teal)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--yellow)">Pro</span><span id="ab-pro" style="font-weight:700;color:var(--yellow)">—</span></div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Aktif Abonelik</span><span id="ab-aktif" style="font-weight:700;color:var(--green)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Süresi Dolan</span><span id="ab-expired" style="font-weight:700;color:var(--red)">—</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header">
+            <div class="card-title">Kâr Tablosu — Bu Ay</div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Abonelik Geliri</span><span id="kar-abonelik" style="font-weight:700;color:var(--teal)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Komisyon Geliri</span><span id="kar-komisyon" style="font-weight:700;color:var(--green)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Toplam Gelir</span><span id="kar-toplam-gelir" style="font-weight:700">—</span></div>
+            <div style="height:1px;background:var(--border)"></div>
+            <!-- İşletme Giderleri Listesi -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:.82rem;font-weight:700;color:var(--text2)">İşletme Giderleri</span>
+              <button class="bsm b-create" style="font-size:.65rem;padding:.2rem .6rem" onclick="openGiderModal()">+ Gider Ekle</button>
+            </div>
+            <div id="gider-list" style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:.78rem;color:var(--text3);text-align:center;padding:8px">Yükleniyor...</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.82rem;padding-top:4px;border-top:1px solid var(--border)">
+              <span style="color:var(--text3)">Toplam Gider</span>
+              <span id="kar-gider-toplam" style="font-weight:700;color:var(--red)">—</span>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700">
+              <span>Net Kâr</span>
+              <span id="kar-net" style="color:var(--green)">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header"><div class="card-title">Gelir Özeti</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Bugün — Komisyon</span><span id="g-gun" style="font-weight:700;color:var(--green)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Bu Hafta — Komisyon</span><span id="g-hafta" style="font-weight:700;color:var(--teal)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Bu Ay — Komisyon</span><span id="g-ay" style="font-weight:700;color:var(--teal)">—</span></div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">SaaS Abonelik (gerçek kullanıcılar)</span><span id="g-saas" style="font-weight:700;color:var(--yellow)">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Tahmini Yıllık</span><span id="g-yillik" style="font-weight:700;color:var(--orange)">—</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header"><div class="card-title">Büyüme Analizi</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Geçen Ay Sipariş</span><span id="byu-gecen-sip" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Bu Ay Sipariş</span><span id="byu-bu-sip" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Sipariş Büyümesi</span><span id="byu-sip-oran" style="font-weight:700">—</span></div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Geçen Ay Gelir</span><span id="byu-gecen-gelir" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Bu Ay Gelir</span><span id="byu-bu-gelir" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--text3)">Gelir Büyümesi</span><span id="byu-gelir-oran" style="font-weight:700">—</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Sistem</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem">
+            <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--text3)">Domain</span><span>www.kuryeai.com</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--text3)">Admin URL</span><span style="color:var(--teal)">kuryeai.com/adminai-panel</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--text3)">Durum</span><span style="color:var(--green)">● Aktif</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ BİLDİRİMLER ════════════ -->
+      <div class="pane" id="pane-bildirimler">
+        <p class="page-lbl">Mesajlaşma</p>
+        <p class="page-title">Bildirim Gönder</p>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">📨 Push Bildirim Gönder</div></div>
+          <div class="card-body">
+            <div class="fg">
+              <label class="fl">Hedef</label>
+              <select class="fsel" id="notif-target" onchange="updateNotifTargetList()">
+                <option value="all">Tüm Kullanıcılar</option>
+                <option value="restoran">Tüm Restoranlar</option>
+                <option value="kurye">Tüm Kuryeler</option>
+                <option value="single">Belirli Kullanıcı</option>
+              </select>
+            </div>
+            <div class="fg" id="notif-user-select" style="display:none">
+              <label class="fl">Kullanıcı Seç</label>
+              <select class="fsel" id="notif-user-id"></select>
+            </div>
+            <div class="fg">
+              <label class="fl">Başlık</label>
+              <input class="fi" id="notif-title" placeholder="Bildirim başlığı"/>
+            </div>
+            <div class="fg">
+              <label class="fl">Mesaj</label>
+              <textarea class="fi" id="notif-body" placeholder="Mesaj içeriği..." rows="3" style="resize:vertical;min-height:80px"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="sendBroadcast()">📤 Gönder</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">🔊 Ses Ayarları</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Yeni Başvuru</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('basvuru')">▶ Test</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Yeni Sipariş</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('siparis')">▶ Test</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Yeni Talep (Acil/İzinci)</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('talep')">▶ Test</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Sipariş Teslim Edildi</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('teslim')">▶ Test</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Talep Tamamlandı</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('tamamlandi')">▶ Test</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Demo Girişi</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('demo')">▶ Test</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.85rem;font-weight:600">Yeni Abonelik / Ödeme</span>
+                <button class="btn btn-ghost btn-sm" onclick="playSound('abonelik')">▶ Test</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">📬 Son Gönderilen Bildirimler</div></div>
+          <div class="card-body" style="padding:0 16px;max-height:300px;overflow-y:auto" id="broadcast-list">
+            <div class="empty"><div class="empty-ico">📬</div><p>Henüz bildirim gönderilmedi</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ USER MODAL ══ -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <p class="modal-title" id="modal-title">Kullanıcı Oluştur</p>
+    <p class="modal-sub" id="modal-sub">Hesap bilgilerini girin.</p>
+    <div class="fg"><label class="fl">Ad Soyad</label><input class="fi" id="m-name" placeholder="Ad Soyad"/></div>
+    <div class="fg"><label class="fl">E-posta</label><input class="fi" id="m-email" type="email" placeholder="kullanici@email.com"/></div>
+    <div class="fg"><label class="fl">Şifre (en az 6 karakter)</label><input class="fi" id="m-pw" type="text" placeholder="Güçlü bir şifre girin"/></div>
+    <div class="fg">
+      <label class="fl">Rol</label>
+      <select class="fsel" id="m-role">
+        <option value="restoran">🍽️ Restoran</option>
+        <option value="kurye">🛵 Kurye</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">İşletme / Kişi Adı</label><input class="fi" id="m-company" placeholder="Restoran veya kurye adı"/></div>
+    <div class="fg"><label class="fl">Telefon</label><input class="fi" id="m-phone" type="tel" placeholder="05XX XXX XX XX"/></div>
+    <button class="fbtn fbtn-teal" id="create-btn" onclick="createUser()">
+      <div class="fspin"></div><span class="fbtxt">Hesap Oluştur →</span>
+    </button>
   </div>
-
-  <!-- TOP NAV -->
-  <nav class="topnav">
-    <a href="/" class="topnav-logo">
-      <img src="../1000417933.png" alt="AI" onerror="this.style.display='none'"/>
-      <span class="topnav-brand">Admin<em>AI</em></span>
-      <span class="topnav-badge">Admin</span>
-    </a>
-    <div class="topnav-right">
-      <span class="admin-email" id="admin-email"></span>
-      <button class="btn-logout" onclick="doLogout()">Çıkış</button>
-    </div>
-  </nav>
-
-  <div class="content">
-
-    <!-- DASHBOARD -->
-    <div class="pane active" id="pane-dash">
-      <p class="page-lbl">Genel Bakış</p>
-      <p class="page-title">Dashboard</p>
-      <div class="sgrid">
-        <div class="scard t"><div class="snum t" id="d-basvuru">—</div><div class="slbl">Toplam Başvuru</div></div>
-        <div class="scard y"><div class="snum y" id="d-bekleyen">—</div><div class="slbl">Bekleyen</div></div>
-        <div class="scard g"><div class="snum g" id="d-kurye">—</div><div class="slbl">Aktif Kurye</div></div>
-        <div class="scard g"><div class="snum g" id="d-restoran">—</div><div class="slbl">Aktif Restoran</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Bugünkü Gelir</div>
-        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem">
-          <div style="flex:1;min-width:80px;background:var(--dark);border-radius:10px;padding:.7rem;text-align:center">
-            <div style="font-size:1.25rem;font-weight:700;color:var(--green)" id="d-gun-komisyon">—</div>
-            <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.25rem">Komisyon</div>
-          </div>
-          <div style="flex:1;min-width:80px;background:var(--dark);border-radius:10px;padding:.7rem;text-align:center">
-            <div style="font-size:1.25rem;font-weight:700;color:var(--teal)" id="d-gun-tutar">—</div>
-            <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.25rem">Sipariş Tutarı</div>
-          </div>
-          <div style="flex:1;min-width:80px;background:var(--dark);border-radius:10px;padding:.7rem;text-align:center">
-            <div style="font-size:1.25rem;font-weight:700;color:var(--yellow)" id="d-gun-siparis">—</div>
-            <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.25rem">Sipariş</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>👀 Canlı Demo Kullanıcıları</span>
-          <span id="d-demo-count" style="font-size:1.4rem;font-weight:700;color:var(--green)">0</span>
-        </div>
-        <div style="font-size:.72rem;color:var(--gray-lt);margin-bottom:.6rem">Son 30 saniye içinde aktif olanlar</div>
-        <div id="d-demo-list"><div class="empty"><div class="empty-ico">🎮</div><p>Demo kullanan yok</p></div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Son Başvurular</div>
-        <div id="d-activity"><div class="empty"><div class="empty-ico">📋</div><p>Yükleniyor...</p></div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Hızlı İşlemler</div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          <button class="bsm b-create" onclick="openModal(null)">+ Yeni Kullanıcı</button>
-          <button class="bsm b-ghost" onclick="switchTab('basvurular')">Başvurular →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- BAŞVURULAR -->
-    <div class="pane" id="pane-basvurular">
-      <p class="page-lbl">Yönet</p>
-      <p class="page-title">Başvurular</p>
-      <div class="ftabs">
-        <button class="ftab active" onclick="fBasvuru('hepsi',this)">Hepsi</button>
-        <button class="ftab" onclick="fBasvuru('pending',this)">Bekleyen</button>
-        <button class="ftab" onclick="fBasvuru('restoran',this)">Restoran</button>
-        <button class="ftab" onclick="fBasvuru('kurye',this)">Kurye</button>
-      </div>
-      <input class="sbox" id="s-basvuru" placeholder="🔍  Ad, e-posta, şehir ara..." oninput="renderBasvurular()"/>
-      <div id="basvuru-list"><div class="empty"><div class="empty-ico">📥</div><p>Yükleniyor...</p></div></div>
-    </div>
-
-    <!-- RESTORANLAR -->
-    <div class="pane" id="pane-restoranlar">
-      <p class="page-lbl">Kayıtlı</p>
-      <p class="page-title">Restoranlar</p>
-      <div class="ftabs">
-        <button class="ftab active" onclick="fRestoran('hepsi',this)">Hepsi</button>
-        <button class="ftab" onclick="fRestoran('active',this)">Aktif</button>
-        <button class="ftab" onclick="fRestoran('suspended',this)">Askıda</button>
-        <button class="ftab" id="tab-odeme" onclick="fRestoran('odeme',this)">💳 Ödeme <span id="badge-odeme" style="display:none;background:var(--yellow);color:#000;border-radius:99px;font-size:.62rem;padding:.05rem .35rem;margin-left:.25rem">0</span></button>
-        <button class="ftab" onclick="fRestoran('demo',this)">🎮 Demo</button>
-      </div>
-      <input class="sbox" id="s-restoran" placeholder="🔍  Restoran ara..." oninput="renderRestoranlar()"/>
-      <div id="restoran-list"><div class="empty"><div class="empty-ico">🍽️</div><p>Yükleniyor...</p></div></div>
-    </div>
-
-    <!-- KURYELER -->
-    <div class="pane" id="pane-kuryeler">
-      <p class="page-lbl">Kayıtlı</p>
-      <p class="page-title">Kuryeler</p>
-      <div class="ftabs">
-        <button class="ftab active" onclick="fKurye('hepsi',this)">Hepsi</button>
-        <button class="ftab" onclick="fKurye('active',this)">Aktif</button>
-        <button class="ftab" onclick="fKurye('suspended',this)">Askıda</button>
-      </div>
-      <input class="sbox" id="s-kurye" placeholder="🔍  Kurye ara..." oninput="renderKuryeler()"/>
-      <div id="kurye-list"><div class="empty"><div class="empty-ico">🛵</div><p>Yükleniyor...</p></div></div>
-    </div>
-
-    <!-- SİPARİŞLER -->
-    <div class="pane" id="pane-siparisler">
-      <p class="page-lbl">Canlı</p>
-      <p class="page-title">Siparişler</p>
-      <div class="ftabs">
-        <button class="ftab active" onclick="fSiparis('hepsi',this)">Hepsi</button>
-        <button class="ftab" onclick="fSiparis('pending',this)">Bekleyen</button>
-        <button class="ftab" onclick="fSiparis('on_the_way',this)">Yolda</button>
-        <button class="ftab" onclick="fSiparis('delivered',this)">Teslim</button>
-      </div>
-      <div id="siparis-list"><div class="empty"><div class="empty-ico">📦</div><p>Yükleniyor...</p></div></div>
-    </div>
-
-    <!-- İSTATİSTİK -->
-    <div class="pane" id="pane-istatistik">
-      <p class="page-lbl">Genel</p>
-      <p class="page-title">İstatistikler</p>
-      <div class="sgrid">
-        <div class="scard t"><div class="snum t" id="i-toplam">—</div><div class="slbl">Toplam Kullanıcı</div></div>
-        <div class="scard g"><div class="snum g" id="i-aktif">—</div><div class="slbl">Aktif Hesap</div></div>
-        <div class="scard y"><div class="snum y" id="i-bek">—</div><div class="slbl">Onay Bekleyen</div></div>
-        <div class="scard r"><div class="snum r" id="i-ask">—</div><div class="slbl">Askıdaki Hesap</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Kullanıcı Dağılımı</div>
-        <div style="display:flex;flex-direction:column;gap:.8rem">
-          <div style="display:flex;justify-content:space-between;font-size:.86rem"><span style="color:var(--gray-lt)">🍽️ Restoran</span><span id="i-r" style="font-weight:700">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.86rem"><span style="color:var(--gray-lt)">🛵 Kurye</span><span id="i-k" style="font-weight:700">—</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Abonelik Özeti</div>
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Trial (Deneme)</span><span id="ab-trial" style="font-weight:700;color:var(--gray-lt)">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--teal)">Basic</span><span id="ab-basic" style="font-weight:700;color:var(--teal)">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--yellow)">Pro</span><span id="ab-pro" style="font-weight:700;color:var(--yellow)">—</span></div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Aktif Abonelik</span><span id="ab-aktif" style="font-weight:700;color:var(--green)">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Süresi Dolan</span><span id="ab-expired" style="font-weight:700;color:var(--red)">—</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Kâr Tablosu — Bu Ay</div>
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Abonelik Geliri</span><span id="kar-abonelik" style="font-weight:700;color:var(--teal)">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Komisyon Geliri</span><span id="kar-komisyon" style="font-weight:700;color:var(--green)">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Toplam Gelir</span><span id="kar-toplam-gelir" style="font-weight:700">—</span></div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">İşletme Giderleri</span>
-            <span style="display:flex;align-items:center;gap:.4rem">
-              <input type="number" id="kar-gider-input" placeholder="5000" min="0" style="width:80px;font-size:.78rem;background:var(--dark);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:.2rem .4rem;text-align:right" oninput="renderIstatistik()">
-              <span style="font-size:.72rem;color:var(--gray-lt)">₺/ay</span>
-            </span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;margin-top:.2rem">
-            <span>Net Kâr</span>
-            <span id="kar-net" style="color:var(--green)">—</span>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Büyüme Analizi</div>
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Geçen Ay Sipariş</span><span id="byu-gecen-sip" style="font-weight:700">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Bu Ay Sipariş</span><span id="byu-bu-sip" style="font-weight:700">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Sipariş Büyümesi</span><span id="byu-sip-oran" style="font-weight:700">—</span></div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Geçen Ay Gelir</span><span id="byu-gecen-gelir" style="font-weight:700">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Bu Ay Gelir</span><span id="byu-bu-gelir" style="font-weight:700">—</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--gray-lt)">Gelir Büyümesi</span><span id="byu-gelir-oran" style="font-weight:700">—</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Gelir Özeti</div>
-        <div style="display:flex;flex-direction:column;gap:.75rem">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">Bugün — Komisyon</span>
-            <span id="g-gun" style="font-weight:700;color:var(--green)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">Bu Hafta — Komisyon</span>
-            <span id="g-hafta" style="font-weight:700;color:var(--teal)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">Bu Ay — Komisyon</span>
-            <span id="g-ay" style="font-weight:700;color:var(--teal)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">Bu Ay — Toplam Sipariş Tutarı</span>
-            <span id="g-toplam-tutar" style="font-weight:700">—</span>
-          </div>
-          <div style="height:1px;background:var(--border);margin:.1rem 0"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">SaaS Abonelik (Aktif × 10.000₺/yıl)</span>
-            <span id="g-saas" style="font-weight:700;color:var(--yellow)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-            <span style="color:var(--gray-lt)">Tahmini Toplam Yıllık Gelir</span>
-            <span id="g-yillik" style="font-weight:700;color:var(--orange)">—</span>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Sistem</div>
-        <div style="display:flex;flex-direction:column;gap:.6rem">
-          <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--gray-lt)">Platform</span><span>Firebase + Vercel</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--gray-lt)">Domain</span><span>www.kuryeai.com</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--gray-lt)">Admin URL</span><span style="color:var(--teal)">kuryeai.com/adminai</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--gray-lt)">Durum</span><span style="color:var(--green)">● Aktif</span></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- BOTTOM TABS -->
-  <nav class="bottomtabs">
-    <button class="tbtn active" id="tab-dash" onclick="switchTab('dash')">
-      <span class="tbtn-icon">🏠</span><span class="tbtn-lbl">Panel</span>
-    </button>
-    <button class="tbtn" id="tab-basvurular" onclick="switchTab('basvurular')">
-      <span class="tbtn-icon">📥</span><span class="tbtn-lbl">Başvurular</span>
-      <span class="tbtn-badge" id="badge-bsv" style="display:none"></span>
-    </button>
-    <button class="tbtn" id="tab-restoranlar" onclick="switchTab('restoranlar')">
-      <span class="tbtn-icon">🍽️</span><span class="tbtn-lbl">Restoranlar</span>
-    </button>
-    <button class="tbtn" id="tab-kuryeler" onclick="switchTab('kuryeler')">
-      <span class="tbtn-icon">🛵</span><span class="tbtn-lbl">Kuryeler</span>
-    </button>
-    <button class="tbtn" id="tab-siparisler" onclick="switchTab('siparisler')">
-      <span class="tbtn-icon">📦</span><span class="tbtn-lbl">Siparişler</span>
-      <span class="tbtn-badge" id="badge-sip" style="display:none"></span>
-    </button>
-    <button class="tbtn" id="tab-istatistik" onclick="switchTab('istatistik')">
-      <span class="tbtn-icon">📊</span><span class="tbtn-lbl">İstatistik</span>
-    </button>
-  </nav>
 </div>
 
+<!-- ══ GİDER MODAL ══ -->
+<div class="overlay" id="gider-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeGiderModal()">✕</button>
+    <p class="modal-title">Gider Ekle</p>
+    <p class="modal-sub">İşletme giderini girin.</p>
+    <div class="fg"><label class="fl">Açıklama</label><input class="fi" id="g-aciklama" placeholder="Örn: Kira, Elektrik..."/></div>
+    <div class="fg"><label class="fl">Tutar (₺)</label><input class="fi" type="number" id="g-tutar" placeholder="5000" min="0" step="1"/></div>
+    <button class="fbtn fbtn-teal" onclick="saveGider()">
+      <span class="fbtxt">Kaydet →</span>
+    </button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
-  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, orderBy, onSnapshot, limit, serverTimestamp }
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
+         query, orderBy, onSnapshot, limit, serverTimestamp, where }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
@@ -515,11 +885,20 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 const rtdb = getDatabase(app);
 
-// STATE
-let allBasvurular=[], allUsers=[], allSiparisler=[];
+// ── STATE ──
+let allBasvurular=[], allUsers=[], allSiparisler=[], allGiderler=[];
 let fBsv='hepsi', fRst='hepsi', fKry='hepsi', fSip='hepsi';
 let modalData=null;
 let _unsubSiparisler=null;
+let _soundEnabled=true;
+let _wakeLock=null;
+let _prevSiparisCount=0, _prevAcilCount=0, _prevIzinciCount=0;
+let _pendingPaymentUserIds=new Set();
+
+// ── TEMA (başlangıçta uygula) ──
+const _savedTheme = localStorage.getItem('admin-theme') || 'dark';
+if(_savedTheme==='dark') document.body.classList.add('dark');
+updateThemeBtn();
 
 // ── AUTH ──
 onAuthStateChanged(auth, async user => {
@@ -534,666 +913,152 @@ onAuthStateChanged(auth, async user => {
     showApp();
     await loadAll();
     watchDemoSessions();
-  } catch(e) { showLogin(); }
+    listenSiparisler();
+    listenAcilTalepler();
+    listenIzinciTalepler();
+    loadGiderler();
+    loadBroadcasts();
+    initMap();
+  } catch(e) { console.error(e); showLogin(); }
   hideLoader(loader);
 });
 
-function hideLoader(el) { el.classList.add('hide'); setTimeout(()=>el.style.display='none',400); }
+function hideLoader(el){ el.classList.add('hide'); setTimeout(()=>el.style.display='none',400); }
+function showLogin(){ document.getElementById('login-view').style.display='flex'; document.getElementById('admin-app').style.display='none'; }
+function showApp(){ document.getElementById('login-view').style.display='none'; document.getElementById('admin-app').style.display='flex'; }
 
-// ── DEMO LIVE TRACKING ────────────────────────────────────────────────────
-function watchDemoSessions() {
-  const TIMEOUT_MS = 30 * 1000; // 30 saniye inaktif → offline say
-  rtdbOnValue(rtdbRef(rtdb, 'demoSessions'), snap => {
-    const all = snap.val() || {};
-    const now = Date.now();
-    const online = Object.values(all).filter(s => s.isOnline && (now - s.lastActive) < TIMEOUT_MS);
-
-    document.getElementById('d-demo-count').textContent = online.length;
-
-    const listEl = document.getElementById('d-demo-list');
-    if (!online.length) {
-      listEl.innerHTML = '<div class="empty"><div class="empty-ico">🎮</div><p>Demo kullanan yok</p></div>';
-      return;
-    }
-    listEl.innerHTML = online.map(s => {
-      const ago       = Math.floor((now - s.lastActive) / 1000);
-      const score     = s.intentScore || 0;
-      const isHot     = score >= 5;
-      const pageLabel = { 'restoran-panel':'Restoran Panel', dashboard:'Dashboard',
-        orders:'Siparişler', couriers:'Kuryeler', menu:'Menü', settings:'Ayarlar',
-        'manual-order':'Manuel Sipariş', reports:'Raporlar' }[s.page] || s.page || '—';
-      return `<div class="act-item">
-        <div class="act-dot" style="background:${isHot?'var(--orange)':'var(--green)'}"></div>
-        <div class="act-text">
-          <strong>${pageLabel}</strong>${isHot?' <span style="font-size:.7rem">🔥</span>':''}
-          <span style="color:var(--gray-lt);font-size:.7rem"> · ${s.sessionId?.slice(-8)||''} · 🎯${score}</span>
-        </div>
-        <div class="act-time">${ago}sn</div>
-      </div>`;
-    }).join('');
-  });
-}
-function showLogin() { document.getElementById('login-view').style.display='flex'; document.getElementById('admin-app').style.display='none'; }
-function showApp()  { document.getElementById('login-view').style.display='none'; document.getElementById('admin-app').style.display='flex'; }
-
-// ── LOGIN ──
-window.togglePw = () => {
-  const i=document.getElementById('l-pw'), b=document.getElementById('pw-tog');
+window.togglePw=()=>{
+  const i=document.getElementById('l-pw'),b=document.getElementById('pw-tog');
   i.type=i.type==='password'?'text':'password';
   b.textContent=i.type==='password'?'Göster':'Gizle';
 };
 
-window.doLogin = async () => {
+window.doLogin=async()=>{
   const email=document.getElementById('l-email').value.trim();
   const pw=document.getElementById('l-pw').value;
   const btn=document.getElementById('login-btn');
   const err=document.getElementById('login-err');
   err.classList.remove('show');
   if(!email||!pw){err.textContent='E-posta ve şifre gerekli.';err.classList.add('show');return;}
-  btn.classList.add('loading'); btn.disabled=true;
+  btn.classList.add('loading');btn.disabled=true;
   try {
-    const cred = await signInWithEmailAndPassword(auth,email,pw);
-    const snap = await getDoc(doc(db,'users',cred.user.uid));
+    const cred=await signInWithEmailAndPassword(auth,email,pw);
+    const snap=await getDoc(doc(db,'users',cred.user.uid));
     if(!snap.exists()||snap.data().role!=='admin'){
       await signOut(auth);
       err.textContent='Bu hesap admin yetkisine sahip değil.';err.classList.add('show');
       btn.classList.remove('loading');btn.disabled=false;return;
     }
     document.getElementById('admin-email').textContent=email;
-    showApp(); await loadAll();
-  } catch(e) {
+    showApp();
+    await loadAll(); watchDemoSessions(); listenSiparisler();
+    listenAcilTalepler(); listenIzinciTalepler(); loadGiderler(); loadBroadcasts(); initMap();
+  } catch(e){
     const c=e.code;
-    err.textContent = c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'
+    err.textContent=c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'
       ?'E-posta veya şifre hatalı.'
       :c==='auth/too-many-requests'?'Çok fazla deneme. Lütfen bekleyin.'
       :'Giriş yapılamadı. Tekrar deneyin.';
     err.classList.add('show');
-    btn.classList.remove('loading');btn.disabled=false;
   }
+  btn.classList.remove('loading');btn.disabled=false;
 };
 
-window.doLogout = async () => { await signOut(auth); showLogin(); };
+window.doLogout=async()=>{ await signOut(auth); showLogin(); };
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login-view').style.display!=='none')window.doLogin();});
 
-// Enter key
-document.addEventListener('keydown', e=>{ if(e.key==='Enter'&&document.getElementById('login-view').style.display!=='none') window.doLogin(); });
-
-// ── LOAD DATA ──
-async function loadAll() {
-  await Promise.all([loadBasvurular(), loadUsers()]);
-  renderDash(); renderIstatistik();
+// ── TEMA ──
+window.toggleTheme=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('admin-theme',document.body.classList.contains('dark')?'dark':'light');
+  updateThemeBtn();
+  if(mapObj){setTimeout(()=>mapObj.invalidateSize(),150);}
+};
+function updateThemeBtn(){
+  const isDark=document.body.classList.contains('dark');
+  const t=isDark?'☀️ Aydınlık':'🌙 Karanlık';
+  ['theme-btn','mob-theme-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
 }
 
-async function loadBasvurular() {
-  try {
-    const q=query(collection(db,'basvurular'),orderBy('createdAt','desc'));
-    const snap=await getDocs(q);
-    allBasvurular=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderBasvurular(); updateBadge();
-  } catch(e){ console.error(e); }
-}
+// ── SIDEBAR MOBİL ──
+window.openSidebar=()=>{ document.getElementById('sidebar').classList.add('open'); document.getElementById('sb-overlay').classList.add('show'); };
+window.closeSidebar=()=>{ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('show'); };
 
-async function loadUsers() {
-  try {
-    const snap=await getDocs(collection(db,'users'));
-    allUsers=snap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role!=='admin');
-    renderRestoranlar(); renderKuryeler();
-  } catch(e){ console.error(e); }
-}
-
-function updateBadge() {
-  const n=allBasvurular.filter(b=>b.status==='pending').length +
-          allUsers.filter(u=>u.status==='pending').length;
-  const b=document.getElementById('badge-bsv');
-  b.textContent=n; b.style.display=n?'flex':'none';
-}
-
-// ── GELİR HESAPLAMA YARDIMCISI ──────────────────────────────────────────
-function calcRevenue() {
-  const now      = new Date();
-  const todayMs  = new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
-  const dayOfWk  = now.getDay() === 0 ? 6 : now.getDay() - 1;
-  const weekMs   = todayMs - dayOfWk * 86400000;
-  const monthMs  = new Date(now.getFullYear(),now.getMonth(),1).getTime();
-  const prevMonthMs = new Date(now.getFullYear(),now.getMonth()-1,1).getTime();
-  const fmt = v  => '₺' + v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
-
-  let gunKomis=0, gunTutar=0, gunSip=0;
-  let haftaKomis=0, ayKomis=0, ayTutar=0;
-  let gecenAyKomis=0, gecenAySip=0, buAySip=0;
-
-  for (const s of allSiparisler) {
-    const raw = s.createdAt;
-    const t   = typeof raw === 'string' ? new Date(raw).getTime() : (raw || 0);
-    const komis = s.commissionAmount ?? ((s.total || 0) * (s.commissionRate ?? 5) / 100);
-    const tutar = s.total || 0;
-    if (t >= todayMs)  { gunKomis += komis; gunTutar += tutar; gunSip++; }
-    if (t >= weekMs)   { haftaKomis += komis; }
-    if (t >= monthMs)  { ayKomis += komis; ayTutar += tutar; buAySip++; }
-    if (t >= prevMonthMs && t < monthMs) { gecenAyKomis += komis; gecenAySip++; }
-  }
-
-  // Abonelik geliri: aktif Basic × 1499₺/ay + aktif Pro × 9999/12₺/ay
-  let abonelikGelir = 0;
-  const restoran = allUsers.filter(u=>u.role==='restoran'&&u.status==='active');
-  const trialCount  = restoran.filter(u=>!u.plan||u.plan==='trial').length;
-  const basicCount  = restoran.filter(u=>u.plan==='basic').length;
-  const proCount    = restoran.filter(u=>u.plan==='pro').length;
-  abonelikGelir = basicCount * 1499 + proCount * (9999/12);
-  const aktifAbonelik = restoran.filter(u=>u.plan&&u.plan!=='trial'&&(!u.planEndDate||Date.now()<u.planEndDate)).length;
-  const expiredAbonelik = restoran.filter(u=>u.planEndDate&&Date.now()>u.planEndDate).length;
-
-  const toplamGelir = abonelikGelir + ayKomis;
-  const yillik = abonelikGelir * 12 + ayKomis * 12;
-
-  // Büyüme oranları
-  const sipBuyume = gecenAySip > 0 ? ((buAySip - gecenAySip) / gecenAySip * 100) : null;
-  const prevGelir = gecenAyKomis + abonelikGelir; // abonelik sabit kabul
-  const gelirBuyume = prevGelir > 0 ? ((toplamGelir - prevGelir) / prevGelir * 100) : null;
-
-  return {
-    gunKomis, gunTutar, gunSip, haftaKomis, ayKomis, ayTutar,
-    abonelikGelir, toplamGelir, yillik, fmt,
-    trialCount, basicCount, proCount, aktifAbonelik, expiredAbonelik,
-    buAySip, gecenAySip, gecenAyKomis, prevGelir,
-    sipBuyume, gelirBuyume,
-  };
-}
-
-// ── DASHBOARD ──
-function renderDash() {
-  document.getElementById('d-basvuru').textContent=allBasvurular.length + allUsers.filter(u=>u.status==='pending').length;
-  document.getElementById('d-bekleyen').textContent=allBasvurular.filter(b=>b.status==='pending').length + allUsers.filter(u=>u.status==='pending').length;
-  document.getElementById('d-kurye').textContent=allUsers.filter(u=>u.role==='kurye'&&u.status==='active').length;
-  document.getElementById('d-restoran').textContent=allUsers.filter(u=>u.role==='restoran'&&u.status==='active').length;
-
-  const {gunKomis,gunTutar,gunSip,fmt} = calcRevenue();
-  document.getElementById('d-gun-komisyon').textContent = fmt(gunKomis);
-  document.getElementById('d-gun-tutar').textContent    = fmt(gunTutar);
-  document.getElementById('d-gun-siparis').textContent  = gunSip;
-
-  const recent=allBasvurular.slice(0,5);
-  const el=document.getElementById('d-activity');
-  if(!recent.length){el.innerHTML='<div class="empty"><div class="empty-ico">📋</div><p>Henüz başvuru yok</p></div>';return;}
-  el.innerHTML=recent.map(b=>`
-    <div class="act-item">
-      <div class="act-dot" style="background:${b.status==='pending'?'var(--yellow)':b.status==='active'?'var(--green)':'var(--gray)'}"></div>
-      <div class="act-text"><strong>${esc(b.name||'—')}</strong> · ${b.type==='restoran'?'🍽️ Restoran':'🛵 Kurye'}</div>
-      <div class="act-time">${fmtTime(b.createdAt)}</div>
-    </div>`).join('');
-}
-
-// ── BAŞVURULAR ──
-window.fBasvuru=(f,btn)=>{fBsv=f;setActive(btn,'#pane-basvurular .ftab');renderBasvurular();};
-window.renderBasvurular=()=>{
-  const s=document.getElementById('s-basvuru').value.toLowerCase();
-
-  // Form başvuruları + self-registered pending users
-  const pendingUsers = allUsers.filter(u => u.status==='pending').map(u=>({
-    _isUser:true, id:u.id, name:u.name||'—', email:u.email||'',
-    telefon:u.phone||'', type:u.role, status:'pending', createdAt:u.createdAt,
-    restoranAdi:u.role==='restoran'?u.name:''
-  }));
-  let list=[...allBasvurular, ...pendingUsers];
-
-  if(fBsv==='pending') list=list.filter(b=>b.status==='pending');
-  if(fBsv==='restoran') list=list.filter(b=>b.type==='restoran');
-  if(fBsv==='kurye') list=list.filter(b=>b.type==='kurye');
-  if(s) list=list.filter(b=>(b.name||'').toLowerCase().includes(s)||(b.email||'').toLowerCase().includes(s)||(b.sehir||'').toLowerCase().includes(s)||(b.restoranAdi||'').toLowerCase().includes(s));
-
-  const el=document.getElementById('basvuru-list');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ico">📭</div><p>Başvuru bulunamadı</p></div>';return;}
-
-  el.innerHTML=list.map(b=>`
-    <div class="litem ${b.status}">
-      <div class="litem-top">
-        <div>
-          <div class="litem-name">${esc(b.name||'—')} ${b._isUser?'<span style="font-size:.6rem;background:rgba(0,200,215,.1);color:var(--teal);border-radius:4px;padding:.1rem .4rem;margin-left:.4rem">Kendi Kaydı</span>':''}</div>
-          <div class="litem-sub">${esc(b.email||'')} ${b.sehir?'· '+b.sehir:''}</div>
-        </div>
-        <span class="badge b-${b.status}">${statusLbl(b.status)}</span>
-      </div>
-      <div class="litem-meta">
-        <span class="badge b-${b.type}">${b.type==='restoran'?'🍽️ Restoran':'🛵 Kurye'}</span>
-        ${b.telefon?`<span style="font-size:.72rem;color:var(--gray-lt)">📞 ${esc(b.telefon)}</span>`:''}
-        ${b.restoranAdi&&!b._isUser?`<span style="font-size:.72rem;color:var(--gray-lt)">🏪 ${b.restoranAdi}</span>`:''}
-        ${b.model?`<span style="font-size:.72rem;color:var(--gray-lt)">📋 ${b.model}</span>`:''}
-      </div>
-      <div class="litem-actions">
-        ${b.status==='pending' && b._isUser ? `
-          <button class="bsm b-approve" onclick="approveUser('${b.id}')">✓ Onayla</button>
-          <button class="bsm b-reject"  onclick="rejectUser('${b.id}')">✕ Reddet</button>
-        ` : b.status==='pending' ? `
-          <button class="bsm b-approve" onclick="approveBasvuru('${b.id}')">✓ Onayla & Hesap Oluştur</button>
-          <button class="bsm b-reject"  onclick="rejectBasvuru('${b.id}')">✕ Reddet</button>
-        ` : ''}
-        ${b.status==='active'?`<span style="font-size:.72rem;color:var(--green)">✓ Onaylandı</span>`:''}
-        ${b.status==='rejected'?`<span style="font-size:.72rem;color:var(--gray-lt)">Reddedildi</span>`:''}
-      </div>
-    </div>`).join('');
-};
-
-window.approveBasvuru=async(id)=>{
-  const b=allBasvurular.find(x=>x.id===id);
-  if(!b) return;
-  openModal(b);
-};
-
-window.rejectBasvuru=async(id)=>{
-  if(!confirm('Bu başvuruyu reddetmek istediğinize emin misiniz?')) return;
-  try {
-    await updateDoc(doc(db,'basvurular',id),{status:'rejected'});
-    allBasvurular=allBasvurular.map(b=>b.id===id?{...b,status:'rejected'}:b);
-    renderBasvurular(); renderDash();
-    showToast('Başvuru reddedildi.','err');
-  } catch(e){ showToast('Hata: '+e.message,'err'); }
-};
-
-window.approveUser=async(uid)=>{
-  try {
-    await updateDoc(doc(db,'users',uid),{status:'active'});
-    allUsers=allUsers.map(u=>u.id===uid?{...u,status:'active'}:u);
-    renderBasvurular(); renderRestoranlar(); renderKuryeler(); renderDash(); renderIstatistik(); updateBadge();
-    showToast('✓ Kullanıcı onaylandı! Artık giriş yapabilir.','ok');
-  } catch(e){ showToast('Hata: '+e.message,'err'); }
-};
-
-window.rejectUser=async(uid)=>{
-  if(!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?')) return;
-  try {
-    await updateDoc(doc(db,'users',uid),{status:'rejected'});
-    allUsers=allUsers.map(u=>u.id===uid?{...u,status:'rejected'}:u);
-    renderBasvurular(); renderDash(); updateBadge();
-    showToast('Kullanıcı reddedildi.','err');
-  } catch(e){ showToast('Hata: '+e.message,'err'); }
-};
-
-// ── RESTORANLAR ──
-window.fRestoran=(f,btn)=>{fRst=f;setActive(btn,'#pane-restoranlar .ftab');renderRestoranlar();};
-window.renderRestoranlar=()=>{
-  const s=document.getElementById('s-restoran').value.toLowerCase();
-  let list=allUsers.filter(u=>u.role==='restoran');
-  if(fRst==='active')    list=list.filter(u=>u.status==='active');
-  if(fRst==='suspended') list=list.filter(u=>u.status==='suspended');
-  if(fRst==='odeme')     list=list.filter(u=>u.paymentStatus==='pending');
-  if(fRst==='demo')      list=list.filter(u=>u.demo===true);
-  if(fRst==='demo')      list=list.filter(u=>u.demo===true||u.email==='demo@kuryeai.com');
-  if(s) list=list.filter(u=>(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s)||(u.company||'').toLowerCase().includes(s));
-
-  // Ödeme bekleyen badge güncelle
-  const odemeCount = allUsers.filter(u=>u.role==='restoran'&&u.paymentStatus==='pending').length;
-  const odmBadge = document.getElementById('badge-odeme');
-  if (odmBadge) { odmBadge.textContent = odemeCount; odmBadge.style.display = odemeCount ? 'inline' : 'none'; }
-
-  const el=document.getElementById('restoran-list');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ico">🍽️</div><p>Restoran bulunamadı</p></div>';return;}
-  el.innerHTML=list.map(u=>userCard(u)).join('');
-};
-
-// ── KURYELER ──
-window.fKurye=(f,btn)=>{fKry=f;setActive(btn,'#pane-kuryeler .ftab');renderKuryeler();};
-window.renderKuryeler=()=>{
-  const s=document.getElementById('s-kurye').value.toLowerCase();
-  let list=allUsers.filter(u=>u.role==='kurye');
-  if(fKry==='active') list=list.filter(u=>u.status==='active');
-  if(fKry==='suspended') list=list.filter(u=>u.status==='suspended');
-  if(s) list=list.filter(u=>(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s));
-
-  const el=document.getElementById('kurye-list');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ico">🛵</div><p>Kurye bulunamadı</p></div>';return;}
-  el.innerHTML=list.map(u=>userCard(u)).join('');
-};
-
-function userCard(u) {
-  const isRest = u.role === 'restoran';
-  const isDemo = u.demo === true || u.email === 'demo@kuryeai.com';
-  const demoBadge = isDemo ? `<span style="font-size:.62rem;font-weight:700;padding:.1rem .45rem;border-radius:6px;background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.4);margin-left:.3rem">🎮 Demo</span>` : '';
-  const planExpired = isRest && u.planEndDate && Date.now() > u.planEndDate;
-  const planDaysLeft = isRest && u.planEndDate
-    ? Math.max(0, Math.ceil((u.planEndDate - Date.now()) / 86400000))
-    : null;
-  const planBadge = isRest
-    ? `<span style="font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:6px;background:rgba(0,0,0,.3);color:${planColor(u.plan)};border:1px solid ${planColor(u.plan)}">${planLbl(u.plan||'trial')}</span>`
-    : '';
-  const planRow = isRest ? `
-    <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem;flex-wrap:wrap">
-      ${planBadge}
-      ${planDaysLeft !== null ? `<span style="font-size:.68rem;color:${planExpired?'var(--red)':'var(--gray-lt)'}">${planExpired?'⚠ Süresi doldu':'⏱ '+planDaysLeft+' gün kaldı'}</span>` : ''}
-      <select onchange="setPlan('${u.id}',this.value)" style="margin-left:auto;font-size:.68rem;background:var(--dark);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
-        <option value="">Plan değiştir…</option>
-        <option value="trial">Deneme (7 gün)</option>
-        <option value="basic">Basic — 1.499₺/ay</option>
-        <option value="pro">Pro — 9.999₺/yıl</option>
-      </select>
-    </div>` : '';
-
-  // Ödeme bildirim satırı
-  const payRow = isRest && u.paymentStatus === 'pending' ? `
-    <div style="margin-top:.55rem;padding:.6rem .75rem;background:rgba(255,214,10,.07);border:1px solid rgba(255,214,10,.25);border-radius:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap">
-        <div style="font-size:.73rem;font-weight:700;color:var(--yellow)">💳 Ödeme Bildirimi</div>
-        <div style="display:flex;gap:.4rem">
-          ${u.paymentDekontURL ? `<a href="${u.paymentDekontURL}" target="_blank" style="font-size:.68rem;padding:.2rem .5rem;background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.35);border-radius:6px;color:var(--teal);text-decoration:none">🖼 Dekont</a>` : ''}
-          <button class="bsm b-approve" style="font-size:.68rem;padding:.2rem .5rem" onclick="approvePayment('${u.id}')">✓ Onayla</button>
-          <button class="bsm b-reject" style="font-size:.68rem;padding:.2rem .5rem" onclick="rejectPayment('${u.id}')">✕ Reddet</button>
-        </div>
-      </div>
-      ${u.paymentNote ? `<div style="font-size:.75rem;color:var(--gray-lt);margin-top:.3rem">📝 ${u.paymentNote}</div>` : ''}
-      ${u.paymentDate ? `<div style="font-size:.68rem;color:var(--gray);margin-top:.15rem">${new Date(u.paymentDate).toLocaleString('tr-TR')}</div>` : ''}
-    </div>` : '';
-
-  return `<div class="litem ${u.status}">
-    <div class="litem-top">
-      <div>
-        <div class="litem-name">${esc(u.name||'—')}${demoBadge}</div>
-        <div class="litem-sub">${esc(u.email||'')} ${u.phone?'· '+u.phone:''}</div>
-      </div>
-      <span class="badge b-${u.status}">${statusLbl(u.status)}</span>
-    </div>
-    <div class="litem-meta">
-      ${u.company?`<span style="font-size:.72rem;color:var(--gray-lt)">🏪 ${u.company}</span>`:''}
-      ${planRow}
-      ${payRow}
-    </div>
-    <div class="litem-actions">
-      ${u.status==='active'
-        ?`<button class="bsm b-suspend" onclick="toggleStatus('${u.id}','suspended')">⏸ Askıya Al</button>`
-        :u.status==='pending'
-        ?`<button class="bsm b-approve" onclick="approveUser('${u.id}')">✓ Onayla</button>
-          <button class="bsm b-reject" onclick="rejectUser('${u.id}')">✕ Reddet</button>`
-        :`<button class="bsm b-activate" onclick="toggleStatus('${u.id}','active')">▶ Aktif Et</button>`}
-    </div>
-  </div>`;
-}
-
-// ── ÖDEME ONAYI ───────────────────────────────────────────────────────────
-window.approvePayment = async (uid) => {
-  const u = allUsers.find(u => u.id === uid);
-  if (!u) return;
-  // Plan seç: trial ise basic'e yükselt, yoksa mevcut planı uzat
-  const plan = (!u.plan || u.plan === 'trial') ? 'basic' : u.plan;
-  const days = PLANS[plan]?.days || 30;
-  const now  = Date.now();
-  const update = {
-    paymentStatus: 'approved',
-    plan,
-    planStartDate: now,
-    planEndDate:   now + days * 86400000,
-    planActive:    true,
-  };
-  try {
-    await updateDoc(doc(db,'users',uid), update);
-    allUsers = allUsers.map(u => u.id === uid ? {...u,...update} : u);
-    renderRestoranlar(); renderDash(); renderIstatistik();
-    showToast(`✓ Ödeme onaylandı — ${planLbl(plan)} planı aktif edildi.`, 'ok');
-  } catch(e) { showToast('Hata: '+e.message,'err'); }
-};
-
-window.rejectPayment = async (uid) => {
-  try {
-    await updateDoc(doc(db,'users',uid), { paymentStatus: 'rejected' });
-    allUsers = allUsers.map(u => u.id === uid ? {...u, paymentStatus:'rejected'} : u);
-    renderRestoranlar();
-    showToast('Ödeme bildirimi reddedildi.', 'err');
-  } catch(e) { showToast('Hata: '+e.message,'err'); }
-};
-
-window.toggleStatus=async(uid,status)=>{
-  try {
-    await updateDoc(doc(db,'users',uid),{status});
-    allUsers=allUsers.map(u=>u.id===uid?{...u,status}:u);
-    renderRestoranlar(); renderKuryeler(); renderDash();
-    showToast(status==='active'?'Hesap aktif edildi.':'Hesap askıya alındı.', status==='active'?'ok':'err');
-  } catch(e){ showToast('Hata: '+e.message,'err'); }
-};
-
-// ── İSTATİSTİK ──
-function renderIstatistik() {
-  const aktif=allUsers.filter(u=>u.status==='active').length;
-  const bek=allBasvurular.filter(b=>b.status==='pending').length;
-  const ask=allUsers.filter(u=>u.status==='suspended').length;
-  document.getElementById('i-toplam').textContent=allUsers.length;
-  document.getElementById('i-aktif').textContent=aktif;
-  document.getElementById('i-bek').textContent=bek;
-  document.getElementById('i-ask').textContent=ask;
-  document.getElementById('i-r').textContent=allUsers.filter(u=>u.role==='restoran').length;
-  document.getElementById('i-k').textContent=allUsers.filter(u=>u.role==='kurye').length;
-
-  const {
-    gunKomis,haftaKomis,ayKomis,ayTutar,
-    abonelikGelir,toplamGelir,yillik,fmt,
-    trialCount,basicCount,proCount,aktifAbonelik,expiredAbonelik,
-    buAySip,gecenAySip,gecenAyKomis,prevGelir,sipBuyume,gelirBuyume,
-  } = calcRevenue();
-
-  document.getElementById('g-gun').textContent          = fmt(gunKomis);
-  document.getElementById('g-hafta').textContent        = fmt(haftaKomis);
-  document.getElementById('g-ay').textContent           = fmt(ayKomis);
-  document.getElementById('g-toplam-tutar').textContent = fmt(ayTutar);
-  document.getElementById('g-saas').textContent         = fmt(abonelikGelir);
-  document.getElementById('g-yillik').textContent       = fmt(yillik);
-
-  // Abonelik özeti
-  document.getElementById('ab-trial').textContent   = trialCount + ' restoran';
-  document.getElementById('ab-basic').textContent   = basicCount + ' restoran';
-  document.getElementById('ab-pro').textContent     = proCount + ' restoran';
-  document.getElementById('ab-aktif').textContent   = aktifAbonelik;
-  document.getElementById('ab-expired').textContent = expiredAbonelik;
-
-  // Kâr tablosu
-  const giderEl  = document.getElementById('kar-gider-input');
-  const gider    = parseFloat(giderEl?.value || '0') || 5000;
-  const netKar   = toplamGelir - gider;
-  document.getElementById('kar-abonelik').textContent    = fmt(abonelikGelir);
-  document.getElementById('kar-komisyon').textContent    = fmt(ayKomis);
-  document.getElementById('kar-toplam-gelir').textContent = fmt(toplamGelir);
-  const netEl = document.getElementById('kar-net');
-  netEl.textContent = fmt(netKar);
-  netEl.style.color = netKar >= 0 ? 'var(--green)' : 'var(--red)';
-
-  // Büyüme analizi
-  const fmtOran = v => v === null ? '—' : (v >= 0 ? '▲ ' : '▼ ') + Math.abs(v).toFixed(1) + '%';
-  document.getElementById('byu-gecen-sip').textContent    = gecenAySip;
-  document.getElementById('byu-bu-sip').textContent       = buAySip;
-  const sipOranEl = document.getElementById('byu-sip-oran');
-  sipOranEl.textContent = fmtOran(sipBuyume);
-  sipOranEl.style.color = sipBuyume === null ? '' : sipBuyume >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('byu-gecen-gelir').textContent  = fmt(prevGelir);
-  document.getElementById('byu-bu-gelir').textContent     = fmt(toplamGelir);
-  const gelirOranEl = document.getElementById('byu-gelir-oran');
-  gelirOranEl.textContent = fmtOran(gelirBuyume);
-  gelirOranEl.style.color = gelirBuyume === null ? '' : gelirBuyume >= 0 ? 'var(--green)' : 'var(--red)';
-}
-
-// ── CREATE USER MODAL ──
-window.openModal=(basvuru)=>{
-  modalData=basvuru;
-  if(basvuru){
-    document.getElementById('modal-title').textContent='Başvuruyu Onayla';
-    document.getElementById('modal-sub').textContent='Kullanıcı bilgilerini kontrol edin ve hesap oluşturun.';
-    document.getElementById('m-name').value=basvuru.name||'';
-    document.getElementById('m-email').value=basvuru.email||'';
-    document.getElementById('m-phone').value=basvuru.telefon||'';
-    document.getElementById('m-role').value=basvuru.type||'kurye';
-    document.getElementById('m-company').value=basvuru.restoranAdi||'';
-    document.getElementById('m-pw').value='';
-  } else {
-    document.getElementById('modal-title').textContent='Yeni Kullanıcı Oluştur';
-    document.getElementById('modal-sub').textContent='Bilgileri girin ve hesap oluşturun.';
-    ['m-name','m-email','m-phone','m-company','m-pw'].forEach(id=>document.getElementById(id).value='');
-  }
-  document.getElementById('modal').classList.add('show');
-};
-window.closeModal=()=>{ document.getElementById('modal').classList.remove('show'); modalData=null; };
-
-window.createUser=async()=>{
-  const name=document.getElementById('m-name').value.trim();
-  const email=document.getElementById('m-email').value.trim();
-  const pw=document.getElementById('m-pw').value.trim();
-  const role=document.getElementById('m-role').value;
-  const company=document.getElementById('m-company').value.trim();
-  const phone=document.getElementById('m-phone').value.trim();
-  const btn=document.getElementById('create-btn');
-
-  if(!name||!email||!pw){ showToast('Ad, e-posta ve şifre zorunlu.','err'); return; }
-  if(pw.length<6){ showToast('Şifre en az 6 karakter olmalı.','err'); return; }
-
-  btn.classList.add('loading'); btn.disabled=true;
-
-  try {
-    // Geçici auth ile yeni kullanıcı oluştur
-    const secondApp = initializeApp(cfg, 'secondary-'+Date.now());
-    const secAuth   = getAuth(secondApp);
-    const cred      = await createUserWithEmailAndPassword(secAuth, email, pw);
-    const uid       = cred.user.uid;
-    await signOut(secAuth);
-
-    // Firestore'a kaydet
-    const now7 = Date.now();
-    const trialPlan = role === 'restoran' ? {
-      plan: 'trial',
-      planStartDate: now7,
-      planEndDate:   now7 + 7 * 86400000,
-      planActive:    true,
-    } : {};
-    await setDoc(doc(db,'users',uid),{
-      name, email, role, company, phone,
-      status:'active',
-      createdAt: serverTimestamp(),
-      ...trialPlan,
-    });
-
-    // Başvuruyu güncelle
-    if(modalData){
-      await updateDoc(doc(db,'basvurular',modalData.id),{status:'active', userId: uid});
-      allBasvurular=allBasvurular.map(b=>b.id===modalData.id?{...b,status:'active',userId:uid}:b);
-    }
-
-    allUsers=[...allUsers,{id:uid,name,email,role,company,phone,status:'active',...trialPlan}];
-    renderBasvurular(); renderRestoranlar(); renderKuryeler(); renderDash(); renderIstatistik(); updateBadge();
-
-    closeModal();
-    showToast('✓ Hesap oluşturuldu! E-posta: '+email,'ok');
-  } catch(e){
-    const msg=e.code==='auth/email-already-in-use'?'Bu e-posta zaten kayıtlı.':`Hata: ${e.message}`;
-    showToast(msg,'err');
-  }
-
-  btn.classList.remove('loading'); btn.disabled=false;
-};
-
-// ── PLAN SİSTEMİ ──────────────────────────────────────────────────────────
-const PLANS = {
-  trial: { label:'Deneme (7 gün)', price:0,       color:'var(--gray-lt)', days:7   },
-  basic: { label:'Basic',          price:1499,     color:'var(--teal)',    days:30  },
-  pro:   { label:'Pro',            price:9999/12,  color:'var(--yellow)',  days:365 },
-};
-
-function planLbl(plan) {
-  return PLANS[plan]?.label || plan || '—';
-}
-function planColor(plan) {
-  return PLANS[plan]?.color || 'var(--gray-lt)';
-}
-
-window.setPlan = async (uid, plan) => {
-  if (!plan) return;
-  const now = Date.now();
-  const days = PLANS[plan]?.days || 30;
-  const planData = {
-    plan,
-    planStartDate: now,
-    planEndDate:   now + days * 86400000,
-    planActive:    true,
-  };
-  try {
-    await updateDoc(doc(db,'users',uid), planData);
-    allUsers = allUsers.map(u => u.id === uid ? {...u,...planData} : u);
-    renderRestoranlar();
-    showToast(`✓ Plan "${planLbl(plan)}" atandı.`, 'ok');
-  } catch(e) { showToast('Hata: '+e.message,'err'); }
-};
-
-// ── TAB SWITCH ──
+// ── SAYFA GEÇİŞİ ──
+const PAGE_TITLES={dash:'Dashboard',basvurular:'Başvurular',restoranlar:'Restoranlar',kuryeler:'Kuryeler',siparisler:'Siparişler',istatistik:'İstatistikler',bildirimler:'Bildirimler'};
 window.switchTab=(tab)=>{
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('pane-'+tab).classList.add('active');
-  document.getElementById('tab-'+tab).classList.add('active');
-};
-
-// ── HELPERS ──
-function setActive(btn,sel){ document.querySelectorAll(sel).forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
-function statusLbl(s){ return s==='active'?'Aktif':s==='suspended'?'Askıda':s==='rejected'?'Reddedildi':'Bekliyor'; }
-function fmtTime(ts){ if(!ts) return ''; try{ const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){return '';} }
-
-// ── SİPARİŞLER ──────────────────────────────────────────────────────────────
-function listenSiparisler() {
-  if (_unsubSiparisler) return;
-  try {
-    const q = query(collection(db,'orders'), orderBy('createdAt','desc'), limit(100));
-    _unsubSiparisler = onSnapshot(q, snap => {
-      allSiparisler = snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderSiparisler();
-      updateSiparisBadge();
-      renderDash();
-      renderIstatistik();
-    }, e=>console.error('orders snap',e));
-  } catch(e){ console.error(e); }
-}
-
-function updateSiparisBadge() {
-  const n = allSiparisler.filter(s=>s.status==='pending').length;
-  const badge = document.getElementById('badge-sip');
-  if(badge){ badge.textContent=n; badge.style.display=n?'flex':'none'; }
-}
-
-window.fSiparis=(f,btn)=>{ fSip=f; setActive(btn,'#pane-siparisler .ftab'); renderSiparisler(); };
-
-function renderSiparisler() {
-  const el = document.getElementById('siparis-list');
-  if(!el) return;
-  let list = [...allSiparisler];
-  if(fSip==='pending') list=list.filter(s=>s.status==='pending');
-  else if(fSip==='on_the_way') list=list.filter(s=>s.status==='on_the_way');
-  else if(fSip==='delivered') list=list.filter(s=>s.status==='delivered');
-  if(!list.length){ el.innerHTML='<div class="empty"><div class="empty-ico">📦</div><p>Sipariş bulunamadı</p></div>'; return; }
-  const stMap = { pending:'Bekliyor', preparing:'Hazırlanıyor', on_the_way:'Yolda', delivered:'Teslim Edildi' };
-  const stCls = { pending:'y', preparing:'t', on_the_way:'t', delivered:'g' };
-  el.innerHTML = list.map(s=>{
-    const st = s.status||'pending';
-    const items = Array.isArray(s.items) ? s.items.join(', ') : (s.items||'');
-    const t = s.createdAt ? fmtTime(s.createdAt) : '';
-    return `<div class="card" style="margin-bottom:.6rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-        <span style="font-size:.72rem;font-weight:700;color:var(--teal)">${s.orderId||s.id}</span>
-        <span class="snum ${stCls[st]||'y'}" style="font-size:.7rem;padding:.2rem .7rem;border-radius:999px;font-weight:700">${stMap[st]||st}</span>
-      </div>
-      <div style="font-size:.86rem;font-weight:600;margin-bottom:.2rem">${s.customer||'—'}</div>
-      <div style="font-size:.78rem;color:var(--gray-lt);line-height:1.5">
-        ${items ? `📦 ${items}<br/>` : ''}
-        ${s.address ? `📍 ${s.address}<br/>` : ''}
-        ${s.restoranName ? `🍽️ ${s.restoranName}<br/>` : ''}
-        💰 ₺${s.total||0} · ${t}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// Siparişler tab'ına geçince listener başlat
-const _origSwitch = window.switchTab;
-window.switchTab=(tab)=>{
-  _origSwitch(tab);
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pane-'+tab)?.classList.add('active');
+  document.getElementById('nav-'+tab)?.classList.add('active');
+  const title=PAGE_TITLES[tab]||tab;
+  document.getElementById('topbar-title').textContent=title;
+  document.getElementById('mob-page-title').textContent=title;
+  closeSidebar();
   if(tab==='siparisler') listenSiparisler();
+  if(tab==='istatistik') renderIstatistik();
+  if(tab==='bildirimler') updateNotifTargetList();
 };
 
-let toastTimer;
+// ── WAKE LOCK ──
+window.toggleWakeLock=async()=>{
+  try {
+    if(_wakeLock){await _wakeLock.release();_wakeLock=null;updateWakeLockBtn();showToast('Wake Lock kapatıldı','ok');return;}
+    if('wakeLock' in navigator){
+      _wakeLock=await navigator.wakeLock.request('screen');
+      _wakeLock.addEventListener('release',()=>{_wakeLock=null;updateWakeLockBtn();});
+      updateWakeLockBtn();showToast('Ekran sürekli açık modda 🔆','ok');
+    } else {showToast('Bu tarayıcı Wake Lock desteklemiyor','err');}
+  } catch(e){showToast('Wake Lock alınamadı','err');}
+};
+function updateWakeLockBtn(){
+  const btn=document.getElementById('wakelock-btn');
+  if(!btn)return;
+  btn.textContent=_wakeLock?'🔆 Açık':'🔆 Wake Lock';
+  btn.classList.toggle('active',!!_wakeLock);
+}
+
+// ── SES TOGGLE ──
+window.toggleSound=()=>{
+  _soundEnabled=!_soundEnabled;
+  const btn=document.getElementById('sound-btn');
+  if(btn){btn.textContent=_soundEnabled?'🔊 Ses Açık':'🔇 Ses Kapalı';btn.classList.toggle('active',_soundEnabled);}
+};
+
+// ── TOAST ──
+let _toastTimer;
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
-  el.textContent=msg; el.className='toast show '+(type==='ok'?'ok':'err');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
+  el.textContent=msg;el.className='toast show '+(type==='ok'?'ok':'err');
+  clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
 }
+
+// ── YARDIMCI ──
+function setActive(btn,sel){document.querySelectorAll(sel).forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function statusLbl(s){return s==='active'?'Aktif':s==='suspended'?'Askıda':s==='rejected'?'Reddedildi':'Bekliyor';}
+function fmtTime(ts){if(!ts)return '';try{const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function planLbl(p){return p==='basic'?'Basic':p==='pro'?'Pro':p==='trial'?'Deneme':'—';}
+function planColor(p){return p==='basic'?'var(--teal)':p==='pro'?'var(--yellow)':'var(--text3)';}
+const PLANS={trial:{label:'Deneme (7 gün)',price:0,days:7},basic:{label:'Basic',price:1499,days:30},pro:{label:'Pro',price:9999/12,days:365}};
+const fmt=v=>'₺'+v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+// ── STUB'lar (diğer modüller yüklenince override edilir) ──
+function loadAll(){return Promise.resolve();}
+function watchDemoSessions(){}
+function listenSiparisler(){}
+function listenAcilTalepler(){}
+function listenIzinciTalepler(){}
+function loadGiderler(){}
+function loadBroadcasts(){}
+function initMap(){}
+function renderIstatistik(){}
+function updateNotifTargetList(){}
+function renderBasvurular(){}
+function renderRestoranlar(){}
+function renderKuryeler(){}
+
+let mapObj=null;
 </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}</script>
 </body>
 </html>

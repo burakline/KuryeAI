@@ -567,7 +567,8 @@ tbody tr:hover{background:var(--bg)}
 .mob-status{display:flex;gap:6px}
 .sidebar-overlay{
   display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.55);z-index:200;
+  background:rgba(0,0,0,.32);z-index:9998;
+  transition:opacity .28s;
 }
 .sidebar-overlay.open{display:block}
 
@@ -576,7 +577,7 @@ tbody tr:hover{background:var(--bg)}
   .sidebar{
     transform:translateX(-100%);
     transition:transform .28s cubic-bezier(.4,0,.2,1);
-    z-index:300!important;
+    z-index:9999;
     width:280px;
   }
   .sidebar.open{transform:translateX(0);box-shadow:8px 0 32px rgba(0,0,0,.25)}
@@ -1947,27 +1948,25 @@ tbody tr:hover{background:var(--bg)}
 <script>
 window.toggleSidebar = function(){
   var sb = document.querySelector(".sidebar");
-  var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
   if(sb.classList.contains("open")){
     window.closeSidebar();
   } else {
     sb.classList.add("open");
     sb.style.transform = "translateX(0)";
-    sb.style.zIndex = "9999";
-    if(ov){ ov.classList.add("open"); ov.style.zIndex = "9998"; }
+    var ov = document.getElementById("sidebar-overlay");
+    if(ov) ov.classList.add("open");
     document.body.style.overflow = "hidden";
   }
 };
 
 window.closeSidebar = function(){
   var sb = document.querySelector(".sidebar");
-  var ov = document.getElementById("sidebar-overlay");
   if(!sb) return;
   sb.classList.remove("open");
   sb.style.transform = "";
-  sb.style.zIndex = "";
-  if(ov){ ov.classList.remove("open"); ov.style.zIndex = ""; }
+  var ov = document.getElementById("sidebar-overlay");
+  if(ov) ov.classList.remove("open");
   document.body.style.overflow = "";
 };
 
@@ -2080,6 +2079,9 @@ const SEED_SETTINGS = {
   custom_base:0,custom_km:0,
   commission_rate:5,
 };
+
+// ── Güvenlik yardımcısı ───────────────────────────────────────────────────
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 // ── State ─────────────────────────────────────────────────────────────────
 let orders=[], menu=[], couriers=[], settings={...SEED_SETTINGS};
@@ -3624,23 +3626,25 @@ window.lookupCourierByEmail=async()=>{
       return;
     }
     const data=snap.docs[0].data();
+    const uid=snap.docs[0].id;
     res.innerHTML=`<div style="padding:12px;background:var(--green-bg);border:1px solid rgba(0,196,140,.2);border-radius:8px">
-      <div style="font-weight:700;margin-bottom:4px">✅ ${data.name||email} bulundu</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">${data.email} · ${data.vehicle||"Araç belirtilmemiş"}</div>
-      <button class="btn btn-primary btn-sm" onclick="addCourierFromSystem('${snap.docs[0].id}')">Restorana Ekle</button>
+      <div style="font-weight:700;margin-bottom:4px">✅ ${esc(data.name||email)} bulundu</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">${esc(data.email)} · ${esc(data.vehicle||"Araç belirtilmemiş")}</div>
+      <button class="btn btn-primary btn-sm" onclick="addCourierFromSystem()">Restorana Ekle</button>
     </div>`;
-    window._pendingCourierAdd=data;window._pendingCourierUid=snap.docs[0].id;
+    window._pendingCourierAdd=data;window._pendingCourierUid=uid;
   }catch(e){
-    res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">Hata: ${e.message}</div>`;
+    res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">${esc(e.message||'Bilinmeyen hata')}</div>`;
   }
 };
-window.addCourierFromSystem=async(uid)=>{
+window.addCourierFromSystem=async()=>{
   const d=window._pendingCourierAdd;
-  if(!d)return;
+  const uid=window._pendingCourierUid;
+  if(!d||!uid)return;
   const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:uid,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
   try{
     await push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
-    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${d.name||d.email} sisteme eklendi</div>`;
+    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
   }catch{showToast("Eklenemedi","error");}

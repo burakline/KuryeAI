@@ -139,7 +139,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 /* ── STAT CARDS ── */
 .sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
-@media(min-width:800px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:769px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+.sgrid-4{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:769px){.sgrid-4{grid-template-columns:repeat(4,1fr)}}
 .scard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:box-shadow .2s;position:relative;overflow:hidden}
 .scard:hover{box-shadow:var(--shadow-md)}
 .scard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
@@ -546,7 +548,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="card" style="margin-bottom:16px">
           <div class="card-header"><div class="card-title">📊 Aylık İstatistikler</div></div>
           <div class="card-body">
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div class="sgrid-4">
               <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--radius-sm)">
                 <div style="font-size:1.5rem;font-weight:800;color:var(--teal)" id="ay-siparis">—</div>
                 <div style="font-size:11px;color:var(--text3);margin-top:4px">Sipariş</div>
@@ -1324,10 +1326,10 @@ function renderIstatistik(){
   const fmtOran=v=>v===null?'—':(v>=0?'▲ ':'▼ ')+Math.abs(v).toFixed(1)+'%';
   if(g('byu-gecen-sip'))g('byu-gecen-sip').textContent=r.gecenAySip;
   if(g('byu-bu-sip'))g('byu-bu-sip').textContent=r.buAySip;
-  if(g('byu-sip-oran')){g('byu-sip-oran').textContent=fmtOran(r.sipBuyume);g('byu-sip-oran').style.color=r.sipBuyume===null?'':r.sipBuyume>=0?'var(--green)':'var(--red)';}
+  if(g('byu-sip-oran')){g('byu-sip-oran').textContent=fmtOran(r.sipBuyume);g('byu-sip-oran').style.color=r.sipBuyume===null?'var(--text3)':r.sipBuyume>=0?'var(--green)':'var(--red)';}
   if(g('byu-gecen-gelir'))g('byu-gecen-gelir').textContent=fmt(r.prevGelir);
   if(g('byu-bu-gelir'))g('byu-bu-gelir').textContent=fmt(r.toplamGelir);
-  if(g('byu-gelir-oran')){g('byu-gelir-oran').textContent=fmtOran(r.gelirBuyume);g('byu-gelir-oran').style.color=r.gelirBuyume===null?'':r.gelirBuyume>=0?'var(--green)':'var(--red)';}
+  if(g('byu-gelir-oran')){g('byu-gelir-oran').textContent=fmtOran(r.gelirBuyume);g('byu-gelir-oran').style.color=r.gelirBuyume===null?'var(--text3)':r.gelirBuyume>=0?'var(--green)':'var(--red)';}
 
   // Kâr tablosu — giderler
   const giderToplam=allGiderler.reduce((acc,g)=>acc+(g.tutar||0),0);
@@ -1448,6 +1450,13 @@ function initMap(){
     document.getElementById('zone-save-panel').style.display='block';
     mapObj.dragging.enable();
   });
+
+  // Touch desteği (mobil zone çizimi)
+  const mc=mapObj.getContainer();
+  const toLatLng=t=>{const r=mc.getBoundingClientRect();return mapObj.containerPointToLatLng(L.point(t.clientX-r.left,t.clientY-r.top));};
+  mc.addEventListener('touchstart',e=>{if(!_zoneMode)return;e.preventDefault();const t=e.touches[0];_zoneStart=toLatLng(t);if(_zoneDrawing){mapObj.removeLayer(_zoneDrawing);_zoneDrawing=null;}},{passive:false});
+  mc.addEventListener('touchmove',e=>{if(!_zoneMode||!_zoneStart)return;e.preventDefault();const t=e.touches[0];const ll=toLatLng(t);const r=ll.distanceTo(_zoneStart);if(_zoneDrawing)mapObj.removeLayer(_zoneDrawing);_zoneDrawing=L.circle(_zoneStart,{radius:r,color:_zoneColor,fillOpacity:.15,weight:2}).addTo(mapObj);const km=(r/1000).toFixed(2);const alan=(Math.PI*r*r/1000000).toFixed(3);const ib=document.getElementById('zone-info-box');if(ib)ib.style.display='block';const id=document.getElementById('zone-info-detail');if(id)id.textContent=`Çap: ${(r*2/1000).toFixed(2)} km · Alan: ${alan} km²`;document.getElementById('zone-info-name').textContent='Bölge Çiziliyor...';},{passive:false});
+  mc.addEventListener('touchend',e=>{if(!_zoneMode||!_zoneStart||!_zoneDrawing)return;const r=_zoneDrawing.getRadius();const km=(r/1000).toFixed(2);const alan=(Math.PI*r*r/1000000).toFixed(3);document.getElementById('zone-info-name').textContent=`Yarıçap: ${km} km · Alan: ${alan} km²`;document.getElementById('zone-save-panel').style.display='block';},{passive:false});
 
   loadZones();
 }

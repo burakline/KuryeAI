@@ -1226,11 +1226,158 @@ function renderIzinciHavuz(){
     </div>`).join('');
 }
 
+// ── GELİR HESAPLAMA (demo hesaplar hariç) ──
+function calcRevenue(){
+  const now=new Date();
+  const todayMs=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  const dayOfWk=now.getDay()===0?6:now.getDay()-1;
+  const weekMs=todayMs-dayOfWk*86400000;
+  const monthMs=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+  const prevMonthMs=new Date(now.getFullYear(),now.getMonth()-1,1).getTime();
+
+  let gunKomis=0,gunTutar=0,gunSip=0;
+  let haftaKomis=0,haftaTutar=0,haftaSip=0;
+  let ayKomis=0,ayTutar=0,buAySip=0;
+  let gecenAyKomis=0,gecenAySip=0;
+
+  for(const s of allSiparisler){
+    const raw=s.createdAt;
+    const t=typeof raw==='string'?new Date(raw).getTime():(raw?.toDate?raw.toDate().getTime():raw||0);
+    const komis=s.commissionAmount??((s.total||0)*(s.commissionRate??5)/100);
+    const tutar=s.total||0;
+    if(t>=todayMs){gunKomis+=komis;gunTutar+=tutar;gunSip++;}
+    if(t>=weekMs){haftaKomis+=komis;haftaTutar+=tutar;haftaSip++;}
+    if(t>=monthMs){ayKomis+=komis;ayTutar+=tutar;buAySip++;}
+    if(t>=prevMonthMs&&t<monthMs){gecenAyKomis+=komis;gecenAySip++;}
+  }
+
+  // Demo hesapları abonelik gelirinden çıkar
+  const restoranlar=allUsers.filter(u=>u.role==='restoran'&&u.status==='active'&&u.demo!==true&&u.email!=='demo@kuryeai.com');
+  const trialCount=restoranlar.filter(u=>!u.plan||u.plan==='trial').length;
+  const basicCount=restoranlar.filter(u=>u.plan==='basic').length;
+  const proCount=restoranlar.filter(u=>u.plan==='pro').length;
+  const abonelikGelir=basicCount*1499+proCount*(9999/12);
+  const aktifAbonelik=restoranlar.filter(u=>u.plan&&u.plan!=='trial'&&(!u.planEndDate||Date.now()<u.planEndDate)).length;
+  const expiredAbonelik=restoranlar.filter(u=>u.planEndDate&&Date.now()>u.planEndDate).length;
+
+  const toplamGelir=abonelikGelir+ayKomis;
+  const yillik=(abonelikGelir+ayKomis)*12;
+  const sipBuyume=gecenAySip>0?((buAySip-gecenAySip)/gecenAySip*100):null;
+  const prevGelir=gecenAyKomis+abonelikGelir;
+  const gelirBuyume=prevGelir>0?((toplamGelir-prevGelir)/prevGelir*100):null;
+
+  return {gunKomis,gunTutar,gunSip,haftaKomis,haftaTutar,haftaSip,ayKomis,ayTutar,buAySip,
+    abonelikGelir,toplamGelir,yillik,trialCount,basicCount,proCount,
+    aktifAbonelik,expiredAbonelik,gecenAySip,gecenAyKomis,prevGelir,sipBuyume,gelirBuyume};
+}
+
+// ── DASHBOARD STATS (günlük/haftalık/aylık) ──
+function renderDashStats(){
+  const r=calcRevenue();
+  // Günlük
+  const g=id=>document.getElementById(id);
+  if(g('gun-siparis'))g('gun-siparis').textContent=r.gunSip;
+  if(g('gun-komisyon'))g('gun-komisyon').textContent=fmt(r.gunKomis);
+  if(g('gun-tutar'))g('gun-tutar').textContent=fmt(r.gunTutar);
+  // Haftalık
+  if(g('hafta-siparis'))g('hafta-siparis').textContent=r.haftaSip;
+  if(g('hafta-komisyon'))g('hafta-komisyon').textContent=fmt(r.haftaKomis);
+  if(g('hafta-tutar'))g('hafta-tutar').textContent=fmt(r.haftaTutar);
+  // Aylık
+  if(g('ay-siparis'))g('ay-siparis').textContent=r.buAySip;
+  if(g('ay-komisyon'))g('ay-komisyon').textContent=fmt(r.ayKomis);
+  if(g('ay-tutar'))g('ay-tutar').textContent=fmt(r.ayTutar);
+  if(g('ay-abonelik'))g('ay-abonelik').textContent=fmt(r.abonelikGelir);
+}
+
+// ── İSTATİSTİK SAYFASI ──
+function renderIstatistik(){
+  const aktif=allUsers.filter(u=>u.status==='active').length;
+  const bek=allBasvurular.filter(b=>b.status==='pending').length;
+  const ask=allUsers.filter(u=>u.status==='suspended').length;
+  const g=id=>document.getElementById(id);
+  if(g('i-toplam'))g('i-toplam').textContent=allUsers.length;
+  if(g('i-aktif'))g('i-aktif').textContent=aktif;
+  if(g('i-bek'))g('i-bek').textContent=bek;
+  if(g('i-ask'))g('i-ask').textContent=ask;
+  if(g('i-r'))g('i-r').textContent=allUsers.filter(u=>u.role==='restoran').length;
+  if(g('i-k'))g('i-k').textContent=allUsers.filter(u=>u.role==='kurye').length;
+
+  const r=calcRevenue();
+  if(g('ab-trial'))g('ab-trial').textContent=r.trialCount+' restoran';
+  if(g('ab-basic'))g('ab-basic').textContent=r.basicCount+' restoran';
+  if(g('ab-pro'))g('ab-pro').textContent=r.proCount+' restoran';
+  if(g('ab-aktif'))g('ab-aktif').textContent=r.aktifAbonelik;
+  if(g('ab-expired'))g('ab-expired').textContent=r.expiredAbonelik;
+  if(g('g-gun'))g('g-gun').textContent=fmt(r.gunKomis);
+  if(g('g-hafta'))g('g-hafta').textContent=fmt(r.haftaKomis);
+  if(g('g-ay'))g('g-ay').textContent=fmt(r.ayKomis);
+  if(g('g-saas'))g('g-saas').textContent=fmt(r.abonelikGelir);
+  if(g('g-yillik'))g('g-yillik').textContent=fmt(r.yillik);
+
+  const fmtOran=v=>v===null?'—':(v>=0?'▲ ':'▼ ')+Math.abs(v).toFixed(1)+'%';
+  if(g('byu-gecen-sip'))g('byu-gecen-sip').textContent=r.gecenAySip;
+  if(g('byu-bu-sip'))g('byu-bu-sip').textContent=r.buAySip;
+  if(g('byu-sip-oran')){g('byu-sip-oran').textContent=fmtOran(r.sipBuyume);g('byu-sip-oran').style.color=r.sipBuyume===null?'':r.sipBuyume>=0?'var(--green)':'var(--red)';}
+  if(g('byu-gecen-gelir'))g('byu-gecen-gelir').textContent=fmt(r.prevGelir);
+  if(g('byu-bu-gelir'))g('byu-bu-gelir').textContent=fmt(r.toplamGelir);
+  if(g('byu-gelir-oran')){g('byu-gelir-oran').textContent=fmtOran(r.gelirBuyume);g('byu-gelir-oran').style.color=r.gelirBuyume===null?'':r.gelirBuyume>=0?'var(--green)':'var(--red)';}
+
+  // Kâr tablosu — giderler
+  const giderToplam=allGiderler.reduce((acc,g)=>acc+(g.tutar||0),0);
+  const netKar=r.toplamGelir-giderToplam;
+  if(g('kar-abonelik'))g('kar-abonelik').textContent=fmt(r.abonelikGelir);
+  if(g('kar-komisyon'))g('kar-komisyon').textContent=fmt(r.ayKomis);
+  if(g('kar-toplam-gelir'))g('kar-toplam-gelir').textContent=fmt(r.toplamGelir);
+  if(g('kar-gider-toplam'))g('kar-gider-toplam').textContent=fmt(giderToplam);
+  if(g('kar-net')){g('kar-net').textContent=fmt(netKar);g('kar-net').style.color=netKar>=0?'var(--green)':'var(--red)';}
+
+  renderDashStats();
+}
+
+// ── GİDERLER ──
+async function loadGiderler(){
+  try{
+    const snap=await getDocs(collection(db,'giderler'));
+    allGiderler=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderGiderList();
+  }catch(e){console.error('giderler',e);}
+}
+function renderGiderList(){
+  const el=document.getElementById('gider-list');if(!el)return;
+  if(!allGiderler.length){el.innerHTML='<div style="font-size:.78rem;color:var(--text3);text-align:center;padding:8px">Henüz gider eklenmedi</div>';return;}
+  el.innerHTML=allGiderler.map(g=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:.82rem;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--text2)">${esc(g.aciklama||'—')}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-weight:700;color:var(--red)">${fmt(g.tutar||0)}</span>
+        <button onclick="deleteGider('${g.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:0 2px" title="Sil">✕</button>
+      </div>
+    </div>`).join('');
+}
+window.openGiderModal=()=>{ document.getElementById('g-aciklama').value=''; document.getElementById('g-tutar').value=''; document.getElementById('gider-modal').classList.add('show'); };
+window.closeGiderModal=()=>document.getElementById('gider-modal').classList.remove('show');
+window.saveGider=async()=>{
+  const aciklama=document.getElementById('g-aciklama').value.trim();
+  const tutar=parseFloat(document.getElementById('g-tutar').value)||0;
+  if(!aciklama||!tutar){showToast('Açıklama ve tutar zorunlu','err');return;}
+  try{
+    const ref=await addDoc(collection(db,'giderler'),{aciklama,tutar,createdAt:serverTimestamp()});
+    allGiderler=[...allGiderler,{id:ref.id,aciklama,tutar}];
+    renderGiderList();renderIstatistik();closeGiderModal();showToast('Gider eklendi','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.deleteGider=async(id)=>{
+  try{
+    await deleteDoc(doc(db,'giderler',id));
+    allGiderler=allGiderler.filter(g=>g.id!==id);
+    renderGiderList();renderIstatistik();showToast('Gider silindi','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+
 // ── STUBS ──
-function loadGiderler(){}
 function loadBroadcasts(){}
 function initMap(){}
-function renderIstatistik(){}
 function updateNotifTargetList(){}
 // ── BAŞVURULAR ──
 window.fBasvuru=(f,btn)=>{fBsv=f;setActive(btn,'#pane-basvurular .ftab');renderBasvurular();};

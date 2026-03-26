@@ -2498,17 +2498,15 @@ async function initFirebase(){
 
     // Realtime listeners — data gelince UI güncellenir
     onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
-      if(snap.val()){ orders=objToArr(snap.val()); renderAll(); }
+      orders=objToArr(snap.val()); renderAll();
     });
     onValue(ref(db,`restaurants/${RESTAURANT_ID}/menu`),snap=>{
-      if(snap.val()){ menu=objToArr(snap.val()); renderMenu(); }
+      menu=objToArr(snap.val()); renderMenu();
     });
     onValue(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),snap=>{
-      if(snap.val()){
-        couriers=objToArr(snap.val());
-        renderCouriers();renderTrackingCouriers();renderDashCouriers();
-        updateMapMarkers();updateMapDashMarkers();updateMetrics();
-      }
+      couriers=objToArr(snap.val());
+      renderCouriers();renderTrackingCouriers();renderDashCouriers();
+      updateMapMarkers();updateMapDashMarkers();updateMetrics();
     });
 
   }catch(err){
@@ -3646,7 +3644,10 @@ window.addCourierFromSystem=async()=>{
     document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
-  }catch{showToast("Eklenemedi","error");}
+  }catch(e){
+    console.error("Kurye ekle RTDB hatası:",e);
+    showToast("Eklenemedi: "+(e.message||e),"error");
+  }
 };
 
 // ── PLATFORM LİNKLERİ ─────────────────────────────────────────────────────

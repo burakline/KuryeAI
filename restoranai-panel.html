@@ -2012,7 +2012,7 @@ const FB = {
   appId:"1:1012295004135:web:0cceac0476175e19395742",
 };
 const app     = initializeApp(FB);
-const db      = getDatabase(app);
+const db      = getDatabase(app, "https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app");
 const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);

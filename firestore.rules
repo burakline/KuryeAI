@@ -139,5 +139,56 @@ service cloud.firestore {
       allow read:  if isSignedIn();
       allow write: if isAdmin();
     }
+
+    // ─── zones ───────────────────────────────────────────────────────────────
+    // Admin yazar; giriş yapmış herkes okur
+    match /zones/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ─── giderler ────────────────────────────────────────────────────────────
+    // Sadece admin okur/yazar
+    match /giderler/{doc} {
+      allow read, write: if isAdmin();
+    }
+
+    // ─── broadcasts ──────────────────────────────────────────────────────────
+    // Admin yazar; giriş yapmış herkes okur (bildirim almak için)
+    match /broadcasts/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ─── izinciTalepler ──────────────────────────────────────────────────────
+    match /izinciTalepler/{doc} {
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        request.auth.uid == resource.data.isverenId ||
+        isKurye()
+      );
+      allow create: if isSignedIn()
+        && request.resource.data.isverenId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        request.auth.uid == resource.data.isverenId ||
+        isKurye()
+      );
+      allow delete: if isAdmin()
+        || (isSignedIn() && request.auth.uid == resource.data.isverenId);
+    }
+
+    // ─── izinciTeklifler ─────────────────────────────────────────────────────
+    match /izinciTeklifler/{doc} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.kureyeId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        isAdmin() ||
+        request.auth.uid == resource.data.isverenId ||
+        request.auth.uid == resource.data.kureyeId
+      );
+      allow delete: if isAdmin();
+    }
   }
 }

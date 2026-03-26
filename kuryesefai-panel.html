@@ -179,10 +179,10 @@ const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 // ── Auth ──────────────────────────────────────────────────────────────────────
 onAuthStateChanged(auth,async user=>{
   const loader=document.getElementById('loader');
-  if(!user){window.location.href='/kuryesefai-login.html';return;}
+  if(!user){window.location.href='/kuryesefai-login';return;}
   const snap=await getDoc(doc(db,'users',user.uid));
   if(!snap.exists()||snap.data().isZoneChief!==true){
-    await signOut(auth);window.location.href='/kuryesefai-login.html';return;
+    await signOut(auth);window.location.href='/kuryesefai-login';return;
   }
   const ud=snap.data();
   document.getElementById('sb-uname').textContent=ud.name||user.email;
@@ -192,7 +192,7 @@ onAuthStateChanged(auth,async user=>{
   await loadZone(ud.bolgeId,user.uid);
 });
 
-window.doSignOut=async()=>{await signOut(auth);window.location.href='/kuryesefai-login.html';};
+window.doSignOut=async()=>{await signOut(auth);window.location.href='/kuryesefai-login';};
 
 // ── Harita ───────────────────────────────────────────────────────────────────
 function initMap(){

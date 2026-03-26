@@ -86,7 +86,7 @@ onAuthStateChanged(auth,async user=>{
   if(user){
     const snap=await getDoc(doc(db,'users',user.uid));
     if(snap.exists()&&snap.data().isZoneChief===true){
-      window.location.href='/kuryesefai-panel.html';return;
+      window.location.href='/kuryesefai-panel';return;
     }
     await signOut(auth);
   }
@@ -109,7 +109,7 @@ window.doLogin=async()=>{
       err.textContent='Bu hesabın Bölge Şefi yetkisi yok.';err.classList.add('show');
       btn.classList.remove('loading');btn.disabled=false;return;
     }
-    window.location.href='/kuryesefai-panel.html';
+    window.location.href='/kuryesefai-panel';
   }catch(e){
     const c=e.code;
     err.textContent=c==='auth/invalid-credential'||c==='auth/wrong-password'?'E-posta veya şifre hatalı.':c==='auth/too-many-requests'?'Çok fazla deneme. Bekleyin.':'Giriş yapılamadı.';

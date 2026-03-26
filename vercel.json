@@ -26,7 +26,10 @@
     { "source": "/izincikuryeai-isveren-panel",    "destination": "/izincikuryeai-isveren-panel.html" },
     { "source": "/auth-action",                    "destination": "/auth-action.html" },
     { "source": "/reset-password",                 "destination": "/reset-password.html" },
-    { "source": "/acil-kurye",                     "destination": "/acil-kurye/index.html" }
+    { "source": "/acil-kurye",                     "destination": "/acil-kurye/index.html" },
+    { "source": "/kuryesefai",                     "destination": "/kuryesefai-login.html" },
+    { "source": "/kuryesefai-login",               "destination": "/kuryesefai-login.html" },
+    { "source": "/kuryesefai-panel",               "destination": "/kuryesefai-panel.html" }
   ],
   "headers": [
     {

@@ -29,10 +29,14 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function isBolgeSefi() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isZoneChief == true;
+    }
+
     // ─── users/{userId} ──────────────────────────────────────────────────────
-    // Kullanıcı kendi profilini okur/yazar; admin hepsini okuyabilir
     match /users/{userId} {
-      allow read:  if isOwner(userId) || isAdmin();
+      allow read:  if isOwner(userId) || isAdmin() || isBolgeSefi();
       allow write: if isOwner(userId) || isAdmin();
 
       match /shifts/{doc} {
@@ -52,6 +56,9 @@ service cloud.firestore {
     // Restoran → sadece kendi siparişleri (restaurantId)
     match /orders/{orderId} {
       allow read, write: if isAdmin();
+
+      // Bölge şefi: siparişleri sadece okuyabilir (değiştiremez)
+      allow read: if isBolgeSefi();
 
       // Kurye: kendine atanmış siparişi okuyabilir ve güncelleyebilir
       allow read, update: if isKurye()

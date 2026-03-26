@@ -2456,6 +2456,14 @@ setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
+  // Gerçek RTDB bağlantı durumunu izle
+  onValue(ref(db,'.info/connected'),snap=>{
+    const connected=snap.val();
+    console.log("RTDB connected:",connected);
+    if(connected) setFbStatus("connected");
+    else setFbStatus("loading");
+  });
+
   // onValue listeners her zaman kurulur — seed/settings hatasına bağlı değil
   onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
     orders=objToArr(snap.val()); renderAll();
@@ -2476,11 +2484,9 @@ async function initFirebase(){
     const ss=await get(ref(db,`restaurants/${RESTAURANT_ID}/settings`));
     if(!ss.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),SEED_SETTINGS);
     else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
-    setFbStatus("connected");
     showToast("Firebase bağlantısı kuruldu ✓");
   }catch(err){
     console.error("Firebase seed hatası:",err);
-    setFbStatus("error");
   }
 }
 
@@ -3595,7 +3601,9 @@ window.addCourierFromSystem=async()=>{
   const resultDiv=document.getElementById("courier-lookup-result");
   resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor… (Restoran ID: ${esc(RESTAURANT_ID)})</div>`;
   try{
-    await push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
+    const pushPromise=push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
+    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('RTDB bağlantı zaman aşımı — sunucuya ulaşılamıyor')),8000));
+    await Promise.race([pushPromise,timeout]);
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     showToast(`✓ ${d.name||d.email} kuryeye eklendi`);

@@ -978,7 +978,6 @@ tbody tr:hover{background:var(--bg)}
           <div class="card-header">
             <div class="card-title">Kayıtlı Kuryeler</div>
             <div class="card-actions">
-              <button class="btn btn-ghost btn-sm" onclick="openAddCourierModal()">+ Manuel Ekle</button>
             </div>
           </div>
           <div class="table-wrap" id="couriers-table-wrap">
@@ -1724,35 +1723,6 @@ tbody tr:hover{background:var(--bg)}
 </div><!-- /app -->
 
 <!-- Kurye Ekle Modal -->
-<div class="modal-overlay" id="modal-add-courier">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Yeni Kurye Ekle</div>
-      <div class="modal-close" onclick="closeModal('modal-add-courier')">✕</div>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Ad Soyad</label><input class="form-input" id="new-courier-name" placeholder="Kurye adı"/></div>
-        <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="new-courier-phone" placeholder="05XX XXX XX XX"/></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group" style="margin-bottom:0"><label class="form-label">Araç Türü</label>
-          <select class="form-select" id="new-courier-vehicle">
-            <option value="moto">Motorsiklet 🛵</option>
-            <option value="bike">Bisiklet 🚲</option>
-            <option value="car">Araç 🚗</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0"><label class="form-label">Bölge</label><input class="form-input" id="new-courier-zone" placeholder="Çalışma bölgesi"/></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modal-add-courier')">İptal</button>
-      <button class="btn btn-primary" onclick="addCourier()">Kurye Ekle</button>
-    </div>
-  </div>
-</div>
-
 <!-- Kurye Sil Confirm Modal -->
 <div class="modal-overlay" id="modal-delete-courier">
   <div class="modal">
@@ -2707,25 +2677,7 @@ function renderCouriers(){
     </tbody></table>`;
 }
 
-window.openAddCourierModal=()=>document.getElementById("modal-add-courier").classList.add("open");
 window.closeModal=id=>document.getElementById(id).classList.remove("open");
-
-window.addCourier=async()=>{
-  const name=document.getElementById("new-courier-name").value.trim();
-  const phone=document.getElementById("new-courier-phone").value.trim();
-  const vehicle=document.getElementById("new-courier-vehicle").value;
-  const zone=document.getElementById("new-courier-zone").value.trim();
-  if(!name){showToast("Ad Soyad boş olamaz","error");return;}
-  const newCourier={name,phone,vehicle,zone,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,createdAt:Date.now()};
-  try{
-    await push(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),newCourier);
-    closeModal("modal-add-courier");
-    document.getElementById("new-courier-name").value="";
-    document.getElementById("new-courier-phone").value="";
-    document.getElementById("new-courier-zone").value="";
-    showToast(`✓ ${name} eklendi`);
-  }catch{showToast("Kurye eklenemedi","error")}
-};
 
 window.openDeleteCourier=(id,name)=>{
   deleteCourierId=id;

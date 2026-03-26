@@ -545,6 +545,11 @@
         showError('Bu hesap RestoranAI paneli için tanımlı değil.');
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
+      if (!cred.user.emailVerified) {
+        await auth.signOut();
+        showError('E-posta adresinizi doğrulamanız gerekiyor. Lütfen gelen kutunuzu kontrol edin.');
+        btn.classList.remove('loading'); btn.disabled = false; return;
+      }
       if (data.status === 'pending') {
         await auth.signOut();
         showError('Hesabınız henüz onaylanmamış. En kısa sürede incelenecektir.');

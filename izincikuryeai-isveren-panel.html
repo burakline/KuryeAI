@@ -149,6 +149,7 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, getDocs, writeBatch }
@@ -245,9 +246,9 @@
                     <span style="font-size:.7rem;font-weight:700;color:var(--tx2)">${tk.createdAt ? new Date(tk.createdAt).toLocaleDateString('tr-TR') : ''}</span>
                   </div>
                   <div class="teklif-info">
-                    ${tk.kuryePlakasi ? `🏍️ Plaka: <strong>${tk.kuryePlakasi}</strong><br>` : ''}
-                    ${tk.kuryeArac ? `🔧 Araç: <strong>${tk.kuryeArac}</strong><br>` : ''}
-                    ${tk.kuryeId ? `🪪 ID: <strong>${tk.kuryeId}</strong>` : ''}
+                    ${tk.kuryePlakasi ? `🏍️ Plaka: <strong>${esc(tk.kuryePlakasi)}</strong><br>` : ''}
+                    ${tk.kuryeArac ? `🔧 Araç: <strong>${esc(tk.kuryeArac)}</strong><br>` : ''}
+                    ${tk.kuryeId ? `🪪 ID: <strong>${esc(tk.kuryeId)}</strong>` : ''}
                   </div>
                   <div class="teklif-actions">
                     <button class="btn-sm btn-approve" onclick="approveTeklif('${t.id}','${tk.id}','${tk.kuryeUid}')">✓ Onayla</button>
@@ -262,7 +263,7 @@
       } else if (t.matchedKuryeAdi) {
         tekliflerHtml = `<div class="teklifler-section" style="background:rgba(52,199,89,.06);border-radius:8px;padding:.8rem;margin-top:.8rem">
           <div style="font-size:.8rem;font-weight:700;color:var(--green)">✅ Eşleşme Tamamlandı</div>
-          <div style="font-size:.8rem;color:var(--tx2);margin-top:.3rem">Kurye: <strong>${t.matchedKuryeAdi}</strong></div>
+          <div style="font-size:.8rem;color:var(--tx2);margin-top:.3rem">Kurye: <strong>${esc(t.matchedKuryeAdi)}</strong></div>
         </div>`;
       }
 
@@ -274,7 +275,7 @@
         <div class="talep-info">
           📅 ${t.tarih || '—'} ${t.saat ? '· ' + t.saat : ''}<br>
           📍 ${t.adres || '—'}<br>
-          ${t.aciklama ? `💬 ${t.aciklama}` : ''}
+          ${t.aciklama ? `💬 ${esc(t.aciklama)}` : ''}
         </div>
         ${tekliflerHtml}
       </div>`;

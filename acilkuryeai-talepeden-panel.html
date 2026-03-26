@@ -110,6 +110,7 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, addDoc, updateDoc, collection, query, where, orderBy, onSnapshot }
@@ -167,12 +168,12 @@
         : '';
       return `<div class="talep-item">
         <div class="talep-item-head">
-          <span class="talep-id-badge">${t.talepId||t.id}</span>
+          <span class="talep-id-badge">${esc(t.talepId||t.id)}</span>
           <span class="st-badge ${stClass[st]||'st-open'}">${stMap[st]||st}</span>
         </div>
         <div class="talep-info">
-          📍 ${t.fromAddr||'—'} → ${t.toAddr||'—'}<br/>
-          📦 ${t.description||'—'}${fee}<br/>
+          📍 ${esc(t.fromAddr||'—')} → ${esc(t.toAddr||'—')}<br/>
+          📦 ${esc(t.description||'—')}${fee}<br/>
           🕐 ${t.createdAt ? new Date(t.createdAt).toLocaleString('tr-TR') : ''}
         </div>
         ${t.kuryeName ? `<div class="kurye-info">🛵 Kurye: <strong>${t.kuryeName}</strong></div>` : ''}

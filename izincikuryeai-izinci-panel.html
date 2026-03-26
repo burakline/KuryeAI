@@ -293,6 +293,7 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, getDocs, setDoc }
@@ -398,12 +399,12 @@
     el.innerHTML = orders.map(o=>`
       <div class="order-item">
         <div class="order-head">
-          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="order-id">${esc(o.orderId||o.id)}</span>
           <span class="st-badge st-open">Bekliyor</span>
         </div>
         <div class="order-info">
           📍 ${o.address||o.fromAddr||'—'}<br/>
-          🍽️ ${o.restoranName||'—'}<br/>
+          🍽️ ${esc(o.restoranName||'—')}<br/>
           💰 ₺${o.total||0}
         </div>
       </div>`).join('');
@@ -432,11 +433,11 @@
     el.innerHTML = orders.map(o=>`
       <div class="order-item">
         <div class="order-head">
-          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="order-id">${esc(o.orderId||o.id)}</span>
           <span class="st-badge st-open">Aktif</span>
         </div>
         <div class="order-info">
-          📍 ${o.fromAddr||'—'} → ${o.toAddr||'—'}<br/>
+          📍 ${esc(o.fromAddr||'—')} → ${esc(o.toAddr||'—')}<br/>
           🕐 ${o.createdAt ? new Date(o.createdAt).toLocaleString('tr-TR') : ''}
         </div>
       </div>`).join('');
@@ -448,11 +449,11 @@
     el.innerHTML = orders.slice(0,20).map(o=>`
       <div class="order-item">
         <div class="order-head">
-          <span class="order-id">${o.orderId||o.id}</span>
+          <span class="order-id">${esc(o.orderId||o.id)}</span>
           <span class="st-badge st-delivered">Teslim Edildi</span>
         </div>
         <div class="order-info">
-          📍 ${o.fromAddr||'—'} → ${o.toAddr||'—'}<br/>
+          📍 ${esc(o.fromAddr||'—')} → ${esc(o.toAddr||'—')}<br/>
           🕐 ${o.createdAt ? new Date(o.createdAt).toLocaleString('tr-TR') : ''}
           ${o.amount ? `<br/>💰 ₺${parseFloat(o.amount).toFixed(2)}` : ''}
         </div>
@@ -478,7 +479,7 @@
       el.innerHTML = entries.slice(0,30).map(e=>`
         <div class="ledger-item">
           <div>
-            <div>${e.description||'Gelir'}</div>
+            <div>${esc(e.description||'Gelir')}</div>
             <div class="ledger-desc">${e.createdAt ? new Date(e.createdAt).toLocaleDateString('tr-TR') : ''}</div>
           </div>
           <div class="ledger-val ${parseFloat(e.amount||0)>=0?'pos':'neg'}">

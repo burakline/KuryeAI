@@ -163,6 +163,7 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot, orderBy }
@@ -241,11 +242,11 @@
     el.innerHTML = list.map(t=>`
       <div class="talep-card" style="margin-bottom:.8rem">
         <div class="talep-header">
-          <span class="talep-id">${t.talepId||t.id}</span>
+          <span class="talep-id">${esc(t.talepId||t.id)}</span>
           <span class="talep-time">${t.createdAt ? new Date(t.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
         </div>
-        <div class="talep-addr">📍 ${t.toAddr||'—'}</div>
-        <div class="talep-detail">📦 ${t.description||'—'} · ${t.fee?'₺'+t.fee:''}</div>
+        <div class="talep-addr">📍 ${esc(t.toAddr||'—')}</div>
+        <div class="talep-detail">📦 ${esc(t.description||'—')} · ${t.fee?'₺'+t.fee:''}</div>
         <div class="talep-actions">
           <button class="btn-accept" onclick="acceptTalep('${t.id}')">Kabul Et</button>
           <button class="btn-reject" onclick="rejectTalep('${t.id}')">Reddet</button>

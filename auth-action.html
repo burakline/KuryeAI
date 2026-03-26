@@ -139,8 +139,12 @@ async function handleAction() {
       // Kullanıcı rolüne göre yönlendirme butonu ayarla
       const loginBtn = document.getElementById('login-btn');
       if (email) {
-        document.getElementById('success-msg').innerHTML =
-          `<strong>${email}</strong> adresi başarıyla doğrulandı.<br><br>Hesabın admin onayına alındı.<br>En kısa sürede aktif edilecektir.`;
+        const msgEl = document.getElementById('success-msg');
+        const strong = document.createElement('strong');
+        strong.textContent = email;
+        msgEl.innerHTML = '';
+        msgEl.appendChild(strong);
+        msgEl.insertAdjacentText('beforeend', ' adresi başarıyla doğrulandı.\n\nHesabın admin onayına alındı. En kısa sürede aktif edilecektir.');
       }
       show('success');
 

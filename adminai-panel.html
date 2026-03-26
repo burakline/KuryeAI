@@ -1124,9 +1124,159 @@ function loadBroadcasts(){}
 function initMap(){}
 function renderIstatistik(){}
 function updateNotifTargetList(){}
-function renderBasvurular(){document.getElementById('basvuru-list').innerHTML='<div class="empty"><div class="empty-ico">📥</div><p>Yakında...</p></div>';}
-function renderRestoranlar(){document.getElementById('restoran-list').innerHTML='<div class="empty"><div class="empty-ico">🍽️</div><p>Yakında...</p></div>';}
-function renderKuryeler(){document.getElementById('kurye-list').innerHTML='<div class="empty"><div class="empty-ico">🛵</div><p>Yakında...</p></div>';}
+// ── BAŞVURULAR ──
+window.fBasvuru=(f,btn)=>{fBsv=f;setActive(btn,'#pane-basvurular .ftab');renderBasvurular();};
+function renderBasvurular(){
+  const s=(document.getElementById('s-basvuru')||{}).value?.toLowerCase()||'';
+  const pendingUsers=allUsers.filter(u=>u.status==='pending').map(u=>({_isUser:true,id:u.id,name:u.name||'—',email:u.email||'',telefon:u.phone||'',type:u.role,status:'pending',createdAt:u.createdAt}));
+  let list=[...allBasvurular,...pendingUsers];
+  if(fBsv==='pending') list=list.filter(b=>b.status==='pending');
+  if(fBsv==='restoran') list=list.filter(b=>b.type==='restoran');
+  if(fBsv==='kurye') list=list.filter(b=>b.type==='kurye');
+  if(s) list=list.filter(b=>(b.name||'').toLowerCase().includes(s)||(b.email||'').toLowerCase().includes(s));
+  const el=document.getElementById('basvuru-list');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ico">📭</div><p>Başvuru bulunamadı</p></div>';return;}
+  el.innerHTML=list.map(b=>`
+    <div class="litem ${b.status}">
+      <div class="litem-top">
+        <div><div class="litem-name">${esc(b.name||'—')}${b._isUser?'<span style="font-size:.6rem;background:var(--teal-bg);color:var(--teal-dk);border-radius:4px;padding:.1rem .4rem;margin-left:.4rem">Kendi Kaydı</span>':''}</div>
+        <div class="litem-sub">${esc(b.email||'')}</div></div>
+        <span class="badge b-${b.status}">${statusLbl(b.status)}</span>
+      </div>
+      <div class="litem-meta"><span class="badge b-${b.type}">${b.type==='restoran'?'🍽️ Restoran':'🛵 Kurye'}</span>${b.telefon?`<span style="font-size:.72rem;color:var(--text3)">📞 ${esc(b.telefon)}</span>`:''}</div>
+      <div class="litem-actions">
+        ${b.status==='pending'&&b._isUser?`<button class="bsm b-approve" onclick="approveUser('${b.id}')">✓ Onayla</button><button class="bsm b-reject" onclick="rejectUser('${b.id}')">✕ Reddet</button>`
+          :b.status==='pending'?`<button class="bsm b-approve" onclick="approveBasvuru('${b.id}')">✓ Onayla & Hesap Oluştur</button><button class="bsm b-reject" onclick="rejectBasvuru('${b.id}')">✕ Reddet</button>`:''}
+        ${b.status==='active'?'<span style="font-size:.72rem;color:var(--green)">✓ Onaylandı</span>':''}
+        ${b.status==='rejected'?'<span style="font-size:.72rem;color:var(--text3)">Reddedildi</span>':''}
+      </div>
+    </div>`).join('');
+}
+window.approveBasvuru=async(id)=>{const b=allBasvurular.find(x=>x.id===id);if(b)openModal(b);};
+window.rejectBasvuru=async(id)=>{
+  if(!confirm('Bu başvuruyu reddetmek istediğinize emin misiniz?'))return;
+  try{await updateDoc(doc(db,'basvurular',id),{status:'rejected'});allBasvurular=allBasvurular.map(b=>b.id===id?{...b,status:'rejected'}:b);renderBasvurular();renderDash();showToast('Başvuru reddedildi','err');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.approveUser=async(uid)=>{
+  try{await updateDoc(doc(db,'users',uid),{status:'active'});allUsers=allUsers.map(u=>u.id===uid?{...u,status:'active'}:u);renderBasvurular();renderRestoranlar();renderKuryeler();renderDash();updateBadge();showToast('✓ Kullanıcı onaylandı','ok');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.rejectUser=async(uid)=>{
+  if(!confirm('Bu kullanıcıyı reddetmek istediğinize emin misiniz?'))return;
+  try{await updateDoc(doc(db,'users',uid),{status:'rejected'});allUsers=allUsers.map(u=>u.id===uid?{...u,status:'rejected'}:u);renderBasvurular();renderDash();updateBadge();showToast('Kullanıcı reddedildi','err');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+
+// ── RESTORANLAR + KURYELER ──
+window.fRestoran=(f,btn)=>{fRst=f;setActive(btn,'#pane-restoranlar .ftab');renderRestoranlar();};
+window.fKurye=(f,btn)=>{fKry=f;setActive(btn,'#pane-kuryeler .ftab');renderKuryeler();};
+function renderRestoranlar(){
+  const s=(document.getElementById('s-restoran')||{}).value?.toLowerCase()||'';
+  let list=allUsers.filter(u=>u.role==='restoran');
+  if(fRst==='active') list=list.filter(u=>u.status==='active');
+  if(fRst==='suspended') list=list.filter(u=>u.status==='suspended');
+  if(fRst==='odeme') list=list.filter(u=>u.paymentStatus==='pending');
+  if(fRst==='demo') list=list.filter(u=>u.demo===true||u.email==='demo@kuryeai.com');
+  if(s) list=list.filter(u=>(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s));
+  const oc=allUsers.filter(u=>u.role==='restoran'&&u.paymentStatus==='pending').length;
+  const ob=document.getElementById('badge-odeme');if(ob){ob.textContent=oc;ob.style.display=oc?'inline':'none';}
+  const el=document.getElementById('restoran-list');
+  el.innerHTML=list.length?list.map(u=>userCard(u)).join(''):'<div class="empty"><div class="empty-ico">🍽️</div><p>Restoran bulunamadı</p></div>';
+}
+function renderKuryeler(){
+  const s=(document.getElementById('s-kurye')||{}).value?.toLowerCase()||'';
+  let list=allUsers.filter(u=>u.role==='kurye');
+  if(fKry==='active') list=list.filter(u=>u.status==='active');
+  if(fKry==='suspended') list=list.filter(u=>u.status==='suspended');
+  if(s) list=list.filter(u=>(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s));
+  const el=document.getElementById('kurye-list');
+  el.innerHTML=list.length?list.map(u=>userCard(u)).join(''):'<div class="empty"><div class="empty-ico">🛵</div><p>Kurye bulunamadı</p></div>';
+}
+function userCard(u){
+  const isRest=u.role==='restoran';
+  const isDemo=u.demo===true||u.email==='demo@kuryeai.com';
+  const demoBadge=isDemo?'<span style="font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:6px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);margin-left:.3rem">🎮 Demo</span>':'';
+  const planExpired=isRest&&u.planEndDate&&Date.now()>u.planEndDate;
+  const daysLeft=isRest&&u.planEndDate?Math.max(0,Math.ceil((u.planEndDate-Date.now())/86400000)):null;
+  const planRow=isRest?`<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem;flex-wrap:wrap">
+    <span style="font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:6px;background:var(--bg2);color:${planColor(u.plan)}">${planLbl(u.plan||'trial')}</span>
+    ${daysLeft!==null?`<span style="font-size:.68rem;color:${planExpired?'var(--red)':'var(--text3)'}">${planExpired?'⚠ Süresi doldu':'⏱ '+daysLeft+' gün kaldı'}</span>`:''}
+    <select onchange="setPlan('${u.id}',this.value)" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
+      <option value="">Plan değiştir…</option><option value="trial">Deneme</option><option value="basic">Basic — 1.499₺/ay</option><option value="pro">Pro — 9.999₺/yıl</option>
+    </select></div>`:'';
+  const payRow=isRest&&u.paymentStatus==='pending'?`<div style="margin-top:.55rem;padding:.6rem .75rem;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem">
+      <span style="font-size:.73rem;font-weight:700;color:var(--yellow)">💳 Ödeme Bildirimi</span>
+      <div style="display:flex;gap:.4rem">
+        ${u.paymentDekontURL?`<a href="${u.paymentDekontURL}" target="_blank" style="font-size:.68rem;padding:.2rem .5rem;background:var(--teal-bg);border:1px solid rgba(0,200,215,.35);border-radius:6px;color:var(--teal);text-decoration:none">🖼 Dekont</a>`:''}
+        <button class="bsm b-approve" style="font-size:.68rem;padding:.2rem .5rem" onclick="approvePayment('${u.id}')">✓ Onayla</button>
+        <button class="bsm b-reject" style="font-size:.68rem;padding:.2rem .5rem" onclick="rejectPayment('${u.id}')">✕ Reddet</button>
+      </div></div></div>`:'';
+  return `<div class="litem ${u.status}">
+    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}</div><div class="litem-sub">${esc(u.email||'')}${u.phone?' · '+u.phone:''}</div></div>
+    <span class="badge b-${u.status}">${statusLbl(u.status)}</span></div>
+    <div class="litem-meta">${u.company?`<span style="font-size:.72rem;color:var(--text3)">🏪 ${esc(u.company)}</span>`:''}</div>
+    ${planRow}${payRow}
+    <div class="litem-actions" style="margin-top:.5rem">
+      ${u.status==='active'?`<button class="bsm b-suspend" onclick="toggleStatus('${u.id}','suspended')">⏸ Askıya Al</button>`
+        :u.status==='pending'?`<button class="bsm b-approve" onclick="approveUser('${u.id}')">✓ Onayla</button><button class="bsm b-reject" onclick="rejectUser('${u.id}')">✕ Reddet</button>`
+        :`<button class="bsm b-activate" onclick="toggleStatus('${u.id}','active')">▶ Aktif Et</button>`}
+    </div></div>`;
+}
+window.toggleStatus=async(uid,status)=>{
+  try{await updateDoc(doc(db,'users',uid),{status});allUsers=allUsers.map(u=>u.id===uid?{...u,status}:u);renderRestoranlar();renderKuryeler();renderDash();showToast(status==='active'?'Hesap aktif edildi':'Hesap askıya alındı',status==='active'?'ok':'err');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.approvePayment=async(uid)=>{
+  const u=allUsers.find(u=>u.id===uid);if(!u)return;
+  const plan=(!u.plan||u.plan==='trial')?'basic':u.plan;
+  const days=PLANS[plan]?.days||30;const now=Date.now();
+  const upd={paymentStatus:'approved',plan,planStartDate:now,planEndDate:now+days*86400000,planActive:true};
+  try{await updateDoc(doc(db,'users',uid),upd);allUsers=allUsers.map(u=>u.id===uid?{...u,...upd}:u);renderRestoranlar();showToast(`✓ Ödeme onaylandı — ${planLbl(plan)} aktif`,'ok');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.rejectPayment=async(uid)=>{
+  try{await updateDoc(doc(db,'users',uid),{paymentStatus:'rejected'});allUsers=allUsers.map(u=>u.id===uid?{...u,paymentStatus:'rejected'}:u);renderRestoranlar();showToast('Ödeme reddedildi','err');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.setPlan=async(uid,plan)=>{
+  if(!plan)return;const now=Date.now();const days=PLANS[plan]?.days||30;
+  const pd={plan,planStartDate:now,planEndDate:now+days*86400000,planActive:true};
+  try{await updateDoc(doc(db,'users',uid),pd);allUsers=allUsers.map(u=>u.id===uid?{...u,...pd}:u);renderRestoranlar();showToast(`✓ "${planLbl(plan)}" planı atandı`,'ok');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+
+// ── USER MODAL ──
+window.openModal=(basvuru)=>{
+  modalData=basvuru;
+  document.getElementById('modal-title').textContent=basvuru?'Başvuruyu Onayla':'Yeni Kullanıcı Oluştur';
+  document.getElementById('modal-sub').textContent=basvuru?'Bilgileri kontrol edip hesap oluşturun.':'Hesap bilgilerini girin.';
+  if(basvuru){document.getElementById('m-name').value=basvuru.name||'';document.getElementById('m-email').value=basvuru.email||'';document.getElementById('m-phone').value=basvuru.telefon||'';document.getElementById('m-role').value=basvuru.type||'kurye';document.getElementById('m-company').value=basvuru.restoranAdi||'';document.getElementById('m-pw').value='';}
+  else{['m-name','m-email','m-phone','m-company','m-pw'].forEach(id=>document.getElementById(id).value='');}
+  document.getElementById('modal').classList.add('show');
+};
+window.closeModal=()=>{document.getElementById('modal').classList.remove('show');modalData=null;};
+window.createUser=async()=>{
+  const name=document.getElementById('m-name').value.trim();
+  const email=document.getElementById('m-email').value.trim();
+  const pw=document.getElementById('m-pw').value.trim();
+  const role=document.getElementById('m-role').value;
+  const company=document.getElementById('m-company').value.trim();
+  const phone=document.getElementById('m-phone').value.trim();
+  const btn=document.getElementById('create-btn');
+  if(!name||!email||!pw){showToast('Ad, e-posta ve şifre zorunlu','err');return;}
+  if(pw.length<6){showToast('Şifre en az 6 karakter olmalı','err');return;}
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const sec=initializeApp(cfg,'sec-'+Date.now());
+    const secAuth=getAuth(sec);
+    const cred=await createUserWithEmailAndPassword(secAuth,email,pw);
+    const uid=cred.user.uid;
+    await signOut(secAuth);
+    const now7=Date.now();
+    const trial=role==='restoran'?{plan:'trial',planStartDate:now7,planEndDate:now7+7*86400000,planActive:true}:{};
+    await setDoc(doc(db,'users',uid),{name,email,role,company,phone,status:'active',createdAt:serverTimestamp(),...trial});
+    if(modalData){await updateDoc(doc(db,'basvurular',modalData.id),{status:'active',userId:uid});allBasvurular=allBasvurular.map(b=>b.id===modalData.id?{...b,status:'active',userId:uid}:b);}
+    allUsers=[...allUsers,{id:uid,name,email,role,company,phone,status:'active',...trial}];
+    renderBasvurular();renderRestoranlar();renderKuryeler();renderDash();updateBadge();
+    closeModal();showToast('✓ Hesap oluşturuldu: '+email,'ok');
+  }catch(e){showToast(e.code==='auth/email-already-in-use'?'Bu e-posta zaten kayıtlı':'Hata: '+e.message,'err');}
+  btn.classList.remove('loading');btn.disabled=false;
+};
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}</script>
 </body>

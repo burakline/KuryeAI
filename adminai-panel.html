@@ -1172,7 +1172,7 @@ function renderSiparisHavuz(){
         <div style="font-size:13px;font-weight:600;color:var(--text)">${esc(s.customer||'—')}</div>
         <div style="font-size:11px;color:var(--text3)">${esc(s.restoranName||'')} · ₺${s.total||0}</div>
       </div>
-      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg2);color:${stColor[s.status]||'var(--text3)';white-space:nowrap">${s.status==='pending'?'Bekliyor':s.status==='preparing'?'Hazırlanıyor':s.status==='on_the_way'?'Yolda':s.status}</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg2);color:${stColor[s.status]||'var(--text3)'};white-space:nowrap">${s.status==='pending'?'Bekliyor':s.status==='preparing'?'Hazırlanıyor':s.status==='on_the_way'?'Yolda':s.status}</span>
     </div>`).join('');
 }
 
@@ -1670,12 +1670,12 @@ function userCard(u){
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem">
       <span style="font-size:.73rem;font-weight:700;color:var(--yellow)">💳 Ödeme Bildirimi</span>
       <div style="display:flex;gap:.4rem">
-        ${u.paymentDekontURL?`<a href="${u.paymentDekontURL}" target="_blank" style="font-size:.68rem;padding:.2rem .5rem;background:var(--teal-bg);border:1px solid rgba(0,200,215,.35);border-radius:6px;color:var(--teal);text-decoration:none">🖼 Dekont</a>`:''}
+        ${u.paymentDekontURL?`<a href="${esc(u.paymentDekontURL)}" target="_blank" rel="noopener noreferrer" style="font-size:.68rem;padding:.2rem .5rem;background:var(--teal-bg);border:1px solid rgba(0,200,215,.35);border-radius:6px;color:var(--teal);text-decoration:none">🖼 Dekont</a>`:''}
         <button class="bsm b-approve" style="font-size:.68rem;padding:.2rem .5rem" onclick="approvePayment('${u.id}')">✓ Onayla</button>
         <button class="bsm b-reject" style="font-size:.68rem;padding:.2rem .5rem" onclick="rejectPayment('${u.id}')">✕ Reddet</button>
       </div></div></div>`:'';
   return `<div class="litem ${u.status}">
-    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}</div><div class="litem-sub">${esc(u.email||'')}${u.phone?' · '+u.phone:''}</div></div>
+    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}</div><div class="litem-sub">${esc(u.email||'')}${u.phone?' · '+esc(u.phone):''}</div></div>
     <span class="badge b-${u.status}">${statusLbl(u.status)}</span></div>
     <div class="litem-meta">${u.company?`<span style="font-size:.72rem;color:var(--text3)">🏪 ${esc(u.company)}</span>`:''}</div>
     ${planRow}${payRow}

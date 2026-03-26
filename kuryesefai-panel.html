@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KuryeŞefAI — Bölge Şefi Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f6f8;--surface:#fff;--border:#e8eaed;
+  --teal:#00c8d7;--teal-dk:#009aaa;--teal-bg:rgba(0,200,215,.08);
+  --text:#0f1117;--text2:#4b5563;--text3:#9ca3af;
+  --red:#ef4444;--green:#22c55e;--yellow:#f59e0b;--purple:#8b5cf6;
+  --fh:'Plus Jakarta Sans',sans-serif;
+  --sb:220px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fh);-webkit-font-smoothing:antialiased;overflow:hidden}
+/* ── Loader ── */
+.loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s}
+.loader.hide{opacity:0;pointer-events:none}
+.ring{width:36px;height:36px;border:2px solid rgba(0,200,215,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ── Layout ── */
+.layout{display:flex;height:100vh;overflow:hidden}
+/* ── Sidebar ── */
+.sb{width:var(--sb);min-width:var(--sb);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0;transition:transform .3s}
+.sb-logo{padding:1.2rem 1rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem}
+.sb-logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--teal-dk));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-logo-text{font-size:.88rem;font-weight:800;letter-spacing:-.02em}
+.sb-logo-text em{font-style:normal;color:var(--teal)}
+.sb-badge{font-size:.62rem;background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2);border-radius:999px;padding:.1rem .55rem;font-weight:700;margin-top:.15rem}
+.sb-nav{padding:.75rem .6rem;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.55rem .7rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--text2);transition:all .15s;user-select:none;margin-bottom:.15rem}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--teal-bg);color:var(--teal);font-weight:700}
+.nav-icon{font-size:1rem;width:20px;text-align:center}
+.sb-zone{margin:.6rem;padding:.7rem;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
+.sb-zone-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:.25rem}
+.sb-zone-name{font-size:.82rem;font-weight:700;color:var(--text)}
+.sb-zone-info{font-size:.72rem;color:var(--text3);margin-top:.15rem}
+.sb-bottom{padding:.75rem .6rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.6rem}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0}
+.sb-user-name{font-size:.78rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-signout{font-size:.7rem;color:var(--text3);cursor:pointer;padding:.2rem .5rem;border-radius:6px;border:none;background:none;font-family:var(--fh)}
+.sb-signout:hover{color:var(--red)}
+/* ── Main ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;min-height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.2rem;gap:.8rem}
+.topbar-title{font-size:.9rem;font-weight:700;flex:1}
+.topbar-stat{display:flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:600;color:var(--text2);background:var(--bg);padding:.3rem .7rem;border-radius:999px;border:1px solid var(--border)}
+.dot{width:7px;height:7px;border-radius:50%}
+.dot-green{background:var(--green)}
+.dot-gray{background:var(--text3)}
+.dot-yellow{background:var(--yellow)}
+.mb-nav-toggle{display:none;background:none;border:none;font-size:1.3rem;cursor:pointer;padding:.2rem .4rem;color:var(--text2)}
+/* ── Content ── */
+.content{flex:1;overflow:hidden;position:relative}
+.tab-pane{position:absolute;inset:0;overflow-y:auto;padding:1rem;display:none}
+.tab-pane.active{display:block}
+/* ── Harita tab ── */
+#map{width:100%;height:calc(100vh - 52px - 2rem);min-height:300px;border-radius:12px;border:1px solid var(--border)}
+/* ── Liste kartları ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.section-title{font-size:.9rem;font-weight:700}
+.badge-count{font-size:.72rem;font-weight:700;background:var(--teal-bg);color:var(--teal);padding:.15rem .55rem;border-radius:999px}
+.list-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.litem{display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;border-bottom:1px solid var(--border)}
+.litem:last-child{border-bottom:none}
+.litem-avatar{width:34px;height:34px;border-radius:50%;background:var(--teal-bg);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:var(--teal);flex-shrink:0}
+.litem-body{flex:1;min-width:0}
+.litem-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.litem-sub{font-size:.72rem;color:var(--text3);margin-top:.1rem}
+.status-chip{font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;white-space:nowrap}
+.chip-online{background:rgba(34,197,94,.1);color:var(--green)}
+.chip-offline{background:rgba(156,163,175,.1);color:var(--text3)}
+.chip-busy{background:rgba(245,158,11,.1);color:var(--yellow)}
+.chip-new{background:rgba(0,200,215,.1);color:var(--teal)}
+.chip-active{background:rgba(139,92,246,.1);color:var(--purple)}
+.chip-done{background:rgba(34,197,94,.1);color:var(--green)}
+.order-row{display:flex;flex-wrap:wrap;gap:.35rem;padding:.65rem 1rem;border-bottom:1px solid var(--border);font-size:.8rem}
+.order-row:last-child{border-bottom:none}
+.order-id{font-weight:700;font-size:.78rem;color:var(--text3);min-width:60px}
+.order-rest{font-weight:600;flex:1;min-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.order-addr{color:var(--text3);font-size:.74rem;flex:1 1 100%}
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text3);font-size:.82rem}
+/* ── Mobile ── */
+@media(max-width:768px){
+  .sb{position:fixed;left:0;top:0;bottom:0;z-index:200;transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,.15)}
+  .sb.open{transform:translateX(0)}
+  .sb-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.4)}
+  .sb-overlay.open{display:block}
+  .mb-nav-toggle{display:block}
+  #map{height:55vw;min-height:240px}
+}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="ring"></div></div>
+<div class="sb-overlay" id="sb-overlay" onclick="closeSb()"></div>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sb" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">⭐</div>
+      <div>
+        <div class="sb-logo-text">Kurye<em>Şef</em>AI</div>
+        <div class="sb-badge">Bölge Şefi Paneli</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-item active" onclick="switchTab('harita',this)"><span class="nav-icon">🗺️</span>Canlı Harita</div>
+      <div class="nav-item" onclick="switchTab('kuryeler',this)"><span class="nav-icon">🛵</span>Kuryeler</div>
+      <div class="nav-item" onclick="switchTab('restoranlar',this)"><span class="nav-icon">🍽️</span>Restoranlar</div>
+      <div class="nav-item" onclick="switchTab('siparisler',this)"><span class="nav-icon">📋</span>Sipariş Havuzu</div>
+    </nav>
+    <div class="sb-zone" id="sb-zone-info">
+      <div class="sb-zone-label">Bölge</div>
+      <div class="sb-zone-name" id="zone-name-disp">Yükleniyor…</div>
+      <div class="sb-zone-info" id="zone-info-disp">—</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sb-av">?</div>
+        <div class="sb-user-name" id="sb-uname">—</div>
+        <button class="sb-signout" onclick="doSignOut()">Çıkış</button>
+      </div>
+    </div>
+  </aside>
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <button class="mb-nav-toggle" onclick="openSb()">☰</button>
+      <div class="topbar-title" id="topbar-title">Canlı Harita</div>
+      <div class="topbar-stat"><div class="dot dot-green"></div><span id="stat-online">0</span> online</div>
+      <div class="topbar-stat"><div class="dot dot-yellow"></div><span id="stat-orders">0</span> sipariş</div>
+    </div>
+    <div class="content">
+      <div class="tab-pane active" id="tab-harita">
+        <div id="map"></div>
+      </div>
+      <div class="tab-pane" id="tab-kuryeler">
+        <div class="section-hdr"><div class="section-title">Kuryeler</div><div class="badge-count" id="kurye-count">0</div></div>
+        <div class="list-card" id="kurye-list"><div class="empty-state">Yükleniyor…</div></div>
+      </div>
+      <div class="tab-pane" id="tab-restoranlar">
+        <div class="section-hdr"><div class="section-title">Restoranlar</div><div class="badge-count" id="rest-count">0</div></div>
+        <div class="list-card" id="rest-list"><div class="empty-state">Yükleniyor…</div></div>
+      </div>
+      <div class="tab-pane" id="tab-siparisler">
+        <div class="section-hdr"><div class="section-title">Sipariş Havuzu</div><div class="badge-count" id="order-count">0</div></div>
+        <div class="list-card" id="order-list"><div class="empty-state">Yükleniyor…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,collection,query,where,onSnapshot,orderBy}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const cfg={apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",authDomain:"kuryeai-99bf9.firebaseapp.com",projectId:"kuryeai-99bf9",storageBucket:"kuryeai-99bf9.firebasestorage.app",messagingSenderId:"1012295004135",appId:"1:1012295004135:web:0cceac0476175e19395742",databaseURL:"https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const rtdb=getDatabase(app);
+
+let _zone=null,_zoneUsers=[],_mapReady=false,_mapObj=null;
+let _zoneCircle=null,_courierMarkers={},_restMarkers={};
+let _couriersData=[],_restsData=[],_ordersData=[];
+
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+onAuthStateChanged(auth,async user=>{
+  const loader=document.getElementById('loader');
+  if(!user){window.location.href='/kuryesefai-login.html';return;}
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists()||snap.data().isZoneChief!==true){
+    await signOut(auth);window.location.href='/kuryesefai-login.html';return;
+  }
+  const ud=snap.data();
+  document.getElementById('sb-uname').textContent=ud.name||user.email;
+  document.getElementById('sb-av').textContent=(ud.name||'?')[0].toUpperCase();
+  loader.classList.add('hide');setTimeout(()=>loader.style.display='none',400);
+  initMap();
+  await loadZone(ud.bolgeId,user.uid);
+});
+
+window.doSignOut=async()=>{await signOut(auth);window.location.href='/kuryesefai-login.html';};
+
+// ── Harita ───────────────────────────────────────────────────────────────────
+function initMap(){
+  if(_mapReady)return;_mapReady=true;
+  _mapObj=L.map('map',{zoomControl:true}).setView([41.015,28.979],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OSM'}).addTo(_mapObj);
+}
+
+async function loadZone(bolgeId,uid){
+  if(!bolgeId){
+    document.getElementById('zone-name-disp').textContent='Bölge atanmamış';
+    document.getElementById('zone-info-disp').textContent='Admin ile iletişime geçin';
+    loadAllData(uid);return;
+  }
+  const zsnap=await getDoc(doc(db,'zones',bolgeId));
+  if(!zsnap.exists()){loadAllData(uid);return;}
+  _zone={id:bolgeId,...zsnap.data()};
+  const priceLabel=_zone.priceModel==='paketBasi'?`₺${_zone.priceAmount||0}/paket`:`₺${_zone.priceAmount||0}/km`;
+  document.getElementById('zone-name-disp').textContent=_zone.name||'—';
+  document.getElementById('zone-info-disp').textContent=`${((_zone.radius||0)/1000).toFixed(1)} km yarıçap · ${priceLabel}`;
+  if(_zone.center&&_mapObj){
+    const c=[_zone.center.lat,_zone.center.lng];
+    _mapObj.setView(c,13);
+    _zoneCircle=L.circle(c,{radius:_zone.radius||1000,color:_zone.color||'#00c8d7',fillOpacity:.08,weight:2}).addTo(_mapObj);
+  }
+  loadAllData(uid);
+}
+
+function loadAllData(uid){
+  loadCouriers();
+  loadRestorants();
+  listenOrders();
+  listenRTDB();
+}
+
+// ── Kuryeler (Firestore) ──────────────────────────────────────────────────────
+function loadCouriers(){
+  const q=_zone?.id
+    ? query(collection(db,'users'),where('role','==','kurye'),where('bolgeId','==',_zone.id))
+    : query(collection(db,'users'),where('role','==','kurye'));
+  onSnapshot(q,snap=>{
+    _couriersData=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderKuryeler();updateTopbarStats();
+  });
+}
+
+function renderKuryeler(){
+  const el=document.getElementById('kurye-list');
+  document.getElementById('kurye-count').textContent=_couriersData.length;
+  if(!_couriersData.length){el.innerHTML='<div class="empty-state">Bu bölgede kurye yok</div>';return;}
+  el.innerHTML=_couriersData.map(u=>{
+    const status=u.onlineStatus||'offline';
+    const chip=status==='online'?'chip-online':status==='busy'?'chip-busy':'chip-offline';
+    const label=status==='online'?'Online':status==='busy'?'Meşgul':'Offline';
+    return`<div class="litem">
+      <div class="litem-avatar">${esc((u.name||'?')[0].toUpperCase())}</div>
+      <div class="litem-body"><div class="litem-name">${esc(u.name||'İsimsiz')}</div><div class="litem-sub">${esc(u.phone||'—')}</div></div>
+      <span class="status-chip ${chip}">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Restoranlar (Firestore) ───────────────────────────────────────────────────
+function loadRestorants(){
+  const q=_zone?.id
+    ? query(collection(db,'users'),where('role','==','restoran'),where('bolgeId','==',_zone.id))
+    : query(collection(db,'users'),where('role','==','restoran'));
+  onSnapshot(q,snap=>{
+    _restsData=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderRestoranlar();addRestMarkers();
+  });
+}
+
+function renderRestoranlar(){
+  const el=document.getElementById('rest-list');
+  document.getElementById('rest-count').textContent=_restsData.length;
+  if(!_restsData.length){el.innerHTML='<div class="empty-state">Bu bölgede restoran yok</div>';return;}
+  el.innerHTML=_restsData.map(u=>`<div class="litem">
+    <div class="litem-avatar" style="background:rgba(245,158,11,.12);color:var(--yellow)">🍽️</div>
+    <div class="litem-body"><div class="litem-name">${esc(u.name||'İsimsiz')}</div><div class="litem-sub">${esc(u.address||u.phone||'—')}</div></div>
+  </div>`).join('');
+}
+
+function addRestMarkers(){
+  Object.values(_restMarkers).forEach(m=>_mapObj&&_mapObj.removeLayer(m));
+  _restMarkers={};
+  if(!_mapObj)return;
+  const icon=L.divIcon({html:'🍽️',className:'',iconSize:[22,22],iconAnchor:[11,11]});
+  _restsData.forEach(r=>{
+    if(r.lat&&r.lng){
+      _restMarkers[r.id]=L.marker([r.lat,r.lng],{icon}).addTo(_mapObj).bindPopup(`<b>${esc(r.name||'Restoran')}</b>`);
+    }
+  });
+}
+
+// ── Siparişler (Firestore) ────────────────────────────────────────────────────
+function listenOrders(){
+  const q=query(collection(db,'orders'),orderBy('createdAt','desc'));
+  onSnapshot(q,snap=>{
+    _ordersData=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(o=>!_zone||!_zone.id||_restsData.some(r=>r.id===o.restaurantId)||_couriersData.some(c=>c.id===o.courierId));
+    renderOrders();updateTopbarStats();
+  });
+}
+
+const stChip={new:'chip-new',active:'chip-active',delivered:'chip-done',cancelled:'chip-offline'};
+const stLabel={new:'Yeni',active:'Aktif',delivered:'Teslim',cancelled:'İptal'};
+
+function renderOrders(){
+  const el=document.getElementById('order-list');
+  document.getElementById('order-count').textContent=_ordersData.length;
+  if(!_ordersData.length){el.innerHTML='<div class="empty-state">Sipariş yok</div>';return;}
+  el.innerHTML=_ordersData.slice(0,60).map(o=>`<div class="order-row">
+    <span class="order-id">#${esc(o.orderNo||o.id.slice(-6))}</span>
+    <span class="order-rest">${esc(o.restaurantName||'—')}</span>
+    <span class="status-chip ${stChip[o.status]||'chip-offline'}">${stLabel[o.status]||o.status||'—'}</span>
+    <span class="order-addr">${esc(o.deliveryAddress||'')}</span>
+  </div>`).join('');
+}
+
+// ── RTDB GPS ─────────────────────────────────────────────────────────────────
+function listenRTDB(){
+  onValue(ref(rtdb,'couriers'),snap=>{
+    const data=snap.val()||{};
+    updateCourierMarkers(data);
+    updateOnlineCount(data);
+  });
+}
+
+function updateOnlineCount(data){
+  const online=Object.values(data).filter(c=>c.online).length;
+  document.getElementById('stat-online').textContent=online;
+}
+
+function updateTopbarStats(){
+  document.getElementById('stat-orders').textContent=_ordersData.filter(o=>o.status==='active'||o.status==='new').length;
+}
+
+function updateCourierMarkers(data){
+  if(!_mapObj)return;
+  // Remove stale
+  Object.keys(_courierMarkers).forEach(uid=>{
+    if(!data[uid]){_mapObj.removeLayer(_courierMarkers[uid]);delete _courierMarkers[uid];}
+  });
+  Object.entries(data).forEach(([uid,c])=>{
+    if(!c.lat||!c.lng)return;
+    const isOnline=c.online;
+    const html=`<div style="background:${isOnline?'#22c55e':'#9ca3af'};width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`;
+    const icon=L.divIcon({html,className:'',iconSize:[14,14],iconAnchor:[7,7]});
+    const courier=_couriersData.find(u=>u.id===uid);
+    const name=courier?.name||uid.slice(0,8);
+    if(_courierMarkers[uid]){
+      _courierMarkers[uid].setLatLng([c.lat,c.lng]);
+      _courierMarkers[uid].setIcon(icon);
+    }else{
+      _courierMarkers[uid]=L.marker([c.lat,c.lng],{icon}).addTo(_mapObj).bindPopup(`<b>${esc(name)}</b><br>${isOnline?'Online':'Offline'}`);
+    }
+  });
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+const tabTitles={harita:'Canlı Harita',kuryeler:'Kuryeler',restoranlar:'Restoranlar',siparisler:'Sipariş Havuzu'};
+window.switchTab=(name,el)=>{
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('topbar-title').textContent=tabTitles[name]||name;
+  if(name==='harita'&&_mapObj)setTimeout(()=>_mapObj.invalidateSize(),100);
+  closeSb();
+};
+
+// ── Sidebar mobile ────────────────────────────────────────────────────────────
+window.openSb=()=>{document.getElementById('sidebar').classList.add('open');document.getElementById('sb-overlay').classList.add('open');};
+window.closeSb=()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');};
+</script>
+</body>
+</html>

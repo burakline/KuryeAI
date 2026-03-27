@@ -1114,10 +1114,6 @@ function initFB(){
   _initFbDot();
   // Ücret dinleyicisi (RTDB REST/SSE)
   window._rtdbListen&&window._rtdbListen('/settings/rates',s=>{const d=s.val();if(d){G.rates={h:d.hourly||250,km:d.km||8};renderEarn();}},()=>{});
-  const q1=fb.query(fb.collection(fb.fs,'chats','room1','messages'),fb.orderBy('timestamp'));
-  fb.onSnapshot(q1,s=>{G.msgs[1]=s.docs.map(d=>d.data());if(G.room===1)renderChat();});
-  const q2=fb.query(fb.collection(fb.fs,'chats','room2','messages'),fb.orderBy('timestamp'));
-  fb.onSnapshot(q2,s=>{G.msgs[2]=s.docs.map(d=>d.data());if(G.room===2)renderChat();});
   // Bekleyen sipariş dinleyicisi (RTDB REST/SSE)
   window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/pendingOrder`,s=>{
     const d=s.val();
@@ -1139,6 +1135,7 @@ function initFB(){
     const d=s.val();
     G.assignedRest=d||null;
     _renderAssignedRest();
+    initChat();
   },()=>{});
   // Admin broadcast bildirimleri (RTDB)
   const _bcLoadTs=Date.now();
@@ -1155,6 +1152,21 @@ function initFB(){
       _showBcNotif(b.title,b.body);
     });
   },()=>{});
+}
+let _chatUnsub1=null,_chatUnsub2=null;
+function initChat(){
+  const fb=window._fb;if(!fb)return;
+  if(_chatUnsub1){_chatUnsub1();_chatUnsub1=null;}
+  if(_chatUnsub2){_chatUnsub2();_chatUnsub2=null;}
+  G.msgs={1:[],2:[]};renderChat();
+  const restId=G.assignedRest?.restoranId;
+  if(!restId)return;
+  const ops=`restoran_${restId}_ops`;
+  const team=`restoran_${restId}_team`;
+  const q1=fb.query(fb.collection(fb.fs,'chats',ops,'messages'),fb.orderBy('timestamp'));
+  _chatUnsub1=fb.onSnapshot(q1,s=>{G.msgs[1]=s.docs.map(d=>d.data());if(G.room===1)renderChat();});
+  const q2=fb.query(fb.collection(fb.fs,'chats',team,'messages'),fb.orderBy('timestamp'));
+  _chatUnsub2=fb.onSnapshot(q2,s=>{G.msgs[2]=s.docs.map(d=>d.data());if(G.room===2)renderChat();});
 }
 function _showBcNotif(title,body){
   toast(`📢 ${title||'Bildirim'}: ${body||''}`,'info');
@@ -1284,7 +1296,7 @@ function renderPerf(){const rat=4.8;document.getElementById('pRat').textContent=
 
 // CHAT
 function swRoom(r){G.room=r;document.getElementById('ct1').className='ctab'+(r===1?' active':'');document.getElementById('ct2').className='ctab'+(r===2?' active':'');renderChat();}
-function renderChat(){const msgs=G.msgs[G.room],c=document.getElementById('cMsgs');if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">Henüz mesaj yok</div>';return;}c.innerHTML=msgs.slice(-50).map(m=>{const me=m.senderId===G.id,init=(m.senderName||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);let con='';if(m.type==='text')con=`<div class="mb2">${esc(m.text)}</div>`;else if(m.type==='location')con=`<div class="mb2" style="color:var(--teal);font-weight:600;font-size:0.81rem">📍 ${esc(m.text)}</div>`;else if(m.type==='image')con=`<div class="mb2"><img src="${esc(m.url)}" style="max-width:180px;border-radius:8px;display:block" alt=""></div>`;else if(m.type==='audio')con=`<div class="mb2">🎵 Sesli mesaj</div>`;return `<div class="mrow ${me?'me':'them'}">${!me?`<div class="mav">${init}</div>`:''}<div>${!me?`<div class="msdr">${m.senderName||'Kurye'}</div>`:''}${con}<div class="mmeta">${fmtT(m.timestamp)}</div></div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
+function renderChat(){const msgs=G.msgs[G.room],c=document.getElementById('cMsgs');if(!G.assignedRest?.restoranId){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">🏪 Restorana bağlandıktan sonra chat kullanılabilir</div>';return;}if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">Henüz mesaj yok</div>';return;}c.innerHTML=msgs.slice(-50).map(m=>{const me=m.senderId===G.id,init=(m.senderName||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);let con='';if(m.type==='text')con=`<div class="mb2">${esc(m.text)}</div>`;else if(m.type==='location')con=`<div class="mb2" style="color:var(--teal);font-weight:600;font-size:0.81rem">📍 ${esc(m.text)}</div>`;else if(m.type==='image')con=`<div class="mb2"><img src="${esc(m.url)}" style="max-width:180px;border-radius:8px;display:block" alt=""></div>`;else if(m.type==='audio')con=`<div class="mb2">🎵 Sesli mesaj</div>`;return `<div class="mrow ${me?'me':'them'}">${!me?`<div class="mav">${init}</div>`:''}<div>${!me?`<div class="msdr">${m.senderName||'Kurye'}</div>`:''}${con}<div class="mmeta">${fmtT(m.timestamp)}</div></div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
 function fmtT(ts){if(!ts)return'şimdi';const d=ts.seconds?new Date(ts.seconds*1000):new Date(ts);return d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
 function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
 function sendMsg(){const inp=document.getElementById('cInp'),t=inp.value.trim();if(!t)return;inp.value='';pushMsg({type:'text',text:t});}
@@ -1293,7 +1305,7 @@ function chatFile(e){const f=e.target.files[0];if(!f)return;const r=new FileRead
 let _mr,_ac=[];
 function startV(){navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{_mr=new MediaRecorder(s);_ac=[];_mr.ondataavailable=e=>_ac.push(e.data);_mr.start();document.getElementById('vBtn').style.background='var(--red-bg)';}).catch(()=>toast('Mikrofon erişimi yok','error'));}
 function stopV(){if(!_mr)return;_mr.onstop=()=>{pushMsg({type:'audio'});document.getElementById('vBtn').style.background='';};_mr.stop();}
-function pushMsg(d){const m={...d,senderId:G.id,senderName:G.name,timestamp:Date.now()};const fb=window._fb;const rk=G.room===1?'room1':'room2';G.msgs[G.room].push(m);renderChat();if(fb){fb.addDoc(fb.collection(fb.fs,'chats',rk,'messages'),{...m,timestamp:fb.fsServerTimestamp()}).catch(e=>{toast('Mesaj gönderilemedi: '+e.message,'error');G.msgs[G.room].pop();renderChat();});}}
+function pushMsg(d){const restId=G.assignedRest?.restoranId;if(!restId){toast('Restorana bağlı değilsiniz','error');return;}const m={...d,senderId:G.id,senderName:G.name,senderRole:'kurye',timestamp:Date.now()};const fb=window._fb;const rk=G.room===1?`restoran_${restId}_ops`:`restoran_${restId}_team`;G.msgs[G.room].push(m);renderChat();if(fb){fb.addDoc(fb.collection(fb.fs,'chats',rk,'messages'),{...m,timestamp:fb.fsServerTimestamp()}).catch(e=>{toast('Mesaj gönderilemedi: '+e.message,'error');G.msgs[G.room].pop();renderChat();});}}
 
 // TOOLS
 function calcE(){const h=+document.getElementById('cH').value||0,k=+document.getElementById('cK').value||0,hr=+document.getElementById('cHR').value||250,kr=+document.getElementById('cKR').value||8;if(!h&&!k){document.getElementById('calcRes').style.display='none';return;}const earn=h*hr+k*kr;document.getElementById('cResV').textContent='₺'+Math.round(earn).toLocaleString('tr-TR');document.getElementById('cResBr').textContent=`${h}s × ${hr}₺ = ${Math.round(h*hr)}₺  +  ${k}km × ${kr}₺ = ${Math.round(k*kr)}₺`;document.getElementById('calcRes').style.display='block';}

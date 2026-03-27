@@ -1716,10 +1716,6 @@ tbody tr:hover{background:var(--bg)}
         <div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 120px);overflow:hidden">
           <div class="card-header" style="flex-shrink:0;flex-wrap:wrap;gap:8px">
             <div class="card-title">💬 Operasyon Chat</div>
-            <div style="display:flex;gap:6px;margin-left:auto">
-              <button id="chat-tab-ops" onclick="switchRestChatRoom('ops')" style="font-size:.75rem;padding:.3rem .8rem;border-radius:8px;border:none;cursor:pointer;background:var(--teal);color:#fff;font-weight:600">📢 Operasyon</button>
-              <button id="chat-tab-team" onclick="switchRestChatRoom('team')" style="font-size:.75rem;padding:.3rem .8rem;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg2);color:var(--text2);font-weight:600">👥 Ekip Odası</button>
-            </div>
           </div>
           <div style="flex:1;overflow-y:auto;padding:12px 16px" id="rest-chat-msgs">
             <div style="text-align:center;color:var(--text3);font-size:.85rem;padding:40px 0">Yükleniyor…</div>
@@ -1727,9 +1723,6 @@ tbody tr:hover{background:var(--bg)}
           <div id="rest-chat-input-wrap" style="flex-shrink:0;padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end">
             <textarea id="rest-chat-inp" placeholder="Mesaj yaz..." rows="1" onkeydown="restChatKey(event)" style="flex:1;resize:none;padding:.5rem .75rem;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:.88rem;min-height:38px;font-family:inherit"></textarea>
             <button onclick="sendRestMsg()" style="padding:.5rem 1.1rem;background:var(--teal);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:.88rem;white-space:nowrap">Gönder</button>
-          </div>
-          <div id="rest-chat-readonly" style="display:none;flex-shrink:0;padding:8px 16px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text3);text-align:center;background:var(--bg2)">
-            👥 Ekip odası sadece kuryeler arası — yalnızca izleyebilirsiniz
           </div>
         </div>
       </div>
@@ -2612,42 +2605,21 @@ async function initFirebase(){
 }
 
 // ── CHAT ──────────────────────────────────────────────────────────────────
-let _chatMsgsOps=[],_chatMsgsTeam=[],_chatRoom='ops';
-let _chatUnsubOps=null,_chatUnsubTeam=null;
+let _chatMsgsOps=[];
+let _chatUnsubOps=null;
 function initChatListeners(){
   if(_chatUnsubOps){_chatUnsubOps();_chatUnsubOps=null;}
-  if(_chatUnsubTeam){_chatUnsubTeam();_chatUnsubTeam=null;}
-  _chatMsgsOps=[];_chatMsgsTeam=[];
+  _chatMsgsOps=[];
   const opsRoom=`restoran_${RESTAURANT_ID}_ops`;
-  const teamRoom=`restoran_${RESTAURANT_ID}_team`;
   const q1=query(collection(fs,'chats',opsRoom,'messages'),orderBy('timestamp'));
   _chatUnsubOps=onSnapshot(q1,s=>{
     _chatMsgsOps=s.docs.map(d=>({id:d.id,...d.data()}));
-    if(window.currentPage==='chat'&&_chatRoom==='ops')renderRestChat();
-    else document.getElementById('chat-unread-badge').style.display='inline';
-  });
-  const q2=query(collection(fs,'chats',teamRoom,'messages'),orderBy('timestamp'));
-  _chatUnsubTeam=onSnapshot(q2,s=>{
-    _chatMsgsTeam=s.docs.map(d=>({id:d.id,...d.data()}));
-    if(window.currentPage==='chat'&&_chatRoom==='team')renderRestChat();
+    if(window.currentPage==='chat')renderRestChat();
     else document.getElementById('chat-unread-badge').style.display='inline';
   });
 }
-window.switchRestChatRoom=function(room){
-  _chatRoom=room;
-  const isOps=room==='ops';
-  document.getElementById('chat-tab-ops').style.background=isOps?'var(--teal)':'var(--bg2)';
-  document.getElementById('chat-tab-ops').style.color=isOps?'#fff':'var(--text2)';
-  document.getElementById('chat-tab-ops').style.border=isOps?'none':'1px solid var(--border)';
-  document.getElementById('chat-tab-team').style.background=!isOps?'var(--teal)':'var(--bg2)';
-  document.getElementById('chat-tab-team').style.color=!isOps?'#fff':'var(--text2)';
-  document.getElementById('chat-tab-team').style.border=!isOps?'none':'1px solid var(--border)';
-  document.getElementById('rest-chat-input-wrap').style.display=isOps?'flex':'none';
-  document.getElementById('rest-chat-readonly').style.display=isOps?'none':'block';
-  renderRestChat();
-};
 function renderRestChat(){
-  const msgs=_chatRoom==='ops'?_chatMsgsOps:_chatMsgsTeam;
+  const msgs=_chatMsgsOps;
   const c=document.getElementById('rest-chat-msgs');
   if(!c)return;
   if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--text3);font-size:.85rem;padding:40px 0">Henüz mesaj yok</div>';return;}

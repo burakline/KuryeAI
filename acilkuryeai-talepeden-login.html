@@ -198,11 +198,13 @@
       const snap = await getDoc(doc(db,'users',cred.user.uid));
       if (!snap.exists()) {
         // Registration was interrupted before Firestore write — recreate doc
-        await setDoc(doc(db,'users',cred.user.uid), {
-          displayName: cred.user.displayName || cred.user.email.split('@')[0],
-          email: cred.user.email, phone: '', role: 'acil_talep',
-          status: 'active', createdAt: new Date().toISOString()
-        });
+        try {
+          await setDoc(doc(db,'users',cred.user.uid), {
+            displayName: cred.user.displayName || cred.user.email.split('@')[0],
+            email: cred.user.email, phone: '', role: 'acil_talep',
+            status: 'active', createdAt: new Date().toISOString()
+          });
+        } catch(e) { /* proceed even if write blocked by rules */ }
       } else if (snap.data().role !== 'acil_talep') {
         await auth.signOut(); showErr('Bu hesap talep paneli için tanımlı değil.');
         btn.classList.remove('loading'); btn.disabled = false; return;

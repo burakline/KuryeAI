@@ -182,10 +182,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .snum{font-size:1.35rem;font-weight:900;color:var(--tx);line-height:1;}
 .sunit{font-size:0.57rem;color:var(--tx2);font-weight:600;letter-spacing:0.04em;margin-top:1px;}
 
-/* CENTER BTN */
-.cbtn{
+/* MAP BUTTONS (follow + traffic) */
+.map-btns{
   position:absolute;right:14px;z-index:101;
   bottom:calc(220px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:8px;align-items:center;
+}
+.cbtn{
   width:44px;height:44px;border-radius:var(--r2);
   background:var(--card);box-shadow:var(--sh);border:1.5px solid var(--border);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
@@ -193,6 +196,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 }
 .cbtn.active{background:var(--teal);border-color:var(--teal);}
 .cbtn.active svg{stroke:#fff;}
+/* Trafik yoğunluk göstergesi — sol üst köşe */
+.traffic-legend{
+  position:absolute;left:14px;z-index:101;
+  top:calc(68px + env(safe-area-inset-top,0px));
+  background:rgba(255,255,255,0.96);border-radius:10px;
+  border:1.5px solid var(--border);box-shadow:var(--sh);
+  padding:8px 12px;font-size:0.7rem;font-weight:700;
+  display:none;flex-direction:column;gap:4px;
+}
+.tleg-row{display:flex;align-items:center;gap:6px;color:var(--tx2);}
+.tleg-dot{width:12px;height:4px;border-radius:2px;flex-shrink:0;}
 /* Smooth marker glide — zoom sırasında devre dışı (zıplamayı önler) */
 .leaflet-marker-pane .leaflet-marker-icon{transition:transform 0.45s linear;}
 #map.zoom-active .leaflet-marker-pane .leaflet-marker-icon,
@@ -550,8 +564,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
   <div class="wakeind" id="wakeind"><div class="wdot" id="wdot"></div><span id="wtxt">Ekran</span></div>
   <div class="speed-badge"><div class="snum" id="spnum">0</div><div class="sunit">km/s</div></div>
-  <div class="cbtn active" id="followBtn" onclick="toggleFollow()" title="Takip modu">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
+  <div class="map-btns">
+    <div class="cbtn" id="trafficBtn" onclick="toggleTraffic()" title="Trafik yoğunluğu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+    </div>
+    <div class="cbtn active" id="followBtn" onclick="toggleFollow()" title="Takip modu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
+    </div>
+  </div>
+  <!-- Trafik renk göstergesi -->
+  <div class="traffic-legend" id="trafficLegend">
+    <div class="tleg-row"><div class="tleg-dot" style="background:#27ae60"></div>Akıcı</div>
+    <div class="tleg-row"><div class="tleg-dot" style="background:#f39c12"></div>Yavaş</div>
+    <div class="tleg-row"><div class="tleg-dot" style="background:#e74c3c"></div>Tıkalı</div>
   </div>
   <div class="bpanel">
     <div class="dhandle"></div>
@@ -926,6 +951,7 @@ const G={
   gps:{lat:39.9334,lng:32.8597,speed:0},
   map:null,marker:null,trail:null,restMarker:null,delivMarker:null,delivRouteLine:null,
   returning:null,_delivLat:null,_delivLng:null,followTimer:null,
+  trafficLayer:null,trafficOn:false,
   assignedRest:null,
   follow:true,bearing:0,lastGPS:0,
   gpsW:null,gpsI:null,simI:null,stI:null,cI:null,wl:null,
@@ -979,6 +1005,61 @@ function initMap(){
   // Bağlı restoran pini (assignedRest yüklendiyse)
   if(G.assignedRest)_showAssignedRestOnMap();
 }
+// ── TRAFIK KATMANI ──────────────────────────────────────────────────────────
+// TomTom Traffic Flow: https://developer.tomtom.com/maps-api/maps-api-documentation
+// Ücretsiz kayıt → https://developer.tomtom.com → API key alın ve aşağıya yapıştırın
+const TOMTOM_KEY = ''; // ← TomTom API key buraya
+
+function toggleTraffic(){
+  if(!G.map)return;
+  G.trafficOn=!G.trafficOn;
+  const btn=document.getElementById('trafficBtn');
+  const leg=document.getElementById('trafficLegend');
+  if(btn)btn.classList.toggle('active',G.trafficOn);
+
+  if(G.trafficOn){
+    if(!TOMTOM_KEY){
+      // API key yoksa: açık kaynaklı HERE trafik renk katmanı dene
+      // (HERE ücretsiz katmanı: herhangi bir auth gerektirmez, limitli)
+      _loadTrafficLayer();
+      return;
+    }
+    _loadTrafficLayer(TOMTOM_KEY);
+  } else {
+    if(G.trafficLayer){G.map.removeLayer(G.trafficLayer);G.trafficLayer=null;}
+    if(leg)leg.style.display='none';
+  }
+}
+
+function _loadTrafficLayer(key){
+  if(G.trafficLayer){G.map.removeLayer(G.trafficLayer);G.trafficLayer=null;}
+  const leg=document.getElementById('trafficLegend');
+
+  if(key){
+    // TomTom flow tiles — gerçek zamanlı hız rengi (kırmızı/sarı/yeşil)
+    G.trafficLayer=L.tileLayer(
+      `https://api.tomtom.com/traffic/map/4/tile/flow/relative0-dark/{z}/{x}/{y}.png?key=${key}&tileSize=256`,
+      {maxZoom:19,opacity:0.75,attribution:'© TomTom Traffic'}
+    ).addTo(G.map);
+    if(leg)leg.style.display='flex';
+    showToast('🟢 Trafik katmanı açık');
+  } else {
+    // Ücretsiz fallback: HERE Traffic (key gerekmez, hafif)
+    G.trafficLayer=L.tileLayer(
+      'https://{s}.traffic.maps.ls.hereapi.com/maptile/2.1/flowtile/newest/normal.day/{z}/{x}/{y}/256/png8',
+      {subdomains:['1','2','3','4'],maxZoom:19,opacity:0.65,
+       errorTileUrl:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
+    );
+    // HERE key gerektiriyor — fallback olarak bilgilendirici toast
+    showToast('⚠️ Trafik için TomTom API key gerekli');
+    G.trafficOn=false;
+    const btn=document.getElementById('trafficBtn');
+    if(btn)btn.classList.remove('active');
+    if(leg)leg.style.display='none';
+  }
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 function mkMarker(){
   const init=G.name.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'K';
   const av=G.avatar||`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128`;

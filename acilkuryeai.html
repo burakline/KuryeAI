@@ -31,6 +31,14 @@
     .nav-back:hover{color:var(--white)}
     .btn-wa{display:inline-flex;align-items:center;gap:.4rem;background:#25d366;color:#fff;font-size:.76rem;font-weight:700;padding:.38rem 1rem;border-radius:999px;text-decoration:none;transition:background .2s}
     .btn-wa:hover{background:#20bd5a}
+    /* Auth dropdown */
+    .auth-drop{position:relative}
+    .auth-drop-btn{display:inline-flex;align-items:center;gap:.35rem;background:#00c8d7;color:#000;font-size:.76rem;font-weight:700;padding:.4rem 1rem;border-radius:999px;cursor:pointer;border:none;font-family:inherit;transition:background .2s}
+    .auth-drop-btn:hover{background:#33d6e3}
+    .auth-drop-menu{display:none;position:absolute;top:calc(100% + .5rem);right:0;background:#111;border:.5px solid rgba(255,255,255,.1);border-radius:12px;min-width:170px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+    .auth-drop.open .auth-drop-menu{display:block}
+    .auth-drop-item{display:block;padding:.72rem 1rem;font-size:.8rem;font-weight:600;color:#fff;text-decoration:none;transition:background .15s}
+    .auth-drop-item:hover{background:rgba(0,200,215,.12);color:#00c8d7}
 
     /* HERO */
     .hero{padding:5.5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden}
@@ -132,7 +140,13 @@
     <span class="nav-brand"><span style="color:#ff5f57">Acil</span><span style="color:#fff">Kurye</span><em>AI</em></span>
   </a>
   <a href="/" class="nav-back">← Ana Sayfa</a>
-  <span id="nav-auth-area"><a href="/acilkuryeai-talepeden-login" class="btn-wa" style="background:#00c8d7;color:#000">🔐 Giriş / Kayıt</a></span>
+  <div class="auth-drop" id="auth-drop">
+    <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')">🔐 Giriş / Kayıt ▾</button>
+    <div class="auth-drop-menu">
+      <a href="/acilkuryeai-talepeden-login" class="auth-drop-item">📦 Talep Eden Girişi</a>
+      <a href="/acilkuryeai-kurye-login" class="auth-drop-item">🛵 Kurye Girişi</a>
+    </div>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -310,8 +324,13 @@
     }
   } catch(e) {}
 
+  // Close dropdown on outside click
+  document.addEventListener('click', e => {
+    const d = document.getElementById('auth-drop');
+    if (d && !d.contains(e.target)) d.classList.remove('open');
+  });
+
   onAuthStateChanged(auth, async (user) => {
-    const navEl = document.getElementById('nav-auth-area');
     if (user && user.emailVerified) {
       try {
         const snap = await getDoc(doc(db,'users',user.uid));
@@ -335,15 +354,10 @@
               status: 'open', createdAt: new Date().toISOString()
             });
             window.location.href = '/acilkuryeai-talepeden-panel';
-            return;
           }
-          // Giriş yapılmış — nav güncelle
-          if (navEl) navEl.innerHTML = '<a href="/acilkuryeai-talepeden-panel" class="btn-wa" style="background:#00c8d7;color:#000">📦 Panelime Git</a>';
-          return;
         }
       } catch(e) {}
     }
-    if (navEl) navEl.innerHTML = '<a href="/acilkuryeai-talepeden-login" class="btn-wa" style="background:#00c8d7;color:#000">🔐 Giriş / Kayıt</a>';
   });
 </script>
 

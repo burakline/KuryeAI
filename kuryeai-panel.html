@@ -913,7 +913,7 @@ const G={
   shift:{on:false,t0:null,sk:null},
   stats:{dur:0,km:0,speeds:[],earn:0},
   gps:{lat:39.9334,lng:32.8597,speed:0},
-  map:null,marker:null,trail:null,
+  map:null,marker:null,trail:null,restMarker:null,
   follow:true,bearing:0,lastGPS:0,
   gpsW:null,gpsI:null,stI:null,wl:null,
   room:1,msgs:{1:[],2:[]},
@@ -1287,13 +1287,18 @@ function advOrderStatus(){
 }
 function renderActiveOrder(){
   const card=document.getElementById('aord');
-  if(!G.activeOrder){card.classList.remove('show');return;}
+  if(!G.activeOrder){
+    card.classList.remove('show');
+    // Haritadan restoran pinini kaldır
+    if(G.restMarker&&G.map){G.map.removeLayer(G.restMarker);G.restMarker=null;}
+    return;
+  }
   card.classList.add('show');
   const o=G.activeOrder;
-  document.getElementById('aordRest').textContent=o.restaurant||'—';
-  document.getElementById('aordAddr').textContent=o.deliveryAddr||'—';
-  document.getElementById('aordCust').textContent=(o.deliveryName||'—')+(o.deliveryPhone?' · '+o.deliveryPhone:'');
-  document.getElementById('aordAmt').textContent='₺'+(o.amount||0);
+  document.getElementById('aordRest').textContent=o.restaurant||o.restoranName||'—';
+  document.getElementById('aordAddr').textContent=o.deliveryAddr||o.address||'—';
+  document.getElementById('aordCust').textContent=(o.deliveryName||o.customer||'—')+(o.deliveryPhone||o.phone?' · '+(o.deliveryPhone||o.phone):'');
+  document.getElementById('aordAmt').textContent='₺'+(o.amount||o.total||0);
   const st=document.getElementById('aordSt');
   const btn=document.getElementById('aordBtn');
   if(o.status==='accepted'){
@@ -1305,7 +1310,18 @@ function renderActiveOrder(){
   }else if(o.status==='delivered'){
     st.className='aordst ast-dl';st.textContent='Teslim Edildi';
     btn.style.display='none';
+    if(G.restMarker&&G.map){G.map.removeLayer(G.restMarker);G.restMarker=null;}
     setTimeout(()=>{G.activeOrder=null;renderActiveOrder();},3000);
+  }
+  // Haritada restoran pinini göster
+  if(G.map&&o.restLat&&o.restLng){
+    if(G.restMarker)G.map.removeLayer(G.restMarker);
+    const ic=L.divIcon({
+      html:`<div style="background:#FF9800;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.35)">🏪</div>`,
+      className:'',iconSize:[34,34],iconAnchor:[17,17]
+    });
+    G.restMarker=L.marker([o.restLat,o.restLng],{icon:ic}).addTo(G.map)
+      .bindPopup(`<b>${o.restaurant||o.restoranName||'Restoran'}</b><br><small>${o.deliveryAddr||''}</small>`);
   }
 }
 function renderOrdHistory(){

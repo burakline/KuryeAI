@@ -2127,6 +2127,7 @@ let currentPage="dashboard", orderFilter="all", menuFilter="all";
 
 let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
 let courierGPS={}, courierGPSListeners={};
+let _orderDelivMarker=null, _orderRouteLine=null, _restPinMarker=null;
 let deleteCourierId=null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -2777,6 +2778,36 @@ const MOCK_COORDS={
   cour_004:[39.9270,32.8490],
 };
 
+// Sipariş oluşturulunca teslimat adresini geocode et ve haritada göster
+async function showOrderOnMap(deliveryAddress){
+  if(!mapInstance)return;
+  const restLat=settings.rest_lat||ANKARA_CENTER[0], restLng=settings.rest_lng||ANKARA_CENTER[1];
+  // Restoran pinini göster (ilk açılışta)
+  if(!_restPinMarker){
+    const ic=L.divIcon({html:`<div style="background:#009688;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.35)">🏪</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
+    _restPinMarker=L.marker([restLat,restLng],{icon:ic}).addTo(mapInstance).bindPopup(`<b>${settings.rest_name||'Restoranım'}</b>`);
+  }
+  // Teslimat adresini geocode et (best-effort)
+  try{
+    const q=encodeURIComponent(deliveryAddress+', Türkiye');
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,{headers:{'Accept-Language':'tr'}});
+    const data=await r.json();
+    if(!data.length)return;
+    const dlat=parseFloat(data[0].lat),dlng=parseFloat(data[0].lon);
+    // Teslimat pini
+    if(_orderDelivMarker)mapInstance.removeLayer(_orderDelivMarker);
+    const dic=L.divIcon({html:`<div style="font-size:26px;text-shadow:0 2px 4px rgba(0,0,0,.4);line-height:1">📍</div>`,className:'',iconSize:[28,28],iconAnchor:[14,28]});
+    _orderDelivMarker=L.marker([dlat,dlng],{icon:dic}).addTo(mapInstance).bindPopup(`<b>Teslimat</b><br>${deliveryAddress}`);
+    // Rota çizgisi
+    if(_orderRouteLine)mapInstance.removeLayer(_orderRouteLine);
+    _orderRouteLine=L.polyline([[restLat,restLng],[dlat,dlng]],{color:'#00c8d7',weight:3,dashArray:'8,5',opacity:0.85}).addTo(mapInstance);
+    // Haritayı hem restorana hem teslimata fit et
+    mapInstance.fitBounds([[restLat,restLng],[dlat,dlng]],{padding:[50,50]});
+  }catch(e){
+    // Geocoding başarısız olursa sessizce geç
+  }
+}
+
 function initMap(){
   if(mapInstance)return;
   mapInstance=L.map("map",{zoomControl:true}).setView(ANKARA_CENTER,13);
@@ -2798,6 +2829,7 @@ function initMapDash(){
 function updateMapDashMarkers(){
   if(!mapDashInstance)return;
   couriers.filter(c=>c.status==="busy"||c.status==="available").forEach(c=>{
+    const id=_cid(c);
     const coords=_courierCoords(c);
     if(!coords)return;
     const color=c.status==="busy"?"#f59e0b":"#00c48c";
@@ -2806,24 +2838,27 @@ function updateMapDashMarkers(){
       html:`<div style="width:32px;height:32px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.2)" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
       iconSize:[32,32],iconAnchor:[16,16],
     });
-    if(courierMarkersD[c.id]){
-      courierMarkersD[c.id].setLatLng(coords);
-      courierMarkersD[c.id].setIcon(icon);
+    if(courierMarkersD[id]){
+      courierMarkersD[id].setLatLng(coords);
+      courierMarkersD[id].setIcon(icon);
     }else{
       const marker=L.marker(coords,{icon}).addTo(mapDashInstance);
       marker.bindPopup(`<b>${c.name}</b><br><small>${c.status==="busy"?"Meşgul":"Müsait"}</small>`);
-      courierMarkersD[c.id]=marker;
+      courierMarkersD[id]=marker;
     }
   });
   Object.keys(courierMarkersD).forEach(id=>{
-    if(!couriers.find(c=>c.id===id&&(c.status==="busy"||c.status==="available"))){
+    if(!couriers.find(c=>_cid(c)===id&&(c.status==="busy"||c.status==="available"))){
       courierMarkersD[id].remove();delete courierMarkersD[id];
     }
   });
 }
 
+// Bir kurye için RTDB'deki stable ID: kuryeUid veya courierId veya RTDB push key
+function _cid(c){ return c.kuryeUid||c.courierId||c.id; }
+
 function _courierCoords(c){
-  const g=courierGPS[c.id];
+  const g=courierGPS[_cid(c)];
   if(g&&g.lat&&g.lng)return[g.lat,g.lng];
   return null;
 }
@@ -2831,18 +2866,19 @@ function _courierCoords(c){
 function updateMapMarkers(){
   if(!mapInstance)return;
   couriers.filter(c=>c.status==="busy"||c.status==="available").forEach((c)=>{
+    const id=_cid(c);
     const coords=_courierCoords(c);
     if(!coords)return; // GPS yoksa marker koyma
     const color=c.status==="busy"?"#f59e0b":"#00c48c";
-    const speed=courierGPS[c.id]?.speed||0;
+    const speed=courierGPS[id]?.speed||0;
     const icon=L.divIcon({
       className:"",
       html:`<div style="width:36px;height:36px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);cursor:pointer" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
       iconSize:[36,36],iconAnchor:[18,18],
     });
-    if(courierMarkers[c.id]){
-      courierMarkers[c.id].setLatLng(coords);
-      courierMarkers[c.id].setIcon(icon);
+    if(courierMarkers[id]){
+      courierMarkers[id].setLatLng(coords);
+      courierMarkers[id].setIcon(icon);
     }else{
       const marker=L.marker(coords,{icon}).addTo(mapInstance);
       marker.bindPopup(`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:140px">
@@ -2851,12 +2887,12 @@ function updateMapMarkers(){
         <div style="font-size:12px;margin-top:6px"><span style="background:${c.status==="busy"?"#fef3c7":"#d1fae5"};color:${c.status==="busy"?"#d97706":"#059669"};padding:2px 8px;border-radius:999px;font-weight:600">${c.status==="busy"?"Meşgul":"Müsait"}</span></div>
         <div style="font-size:11px;color:#9ca3af;margin-top:6px">⭐ ${c.rating} · ${c.deliveries} teslimat · ${speed}km/s</div>
       </div>`);
-      courierMarkers[c.id]=marker;
+      courierMarkers[id]=marker;
     }
   });
   // Artık listede olmayan marker'ları kaldır
   Object.keys(courierMarkers).forEach(id=>{
-    if(!couriers.find(c=>c.id===id&&(c.status==="busy"||c.status==="available"))){
+    if(!couriers.find(c=>_cid(c)===id&&(c.status==="busy"||c.status==="available"))){
       courierMarkers[id].remove();delete courierMarkers[id];
     }
   });
@@ -2868,7 +2904,7 @@ function updateMapMarkers(){
 }
 
 function syncCourierGPSListeners(){
-  const activeIds=new Set(couriers.filter(c=>c.status==="busy"||c.status==="available").map(c=>c.id));
+  const activeIds=new Set(couriers.filter(c=>c.status==="busy"||c.status==="available").map(c=>_cid(c)));
   // Kaldırılan kuryeler için dinleyiciyi durdur
   Object.keys(courierGPSListeners).forEach(id=>{
     if(!activeIds.has(id)){
@@ -3142,7 +3178,7 @@ function refreshCourierSelect(){
   if(!sel) return;
   const available = couriers.filter(c=>c.status==="available");
   sel.innerHTML = `<option value="">Otomatik Ata</option>` +
-    available.map(c=>`<option value="${c.id}">${c.name} (${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||""})</option>`).join("");
+    available.map(c=>`<option value="${c.kuryeUid||c.courierId||c.id}">${c.name} (${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||""})</option>`).join("");
 }
 
 window.clearManualOrder = () => {
@@ -3295,10 +3331,22 @@ window.submitManualOrder = async () => {
       // Manuel seçim: kuryeye bildir ve statusunu güncelle
       try {
         await _rtdbSet(`/couriers/${courierId}/pendingOrder`, {
-          ...newOrder,
           orderId,
+          restaurant: settings.rest_name || RESTAURANT_ID,
           restoranId: RESTAURANT_ID,
-          restoranName: settings.rest_name || RESTAURANT_ID
+          restoranName: settings.rest_name || RESTAURANT_ID,
+          restLat: settings.rest_lat || null,
+          restLng: settings.rest_lng || null,
+          deliveryAddr: address,
+          deliveryName: customer,
+          deliveryPhone: document.getElementById("mo-phone").value.trim(),
+          amount: total,
+          items: itemsArr.join(', '),
+          payment,
+          note,
+          source: selectedSource,
+          status: 'pending',
+          createdAt: Date.now(),
         });
         await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/couriers/${courierId}`,{status:"busy"});
       } catch(ne) { console.error('Kurye notify error:', ne); }
@@ -3323,6 +3371,9 @@ window.submitManualOrder = async () => {
 
     clearManualOrder();
     renderRecentManualOrders();
+    // Haritada sipariş pinini ve rotayı göster (async, engellemez)
+    goPage('tracking');
+    setTimeout(()=>showOrderOnMap(address),300);
   }catch(e){
     console.error('submitManualOrder hata:', e);
     const msg = e?.message || String(e) || 'Bilinmeyen hata';
@@ -3716,7 +3767,8 @@ window.addCourierFromSystem=async()=>{
   const resultDiv=document.getElementById("courier-lookup-result");
   resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor…</div>`;
   try{
-    await _rtdbPush(`/restaurants/${RESTAURANT_ID}/couriers`,newCourier);
+    const courierId = d.kuryeId || uid; // Stable ID: kuryeai-panel'deki G.id ile eşleşir
+    await _rtdbSet(`/restaurants/${RESTAURANT_ID}/couriers/${courierId}`,{...newCourier,courierId});
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     window._pendingCourierAdd=null;window._pendingCourierUid=null;

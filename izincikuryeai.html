@@ -35,6 +35,14 @@
     .nav-back:hover{color:var(--white)}
     .btn-pill{display:inline-block;background:var(--teal);color:var(--black);font-size:.76rem;font-weight:700;padding:.4rem 1.1rem;border-radius:999px;text-decoration:none;transition:background .2s,transform .15s}
     .btn-pill:hover{background:var(--teal-lt);transform:scale(1.04)}
+    /* Auth dropdown */
+    .auth-drop{position:relative}
+    .auth-drop-btn{display:inline-flex;align-items:center;gap:.35rem;background:var(--teal);color:#000;font-size:.76rem;font-weight:700;padding:.4rem 1rem;border-radius:999px;cursor:pointer;border:none;font-family:inherit;transition:background .2s}
+    .auth-drop-btn:hover{background:var(--teal-lt)}
+    .auth-drop-menu{display:none;position:absolute;top:calc(100% + .5rem);right:0;background:#111;border:.5px solid rgba(255,255,255,.1);border-radius:12px;min-width:160px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+    .auth-drop.open .auth-drop-menu{display:block}
+    .auth-drop-item{display:block;padding:.72rem 1rem;font-size:.8rem;font-weight:600;color:#fff;text-decoration:none;transition:background .15s}
+    .auth-drop-item:hover{background:rgba(0,200,215,.12);color:var(--teal)}
 
     /* HERO */
     .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden}
@@ -165,7 +173,13 @@
   </ul>
   <div class="nav-right">
     <a href="/" class="nav-back">← Ana Sayfa</a>
-    <span id="nav-auth-area"><a href="/izincikuryeai-login" class="btn-pill" style="background:#00c8d7;color:#000">🔐 Giriş / Kayıt</a></span>
+    <div class="auth-drop" id="auth-drop">
+      <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')">🔐 Giriş / Kayıt ▾</button>
+      <div class="auth-drop-menu">
+        <a href="/izincikuryeai-isveren-login" class="auth-drop-item">🏪 İşveren Girişi</a>
+        <a href="/izincikuryeai-izinci-login" class="auth-drop-item">🛵 İzinci Girişi</a>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -501,6 +515,11 @@
   // Nav scroll
   const nav = document.getElementById('main-nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+  // Close auth dropdown on outside click
+  document.addEventListener('click', e => {
+    const d = document.getElementById('auth-drop');
+    if (d && !d.contains(e.target)) d.classList.remove('open');
+  });
 
   // Scroll reveal
   const obs = new IntersectionObserver(entries => {

@@ -76,10 +76,5 @@
       ".write": "auth != null"
     },
 
-    ".info": {
-      "connected": {
-        ".read": "auth != null"
-      }
-    }
   }
 }

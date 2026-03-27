@@ -2017,6 +2017,58 @@ const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);
 
+// ── RTDB REST/SSE (WebSocket SDK bağlanamıyor — SSE ile gerçek zamanlı) ──────
+const RTDB_BASE='https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app';
+const _sseMap=new Map();
+async function _rtdbToken(){
+  if(!auth.currentUser) throw new Error('Oturum açılmamış');
+  return auth.currentUser.getIdToken();
+}
+function rtdbListen(path,cb){
+  if(_sseMap.has(path)){try{_sseMap.get(path).close();}catch{}}_sseMap.delete(path);
+  let timer;
+  async function connect(){
+    try{
+      const token=await _rtdbToken();
+      const es=new EventSource(`${RTDB_BASE}/${path}.json?auth=${encodeURIComponent(token)}`);
+      _sseMap.set(path,es);
+      es.addEventListener('put',e=>{try{cb(JSON.parse(e.data).data);}catch{}});
+      es.addEventListener('patch',()=>{rtdbGet(path).then(cb).catch(()=>{});});
+      es.onerror=()=>{es.close();_sseMap.delete(path);clearTimeout(timer);timer=setTimeout(connect,5000);};
+      clearTimeout(timer);timer=setTimeout(()=>connect(),55*60*1000);
+      setFbStatus('connected');
+    }catch(err){console.error('rtdbListen err:',path,err);timer=setTimeout(connect,5000);}
+  }
+  connect();
+}
+async function rtdbGet(path){
+  const token=await _rtdbToken();
+  const r=await fetch(`${RTDB_BASE}/${path}.json?auth=${token}`);
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+async function rtdbSet(path,data){
+  const token=await _rtdbToken();
+  const r=await fetch(`${RTDB_BASE}/${path}.json?auth=${token}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+}
+async function rtdbPush(path,data){
+  const token=await _rtdbToken();
+  const r=await fetch(`${RTDB_BASE}/${path}.json?auth=${token}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return (await r.json()).name;
+}
+async function rtdbUpdate(path,data){
+  const token=await _rtdbToken();
+  const r=await fetch(`${RTDB_BASE}/${path}.json?auth=${token}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+}
+async function rtdbRemove(path){
+  const token=await _rtdbToken();
+  const r=await fetch(`${RTDB_BASE}/${path}.json?auth=${token}`,{method:'DELETE'});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+}
+
 let RESTAURANT_ID = "demo_restoran_001";
 
 // ── Seed ─────────────────────────────────────────────────────────────────
@@ -2456,43 +2508,32 @@ setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
-  // Gerçek RTDB bağlantı durumunu izle
-  onValue(ref(db,'.info/connected'),snap=>{
-    const connected=snap.val();
-    console.log("RTDB connected:",connected);
-    if(connected) setFbStatus("connected");
-    else setFbStatus("loading");
+  // SSE ile gerçek zamanlı dinleme (WebSocket yerine HTTP streaming)
+  rtdbListen(`restaurants/${RESTAURANT_ID}/orders`,val=>{
+    orders=objToArr(val); renderAll();
   });
-
-  // onValue listeners her zaman kurulur — seed/settings hatasına bağlı değil
-  onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
-    orders=objToArr(snap.val()); renderAll();
-  },(err)=>{ console.error("orders onValue err:",err); });
-  onValue(ref(db,`restaurants/${RESTAURANT_ID}/menu`),snap=>{
-    menu=objToArr(snap.val()); renderMenu();
-  },(err)=>{ console.error("menu onValue err:",err); });
-  onValue(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),snap=>{
-    couriers=objToArr(snap.val());
+  rtdbListen(`restaurants/${RESTAURANT_ID}/menu`,val=>{
+    menu=objToArr(val); renderMenu();
+  });
+  rtdbListen(`restaurants/${RESTAURANT_ID}/couriers`,val=>{
+    couriers=objToArr(val);
     renderCouriers();renderTrackingCouriers();renderDashCouriers();
     updateMapMarkers();updateMapDashMarkers();updateMetrics();
-  },(err)=>{ console.error("couriers onValue err:",err); renderCouriers(); });
+  });
+  rtdbListen(`restaurants/${RESTAURANT_ID}/staff`,val=>{
+    staff=objToArr(val); renderStaff();
+  });
 
-  // RTDB bağlanamıyorsa 3 sn sonra REST ile yükle, sonra her 15 sn'de güncelle
-  setTimeout(async()=>{
-    await loadCouriersREST();
-    setInterval(loadCouriersREST, 15000);
-  }, 3000);
-
-  // Seed verisi yükleme (opsiyonel — hata olursa sadece log)
+  // Seed verisi (yoksa oluştur)
   try{
-    const ms=await get(ref(db,`restaurants/${RESTAURANT_ID}/menu`));
-    if(!ms.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/menu`),SEED_MENU);
-    const ss=await get(ref(db,`restaurants/${RESTAURANT_ID}/settings`));
-    if(!ss.exists()) await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),SEED_SETTINGS);
-    else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
-    showToast("Firebase bağlantısı kuruldu ✓");
+    const ms=await rtdbGet(`restaurants/${RESTAURANT_ID}/menu`);
+    if(!ms) await rtdbSet(`restaurants/${RESTAURANT_ID}/menu`,SEED_MENU);
+    const ss=await rtdbGet(`restaurants/${RESTAURANT_ID}/settings`);
+    if(!ss) await rtdbSet(`restaurants/${RESTAURANT_ID}/settings`,SEED_SETTINGS);
+    else { settings={...SEED_SETTINGS,...ss}; applySettings(); }
+    showToast('Firebase bağlantısı kuruldu ✓');
   }catch(err){
-    console.error("Firebase seed hatası:",err);
+    console.error('Firebase seed hatası:',err);
   }
 }
 
@@ -2612,7 +2653,7 @@ window.advanceOrder=async(id,next)=>{
   renderOrders();renderDashboard();
   if(currentPage==="kitchen")renderKitchen();
   try{
-    await update(ref(db,`restaurants/${RESTAURANT_ID}/orders/${id}`),{status:next});
+    await rtdbUpdate(`restaurants/${RESTAURANT_ID}/orders/${id}`,{status:next});
     showToast(`✓ ${STATUS[next].label}`);
   }catch{showToast("Güncelleme başarısız","error")}
 };
@@ -2645,25 +2686,10 @@ window.toggleMenuItem=async(id,val)=>{
   menu=menu.map(m=>m.id===id?{...m,available:val}:m);
   renderMenu();
   try{
-    await update(ref(db,`restaurants/${RESTAURANT_ID}/menu/${id}`),{available:val});
+    await rtdbUpdate(`restaurants/${RESTAURANT_ID}/menu/${id}`,{available:val});
     showToast(val?"✓ Ürün aktif":"✓ Ürün pasif");
   }catch{showToast("Menü güncellenemedi","error")}
 };
-
-// ── REST fallback: RTDB SDK bağlanamadığında kullan ───────────────────────
-async function loadCouriersREST(){
-  try{
-    if(!auth.currentUser) return;
-    const token=await auth.currentUser.getIdToken();
-    const rtdbBase="https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app";
-    const res=await fetch(`${rtdbBase}/restaurants/${encodeURIComponent(RESTAURANT_ID)}/couriers.json?auth=${token}`);
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const val=await res.json();
-    couriers=objToArr(val);
-    renderCouriers();renderTrackingCouriers();renderDashCouriers();
-    updateMapMarkers();updateMapDashMarkers();updateMetrics();
-  }catch(e){ console.error("loadCouriersREST err:",e); }
-}
 
 // ── COURIERS ───────────────────────────────────────────────────────────────
 function renderCouriers(){
@@ -2712,7 +2738,7 @@ window.openDeleteCourier=(id,name)=>{
 window.confirmDeleteCourier=async()=>{
   if(!deleteCourierId)return;
   try{
-    await remove(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${deleteCourierId}`));
+    await rtdbRemove(`restaurants/${RESTAURANT_ID}/couriers/${deleteCourierId}`);
     closeModal("modal-delete-courier");
     showToast("✓ Kurye silindi");
     deleteCourierId=null;
@@ -2946,7 +2972,7 @@ window.saveSettings=async()=>{
   settings.custom_base=parseFloat(document.getElementById("custom-base").value)||0;
   settings.custom_km=parseFloat(document.getElementById("custom-km").value)||0;
   try{
-    await set(ref(db,`restaurants/${RESTAURANT_ID}/settings`),settings);
+    await rtdbSet(`restaurants/${RESTAURANT_ID}/settings`,settings);
     showToast("✓ Ayarlar kaydedildi");
   }catch{showToast("Kayıt başarısız","error")}
 };
@@ -2954,7 +2980,7 @@ window.saveSettings=async()=>{
 window.confirmReset=async()=>{
   if(!confirm("Tüm demo siparişleri sıfırlanacak. Emin misin?"))return;
   try{
-    await set(ref(db,`restaurants/${RESTAURANT_ID}/orders`),SEED_ORDERS);
+    await rtdbSet(`restaurants/${RESTAURANT_ID}/orders`,SEED_ORDERS);
     showToast("✓ Siparişler sıfırlandı","info");
   }catch{showToast("Sıfırlama başarısız","error")}
 };
@@ -3078,8 +3104,7 @@ async function assignCourierAuto(orderId, orderData) {
   // 3. Her müsait kuryenin gerçek zamanlı GPS konumunu al ve mesafeyi hesapla
   const withDist = await Promise.all(available.map(async c => {
     try {
-      const snap = await get(ref(db, `couriers/${c.id}/location`));
-      const loc  = snap.val();
+      const loc = await rtdbGet(`couriers/${c.id}/location`);
       if (loc?.lat && loc?.lng) {
         return { ...c, dist: hvsDist(restLat, restLng, loc.lat, loc.lng) };
       }
@@ -3091,38 +3116,34 @@ async function assignCourierAuto(orderId, orderData) {
   const sorted = withDist.filter(c => c.dist < Infinity).sort((a,b) => a.dist - b.dist);
   if (!sorted.length) return null;
 
-  // 5. En yakından başla, transaction ile atomik atama yap (çakışma önler)
+  // 5. En yakından başla, REST ile atama yap
   for (const candidate of sorted) {
-    const statusRef = ref(db, `restaurants/${RESTAURANT_ID}/couriers/${candidate.id}/status`);
-    let didAssign = false;
-
     try {
-      const { committed } = await runTransaction(statusRef, current => {
-        if (current === "available") { didAssign = true; return "busy"; }
-        return current; // Başkası kapıya gitmiş, iptal
+      // Mevcut durumu kontrol et
+      const currentStatus = await rtdbGet(`restaurants/${RESTAURANT_ID}/couriers/${candidate.id}/status`);
+      if (currentStatus !== "available") continue; // Artık müsait değil
+
+      const cid = candidate.id;
+
+      // Kurye durumunu güncelle
+      await rtdbUpdate(`restaurants/${RESTAURANT_ID}/couriers/${cid}`, { status: "busy" });
+
+      // Kuryeye sipariş bildirimi gönder (RTDB)
+      await rtdbSet(`couriers/${cid}/pendingOrder`, {
+        ...orderData,
+        orderId,
+        restoranId:   RESTAURANT_ID,
+        restoranName: settings.rest_name || RESTAURANT_ID
       });
 
-      if (committed && didAssign) {
-        const cid = candidate.id;
+      // Siparişin courier alanını güncelle
+      await rtdbUpdate(`restaurants/${RESTAURANT_ID}/orders/${orderId}`, {
+        courier: cid
+      });
 
-        // Kuryeye sipariş bildirimi gönder (RTDB)
-        await set(ref(db, `couriers/${cid}/pendingOrder`), {
-          ...orderData,
-          orderId,
-          restoranId:   RESTAURANT_ID,
-          restoranName: settings.rest_name || RESTAURANT_ID
-        });
-
-        // Siparişin courier alanını güncelle
-        await update(ref(db, `restaurants/${RESTAURANT_ID}/orders/${orderId}`), {
-          courier: cid
-        });
-
-        return { courierId: cid, name: candidate.name, dist: candidate.dist };
-      }
-      // Bu kurye artık müsait değil, bir sonrakine geç
+      return { courierId: cid, name: candidate.name, dist: candidate.dist };
     } catch(e) {
-      console.error('Atama transaction hatası:', e);
+      console.error('Atama hatası:', e);
     }
   }
 
@@ -3183,8 +3204,8 @@ window.submitManualOrder = async () => {
   }
 
   try{
-    const rtdbRef = await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), newOrder);
-    const orderId = rtdbRef.key;
+    const newKey = await rtdbPush(`restaurants/${RESTAURANT_ID}/orders`, newOrder);
+    const orderId = newKey;
 
     // Firestore'a da yaz (admin panel & kurye takibi için)
     try {
@@ -3201,13 +3222,13 @@ window.submitManualOrder = async () => {
     if (courierId) {
       // Manuel seçim: kuryeye bildir ve statusunu güncelle
       try {
-        await set(ref(db,`couriers/${courierId}/pendingOrder`), {
+        await rtdbSet(`couriers/${courierId}/pendingOrder`, {
           ...newOrder,
           orderId,
           restoranId: RESTAURANT_ID,
           restoranName: settings.rest_name || RESTAURANT_ID
         });
-        await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${courierId}`),{status:"busy"});
+        await rtdbUpdate(`restaurants/${RESTAURANT_ID}/couriers/${courierId}`,{status:"busy"});
       } catch(ne) { console.error('Kurye notify error:', ne); }
       showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
     } else if (settings.assign_mode === "auto") {
@@ -3264,7 +3285,7 @@ window.fetchFromPlatform = async (platform, apiKey) => {
   // Migros için:       GET https://api.migros.com.tr/partner/v1/orders
   // Dönen siparişleri normalize et → Firebase'e yaz:
   const normalized = { customer:"", items:[], total:0, status:"pending", address:"", platform, platformOrderId:"", createdAt:Date.now() };
-  await push(ref(db,`restaurants/${RESTAURANT_ID}/orders`), normalized);
+  await rtdbPush(`restaurants/${RESTAURANT_ID}/orders`, normalized);
 };
 
 // initFirebase() is now called from onAuthStateChanged after user is verified
@@ -3441,9 +3462,9 @@ window.confirmMarkPaid=async()=>{
   if(!c) return;
   const newPaid=(c.paidEarnings||0)+amount;
   try{
-    await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${id}`),{paidEarnings:newPaid});
+    await rtdbUpdate(`restaurants/${RESTAURANT_ID}/couriers/${id}`,{paidEarnings:newPaid});
     // Kuryeye RTDB üzerinden bildirim
-    await set(ref(db,`couriers/${id}/paymentNotification`),{
+    await rtdbSet(`couriers/${id}/paymentNotification`,{
       message:"Ödemeniz sistemde kayıtlı IBAN numaranıza yapılmıştır. Emeğiniz için teşekkür eder, iyi çalışmalar dileriz.",
       amount,restoranName:settings.rest_name||RESTAURANT_ID,createdAt:Date.now(),read:false
     });
@@ -3480,7 +3501,7 @@ window.addStaff=async()=>{
   const phone=document.getElementById("staff-phone").value.trim();
   if(!name){showToast("Ad Soyad boş olamaz","error");return;}
   try{
-    await push(ref(db,`restaurants/${RESTAURANT_ID}/staff`),{name,role,phone,createdAt:Date.now()});
+    await rtdbPush(`restaurants/${RESTAURANT_ID}/staff`,{name,role,phone,createdAt:Date.now()});
     closeModal("modal-add-staff");
     document.getElementById("staff-name").value="";document.getElementById("staff-phone").value="";
     showToast(`✓ ${name} eklendi`);
@@ -3488,7 +3509,7 @@ window.addStaff=async()=>{
 };
 window.removeStaff=async(id)=>{
   if(!confirm("Personel silinsin mi?"))return;
-  try{await remove(ref(db,`restaurants/${RESTAURANT_ID}/staff/${id}`));showToast("✓ Silindi");}
+  try{await rtdbRemove(`restaurants/${RESTAURANT_ID}/staff/${id}`);showToast("✓ Silindi");}
   catch{showToast("Silinemedi","error");}
 };
 
@@ -3507,14 +3528,14 @@ window.addMenuItem=async()=>{
   const description=document.getElementById("mi-desc").value.trim();
   if(!name){showToast("Ürün adı boş olamaz","error");return;}
   try{
-    await push(ref(db,`restaurants/${RESTAURANT_ID}/menu`),{name,price,category,description,available:true,createdAt:Date.now()});
+    await rtdbPush(`restaurants/${RESTAURANT_ID}/menu`,{name,price,category,description,available:true,createdAt:Date.now()});
     closeModal("modal-add-menu-item");
     showToast(`✓ ${name} menüye eklendi`);
   }catch{showToast("Ürün eklenemedi","error");}
 };
 window.deleteMenuItem=async(id)=>{
   if(!confirm("Ürün silinsin mi?"))return;
-  try{await remove(ref(db,`restaurants/${RESTAURANT_ID}/menu/${id}`));showToast("✓ Ürün silindi");}
+  try{await rtdbRemove(`restaurants/${RESTAURANT_ID}/menu/${id}`);showToast("✓ Ürün silindi");}
   catch{showToast("Silinemedi","error");}
 };
 
@@ -3523,8 +3544,8 @@ let _customerBook={};
 
 async function loadCustomerBook(){
   try{
-    const snap=await get(ref(db,`restaurants/${RESTAURANT_ID}/customers`));
-    if(snap.exists()) _customerBook=snap.val()||{};
+    const snapVal=await rtdbGet(`restaurants/${RESTAURANT_ID}/customers`);
+    if(snapVal !== null) _customerBook=snapVal||{};
   }catch{}
 }
 
@@ -3579,7 +3600,7 @@ window.submitManualOrder=async()=>{
   const address=document.getElementById("mo-address").value.trim();
   if(name&&phone&&!IS_DEMO){
     const key=phone.replace(/\D/g,"")||`cust_${Date.now()}`;
-    set(ref(db,`restaurants/${RESTAURANT_ID}/customers/${key}`),{name,phone,address,lastOrder:Date.now()}).catch(()=>{});
+    rtdbSet(`restaurants/${RESTAURANT_ID}/customers/${key}`,{name,phone,address,lastOrder:Date.now()}).catch(()=>{});
     _customerBook[key]={name,phone,address};
   }
   return _origSubmit();
@@ -3620,25 +3641,13 @@ window.addCourierFromSystem=async()=>{
   }
   const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:uid,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
   const resultDiv=document.getElementById("courier-lookup-result");
-  resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor… (REST API)</div>`;
+  resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor…</div>`;
   try{
-    // Firebase SDK bağlanamıyor — REST API ile yaz
-    const token=await auth.currentUser.getIdToken();
-    const rtdbBase="https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app";
-    const res=await fetch(`${rtdbBase}/restaurants/${encodeURIComponent(RESTAURANT_ID)}/couriers.json?auth=${token}`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(newCourier)
-    });
-    if(!res.ok){const txt=await res.text();throw new Error(`HTTP ${res.status}: ${txt}`);}
-    const {name:newKey}=await res.json();
-    console.log("Kurye REST ile eklendi, key:",newKey);
+    await rtdbPush(`restaurants/${RESTAURANT_ID}/couriers`,newCourier);
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     window._pendingCourierAdd=null;window._pendingCourierUid=null;
     showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
-    // Kurye listesini REST ile de yenile
-    loadCouriersREST();
   }catch(e){
     console.error("Kurye ekle hatası:",e);
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Eklenemedi: ${esc(e.message||String(e))}</div>`;
@@ -3649,9 +3658,9 @@ window.addCourierFromSystem=async()=>{
 // ── PLATFORM LİNKLERİ ─────────────────────────────────────────────────────
 async function loadPlatformLinks(){
   try{
-    const snap=await get(ref(db,`restaurants/${RESTAURANT_ID}/platforms`));
-    if(snap.exists()){
-      const d=snap.val();
+    const snapVal=await rtdbGet(`restaurants/${RESTAURANT_ID}/platforms`);
+    if(snapVal !== null){
+      const d=snapVal;
       ["ys","ty","gr","mg"].forEach(k=>{
         const lnk=document.getElementById(`${k}-link`);
         if(lnk&&d[k]?.link) lnk.value=d[k].link;
@@ -3676,7 +3685,7 @@ window.savePlatformLinks=async()=>{
   });
   const data={ys:getData("ys"),ty:getData("ty"),gr:getData("gr"),mg:getData("mg")};
   try{
-    await set(ref(db,`restaurants/${RESTAURANT_ID}/platforms`),data);
+    await rtdbSet(`restaurants/${RESTAURANT_ID}/platforms`,data);
     showToast("✓ Platform bilgileri kaydedildi");
     updatePlatformAvg(data);
     ["ys","ty","gr","mg"].forEach(k=>{
@@ -3731,20 +3740,15 @@ window.saveCourierPricing=async()=>{
   const base=parseFloat(document.getElementById("cp-base")?.value)||0;
   const km=parseFloat(document.getElementById("cp-km")?.value)||0;
   try{
-    await update(ref(db,`restaurants/${RESTAURANT_ID}/couriers/${_pricingCourierId}`),{pricingType:type,pricingBase:base,pricingKm:km});
+    await rtdbUpdate(`restaurants/${RESTAURANT_ID}/couriers/${_pricingCourierId}`,{pricingType:type,pricingBase:base,pricingKm:km});
     closeModal("modal-courier-pricing");
     showToast("✓ Ücret ayarları kaydedildi");
   }catch{showToast("Kayıt başarısız","error");}
 };
 
 // ── Firebase staff listener ───────────────────────────────────────────────
-const _origInitFB=window.initFirebase||undefined;
-// staff + customer listeners eklenir initFirebase içinde değil, onAuthStateChanged sonrasında
+// staff artık initFirebase içinde rtdbListen ile dinleniyor
 function listenExtras(){
-  onValue(ref(db,`restaurants/${RESTAURANT_ID}/staff`),snap=>{
-    staff=snap.exists()?objToArr(snap.val()):[];
-    if(currentPage==="staff")renderStaff();
-  });
   loadCustomerBook();
 }
 

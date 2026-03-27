@@ -1,0 +1,148 @@
+/* ── KuryeAI Light Theme ── */
+[data-theme="light"] {
+  --black:   #f5f7fa;
+  --dark:    #eaedf2;
+  --card:    #ffffff;
+  --border:  rgba(0,0,0,0.09);
+  --gray:    #aaaaaa;
+  --gray-lt: #555555;
+  --silver:  #2a2a2a;
+  --white:   #0d0d0d;
+  --teal:    #0099aa;
+  --teal-lt: #00b4c6;
+  --orange:  #d97c08;
+  --red:     #d62d20;
+  --green:   #1a9640;
+  --yellow:  #c88e00;
+}
+
+/* Hero grid lines — more visible on light bg */
+[data-theme="light"] .hero-grid {
+  background-image:
+    linear-gradient(rgba(0,120,135,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,120,135,.08) 1px, transparent 1px);
+}
+
+/* Hero glow — softer on white */
+[data-theme="light"] .hero-glow {
+  background: radial-gradient(circle, rgba(0,150,170,.07) 0%, transparent 65%);
+}
+
+/* Nav & footer backgrounds */
+[data-theme="light"] nav {
+  background: rgba(245,247,250,0.92) !important;
+  border-bottom-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] nav.scrolled {
+  background: rgba(245,247,250,0.98) !important;
+}
+[data-theme="light"] footer {
+  background: var(--dark);
+  border-top-color: rgba(0,0,0,0.08);
+}
+
+/* Cards & bento */
+[data-theme="light"] .bento-card,
+[data-theme="light"] .prod-card,
+[data-theme="light"] .izinci-card,
+[data-theme="light"] .testi-card,
+[data-theme="light"] .price-card,
+[data-theme="light"] .faq-item,
+[data-theme="light"] .panel-visual,
+[data-theme="light"] .kurye-visual,
+[data-theme="light"] .form-card,
+[data-theme="light"] .acil-card {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .bento-card:hover,
+[data-theme="light"] .prod-card:hover,
+[data-theme="light"] .izinci-card:hover,
+[data-theme="light"] .faq-item:hover {
+  background: #f8f9fc;
+}
+
+/* Platform badges */
+[data-theme="light"] .platform-badge,
+[data-theme="light"] .pg-item {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.08);
+  color: #444;
+}
+[data-theme="light"] .pg-item:hover {
+  background: rgba(0,150,170,.08);
+  color: var(--teal);
+}
+
+/* Mock order rows */
+[data-theme="light"] .mock-order {
+  background: rgba(0,0,0,.03);
+  border-color: rgba(0,0,0,.06);
+}
+[data-theme="light"] .mock-order:hover {
+  background: rgba(0,150,170,.05);
+}
+
+/* Form inputs */
+[data-theme="light"] .form-input,
+[data-theme="light"] .form-select,
+[data-theme="light"] .form-textarea {
+  background: #f5f7fa;
+  border-color: rgba(0,0,0,0.12);
+  color: #0d0d0d;
+}
+[data-theme="light"] .form-input:focus,
+[data-theme="light"] .form-select:focus,
+[data-theme="light"] .form-textarea:focus {
+  background: #fff;
+  border-color: var(--teal);
+}
+
+/* Stats strip */
+[data-theme="light"] .stat-box,
+[data-theme="light"] .stats-strip {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+
+/* Btn outline */
+[data-theme="light"] .btn-outline {
+  color: var(--white);
+  border-color: rgba(0,0,0,0.2);
+}
+[data-theme="light"] .btn-outline:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* Ticker */
+[data-theme="light"] .ticker {
+  background: var(--dark);
+  border-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .ti { color: #555; }
+[data-theme="light"] .ti.accent { color: var(--teal); }
+
+/* ── Theme toggle button ── */
+.theme-toggle {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1.2rem;
+  z-index: 9999;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--card);
+  border: .5px solid var(--border);
+  cursor: pointer;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 14px rgba(0,0,0,.18);
+  transition: background .2s, transform .15s, box-shadow .2s;
+  line-height: 1;
+}
+.theme-toggle:hover {
+  transform: scale(1.12);
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+}

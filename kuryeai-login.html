@@ -9,12 +9,12 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black:    #000000;
+      --black:    #f5f7fa;
       --dark:     #0c0c0c;
-      --card:     #111111;
-      --border:   rgba(255,255,255,0.08);
-      --text:     #ffffff;
-      --sub:      #888888;
+      --card:     #ffffff;
+      --border:   rgba(0,0,0,0.09);
+      --text:     #1c1c1e;
+      --sub:      #636366;
       --teal:     #00c8d7;
       --teal-lt:  #33d6e3;
       --teal-dk:  #009aaa;
@@ -22,9 +22,9 @@
       --green:    #34c759;
     }
 
-    .tabs { display:flex; background:#1a1a1a; border-radius:12px; padding:4px; margin-bottom:1.5rem; }
+    .tabs { display:flex; background:rgba(0,0,0,0.05); border-radius:12px; padding:4px; margin-bottom:1.5rem; }
     .tab-btn { flex:1; text-align:center; padding:.55rem; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; color:var(--sub); transition:all .2s; border:none; background:none; font-family:Arial,Helvetica,sans-serif; }
-    .tab-btn.active { background:var(--card); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.5); }
+    .tab-btn.active { background:var(--card); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.12); }
     .tab-pane { display:none; }
     .tab-pane.active { display:block; }
     .ok-msg { display:none; background:rgba(52,199,89,.08); border:.5px solid rgba(52,199,89,.25); border-radius:8px; padding:.7rem 1rem; font-size:.82rem; color:var(--green); margin-bottom:1rem; line-height:1.5; }
@@ -140,7 +140,7 @@
     }
     .form-input {
       width: 100%;
-      background: rgba(255,255,255,.05);
+      background: rgba(0,0,0,.04);
       border: .5px solid rgba(255,255,255,.1);
       border-radius: 10px; padding: .78rem 1rem;
       color: var(--text); font-family: Arial, Helvetica, sans-serif;

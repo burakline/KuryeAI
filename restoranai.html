@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('kuryeai-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+  <link rel="stylesheet" href="/theme.css"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RestoranAI — Akıllı İşletme | KuryeAI</title>
   <meta name="description" content="RestoranAI ile tüm sipariş platformlarınızı tek panelde yönetin. Yemeksepeti, Trendyol, Getir entegrasyonu, AI analiz, kurye hizmeti."/>
@@ -1323,4 +1325,20 @@
 
   // Form submit
   function submitForm() {
-    const required = ['f-
+  function submitForm() {
+    const required = ['f-ad','f-soyad','f-telefon','f-restoran'];
+    let ok = true;
+    required.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !el.value.trim()) { el && (el.style.borderColor='#ff5f57'); ok = false; }
+      else el.style.borderColor = '';
+    });
+    if (!ok) return;
+    document.getElementById('form-content').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+
+</script>
+<script src="/theme.js"></script>
+</body>
+</html>

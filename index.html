@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('kuryeai-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+  <link rel="stylesheet" href="/theme.css"/>
   <link rel="manifest" href="/manifest.json"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KuryeAI — Türkiye Kurye | Acil Kurye | İzinci Kurye | Restoran Sipariş Yönetimi | Yapay Zeka Kurye Platformu</title>
@@ -1007,5 +1009,6 @@
 
 
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
+<script src="/theme.js"></script>
 </body>
 </html>

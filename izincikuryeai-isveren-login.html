@@ -6,7 +6,7 @@
   <title>İzinciKuryeAI — İşveren Girişi</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --bg:#0c0c0c; --card:#161616; --border:rgba(255,255,255,0.08); --tx:#fff; --tx2:#888; --teal:#00c8d7; --teal-lt:#33d6e3; --green:#30d158; --red:#ff3b30; --sh:0 4px 24px rgba(0,0,0,0.4); --r:16px; --f:Arial,Helvetica,sans-serif; }
+    :root { --bg:#f5f7fa; --card:#ffffff; --border:rgba(0,0,0,0.09); --tx:#1c1c1e; --tx2:#636366; --teal:#00c8d7; --teal-lt:#33d6e3; --green:#30d158; --red:#ff3b30; --sh:0 4px 30px rgba(0,0,0,0.08); --r:16px; --f:Arial,Helvetica,sans-serif; }
     html { background:var(--bg); }
     body { min-height:100svh; background:var(--bg); color:var(--tx); font-family:var(--f); -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:3rem 1.5rem 3rem; }
     .page-loader { position:fixed; inset:0; z-index:999; background:var(--bg); display:flex; align-items:center; justify-content:center; }
@@ -18,15 +18,15 @@
     .logo .izinci { color:var(--green); }
     .logo .ai { color:var(--teal); }
     .logo-sub { text-align:center; font-size:.78rem; color:var(--tx2); margin-bottom:2rem; }
-    .tabs { display:flex; background:#111; border-radius:12px; padding:4px; margin-bottom:1.5rem; }
+    .tabs { display:flex; background:rgba(0,0,0,0.05); border-radius:12px; padding:4px; margin-bottom:1.5rem; }
     .tab { flex:1; text-align:center; padding:.6rem; border-radius:9px; font-size:.85rem; font-weight:700; cursor:pointer; color:var(--tx2); transition:all .2s; border:none; background:none; font-family:var(--f); }
-    .tab.active { background:var(--card); color:var(--tx); box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+    .tab.active { background:var(--card); color:var(--tx); box-shadow:0 2px 8px rgba(0,0,0,0.12); }
     .card { background:var(--card); border:.5px solid var(--border); border-radius:var(--r); padding:1.8rem; box-shadow:var(--sh); }
     .tab-pane { display:none; }
     .tab-pane.active { display:block; }
     .form-group { margin-bottom:1rem; }
     .form-label { display:block; font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--tx2); margin-bottom:.35rem; }
-    .form-input { width:100%; background:#0c0c0c; border:1px solid var(--border); border-radius:10px; padding:.75rem 1rem; font-size:.9rem; font-family:var(--f); outline:none; transition:border-color .2s; color:var(--tx); }
+    .form-input { width:100%; background:rgba(0,0,0,.04); border:1px solid var(--border); border-radius:10px; padding:.75rem 1rem; font-size:.9rem; font-family:var(--f); outline:none; transition:border-color .2s; color:var(--tx); }
     .form-input:focus { border-color:var(--teal); }
     .pw-wrap { position:relative; }
     .pw-wrap .form-input { padding-right:2.8rem; }

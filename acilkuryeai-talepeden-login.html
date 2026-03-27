@@ -196,7 +196,14 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
       const snap = await getDoc(doc(db,'users',cred.user.uid));
-      if (!snap.exists() || snap.data().role !== 'acil_talep') {
+      if (!snap.exists()) {
+        // Registration was interrupted before Firestore write — recreate doc
+        await setDoc(doc(db,'users',cred.user.uid), {
+          displayName: cred.user.displayName || cred.user.email.split('@')[0],
+          email: cred.user.email, phone: '', role: 'acil_talep',
+          status: 'active', createdAt: new Date().toISOString()
+        });
+      } else if (snap.data().role !== 'acil_talep') {
         await auth.signOut(); showErr('Bu hesap talep paneli için tanımlı değil.');
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
@@ -221,11 +228,11 @@
     btn.classList.add('loading'); btn.disabled = true;
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      await sendEmailVerification(cred.user);
       await setDoc(doc(db,'users',cred.user.uid), {
         displayName:name, phone, email, role:'acil_talep', status:'active',
         createdAt:new Date().toISOString()
       });
+      await sendEmailVerification(cred.user);
       await auth.signOut();
       showOk('Kayıt başarılı! E-posta doğrulama linki gönderildi. Doğruladıktan sonra giriş yapabilirsiniz.');
       btn.classList.remove('loading'); btn.disabled = false;

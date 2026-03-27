@@ -208,7 +208,11 @@
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
       const snap = await getDoc(doc(db,'users',cred.user.uid));
-      if (!snap.exists() || snap.data().role !== 'acil_kurye') {
+      if (!snap.exists()) {
+        await auth.signOut(); showErr('Hesap kaydı tamamlanamadı. Lütfen tekrar kayıt olun.');
+        btn.classList.remove('loading'); btn.disabled = false; return;
+      }
+      if (snap.data().role !== 'acil_kurye') {
         await auth.signOut(); showErr('Bu hesap acil kurye paneli için tanımlı değil.');
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
@@ -237,12 +241,12 @@
     btn.classList.add('loading'); btn.disabled = true;
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      await sendEmailVerification(cred.user);
       const kuryeId = generateID('KAI');
       await setDoc(doc(db,'users',cred.user.uid), {
         displayName:name, phone, email, role:'acil_kurye', status:'active',
         kuryeId, createdAt:new Date().toISOString()
       });
+      await sendEmailVerification(cred.user);
       await auth.signOut();
       showOk('Kayıt başarılı! E-posta adresinize doğrulama linki gönderildi. Doğruladıktan sonra giriş yapabilirsiniz.');
       btn.classList.remove('loading'); btn.disabled = false;

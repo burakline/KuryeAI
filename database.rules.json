@@ -5,6 +5,7 @@
     ".write": false,
 
     "couriers": {
+      ".read": "auth != null",
       "$courierId": {
 
         ".read": "auth != null",

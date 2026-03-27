@@ -119,11 +119,7 @@ service cloud.firestore {
         && request.auth.uid in request.resource.data.participants;
 
       match /messages/{msgId} {
-        allow read, write: if isSignedIn() && (
-          isAdmin() ||
-          request.auth.uid in
-            get(/databases/$(database)/documents/chats/$(roomId)).data.participants
-        );
+        allow read, write: if isSignedIn();
       }
     }
 

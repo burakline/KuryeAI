@@ -193,8 +193,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 }
 .cbtn.active{background:var(--teal);border-color:var(--teal);}
 .cbtn.active svg{stroke:#fff;}
-/* Smooth marker glide */
+/* Smooth marker glide — zoom sırasında devre dışı (zıplamayı önler) */
 .leaflet-marker-pane .leaflet-marker-icon{transition:transform 0.45s linear;}
+#map.zoom-active .leaflet-marker-pane .leaflet-marker-icon,
+#map.zoom-active .leaflet-shadow-pane .leaflet-marker-shadow{transition:none!important;}
 /* Profile marker circle */
 .km-circle{
   width:46px;height:46px;border-radius:50%;overflow:hidden;
@@ -961,6 +963,11 @@ function initMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
   G.map=m; mkMarker();
   G.trail=L.polyline([],{color:'#009688',weight:3.5,opacity:0.75,dashArray:'6,5'}).addTo(m);
+  // Zoom sırasında marker transition'ı kapat → zıplamayı önle
+  const mapEl=document.getElementById('map');
+  m.on('zoomstart',()=>mapEl.classList.add('zoom-active'));
+  m.on('zoomend',()=>mapEl.classList.remove('zoom-active'));
+
   // Auto-refollow: kullanıcı haritadan el çekince 5sn sonra takip moduna geri dön
   function _resetFollowTimer(){
     clearTimeout(G.followTimer);

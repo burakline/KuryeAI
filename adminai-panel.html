@@ -1486,19 +1486,22 @@ function initMap(){
       const loc=data.location;
       if(!loc||!loc.lat||!loc.lng)return;
       const age=loc.updatedAt?now-loc.updatedAt:0;
-      if(age>300000)return; // 5 dk'dan eski = gizle
+      if(age>3600000)return; // 1 saaten eski = gizle
       count++;
       const isActive=data.shift?.active||loc.shiftActive;
+      const isStale=age>300000; // 5 dk üstü = eski konum
+      const iconBg=isStale?'#9ca3af':(isActive?'#00c8d7':'#6b7280');
       const icon=L.divIcon({
-        html:`<div style="width:36px;height:36px;border-radius:50%;background:${isActive?'#00c8d7':'#9ca3af'};border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.25)">🛵</div>`,
+        html:`<div style="width:36px;height:36px;border-radius:50%;background:${iconBg};border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.25);opacity:${isStale?.6:1}">🛵</div>`,
         className:'',iconAnchor:[18,18],iconSize:[36,36]
       });
+      const ageTxt=isStale?` · ${Math.round(age/60000)} dk önce`:'';
       if(_courierMarkers[uid]){
         _courierMarkers[uid].setLatLng([loc.lat,loc.lng]);
         _courierMarkers[uid].setIcon(icon);
       } else {
         const m=L.marker([loc.lat,loc.lng],{icon}).addTo(mapObj);
-        m.bindPopup(`<b>${esc(loc.name||uid.slice(-6))}</b><br/>Hız: ${loc.speed||0} km/h<br/>Vardiya: ${isActive?'✅ Aktif':'⏸ Pasif'}`);
+        m.bindPopup(`<b>${esc(loc.name||uid.slice(-6))}</b><br/>Hız: ${loc.speed||0} km/h<br/>Vardiya: ${isActive?'✅ Aktif':'⏸ Pasif'}${ageTxt}`);
         _courierMarkers[uid]=m;
       }
     });

@@ -1991,28 +1991,28 @@ document.addEventListener("click", function(e){
 
 <!-- Firebase SDK -->
 <script type="module">
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getDatabase, ref, onValue, set, update, get, push, remove, runTransaction, goOnline }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, getDocs, query, where }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 
 // ── Config ────────────────────────────────────────────────────────────────
 const FB = {
   apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
   authDomain:"kuryeai-99bf9.firebaseapp.com",
-  databaseURL:"https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL:"https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
   projectId:"kuryeai-99bf9",
   storageBucket:"kuryeai-99bf9.firebasestorage.app",
   messagingSenderId:"1012295004135",
   appId:"1:1012295004135:web:0cceac0476175e19395742",
 };
 const app     = initializeApp(FB);
-const db      = getDatabase(app, "https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app");
+const db      = getDatabase(app);
 const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);

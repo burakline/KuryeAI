@@ -2042,11 +2042,20 @@ setTimeout(()=>{
 // ── RTDB REST/SSE (WebSocket SDK bağlanamıyor — SSE ile gerçek zamanlı) ──────
 const RTDB_BASE='https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app';
 const _sseMap=new Map();
-// SDK WebSocket testi — onValue çağrılmazsa SDK hiç bağlanmaz
+// SDK testi
 onValue(ref(db,'.info/connected'),snap=>{
-  _wsLog.push(snap.val()?'✅ SDK WebSocket BAĞLANDI!':'🟡 SDK bağlantı bekliyor…');
-  _showWsLog();
+  _wsLog.push(snap.val()?'✅ SDK BAĞLANDI!':'🟡 SDK bekliyor…');_showWsLog();
 });
+// Ham WebSocket testi (SDK olmadan)
+setTimeout(()=>{
+  try{
+    _wsLog.push('🔵 Ham WS deneniyor…');_showWsLog();
+    const ws=new _OrigWS('wss://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app/.ws?v=5');
+    ws.onopen=()=>{_wsLog.push('✅ Ham WS AÇILDI — WebSocket çalışıyor!');_showWsLog();ws.close();};
+    ws.onerror=()=>{_wsLog.push('❌ Ham WS HATA');_showWsLog();};
+    ws.onclose=e=>{_wsLog.push(`🔴 Ham WS KAPANDI code:${e.code} reason:${e.reason||'—'}`);_showWsLog();};
+  }catch(e){_wsLog.push('❌ Ham WS exception: '+e.message);_showWsLog();}
+},3000);
 async function _rtdbToken(){
   if(!auth.currentUser) throw new Error('Oturum açılmamış');
   return auth.currentUser.getIdToken();

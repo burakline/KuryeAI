@@ -9,3 +9,4 @@ build/
 .DS_Store
 Thumbs.db
 .git/github_token
+adminai-panel.html.bak

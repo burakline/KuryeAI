@@ -467,6 +467,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             <div id="map" style="width:100%;height:420px;background:#e8edf2;border-radius:0 0 var(--radius) var(--radius)"></div>
             <!-- TomTom harita butonları -->
             <div class="admin-map-btns">
+              <div class="admin-cbtn" id="admFsBtn" onclick="toggleAdminFullscreen()" title="Tam ekran">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              </div>
+              <div class="admin-cbtn" id="admSatBtn" onclick="toggleAdminSatellite()" title="Uydu görüntüsü">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
               <div class="admin-cbtn" id="admIncidentBtn" onclick="toggleAdminIncidents()" title="Trafik olayları">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
@@ -1484,6 +1490,7 @@ window.deleteGider=async(id)=>{
 // ── HARİTA ──
 const TOMTOM_KEY='cf8LiJcnBulkjibau4e9uA58HsrmHovP';
 let _courierMarkers={}, _restoMarkers=[], _showRestoranPins=false;
+let _adminBaseLayer=null, _adminLabelsLayer=null, _adminSatMode=false;
 let _adminTrafficLayer=null, _adminTrafficOn=false;
 let _adminIncMarkers=[], _adminIncOn=false, _adminIncFetchI=null;
 let _adminCourierTrails={};
@@ -1514,7 +1521,12 @@ function _initAdminFbDot(){
 function initMap(){
   if(mapObj)return;
   mapObj=L.map('map',{zoomControl:true,attributionControl:false,center:[39.92,32.85],zoom:12});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
+  _adminBaseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
+  document.addEventListener('fullscreenchange',()=>{
+    const btn=document.getElementById('admFsBtn');
+    if(btn)btn.classList.toggle('active',!!document.fullscreenElement);
+    setTimeout(()=>mapObj&&mapObj.invalidateSize(),100);
+  });
 
   // Kurye GPS - RTDB dinle
   if(_unsubMapCouriers){_unsubMapCouriers();_unsubMapCouriers=null;}
@@ -1667,6 +1679,34 @@ async function loadZones(){
   }catch(e){console.error('zones',e);}
 }
 // Profil fotoğraflı + yön oklu kurye harita ikonu
+// ── Uydu / Tam Ekran (Admin) ──────────────────────────────────────────────────
+function toggleAdminSatellite(){
+  if(!mapObj)return;
+  _adminSatMode=!_adminSatMode;
+  document.getElementById('admSatBtn').classList.toggle('active',_adminSatMode);
+  if(_adminBaseLayer){mapObj.removeLayer(_adminBaseLayer);_adminBaseLayer=null;}
+  if(_adminLabelsLayer){mapObj.removeLayer(_adminLabelsLayer);_adminLabelsLayer=null;}
+  if(_adminSatMode){
+    _adminBaseLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}).addTo(mapObj);
+    _adminLabelsLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:0.85}).addTo(mapObj);
+    showToast('🛰️ Uydu görüntüsü','ok');
+  }else{
+    _adminBaseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
+    showToast('🗺️ Sokak haritası','ok');
+  }
+}
+function toggleAdminFullscreen(){
+  const el=document.getElementById('map');
+  if(!document.fullscreenElement){
+    el.requestFullscreen().catch(()=>{
+      el.style.cssText='position:fixed!important;inset:0!important;z-index:9000!important;height:100vh!important;width:100vw!important;border-radius:0!important';
+      setTimeout(()=>mapObj&&mapObj.invalidateSize(),50);
+      document.getElementById('admFsBtn').classList.add('active');
+    });
+  }else{
+    document.exitFullscreen();
+  }
+}
 // ── TomTom Traffic (Admin Haritası) ──────────────────────────────────────────
 function toggleAdminTraffic(){
   if(!mapObj)return;

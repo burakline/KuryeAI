@@ -952,6 +952,12 @@ tbody tr:hover{background:var(--bg)}
               <div id="map"></div>
               <!-- Harita sağ-alt butonlar -->
               <div class="map-btns-rest">
+                <div class="cbtn-rest" id="restFsBtn" onclick="toggleRestFullscreen()" title="Tam ekran">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                </div>
+                <div class="cbtn-rest" id="restSatBtn" onclick="toggleRestSatellite()" title="Uydu görüntüsü">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
                 <div class="cbtn-rest" id="restIncidentBtn" onclick="toggleRestIncidents()" title="Trafik olayları">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 </div>
@@ -2232,6 +2238,7 @@ const TOMTOM_KEY='cf8LiJcnBulkjibau4e9uA58HsrmHovP';
 let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
 let courierGPS={}, courierGPSListeners={};
 let courierTrails={};
+let _restBaseLayer=null, _restLabelsLayer=null, _restSatMode=false;
 let _restTrafficLayer=null, _restTrafficOn=false;
 let _restIncMarkers=[], _restIncOn=false, _restIncFetchI=null;
 let _orderDelivMarker=null, _orderRouteLine=null, _restPinMarker=null;
@@ -3031,11 +3038,16 @@ async function showOrderOnMap(deliveryAddress){
 function initMap(){
   if(mapInstance)return;
   mapInstance=L.map("map",{zoomControl:true}).setView(ANKARA_CENTER,13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  _restBaseLayer=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
     attribution:'© OpenStreetMap',maxZoom:18
   }).addTo(mapInstance);
   updateMapMarkers();
   _addRestPinToMap();
+  document.addEventListener('fullscreenchange',()=>{
+    const btn=document.getElementById('restFsBtn');
+    if(btn)btn.classList.toggle('active',!!document.fullscreenElement);
+    setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),100);
+  });
 }
 
 // Profil fotoğraflı + yön oklu kurye harita ikonu
@@ -3094,6 +3106,34 @@ function initMapDash(){
   updateMapDashMarkers();
 }
 
+// ── Uydu / Tam Ekran (Restoran) ───────────────────────────────────────────────
+function toggleRestSatellite(){
+  if(!mapInstance)return;
+  _restSatMode=!_restSatMode;
+  document.getElementById('restSatBtn').classList.toggle('active',_restSatMode);
+  if(_restBaseLayer){mapInstance.removeLayer(_restBaseLayer);_restBaseLayer=null;}
+  if(_restLabelsLayer){mapInstance.removeLayer(_restLabelsLayer);_restLabelsLayer=null;}
+  if(_restSatMode){
+    _restBaseLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}).addTo(mapInstance);
+    _restLabelsLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:0.85}).addTo(mapInstance);
+    showToast('🛰️ Uydu görüntüsü');
+  }else{
+    _restBaseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(mapInstance);
+    showToast('🗺️ Sokak haritası');
+  }
+}
+function toggleRestFullscreen(){
+  const el=document.getElementById('map');
+  if(!document.fullscreenElement){
+    el.requestFullscreen().catch(()=>{
+      el.style.cssText='position:fixed!important;inset:0!important;z-index:9000!important;height:100vh!important;width:100vw!important;border-radius:0!important';
+      setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),50);
+      document.getElementById('restFsBtn').classList.add('active');
+    });
+  }else{
+    document.exitFullscreen();
+  }
+}
 // ── TomTom Traffic (Restoran Haritası) ───────────────────────────────────────
 function toggleRestTraffic(){
   if(!mapInstance)return;

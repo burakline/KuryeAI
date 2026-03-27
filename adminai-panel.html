@@ -306,13 +306,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .bolge-user-name{font-size:13px;color:var(--text);flex:1}
 .bolge-add-row{display:flex;gap:8px;margin-top:8px}
 .bolge-add-row .fsel{flex:1;font-size:12px;padding:.45rem .7rem}
-/* Admin harita butonları */
+/* Admin harita butonları — card içinde, admMapWrap dışında */
 #map{position:relative;z-index:0}
-.admin-map-btns{position:absolute;right:10px;bottom:12px;z-index:1000;display:flex;flex-direction:column;gap:6px;}
+.admin-map-btns{position:absolute;right:10px;bottom:12px;z-index:2000;display:flex;flex-direction:column;gap:6px;}
 .admin-cbtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.95);border:1px solid var(--border);box-shadow:var(--shadow-md);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;color:var(--text2);}
 .admin-cbtn:hover{background:#f0fdfa;}
 .admin-cbtn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
-.admin-tleg{position:absolute;right:50px;bottom:12px;z-index:1000;background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);display:none;flex-direction:column;gap:4px;}
+.admin-tleg{position:absolute;right:50px;bottom:12px;z-index:2000;background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);display:none;flex-direction:column;gap:4px;}
 /* Fullscreen wrapper */
 #admMapWrap.adm-fs{position:fixed!important;inset:0!important;z-index:9000!important;border-radius:0!important;background:#e8edf2;}
 #admMapWrap.adm-fs #map{height:100%!important;border-radius:0!important;}
@@ -473,27 +473,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           </div>
           <div id="admMapWrap" style="position:relative">
             <div id="map" style="width:100%;height:420px;background:#e8edf2;border-radius:0 0 var(--radius) var(--radius)"></div>
-            <!-- TomTom harita butonları -->
-            <div class="admin-map-btns">
-              <div class="admin-cbtn" id="admFsBtn" onclick="toggleAdminFullscreen()" title="Tam ekran">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-              </div>
-              <div class="admin-cbtn" id="admSatBtn" onclick="toggleAdminSatellite()" title="Uydu görüntüsü">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              </div>
-              <div class="admin-cbtn" id="admIncidentBtn" onclick="toggleAdminIncidents()" title="Trafik olayları">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              </div>
-              <div class="admin-cbtn" id="admTrafficBtn" onclick="toggleAdminTraffic()" title="Trafik yoğunluğu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
-              </div>
-            </div>
-            <!-- Trafik renk göstergesi -->
-            <div class="admin-tleg" id="admTrafficLegend">
-              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#27ae60"></div>Akıcı</div>
-              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#f39c12"></div>Yavaş</div>
-              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#e74c3c"></div>Tıkalı</div>
-            </div>
             <!-- Zone kapsama analizi overlay -->
             <div id="zone-coverage" style="display:none;position:absolute;bottom:12px;left:12px;z-index:800;background:rgba(255,255,255,0.93);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:8px 12px;min-width:150px;max-width:200px;font-family:var(--fh);font-size:0.78rem;color:var(--text);box-shadow:var(--shadow-md);pointer-events:none"></div>
             <!-- Harita üst köşe bilgi kutusu -->
@@ -509,6 +488,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
               <div style="font-size:11px;color:var(--text3)" id="zone-info-detail">—</div>
               <button class="bsm b-reject" style="margin-top:6px;font-size:.65rem" onclick="clearZoneDrawing()">✕ İptal</button>
             </div>
+          </div>
+          <!-- TomTom harita butonları — card içinde, admMapWrap DIŞINDA (z-index karmaşası önlenir) -->
+          <div class="admin-map-btns">
+            <div class="admin-cbtn" id="admFsBtn" onclick="toggleAdminFullscreen()" title="Tam ekran">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </div>
+            <div class="admin-cbtn" id="admSatBtn" onclick="toggleAdminSatellite()" title="Uydu görüntüsü">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="admin-cbtn" id="admIncidentBtn" onclick="toggleAdminIncidents()" title="Trafik olayları">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="admin-cbtn" id="admTrafficBtn" onclick="toggleAdminTraffic()" title="Trafik yoğunluğu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+            </div>
+          </div>
+          <!-- Trafik renk göstergesi -->
+          <div class="admin-tleg" id="admTrafficLegend">
+            <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#27ae60"></div>Akıcı</div>
+            <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#f39c12"></div>Yavaş</div>
+            <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#e74c3c"></div>Tıkalı</div>
           </div>
         </div>
 

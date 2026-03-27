@@ -1954,7 +1954,7 @@ function userCard(u){
     const curZone=_zoneList.find(z=>(z.couriers||[]).includes(u.id));
     const _rtdbKey=u.kuryeId||u.id;
     const assignedRest=_rtdbCouriers[_rtdbKey]?.assignedRestaurant;
-    const activeRestos=allUsers.filter(u2=>u2.role==='restoran'&&u2.status==='active');
+    const activeRestos=allUsers.filter(u2=>u2.role==='restoran'&&u2.status!=='suspended');
     return `<div style="margin-top:.55rem;display:flex;flex-direction:column;gap:.35rem">
       <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
         <span style="font-size:.68rem;color:var(--text3)">🗺️ Bölge:</span>
@@ -2026,12 +2026,12 @@ window.setCourierRestaurant=async(uid,restoranUid)=>{
       else _rtdbCouriers[uid]={assignedRestaurant:null};
       renderKuryeler();showToast('✓ Restoran ataması kaldırıldı','ok');return;
     }
-    const rest=allUsers.find(u=>u.id===restoranUid);if(!rest)return;
+    const rest=allUsers.find(u=>u.id===restoranUid);if(!rest){showToast('Restoran bulunamadı (id: '+restoranUid+')','err');console.error('setCourierRestaurant: rest not found',restoranUid,allUsers.filter(u=>u.role==='restoran'));return;}
     const assignment={restoranId:rest.id,restoranName:rest.name||rest.company||rest.email,restoranAddress:rest.address||'',restoranPhone:rest.phone||'',restoranLat:rest.lat||null,restoranLng:rest.lng||null,logoURL:rest.logoURL||null,assignedAt:Date.now()};
     await rtdbSet(rtdbRef(rtdb,'couriers/'+uid+'/assignedRestaurant'),assignment);
     _rtdbCouriers[uid]={...(_rtdbCouriers[uid]||{}),assignedRestaurant:assignment};
     renderKuryeler();showToast('✓ Restoran atandı','ok');
-  }catch(e){showToast('Hata: '+e.message,'err');}
+  }catch(e){console.error('setCourierRestaurant error',e);showToast('Hata: '+e.message,'err');}
 };
 window.setPlan=async(uid,plan)=>{
   if(!plan)return;const now=Date.now();const days=PLANS[plan]?.days||30;

@@ -441,6 +441,62 @@
     .success-title { font-size: 1.2rem; font-weight: 700; margin-bottom: .5rem; }
     .success-desc { font-size: .88rem; color: var(--gray-lt); line-height: 1.6; }
 
+    /* ── COMPARISON ── */
+    .comparison { background:var(--dark); border-top:.5px solid var(--border); }
+    .comp-table { width:100%; border-collapse:collapse; margin-top:3rem; }
+    .comp-table th { padding:1rem 1.5rem; font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; text-align:left; }
+    .comp-table th:first-child { color:var(--gray); }
+    .comp-table th.col-old { color:var(--gray-lt); background:rgba(255,255,255,.03); }
+    .comp-table th.col-new { color:var(--orange); background:rgba(255,159,10,.06); border-bottom:2px solid var(--orange); }
+    .comp-table td { padding:.9rem 1.5rem; font-size:.85rem; border-top:.5px solid var(--border); }
+    .comp-table td:first-child { color:var(--gray-lt); }
+    .comp-table td.col-old { color:#555; background:rgba(255,255,255,.02); }
+    .comp-table td.col-new { color:var(--white); background:rgba(255,159,10,.03); font-weight:600; }
+    .comp-x { color:#ff5f57; }
+    .comp-check { color:#28c840; }
+
+    /* ── PRICING ── */
+    .pricing-section { background:var(--black); border-top:.5px solid var(--border); }
+    .pricing-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:3rem; }
+    .price-card {
+      background:var(--card); border:.5px solid var(--border); border-radius:20px;
+      padding:2.5rem; position:relative; overflow:hidden; transition:border-color .3s;
+    }
+    .price-card:hover { border-color:rgba(0,200,215,.3); }
+    .price-card.featured { border-color:var(--orange); }
+    .price-card.featured::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--orange); }
+    .price-badge { display:inline-block; background:var(--orange); color:#000; font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.25rem .75rem; border-radius:999px; margin-bottom:1.2rem; }
+    .price-name { font-size:1.1rem; font-weight:700; margin-bottom:.4rem; }
+    .price-desc { font-size:.82rem; color:var(--gray-lt); margin-bottom:2rem; line-height:1.6; }
+    .price-amount { font-size:2.4rem; font-weight:800; letter-spacing:-.04em; }
+    .price-amount span { font-size:.88rem; font-weight:400; color:var(--gray-lt); }
+    .price-period { font-size:.72rem; color:var(--gray-lt); margin-top:.3rem; margin-bottom:2rem; }
+    .price-features { display:flex; flex-direction:column; gap:.7rem; margin-bottom:2rem; }
+    .pf-item { display:flex; align-items:center; gap:.7rem; font-size:.84rem; color:var(--gray-lt); }
+    .pf-item .pfi { color:#28c840; font-size:.9rem; }
+    .price-btn { display:block; width:100%; padding:.85rem; border-radius:999px; text-align:center; font-size:.9rem; font-weight:700; text-decoration:none; transition:all .2s; }
+    .price-btn-outline { background:transparent; color:var(--white); border:.5px solid rgba(255,255,255,.2); }
+    .price-btn-outline:hover { background:rgba(255,255,255,.07); }
+    .price-btn-fill { background:var(--orange); color:#000; }
+    .price-btn-fill:hover { filter:brightness(1.1); transform:scale(1.02); }
+
+    /* ── FAQ ── */
+    .faq-section { background:var(--dark); border-top:.5px solid var(--border); }
+    .faq-list { max-width:720px; margin:3rem auto 0; display:flex; flex-direction:column; gap:.7rem; }
+    .faq-item { background:var(--card); border:.5px solid var(--border); border-radius:12px; overflow:hidden; }
+    .faq-q {
+      width:100%; background:none; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.2rem 1.5rem; font-size:.92rem; font-weight:600; color:var(--white);
+      text-align:left; gap:1rem; transition:background .2s;
+      font-family:Arial,Helvetica,sans-serif;
+    }
+    .faq-q:hover { background:rgba(255,255,255,.03); }
+    .faq-icon { font-size:1.2rem; color:var(--orange); flex-shrink:0; transition:transform .25s; }
+    .faq-a { max-height:0; overflow:hidden; transition:max-height .35s cubic-bezier(.16,1,.3,1); }
+    .faq-a.open { max-height:300px; }
+    .faq-a-inner { padding:.2rem 1.5rem 1.3rem; font-size:.85rem; color:var(--gray-lt); line-height:1.7; }
+
     /* ── FOOTER ── */
     footer {
       background: var(--dark); border-top: .5px solid var(--border);
@@ -521,6 +577,8 @@
       .stats-strip-inner { grid-template-columns: repeat(2,1fr); }
       .why-grid { grid-template-columns: 1fr; gap:2.5rem; }
       .testi-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .comp-table th, .comp-table td { padding:.7rem .9rem; font-size:.78rem; }
     }
     @media (max-width: 480px) {
       .platform-grid { grid-template-columns: repeat(2,1fr); }
@@ -538,8 +596,9 @@
   <ul class="nav-links">
     <li><a href="#ozellikler">Özellikler</a></li>
     <li><a href="#nasil-calisir">Nasıl Çalışır</a></li>
-    <li><a href="#kurye">Kurye Hizmeti</a></li>
-    <li><a href="/restoranai#basvuru">Başvur</a></li>
+    <li><a href="#fiyatlar">Fiyatlar</a></li>
+    <li><a href="#sss">SSS</a></li>
+    <li><a href="#basvuru">Başvur</a></li>
   </ul>
   <div style="display:flex;align-items:center;gap:1rem">
     <a href="/" class="nav-back">← Ana Sayfa</a>
@@ -938,6 +997,152 @@
   </div>
 </section>
 
+<!-- KARŞILAŞTIRMA -->
+<section class="section comparison">
+  <div class="inner">
+    <div class="reveal" style="text-align:center">
+      <p class="lbl">Fark Ne?</p>
+      <h2 class="h2">Eski yöntem mi,<br/><span class="muted">yoksa RestoranAI mi?</span></h2>
+      <p class="body-lg" style="margin:1.2rem auto 0">Platform kaosundan kurtulun. Her şey tek yerden.</p>
+    </div>
+    <div class="reveal" style="overflow-x:auto;margin-top:3rem">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Özellik</th>
+            <th class="col-old">Eski Yöntem</th>
+            <th class="col-new">RestoranAI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sipariş yönetimi</td>
+            <td class="col-old"><span class="comp-x">✗</span> 5 ayrı uygulama açık</td>
+            <td class="col-new"><span class="comp-check">✓</span> Tek ekran, tek bildirim</td>
+          </tr>
+          <tr>
+            <td>Sipariş kaçırma</td>
+            <td class="col-old"><span class="comp-x">✗</span> Sık sık yaşanıyor</td>
+            <td class="col-new"><span class="comp-check">✓</span> Sıfır kayıp, anlık uyarı</td>
+          </tr>
+          <tr>
+            <td>Ciro raporu</td>
+            <td class="col-old"><span class="comp-x">✗</span> Elle hesaplama, saatler</td>
+            <td class="col-new"><span class="comp-check">✓</span> Otomatik, günlük/haftalık</td>
+          </tr>
+          <tr>
+            <td>AI analiz</td>
+            <td class="col-old"><span class="comp-x">✗</span> Yok</td>
+            <td class="col-new"><span class="comp-check">✓</span> Satış tahmini ve öneriler</td>
+          </tr>
+          <tr>
+            <td>Kurye takibi</td>
+            <td class="col-old"><span class="comp-x">✗</span> Telefon ile manuel</td>
+            <td class="col-new"><span class="comp-check">✓</span> Canlı harita + otomatik atama</td>
+          </tr>
+          <tr>
+            <td>Müşteri yorumları</td>
+            <td class="col-old"><span class="comp-x">✗</span> Platform bazında dağınık</td>
+            <td class="col-new"><span class="comp-check">✓</span> Merkezi yorum yönetimi</td>
+          </tr>
+          <tr>
+            <td>Kurulum</td>
+            <td class="col-old"><span class="comp-x">✗</span> Haftalarca sürebilir</td>
+            <td class="col-new"><span class="comp-check">✓</span> 24 saatte aktif</td>
+          </tr>
+          <tr>
+            <td>7/24 destek</td>
+            <td class="col-old"><span class="comp-x">✗</span> Yok</td>
+            <td class="col-new"><span class="comp-check">✓</span> 7/24 teknik destek</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FİYATLANDIRMA -->
+<section class="section pricing-section" id="fiyatlar">
+  <div class="inner">
+    <div class="reveal" style="text-align:center">
+      <p class="lbl">Fiyatlandırma</p>
+      <h2 class="h2">Şeffaf fiyat,<br/><span class="muted">sürpriz yok.</span></h2>
+      <p class="body-lg" style="margin:1.2rem auto 0">Tüm özellikler dahil, gizli ücret yok.</p>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <p class="price-name">Başlangıç</p>
+        <p class="price-desc">Tek şubeli küçük ve orta ölçekli restoranlar için ideal başlangıç paketi.</p>
+        <div class="price-amount">₺10.000 <span>/ yıl</span></div>
+        <p class="price-period">aylık ₺833 — veya taksitli</p>
+        <div class="price-features">
+          <div class="pf-item"><span class="pfi">✓</span>Tüm platform entegrasyonları</div>
+          <div class="pf-item"><span class="pfi">✓</span>Masa + paket sipariş yönetimi</div>
+          <div class="pf-item"><span class="pfi">✓</span>Günlük ciro raporları</div>
+          <div class="pf-item"><span class="pfi">✓</span>7/24 teknik destek</div>
+          <div class="pf-item"><span class="pfi">✓</span>İlk ay ücretsiz deneme</div>
+        </div>
+        <a href="/restoranai-login?tab=kayit" class="price-btn price-btn-outline">Ücretsiz Dene →</a>
+      </div>
+      <div class="price-card featured">
+        <span class="price-badge">En Popüler</span>
+        <p class="price-name">Pro</p>
+        <p class="price-desc">AI analiz, çoklu şube desteği ve öncelikli destek isteyen büyüyen işletmeler için.</p>
+        <div class="price-amount">₺18.000 <span>/ yıl</span></div>
+        <p class="price-period">aylık ₺1.500 — veya taksitli</p>
+        <div class="price-features">
+          <div class="pf-item"><span class="pfi">✓</span>Başlangıç paketi + tüm özellikler</div>
+          <div class="pf-item"><span class="pfi">✓</span>AI destekli satış analizi ve tahmin</div>
+          <div class="pf-item"><span class="pfi">✓</span>Çoklu şube yönetimi</div>
+          <div class="pf-item"><span class="pfi">✓</span>KuryeAI tam entegrasyonu</div>
+          <div class="pf-item"><span class="pfi">✓</span>Öncelikli destek hattı</div>
+          <div class="pf-item"><span class="pfi">✓</span>PDF raporlar + özel analizler</div>
+        </div>
+        <a href="/restoranai-login?tab=kayit" class="price-btn price-btn-fill">Hemen Başla →</a>
+      </div>
+    </div>
+    <p class="reveal" style="text-align:center;font-size:.8rem;color:var(--gray-lt);margin-top:2rem">
+      İlk ay ücretsiz — kredi kartı gerekmez — istediğiniz zaman iptal
+    </p>
+  </div>
+</section>
+
+<!-- SSS -->
+<section class="section faq-section" id="sss">
+  <div class="inner">
+    <div class="reveal" style="text-align:center">
+      <p class="lbl">Sıkça Sorulan Sorular</p>
+      <h2 class="h2">Aklınızdaki<br/><span class="muted">sorular.</span></h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">RestoranAI kurulumu ne kadar sürer? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><p class="faq-a-inner">Başvurunuzu aldıktan sonra ekibimiz 24 saat içinde sizinle iletişime geçer. Platform entegrasyonları genellikle aynı gün tamamlanır. Teknik bilgi gerekmez — her şeyi biz ayarlarız.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Hangi platformlarla entegre çalışıyor? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><p class="faq-a-inner">Yemeksepeti, Trendyol Yemek, Getir, Migros Yemek ve WhatsApp sipariş kanallarıyla tam entegrasyon sağlıyoruz. Ayrıca QR menü ve masa sipariş sistemi de dahildir.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Mevcut POS sistemimle uyumlu mu? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><p class="faq-a-inner">RestoranAI çoğu popüler POS sistemiyle entegre çalışabilir. Kullandığınız sistemi başvuru formunda belirtin, teknik ekibimiz uyumluluğu sizinle paylaşsın.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Sözleşme zorunlu mu, iptal edebilir miyim? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><p class="faq-a-inner">Yıllık paket alırsanız yılın geri kalanı için ücretlendirme yapılır. Ancak ilk ay ücretsiz deneme süresinde istediğiniz zaman ücretsiz iptal hakkınız vardır.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">AI analiz nasıl çalışıyor? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><p class="faq-a-inner">Yapay zeka geçmiş sipariş verilerinizi analiz ederek satış tahminleri, yoğun saat bildirimleri, en karlı ürün önerileri ve müşteri eğilim raporları üretir. Panel üzerinden anlık erişebilirsiniz.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Birden fazla şubem var, kullanabilir miyim? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><p class="faq-a-inner">Evet, Pro pakette çoklu şube yönetimi dahildir. Tüm şubelerinizin siparişlerini, kuryelerini ve raporlarını tek panelden yönetebilirsiniz.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- TESTIMONIALS -->
 <section class="section testimonials">
   <div class="inner">
@@ -1102,18 +1307,32 @@
   <p class="footer-copy">© 2025 AI Teknoloji ve Lojistik Ltd. Şti.</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // Scroll reveal
+<script>
+  // Scroll reveal — threshold 0 + rootMargin ensures elements never stay invisible
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  // Fallback: force all reveals visible after 1.5s in case observer misfires
+  setTimeout(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible')), 1500);
 
   // Nav scroll
   const nav = document.getElementById('main-nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+  // FAQ toggle
+  function toggleFaq(btn) {
+    const ans = btn.nextElementSibling;
+    const icon = btn.querySelector('.faq-icon');
+    const isOpen = ans.classList.contains('open');
+    document.querySelectorAll('.faq-a.open').forEach(a => {
+      a.classList.remove('open');
+      a.previousElementSibling.querySelector('.faq-icon').textContent = '+';
+    });
+    if (!isOpen) { ans.classList.add('open'); icon.textContent = '−'; }
+  }
 
   // Form submit
   function submitForm() {

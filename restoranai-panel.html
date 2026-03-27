@@ -2050,6 +2050,18 @@ const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);
 
+// Module-scope immediate test — auth beklenmeden
+onValue(ref(db,"restaurants/RAI-ZPM4SJ/couriers"),snap=>{
+  const d=snap.val();
+  const el=document.getElementById('_wd');
+  if(el)el.textContent='MODULE SCOPE onValue: '+(d?JSON.stringify(d).slice(0,80):'null');
+  else alert('MODULE onValue: '+(d?'DATA VAR':'null'));
+},err=>{
+  const el=document.getElementById('_wd');
+  if(el)el.textContent='MODULE SCOPE ERR: '+err.code+' '+err.message;
+  else alert('MODULE ERR: '+err.message);
+});
+
 let RESTAURANT_ID = "demo_restoran_001";
 
 // ── Seed ─────────────────────────────────────────────────────────────────

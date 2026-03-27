@@ -911,7 +911,7 @@ import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, creat
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
          query, orderBy, onSnapshot, limit, serverTimestamp, where, arrayUnion, arrayRemove }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-import { getDatabase, initializeDatabase, ref as rtdbRef, onValue as rtdbOnValue, set as rtdbSet, update as rtdbUpdate }
+import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue, set as rtdbSet, update as rtdbUpdate }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
 const cfg = {
@@ -928,9 +928,7 @@ const cfg = {
 const app  = initializeApp(cfg);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-const rtdb = initializeDatabase(app, 'https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app', {
-  experimentalAutoDetectLongPolling: true
-});
+const rtdb = getDatabase(app);
 
 // ── STATE ──
 let allBasvurular=[], allUsers=[], allSiparisler=[], allGiderler=[];

@@ -1173,17 +1173,19 @@ function renderDash(){
 window.fSiparis=(f,btn)=>{fSip=f;setActive(btn,'#pane-siparisler .ftab');renderSiparisler();};
 function listenSiparisler(){
   if(_unsubSiparisler)return;
-  try{
-    const q=query(collection(db,'orders'),orderBy('createdAt','desc'),limit(100));
-    _unsubSiparisler=onSnapshot(q,snap=>{
-      const prev=new Set(allSiparisler.map(s=>s.id));
-      allSiparisler=snap.docs.map(d=>({id:d.id,...d.data()}));
-      allSiparisler.forEach(s=>{if(!prev.has(s.id))playSound('siparis');});
-      allSiparisler.filter(s=>s.status==='delivered'&&!prev.has(s.id+'_del')).forEach(()=>playSound('teslim'));
-      renderSiparisler();updateSiparisBadge();renderDash();
-      renderSiparisHavuz();
-    },e=>console.error('orders',e));
-  }catch(e){console.error(e);}
+  // RTDB /orders yolunu dinle (restoran paneli buraya yazar, Firestore security rules engeli yok)
+  _unsubSiparisler=rtdbOnValue(rtdbRef(rtdb,'orders'),snap=>{
+    const all=snap.val()||{};
+    const prev=new Set(allSiparisler.map(s=>s.id));
+    allSiparisler=Object.entries(all)
+      .map(([id,d])=>({id,...d}))
+      .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))
+      .slice(0,200);
+    allSiparisler.forEach(s=>{if(!prev.has(s.id))playSound('siparis');});
+    allSiparisler.filter(s=>s.status==='delivered'&&!prev.has(s.id+'_del')).forEach(()=>playSound('teslim'));
+    renderSiparisler();updateSiparisBadge();renderDash();
+    renderSiparisHavuz();
+  },e=>console.error('orders RTDB',e));
 }
 function renderSiparisler(){
   const el=document.getElementById('siparis-list');if(!el)return;

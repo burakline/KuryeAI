@@ -2682,6 +2682,8 @@ window.advanceOrder=async(id,next)=>{
   if(currentPage==="kitchen")renderKitchen();
   try{
     await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/orders/${id}`,{status:next});
+    // Admin panel global siparişler yolunu da güncelle
+    _rtdbUpdate(`/orders/${id}`,{status:next,updatedAt:Date.now()}).catch(()=>{});
     showToast(`✓ ${STATUS[next].label}`);
   }catch{showToast("Güncelleme başarısız","error")}
 };
@@ -3345,7 +3347,17 @@ window.submitManualOrder = async () => {
   try{
     const orderId = await _rtdbPush(`/restaurants/${RESTAURANT_ID}/orders`, newOrder);
 
-    // Firestore'a da yaz (admin panel & kurye takibi için)
+    // Admin panel için paylaşılan RTDB siparişler yolu (/orders/{id})
+    try {
+      await _rtdbSet(`/orders/${orderId}`, {
+        ...newOrder,
+        orderId,
+        restoranId: RESTAURANT_ID,
+        restoranName: settings.rest_name || RESTAURANT_ID,
+      });
+    } catch(fe) { console.error('RTDB global order error:', fe); }
+
+    // Firestore'a da yaz (eski entegrasyon - best-effort)
     try {
       await addDoc(collection(fs,'orders'), {
         ...newOrder,
@@ -3354,7 +3366,7 @@ window.submitManualOrder = async () => {
         restoranName: settings.rest_name || RESTAURANT_ID,
         createdAt: new Date().toISOString()
       });
-    } catch(fe) { console.error('Firestore order error:', fe); }
+    } catch(_) {}
 
     // Kurye atama: manuel seçim varsa direkt, yoksa ve auto modundaysa otomatik ata
     if (courierId) {

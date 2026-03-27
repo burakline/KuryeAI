@@ -207,6 +207,32 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 }
 .tleg-row{display:flex;align-items:center;gap:6px;color:var(--tx2);}
 .tleg-dot{width:12px;height:4px;border-radius:2px;flex-shrink:0;}
+/* Reverse geocoding — mevcut konum etiketi */
+.rev-geo-pill{
+  position:absolute;left:14px;z-index:101;
+  bottom:calc(296px + env(safe-area-inset-bottom,0px));
+  background:rgba(255,255,255,0.96);border:1.5px solid var(--border);
+  border-radius:20px;padding:5px 11px;font-size:0.7rem;font-weight:600;
+  color:var(--tx2);box-shadow:var(--sh);
+  display:none;align-items:center;gap:4px;
+  max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* Trafik olayı marker */
+.inc-marker{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,0.95);border:2px solid #e74c3c;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;
+}
+/* Rota Planlayıcı */
+.rp-addr-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.rp-num{width:24px;height:24px;border-radius:50%;background:var(--teal-bg);color:var(--teal);font-size:0.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rp-result{background:var(--teal-bg);border-radius:12px;padding:14px 16px;margin-top:14px;display:none;}
+.rp-result-row{display:flex;justify-content:space-between;font-size:0.82rem;padding:5px 0;border-bottom:1px solid var(--border);}
+.rp-result-row:last-child{border-bottom:none;font-weight:800;color:var(--teal);}
+.rp-order-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.rp-order-item{display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:7px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);}
+.rp-order-idx{width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;font-size:0.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 /* Smooth marker glide — zoom sırasında devre dışı (zıplamayı önler) */
 .leaflet-marker-pane .leaflet-marker-icon{transition:transform 0.45s linear;}
 #map.zoom-active .leaflet-marker-pane .leaflet-marker-icon,
@@ -564,7 +590,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
   <div class="wakeind" id="wakeind"><div class="wdot" id="wdot"></div><span id="wtxt">Ekran</span></div>
   <div class="speed-badge"><div class="snum" id="spnum">0</div><div class="sunit">km/s</div></div>
+  <div class="rev-geo-pill" id="revGeoPill">📍 <span id="revGeoText"></span></div>
   <div class="map-btns">
+    <div class="cbtn" id="incidentBtn" onclick="toggleIncidents()" title="Trafik olayları (kaza/çalışma)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
     <div class="cbtn" id="trafficBtn" onclick="toggleTraffic()" title="Trafik yoğunluğu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
     </div>
@@ -597,6 +627,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="aordrow"><div class="aordico">📍</div><div class="aordaddr" id="aordAddr">—</div></div>
       <div class="aordrow"><div class="aordico">👤</div><div class="aordaddr" id="aordCust">—</div></div>
       <div class="aordrow" style="padding-bottom:4px"><div class="aordico">💰</div><div class="aordaddr" id="aordAmt" style="font-weight:800;color:var(--teal)">—</div></div>
+      <div class="aordrow" id="aordEtaRow" style="display:none;padding-bottom:4px"><div class="aordico">⏱️</div><div class="aordaddr" id="aordEta" style="font-weight:700;color:#43A047">—</div></div>
       <button class="aordnavbtn" id="aordNavBtn" onclick="openDelivNav()" style="display:none">🗺️ Müşteriye Yol Tarifi Al</button>
       <button class="aordnavbtn" id="aordRetNavBtn" onclick="openRestNav()" style="display:none;background:#43A047">🗺️ Restorana Dön — Yol Tarifi Al</button>
       <button class="aordbtn" id="aordBtn" onclick="advOrderStatus()">Restorana Vardım — Teslim Alıyorum</button>
@@ -637,6 +668,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="ni" onclick="closeSB();openS('chatScreen')"><div class="nico">💬</div>Chat<div class="nbadge" id="chatBadge" style="display:none">3</div></div>
     <div class="nsec">Araçlar</div>
     <div class="ni" onclick="closeSB();openS('toolsScreen')"><div class="nico">🔧</div>Araçlar</div>
+    <div class="ni" onclick="closeSB();openS('tRouteOpt')"><div class="nico">🗺️</div>Rota Planlayıcı</div>
   </nav>
   <div class="sbft">
     <button class="lgout" onclick="doLogout()">
@@ -802,6 +834,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="tcard" onclick="openS('tFuel')"><div class="tico">⛽</div><div class="tname">KM / Yakıt</div><div class="tdesc">Yakıt verimliliği</div></div>
       <div class="tcard" onclick="openS('tLedger')"><div class="tico">📒</div><div class="tname">Gelir / Gider</div><div class="tdesc">Mali defterim</div></div>
       <div class="tcard" onclick="openS('tMaint')"><div class="tico">🔧</div><div class="tname">Araç Bakım</div><div class="tdesc">Bakım takibi</div></div>
+      <div class="tcard" onclick="openS('tRouteOpt')"><div class="tico">🗺️</div><div class="tname">Rota Planlayıcı</div><div class="tdesc">En hızlı teslimat sırası</div></div>
     </div>
   </div>
 </div>
@@ -867,6 +900,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div class="ibody">
     <div class="card" style="margin-bottom:14px"><label class="fl">Güncel Araç KM</label><input class="fi" type="number" id="curKm" placeholder="KM giriniz" oninput="renderMaint()" style="margin-bottom:0"></div>
     <div id="mList"></div>
+  </div>
+</div>
+
+<!-- TOOL: ROUTE OPTIMIZER -->
+<div class="isc" id="tRouteOpt">
+  <div class="ihd"><div class="bbtn" onclick="closeS('tRouteOpt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">🗺️ Rota Planlayıcı</div></div>
+  <div class="ibody">
+    <div class="card">
+      <div class="fsec">Teslimat Noktaları</div>
+      <div id="rpAddrList"><div class="rp-addr-row" style="color:var(--tx3);font-size:0.82rem;padding:8px 0">Teslimat adresi ekleyin</div></div>
+      <button class="addrbtn" style="margin-top:8px" onclick="addRpAddr()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adres Ekle
+      </button>
+    </div>
+    <button class="savebtn" id="rpRunBtn" onclick="runRouteOpt()" style="margin-top:8px">🗺️ En İyi Rotayı Hesapla</button>
+    <div id="rpResult" style="display:none">
+      <div class="fsec" style="margin-top:16px;margin-bottom:8px">Önerilen Sıra</div>
+      <div id="rpOrderList" class="rp-order-list"></div>
+      <div class="rp-result" id="rpSummary" style="display:block"></div>
+    </div>
   </div>
 </div>
 
@@ -1058,6 +1112,196 @@ function _loadTrafficLayer(key){
     if(leg)leg.style.display='none';
   }
 }
+// ── TOMTOM ROUTING ───────────────────────────────────────────────────────────
+async function _fetchTomTomRoute(fromLat,fromLng,toLat,toLng){
+  try{
+    const url=`https://api.tomtom.com/routing/1/calculateRoute/${fromLat},${fromLng}:${toLat},${toLng}/json?key=${TOMTOM_KEY}&travelMode=motorcycle&traffic=true`;
+    const r=await fetch(url);
+    if(!r.ok)return null;
+    const data=await r.json();
+    const route=data.routes&&data.routes[0];
+    if(!route)return null;
+    const points=route.legs.flatMap(leg=>leg.points.map(p=>[p.latitude,p.longitude]));
+    const travelSec=route.summary.travelTimeInSeconds;
+    const distKm=route.summary.lengthInMeters/1000;
+    return{points,travelSec,distKm};
+  }catch{return null;}
+}
+
+// ── TRAFFIC INCIDENTS ─────────────────────────────────────────────────────────
+let _incMarkers=[],_incOn=false,_incFetchI=null;
+
+function toggleIncidents(){
+  _incOn=!_incOn;
+  const btn=document.getElementById('incidentBtn');
+  if(btn)btn.classList.toggle('active',_incOn);
+  if(_incOn){
+    _fetchIncidents();
+    _incFetchI=setInterval(_fetchIncidents,60000);
+    showToast('⚠️ Trafik olayları açık');
+  }else{
+    clearInterval(_incFetchI);_incFetchI=null;
+    _incMarkers.forEach(m=>{if(G.map)G.map.removeLayer(m);});
+    _incMarkers=[];
+    showToast('Trafik olayları kapalı');
+  }
+}
+
+async function _fetchIncidents(){
+  if(!G.map)return;
+  const b=G.map.getBounds();
+  const bbox=`${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+  try{
+    const url=`https://api.tomtom.com/traffic/services/5/incidentDetails?key=${TOMTOM_KEY}&bbox=${bbox}&fields={incidents{type,geometry{type,coordinates},properties{id,iconCategory,events{description,iconCategory}}}}&language=tr-TR&t=1111&expandCluster=true`;
+    const r=await fetch(url);
+    if(!r.ok)return;
+    const data=await r.json();
+    _incMarkers.forEach(m=>{if(G.map)G.map.removeLayer(m);});
+    _incMarkers=[];
+    (data.incidents||[]).forEach(inc=>{
+      const coords=inc.geometry&&inc.geometry.coordinates;
+      if(!coords)return;
+      let lat,lng;
+      if(inc.geometry.type==='Point'){lng=coords[0];lat=coords[1];}
+      else if(inc.geometry.type==='LineString'){lng=coords[0][0];lat=coords[0][1];}
+      else return;
+      const cat=inc.properties&&inc.properties.iconCategory;
+      const emoji=_incidentEmoji(cat);
+      const label=_incidentLabel(cat);
+      const desc=(inc.properties&&inc.properties.events&&inc.properties.events[0]&&inc.properties.events[0].description)||label;
+      const ic=L.divIcon({html:`<div class="inc-marker">${emoji}</div>`,className:'',iconSize:[28,28],iconAnchor:[14,14]});
+      const m=L.marker([lat,lng],{icon:ic}).addTo(G.map).bindPopup(`<b>${emoji} ${label}</b><br><small>${desc}</small>`);
+      _incMarkers.push(m);
+    });
+  }catch{}
+}
+
+function _incidentEmoji(cat){
+  const map={0:'⚠️',1:'🚧',2:'🚗',3:'🌦️',4:'🚨',5:'🚧',6:'⚠️',7:'🚦',8:'🛑',9:'⛽',10:'🌪️',11:'🚑'};
+  return map[cat]||'⚠️';
+}
+function _incidentLabel(cat){
+  const map={0:'Olay',1:'Yol Çalışması',2:'Trafik Sıkışıklığı',3:'Hava Durumu',4:'Tehlike',5:'Kapalı Yol',6:'Uyarı',7:'Trafik Işığı',8:'Durdurma',9:'Yakıt',10:'Afet',11:'Acil Durum'};
+  return map[cat]||'Trafik Olayı';
+}
+
+// ── REVERSE GEOCODING ─────────────────────────────────────────────────────────
+let _revGeoTimer=null,_revGeoLast={lat:null,lng:null};
+
+async function _doRevGeo(lat,lng){
+  if(_revGeoLast.lat!==null){
+    const d=hvs(_revGeoLast.lat,_revGeoLast.lng,lat,lng);
+    if(d<0.15)return;
+  }
+  clearTimeout(_revGeoTimer);
+  _revGeoTimer=setTimeout(async()=>{
+    try{
+      const url=`https://api.tomtom.com/search/2/reverseGeocode/${lat},${lng}.json?key=${TOMTOM_KEY}&language=tr-TR`;
+      const r=await fetch(url);
+      if(!r.ok)return;
+      const data=await r.json();
+      const addr=data.addresses&&data.addresses[0]&&data.addresses[0].address;
+      if(!addr)return;
+      _revGeoLast={lat,lng};
+      const street=addr.streetName||addr.municipalitySubdivision||addr.municipality||'';
+      const pill=document.getElementById('revGeoPill');
+      const txt=document.getElementById('revGeoText');
+      if(txt)txt.textContent=street;
+      if(pill)pill.style.display=street?'flex':'none';
+    }catch{}
+  },2000);
+}
+
+// ── SNAP TO ROADS ─────────────────────────────────────────────────────────────
+let _snapBuf=[];
+
+async function _snapAndAddTrail(lat,lng){
+  _snapBuf.push({latitude:lat,longitude:lng});
+  G.trail.addLatLng([lat,lng]);
+  if(_snapBuf.length<6)return;
+  const batch=_snapBuf.splice(0,6);
+  try{
+    const body={points:batch.map(p=>({point:{latitude:p.latitude,longitude:p.longitude}}))};
+    const r=await fetch(`https://api.tomtom.com/snap-to-roads/1/snap-to-roads?key=${TOMTOM_KEY}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+    });
+    if(!r.ok)return;
+    const data=await r.json();
+    const snapped=data.snappedPoints||[];
+    if(snapped.length){
+      const ll=G.trail.getLatLngs();
+      const newLL=ll.slice(0,Math.max(0,ll.length-batch.length));
+      snapped.forEach(p=>newLL.push([p.location.lat,p.location.lon]));
+      G.trail.setLatLngs(newLL);
+    }
+  }catch{}
+}
+
+// ── WAYPOINT OPTIMIZATION / ROTA PLANLAYICI ───────────────────────────────────
+let _rpAddrs=[];
+
+function addRpAddr(){
+  _rpAddrs.push('');
+  _renderRpAddrList();
+}
+function removeRpAddr(i){
+  _rpAddrs.splice(i,1);
+  _renderRpAddrList();
+}
+function _renderRpAddrList(){
+  const el=document.getElementById('rpAddrList');
+  if(!el)return;
+  if(!_rpAddrs.length){
+    el.innerHTML='<div class="rp-addr-row" style="color:var(--tx3);font-size:0.82rem;padding:8px 0">Teslimat adresi ekleyin</div>';
+    return;
+  }
+  el.innerHTML=_rpAddrs.map((a,i)=>
+    `<div class="rp-addr-row"><span class="rp-num">${i+1}</span><input class="fi" style="flex:1;margin:0" type="text" placeholder="Adres ${i+1}" value="${esc(a)}" oninput="_rpAddrs[${i}]=this.value"><button onclick="removeRpAddr(${i})" style="background:none;border:none;color:var(--tx3);cursor:pointer;padding:4px;font-size:1rem">✕</button></div>`
+  ).join('');
+}
+async function runRouteOpt(){
+  const valid=_rpAddrs.filter(a=>a.trim());
+  if(valid.length<2){showToast('En az 2 adres girin','error');return;}
+  const btn=document.getElementById('rpRunBtn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Hesaplanıyor...';}
+  try{
+    const coords=[];
+    for(const addr of valid){
+      try{
+        const q=encodeURIComponent(addr+', Türkiye');
+        const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,{headers:{'Accept-Language':'tr','User-Agent':'KuryeAI/1.0'}});
+        const d=await r.json();
+        if(d&&d.length)coords.push({addr,lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)});
+      }catch{}
+    }
+    if(coords.length<2){showToast('Adresler bulunamadı','error');return;}
+    const origin=`${G.gps.lat},${G.gps.lng}`;
+    const waypoints=coords.map(c=>`${c.lat},${c.lng}`).join(':');
+    const url=`https://api.tomtom.com/routing/1/calculateRoute/${origin}:${waypoints}/json?key=${TOMTOM_KEY}&travelMode=motorcycle&traffic=true&computeBestOrder=true`;
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error('Rota hesaplanamadı');
+    const data=await resp.json();
+    const route=data.routes&&data.routes[0];
+    if(!route)throw new Error('Sonuç yok');
+    const tSec=route.summary.travelTimeInSeconds;
+    const distKm=(route.summary.lengthInMeters/1000).toFixed(1);
+    const optOrder=route.optimizedWaypoints||coords.map((_,i)=>({optimizedIndex:i,providedIndex:i}));
+    const orderedCoords=optOrder.slice().sort((a,b)=>a.optimizedIndex-b.optimizedIndex).map(o=>coords[o.providedIndex]||coords[0]);
+    document.getElementById('rpResult').style.display='block';
+    document.getElementById('rpOrderList').innerHTML=orderedCoords.map((c,i)=>
+      `<div class="rp-order-item"><span class="rp-order-idx">${i+1}</span><span>${esc(c.addr)}</span></div>`
+    ).join('');
+    const min=Math.round(tSec/60);
+    document.getElementById('rpSummary').innerHTML=`<div class="rp-result-row">⏱️ Tahmini süre: <b>${min} dk</b></div><div class="rp-result-row">📏 Toplam mesafe: <b>${distKm} km</b></div>`;
+    if(G.delivRouteLine){G.map.removeLayer(G.delivRouteLine);G.delivRouteLine=null;}
+    const pts=route.legs.flatMap(leg=>leg.points.map(p=>[p.latitude,p.longitude]));
+    if(pts.length&&G.map){
+      G.delivRouteLine=L.polyline(pts,{color:'#7C4DFF',weight:4,opacity:0.8}).addTo(G.map);
+      G.map.fitBounds(G.delivRouteLine.getBounds(),{padding:[40,40]});
+    }
+  }catch(e){showToast('Rota hatası: '+e.message,'error');}
+  finally{if(btn){btn.disabled=false;btn.textContent='🗺️ En İyi Rotayı Hesapla';}}
+}
 // ────────────────────────────────────────────────────────────────────────────
 
 function mkMarker(){
@@ -1117,9 +1361,11 @@ function initGPS(){
     if(G.shift.on){
       // Km say: sadece gerçek hareket (>10m) ve hız >0.5 km/h ise
       if(d>0.010&&d<0.5&&curSpeed>0.5)G.stats.km+=d;
-      // Trail: sadece anlamlı hareket varsa nokta ekle
-      if(d>0.010)G.trail.addLatLng([la,ln]);
+      // Trail: yola yapıştırılmış (snap-to-roads)
+      if(d>0.010)_snapAndAddTrail(la,ln);
     }
+    // Reverse geocoding: konum → sokak adı
+    _doRevGeo(la,ln);
     if(G.marker){
       G.marker.setLatLng([la,ln]);
       const el=document.getElementById('kurMrkArrow');
@@ -1149,7 +1395,8 @@ function simGPS(){
       const el=document.getElementById('kurMrkArrow');
       if(el)el.style.transform=`rotate(${G.bearing}deg)`;
     }
-    if(G.shift.on){G.stats.km+=0.01;G.trail.addLatLng([G.gps.lat,G.gps.lng]);}
+    if(G.shift.on){G.stats.km+=0.01;_snapAndAddTrail(G.gps.lat,G.gps.lng);}
+    _doRevGeo(G.gps.lat,G.gps.lng);
     if(G.follow&&G.map){
       if(G.map.getZoom()<14)G.map.flyTo([G.gps.lat,G.gps.lng],15,{animate:true,duration:1.0});
       else G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
@@ -1362,7 +1609,7 @@ function openSB(){document.getElementById('sb').classList.add('open');document.g
 function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('ov').classList.remove('open');}
 
 // SCREENS
-function openS(id){const el=document.getElementById(id);if(!el)return;el.classList.add('active');if(id==='chatScreen')renderChat();if(id==='earningsScreen')renderEarn();if(id==='perfScreen')renderPerf();if(id==='tLedger')renderLedger();if(id==='tMaint')renderMaint();if(id==='tComp')startCmp();if(id==='ordersScreen'){renderOrdHistory();document.getElementById('ordNBadge').style.display='none';}}
+function openS(id){const el=document.getElementById(id);if(!el)return;el.classList.add('active');if(id==='chatScreen')renderChat();if(id==='earningsScreen')renderEarn();if(id==='perfScreen')renderPerf();if(id==='tLedger')renderLedger();if(id==='tMaint')renderMaint();if(id==='tComp')startCmp();if(id==='ordersScreen'){renderOrdHistory();document.getElementById('ordNBadge').style.display='none';}if(id==='tRouteOpt')_renderRpAddrList();}
 function closeS(id){document.getElementById(id).classList.remove('active');}
 function openM(id){document.getElementById(id).classList.add('active');}
 function closeM(id){document.getElementById(id).classList.remove('active');}
@@ -1563,6 +1810,7 @@ function renderActiveOrder(){
     card.classList.remove('show');
     _clearDelivMapLayers(true);
     if(G.restMarker&&G.map){G.map.removeLayer(G.restMarker);G.restMarker=null;}
+    const etaRow=document.getElementById('aordEtaRow');if(etaRow)etaRow.style.display='none';
     return;
   }
   card.classList.add('show');
@@ -1666,13 +1914,25 @@ async function _showDelivOnMap(o){
   G.delivMarker=L.marker([dlat,dlng],{icon:dic}).addTo(G.map).bindPopup(
     `<div style="min-width:160px"><b style="font-size:0.95rem">👤 ${custName}</b>${custPhone?`<br><small>📞 ${custPhone}</small>`:''}<br><small style="color:#555">📍 ${addr||''}</small></div>`
   ).openPopup();
-  // Kuryeden müşteriye rota çizgisi
+  // Kuryeden müşteriye gerçek rota (TomTom) veya düz çizgi fallback
   const kLat=G.gps.lat,kLng=G.gps.lng;
-  G.delivRouteLine=L.polyline([[kLat,kLng],[dlat,dlng]],{
-    color:'#E53935',weight:3,dashArray:'8,6',opacity:0.8
-  }).addTo(G.map);
-  // Haritayı her iki noktayı kapsayacak şekilde ayarla
-  G.map.fitBounds([[kLat,kLng],[dlat,dlng]],{padding:[60,60]});
+  _fetchTomTomRoute(kLat,kLng,dlat,dlng).then(route=>{
+    if(route&&route.points.length>1){
+      G.delivRouteLine=L.polyline(route.points,{color:'#E53935',weight:4,opacity:0.85}).addTo(G.map);
+      G.map.fitBounds(G.delivRouteLine.getBounds(),{padding:[60,60]});
+      // ETA göster
+      const min=Math.round(route.travelSec/60);
+      const km=route.distKm.toFixed(1);
+      const etaEl=document.getElementById('aordEta');
+      const etaRow=document.getElementById('aordEtaRow');
+      if(etaEl)etaEl.textContent=`${min} dk · ${km} km`;
+      if(etaRow)etaRow.style.display='flex';
+    }else{
+      // Fallback: düz çizgi
+      G.delivRouteLine=L.polyline([[kLat,kLng],[dlat,dlng]],{color:'#E53935',weight:3,dashArray:'8,6',opacity:0.8}).addTo(G.map);
+      G.map.fitBounds([[kLat,kLng],[dlat,dlng]],{padding:[60,60]});
+    }
+  });
   // Koordinatları G'ye sakla (openDelivNav için)
   G._delivLat=dlat;G._delivLng=dlng;
 }

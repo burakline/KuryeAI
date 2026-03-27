@@ -1989,19 +1989,10 @@ document.addEventListener("click", function(e){
 });
 </script>
 
-<!-- WebSocket interceptor — Firebase SDK'dan ÖNCE çalışmalı -->
-<script>
-window._wsLog=[];
-window._showWsLog=function(){var el=document.getElementById('_wsd');if(!el){el=document.createElement('div');el.id='_wsd';el.style.cssText='position:fixed;bottom:60px;left:8px;right:8px;background:#111;color:#0ff;font-size:11px;font-family:monospace;padding:8px;border-radius:8px;z-index:99999;max-height:140px;overflow-y:auto;';document.body.appendChild(el);}el.innerHTML=window._wsLog.slice(-6).map(function(l){return'<div>'+l+'</div>';}).join('');};
-var _OrigWS=window.WebSocket;
-window.WebSocket=function(url,p){var s=url.replace('wss://','').slice(0,55);window._wsLog.push('🔵 '+s);window._showWsLog();var ws=new _OrigWS(url,p);ws.addEventListener('open',function(){window._wsLog.push('✅ AÇILDI: '+s);window._showWsLog();});ws.addEventListener('error',function(){window._wsLog.push('❌ HATA: '+s);window._showWsLog();});ws.addEventListener('close',function(e){window._wsLog.push('🔴 KAPANDI '+e.code+' '+(e.reason||''));window._showWsLog();});return ws;};
-setTimeout(function(){if(!window._wsLog.length){window._wsLog.push('⚠️ 10sn içinde WebSocket açılmadı');window._showWsLog();}},10000);
-</script>
-
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, get, push, remove, runTransaction }
+import { getDatabase, ref, onValue, set, update, get, push, remove, runTransaction, goOnline }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -2021,7 +2012,7 @@ const FB = {
   appId:"1:1012295004135:web:0cceac0476175e19395742",
 };
 const app     = initializeApp(FB);
-const db      = getDatabase(app);
+const db      = getDatabase(app, "https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app");
 const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);
@@ -2465,6 +2456,7 @@ setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
+  goOnline(db);
   setFbStatus("connected");
 
   // SDK onValue listeners — gerçek zamanlı

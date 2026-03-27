@@ -188,6 +188,18 @@
       currentUser = { uid:user.uid, ...snap.data() };
       initPanel();
       document.getElementById('page-loader').classList.add('hide');
+      // Process pending talep from landing page form
+      const pending = sessionStorage.getItem('pendingIzinciTalep');
+      if (pending) {
+        sessionStorage.removeItem('pendingIzinciTalep');
+        try {
+          const f = JSON.parse(pending);
+          await addDoc(collection(db,'izinciTalepler'), {
+            ...f, isverenId: currentUser.uid, isverenAdi: currentUser.name || '',
+            status: 'open', createdAt: new Date().toISOString()
+          });
+        } catch(e) { console.error('Pending talep kaydedilemedi:', e); }
+      }
     } catch(e) { window.location.href = '/izincikuryeai-isveren-login'; }
   });
 

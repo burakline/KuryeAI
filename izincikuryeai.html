@@ -554,10 +554,11 @@
       alert('Lütfen zorunlu alanları doldurun.');return;
     }
 
-    const btn = document.getElementById('i-btn');
-    btn.classList.add('loading'); btn.disabled = true;
-
-    _saveIsletme({adsoyad,isletme,tel,adres,tarih,saatler,alan,yemek,odemeZaman,odeemSekil,bilgi}, btn);
+    // Save to sessionStorage, redirect to isveren login to complete
+    sessionStorage.setItem('pendingIzinciTalep', JSON.stringify({
+      adsoyad,isletme,tel,adres,tarih,saatler,alan,yemek,odemeZaman,odeemSekil,bilgi
+    }));
+    window.location.href = '/izincikuryeai-isveren-login?back=/izincikuryeai-isveren-panel';
   }
 
   // Kurye formu
@@ -572,10 +573,8 @@
       alert('Lütfen zorunlu alanları doldurun: Ad, Soyad, Telefon, Araç ve Plaka.');return;
     }
 
-    const btn = document.getElementById('k-btn');
-    btn.classList.add('loading'); btn.disabled = true;
-
-    _saveKurye({
+    // Save to sessionStorage, redirect to izinci login to complete
+    sessionStorage.setItem('pendingIzinciBasvuru', JSON.stringify({
       ad, soyad, tel,
       email: document.getElementById('k-email').value,
       adres: document.getElementById('k-adres').value,
@@ -605,48 +604,9 @@
       tercihSaat: document.getElementById('k-tercih-saat').value,
       iban: document.getElementById('k-iban').value,
       saglik: document.getElementById('k-saglik').value,
-    }, btn);
+    }));
+    window.location.href = '/izincikuryeai-izinci-login?back=/izincikuryeai-izinci-panel';
   }
-</script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-  const app = initializeApp({
-    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
-    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
-    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
-  });
-  const db = getFirestore(app);
-
-  window._saveIsletme = async (data, btn) => {
-    try {
-      await addDoc(collection(db,'izinciTalepler'), {
-        ...data, status:'pending', createdAt: new Date().toISOString()
-      });
-      btn.classList.remove('loading'); btn.disabled = false;
-      document.getElementById('isletme-form-card').style.display = 'none';
-      document.getElementById('isletme-success').classList.add('show');
-    } catch(e) {
-      btn.classList.remove('loading'); btn.disabled = false;
-      alert('Talep gönderilemedi, lütfen tekrar deneyin.');
-    }
-  };
-
-  window._saveKurye = async (data, btn) => {
-    try {
-      await addDoc(collection(db,'izinciBasvurular'), {
-        ...data, status:'pending', createdAt: new Date().toISOString()
-      });
-      btn.classList.remove('loading'); btn.disabled = false;
-      document.getElementById('kurye-form-card').style.display = 'none';
-      document.getElementById('kurye-success').classList.add('show');
-    } catch(e) {
-      btn.classList.remove('loading'); btn.disabled = false;
-      alert('Başvuru gönderilemedi, lütfen tekrar deneyin.');
-    }
-  };
 </script>
 </body>
 </html>

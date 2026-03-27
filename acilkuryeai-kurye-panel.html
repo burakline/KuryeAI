@@ -232,11 +232,13 @@
   }
 
   function listenTalepler() {
-    const q = query(collection(db,'acilTalepler'), where('status','==','open'), orderBy('createdAt','desc'));
+    const q = query(collection(db,'acilTalepler'), where('status','==','open'));
     unsubTalepler = onSnapshot(q, snap => {
-      const list = snap.docs.map(d=>({id:d.id,...d.data()}));
+      const list = snap.docs
+        .map(d=>({id:d.id,...d.data()}))
+        .sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
       renderTalepler(list);
-    }, ()=>{});
+    }, (err)=>{ console.error('Talepler dinleme hatası:',err); });
   }
 
   function renderTalepler(list) {

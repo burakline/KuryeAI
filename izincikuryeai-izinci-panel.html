@@ -327,6 +327,18 @@
       currentUser = { uid:user.uid, ...snap.data() };
       initPanel();
       document.getElementById('page-loader').classList.add('hide');
+      // Process pending başvuru from landing page form
+      const pending = sessionStorage.getItem('pendingIzinciBasvuru');
+      if (pending) {
+        sessionStorage.removeItem('pendingIzinciBasvuru');
+        try {
+          const f = JSON.parse(pending);
+          await addDoc(collection(db,'izinciBasvurular'), {
+            ...f, kuryeUid: currentUser.uid, status: 'pending',
+            createdAt: new Date().toISOString()
+          });
+        } catch(e) { console.error('Pending başvuru kaydedilemedi:', e); }
+      }
     } catch(e) { window.location.href = '/izincikuryeai-izinci-login'; }
   });
 
@@ -369,30 +381,7 @@
     loadShiftHistory();
     listenOrders();
     updateStats();
-    if (u.route) listenRouteOrders(u.route);
     listenAcikTalepler();
-  }
-
-  let _unsubRouteOrders = null;
-  function listenRouteOrders(route) {
-    if (_unsubRouteOrders) _unsubRouteOrders();
-    if (!route) return;
-    // Listen to global orders collection where address contains route keyword
-    const q = query(
-      collection(db,'orders'),
-      where('status','==','pending'),
-      orderBy('createdAt','desc')
-    );
-    _unsubRouteOrders = onSnapshot(q, snap => {
-      const routeLower = route.toLowerCase();
-      const matched = snap.docs
-        .map(d=>({id:d.id,...d.data()}))
-        .filter(o => {
-          const addr = ((o.address||'') + ' ' + (o.fromAddr||'') + ' ' + (o.toAddr||'')).toLowerCase();
-          return addr.includes(routeLower);
-        });
-      renderRouteOrders(matched);
-    }, ()=>{});
   }
 
   function renderRouteOrders(orders) {

@@ -142,10 +142,12 @@
     _dataLoaded = true;
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
-      if (!snap.exists() || snap.data().role !== 'acil_talep') {
+      if (snap.exists() && snap.data().role !== 'acil_talep') {
         await signOut(auth); window.location.href = '/acilkuryeai-talepeden-login'; return;
       }
-      currentUser = { uid:user.uid, ...snap.data() };
+      // If doc missing (interrupted registration), build minimal profile from auth
+      const profile = snap.exists() ? snap.data() : { displayName: user.email.split('@')[0], email: user.email, role: 'acil_talep', phone: '' };
+      currentUser = { uid:user.uid, ...profile };
       document.getElementById('page-loader').classList.add('hide');
       listenTaleplerim();
     } catch(e) { window.location.href = '/acilkuryeai-talepeden-login'; }

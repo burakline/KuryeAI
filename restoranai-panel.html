@@ -3233,9 +3233,9 @@ window.submitManualOrder = async () => {
   const courierId= document.getElementById("mo-courier").value;
   const note     = document.getElementById("mo-note").value.trim();
 
-  // Abonelik plan kontrolü
-  if (currentPlan && (!currentPlan.planActive || Date.now() > currentPlan.planEndDate)) {
-    showToast("⚠ Abonelik planınız sona ermiş. Sipariş oluşturamazsınız.", "error");
+  // Abonelik plan kontrolü — sadece planActive kesin false ise engelle, yoksa geçir
+  if (currentPlan && currentPlan.planActive === false) {
+    showToast("⚠ Abonelik planınız pasif. Lütfen admin ile iletişime geçin.", "error");
     return;
   }
 
@@ -3323,8 +3323,10 @@ window.submitManualOrder = async () => {
 
     clearManualOrder();
     renderRecentManualOrders();
-  }catch{
-    showToast("Sipariş kaydedilemedi","error");
+  }catch(e){
+    console.error('submitManualOrder hata:', e);
+    const msg = e?.message || String(e) || 'Bilinmeyen hata';
+    showToast(`Sipariş kaydedilemedi: ${msg}`, "error");
   }
 };
 

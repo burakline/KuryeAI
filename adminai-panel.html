@@ -1449,29 +1449,21 @@ function _initAdminFbDot(){
   if(_fbDotInited)return;_fbDotInited=true;
   const dot=document.getElementById('adminFbDot');
   const txt=document.getElementById('adminFbTxt');
-  // RTDB SDK .info/connected listener
+  // RTDB SDK .info/connected listener — tek kaynak gerçek bağlantı durumu için
   rtdbOnValue(rtdbRef(rtdb,'.info/connected'),snap=>{
     const ok=snap.val()===true;
     if(dot)dot.style.background=ok?'#22c55e':'#f59e0b';
     if(txt)txt.textContent=ok?'Firebase Bağlı':'Bağlanıyor…';
   });
-  // Fallback: 8 saniyede bağlanamadıysa REST ile dene
-  setTimeout(async()=>{
+  // 20 saniye sonra hâlâ bağlanmadıysa "Bağlantı Yok" göster
+  setTimeout(()=>{
     const dot2=document.getElementById('adminFbDot');
-    if(dot2&&dot2.style.background!=='rgb(34, 197, 94)'){
-      try{
-        const r=await fetch('https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app/.info/connected.json',{signal:AbortSignal.timeout(4000)});
-        const v=await r.json();
-        if(dot2)dot2.style.background=v?'#22c55e':'#ef4444';
-        const t2=document.getElementById('adminFbTxt');
-        if(t2)t2.textContent=v?'Firebase Bağlı':'Bağlantı Yok';
-      }catch{
-        if(dot2)dot2.style.background='#ef4444';
-        const t2=document.getElementById('adminFbTxt');
-        if(t2)t2.textContent='Bağlantı Yok';
-      }
+    if(dot2&&dot2.style.background==='rgb(240, 158, 11)'||dot2?.style.background===''){
+      if(dot2)dot2.style.background='#ef4444';
+      const t2=document.getElementById('adminFbTxt');
+      if(t2&&t2.textContent==='Bağlanıyor…')t2.textContent='Bağlantı Yok';
     }
-  },8000);
+  },20000);
   // Online/offline browser events
   window.addEventListener('offline',()=>{if(dot)dot.style.background='#ef4444';if(txt)txt.textContent='İnternet Yok';});
   window.addEventListener('online',()=>{if(dot)dot.style.background='#f59e0b';if(txt)txt.textContent='Yeniden Bağlanıyor…';});

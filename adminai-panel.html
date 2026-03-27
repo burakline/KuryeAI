@@ -1130,9 +1130,11 @@ function updateSiparisBadge(){
 
 // ── DEMO TAKİBİ ──
 let _prevDemoIds=new Set();
+let _unsubDemo=null;
 function watchDemoSessions(){
+  if(_unsubDemo){_unsubDemo();_unsubDemo=null;}
   const TIMEOUT=30000;
-  rtdbOnValue(rtdbRef(rtdb,'demoSessions'),snap=>{
+  _unsubDemo=rtdbOnValue(rtdbRef(rtdb,'demoSessions'),snap=>{
     const all=snap.val()||{};
     const now=Date.now();
     const online=Object.values(all).filter(s=>s.isOnline&&(now-s.lastActive)<TIMEOUT);
@@ -1147,7 +1149,7 @@ function watchDemoSessions(){
     listEl.innerHTML=online.map(s=>{
       const ago=Math.floor((now-s.lastActive)/1000);
       const isHot=(s.intentScore||0)>=5;
-      return `<div class="act-item"><div class="act-dot" style="background:${isHot?'var(--orange)':'var(--green)'}"></div><div class="act-text"><strong>${pageLabel(s.page)}</strong>${isHot?' 🔥':''}<span style="color:var(--text3);font-size:.7rem"> · 🎯${s.intentScore||0}</span></div><div class="act-time">${ago}sn</div></div>`;
+      return `<div class="act-item"><div class="act-dot" style="background:${isHot?'var(--orange)':'var(--green)'}"></div><div class="act-text"><strong>${pageLabel(s.page)}</strong>${isHot?' 🔥':''}<span style="color:var(--text3);font-size:.7rem"> · 🎯${esc(String(s.intentScore||0))}</span></div><div class="act-time">${esc(String(ago))}sn</div></div>`;
     }).join('');
   });
 }
@@ -1172,7 +1174,7 @@ function renderDash(){
 // ── SİPARİŞLER ──
 window.fSiparis=(f,btn)=>{fSip=f;setActive(btn,'#pane-siparisler .ftab');renderSiparisler();};
 function listenSiparisler(){
-  if(_unsubSiparisler)return;
+  if(_unsubSiparisler){_unsubSiparisler();_unsubSiparisler=null;}
   // RTDB /orders yolunu dinle (restoran paneli buraya yazar, Firestore security rules engeli yok)
   _unsubSiparisler=rtdbOnValue(rtdbRef(rtdb,'orders'),snap=>{
     const all=snap.val()||{};
@@ -1227,10 +1229,12 @@ function renderSiparisHavuz(){
 }
 
 // ── ACİL + İZİNCİ HAVUZLARI ──
+let _unsubAcil=null,_unsubIzinci=null;
 function listenAcilTalepler(){
+  if(_unsubAcil){_unsubAcil();_unsubAcil=null;}
   try{
     const q=query(collection(db,'acilTalepler'),orderBy('createdAt','desc'),limit(50));
-    onSnapshot(q,snap=>{
+    _unsubAcil=onSnapshot(q,snap=>{
       const prev=new Set((window._acilList||[]).map(t=>t.id));
       window._acilList=snap.docs.map(d=>({id:d.id,...d.data()}));
       window._acilList.forEach(t=>{if(!prev.has(t.id))playSound('talep');});
@@ -1239,9 +1243,10 @@ function listenAcilTalepler(){
   }catch(e){console.error('acil',e);}
 }
 function listenIzinciTalepler(){
+  if(_unsubIzinci){_unsubIzinci();_unsubIzinci=null;}
   try{
     const q=query(collection(db,'izinciTalepler'),orderBy('createdAt','desc'),limit(50));
-    onSnapshot(q,snap=>{
+    _unsubIzinci=onSnapshot(q,snap=>{
       const prev=new Set((window._izinciList||[]).map(t=>t.id));
       window._izinciList=snap.docs.map(d=>({id:d.id,...d.data()}));
       window._izinciList.forEach(t=>{if(!prev.has(t.id))playSound('talep');});
@@ -1485,7 +1490,7 @@ function initMap(){
     Object.entries(all).forEach(([uid,data])=>{
       const loc=data.location;
       if(!loc||!loc.lat||!loc.lng)return;
-      const age=loc.updatedAt?now-loc.updatedAt:0;
+      const age=loc.updatedAt?now-loc.updatedAt:Infinity; // updatedAt yoksa kesinlikle eski say
       if(age>3600000)return; // 1 saaten eski = gizle
       count++;
       const isActive=data.shift?.active||loc.shiftActive;
@@ -2029,10 +2034,10 @@ window.setCourierRestaurant=async(rtdbUid,fsUid,restoranUid)=>{
     }
     const rest=allUsers.find(u=>u.id===restoranUid);if(!rest){showToast('Restoran bulunamadı (id: '+restoranUid+')','err');console.error('setCourierRestaurant: rest not found',restoranUid,allUsers.filter(u=>u.role==='restoran'));return;}
     const assignment={restoranId:rest.id,restoranName:rest.name||rest.company||rest.email,restoranAddress:rest.address||'',restoranPhone:rest.phone||'',restoranLat:rest.lat||null,restoranLng:rest.lng||null,logoURL:rest.logoURL||null,assignedAt:Date.now()};
-    // RTDB'ye yaz (kurye paneli buradan okur) — permission denied olursa yine de Firestore'a yazar
-    try{await rtdbSet(rtdbRef(rtdb,'couriers/'+rtdbUid+'/assignedRestaurant'),assignment);}catch(re){console.warn('RTDB write warn (falling back to Firestore):',re);}
-    // Firestore'a yaz (admin'in kesin yazma erişimi var, kurye panel de buradan okur)
+    // Firestore'a yaz (admin kesin erişim — kaynak doğruluğu sağlar)
     await updateDoc(doc(db,'users',fsUid),{assignedRestaurant:assignment});
+    // RTDB'ye yaz (kurye paneli SSE ile anlık okur — hata olursa Firestore fallback devrede)
+    rtdbSet(rtdbRef(rtdb,'couriers/'+rtdbUid+'/assignedRestaurant'),assignment).catch(re=>{console.warn('RTDB assign warn:',re);});
     _rtdbCouriers[rtdbUid]={...(_rtdbCouriers[rtdbUid]||{}),assignedRestaurant:assignment};
     renderKuryeler();showToast('✓ Restoran atandı','ok');
   }catch(e){console.error('setCourierRestaurant error',e);showToast('Hata: '+e.message,'err');}

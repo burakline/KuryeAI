@@ -2325,7 +2325,12 @@ onAuthStateChanged(auth, async user=>{
   }
 });
 window.logout=async()=>{
-  try{await signOut(auth);window.location.href="/restoranai-login";}catch{}
+  try{
+    _stopAllFbListeners();
+    if(_chatUnsubOps){_chatUnsubOps();_chatUnsubOps=null;}
+    await signOut(auth);
+    window.location.href="/restoranai-login";
+  }catch{window.location.href="/restoranai-login";}
 };
 
 // ── PLAN BİLGİSİ ──────────────────────────────────────────────────────────
@@ -2555,33 +2560,37 @@ const hideLoader=()=>{
 setTimeout(hideLoader, 2500);
 
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
+let _fbInited=false;
+const _fbListeners=[]; // cleanup için tüm rtdbListen off() fonksiyonları
+function _stopAllFbListeners(){_fbListeners.forEach(off=>{try{off();}catch{}});_fbListeners.length=0;}
 async function initFirebase(){
+  if(_fbInited){_stopAllFbListeners();} // eski dinleyicileri temizle
+  _fbInited=true;
   const _err=err=>{
     setFbStatus("error");
-    console.error("RTDB listener hatası:",err);
   };
 
   // SSE real-time listeners
-  rtdbListen(`/restaurants/${RESTAURANT_ID}/orders`,snap=>{
+  _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/orders`,snap=>{
     setFbStatus("connected");
     orders=objToArr(snap.val()); renderAll();
-  },_err);
-  rtdbListen(`/restaurants/${RESTAURANT_ID}/menu`,snap=>{
+  },_err));
+  _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/menu`,snap=>{
     menu=objToArr(snap.val()); renderMenu();
-  },_err);
-  rtdbListen(`/restaurants/${RESTAURANT_ID}/couriers`,snap=>{
+  },_err));
+  _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/couriers`,snap=>{
     couriers=objToArr(snap.val());
     renderCouriers();renderTrackingCouriers();renderDashCouriers();
     updateMapMarkers();updateMapDashMarkers();updateMetrics();
     syncCourierGPSListeners();
-  },_err);
-  rtdbListen(`/restaurants/${RESTAURANT_ID}/staff`,snap=>{
+  },_err));
+  _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/staff`,snap=>{
     staff=objToArr(snap.val()); renderStaff();
-  },_err);
+  },_err));
   // Admin broadcast bildirimleri (RTDB)
   const _bcLoadTs=Date.now();
   const _seenBc=new Set();
-  rtdbListen('/broadcasts',s=>{
+  _fbListeners.push(rtdbListen('/broadcasts',s=>{
     const all=s.val();
     if(!all)return;
     Object.entries(all).forEach(([id,b])=>{
@@ -2592,7 +2601,7 @@ async function initFirebase(){
       _seenBc.add(id);
       _showBcNotif(b.title,b.body);
     });
-  },()=>{});
+  },()=>{}));
 
   // Seed verisi
   try{

@@ -924,7 +924,7 @@ const G={
   returning:null,_delivLat:null,_delivLng:null,
   assignedRest:null,
   follow:true,bearing:0,lastGPS:0,
-  gpsW:null,gpsI:null,stI:null,wl:null,
+  gpsW:null,gpsI:null,simI:null,stI:null,cI:null,wl:null,
   room:1,msgs:{1:[],2:[]},
   hist:[],
   ledger:[],
@@ -944,7 +944,10 @@ const G={
 
 function doLogout(){
   if(G.shift.on){toast('Önce vardiyayı bitir!','error');closeSB();return;}
-  stopGPS();if(G.stI)clearInterval(G.stI);
+  stopGPS();if(G.stI)clearInterval(G.stI);if(G.cI)clearInterval(G.cI);
+  _stopFbListeners();
+  if(_chatUnsub1){_chatUnsub1();_chatUnsub1=null;}
+  if(_chatUnsub2){_chatUnsub2();_chatUnsub2=null;}
   const fb=window._fb;if(fb)fb.signOut(fb.auth).catch(()=>{});
   window.location.href='/kuryeai-login';
 }
@@ -1028,7 +1031,8 @@ function initGPS(){
   if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }
 function simGPS(){
-  setInterval(()=>{
+  if(G.simI)clearInterval(G.simI); // önceki sim interval'ını temizle
+  G.simI=setInterval(()=>{
     const pl=G.gps.lat,pn=G.gps.lng;
     G.gps.lat+=(Math.random()-.5)*0.0003;
     G.gps.lng+=(Math.random()-.5)*0.0003;
@@ -1045,7 +1049,7 @@ function simGPS(){
   },3000);
   if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }
-function stopGPS(){if(G.gpsW)navigator.geolocation.clearWatch(G.gpsW);if(G.gpsI)clearInterval(G.gpsI);}
+function stopGPS(){if(G.gpsW)navigator.geolocation.clearWatch(G.gpsW);if(G.gpsI){clearInterval(G.gpsI);G.gpsI=null;}if(G.simI){clearInterval(G.simI);G.simI=null;}}
 function pushGPS(){
   const fb=window._fb;if(!fb)return;
   // Adaptif batarya optimizasyonu: duruyorsa 15s atlama (her 5. çağrıda bir gönder)
@@ -1108,14 +1112,20 @@ function resetPh(t){G.ph[t]=null;document.getElementById(t==='s'?'sPPrev':'ePPre
 function pushShFB(a){window._rtdbSet&&window._rtdbSet(`/couriers/${G.id}/shift`,{active:a,updatedAt:{".sv":"timestamp"}}).catch(()=>{});}
 
 // FIREBASE
+const _fbOffFns=[]; // tüm RTDB SSE listener kapatma fonksiyonları
+function _stopFbListeners(){_fbOffFns.forEach(off=>{try{off();}catch{}});_fbOffFns.length=0;}
+let _fbInitDone=false;
 function initFB(){
   const fb=window._fb;if(!fb)return;
+  if(_fbInitDone)_stopFbListeners(); // tekrar çağrılırsa eskileri kapat
+  _fbInitDone=true;
   // Firebase bağlantı noktası (RTDB SSE üzerinden ölçülür)
   _initFbDot();
+  const _push=off=>{if(off)_fbOffFns.push(off);return off;};
   // Ücret dinleyicisi (RTDB REST/SSE)
-  window._rtdbListen&&window._rtdbListen('/settings/rates',s=>{const d=s.val();if(d){G.rates={h:d.hourly||250,km:d.km||8};renderEarn();}},()=>{});
+  _push(window._rtdbListen&&window._rtdbListen('/settings/rates',s=>{const d=s.val();if(d){G.rates={h:d.hourly||250,km:d.km||8};renderEarn();}},()=>{}));
   // Bekleyen sipariş dinleyicisi (RTDB REST/SSE)
-  window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/pendingOrder`,s=>{
+  _push(window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/pendingOrder`,s=>{
     const d=s.val();
     if(d&&d.orderId){
       if(!document.getElementById('ordNotif').classList.contains('active')){
@@ -1123,24 +1133,24 @@ function initFB(){
         showOrderNotif(d);
       }
     }
-  },()=>{});
+  },()=>{}));
   // Aktif sipariş dinleyicisi (RTDB REST/SSE)
-  window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/activeOrder`,s=>{
+  _push(window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/activeOrder`,s=>{
     const d=s.val();
     G.activeOrder=d||null;
     renderActiveOrder();
-  },()=>{});
+  },()=>{}));
   // Bağlı restoran bilgisi (RTDB)
-  window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/assignedRestaurant`,s=>{
+  _push(window._rtdbListen&&window._rtdbListen(`/couriers/${G.id}/assignedRestaurant`,s=>{
     const d=s.val();
     G.assignedRest=d||null;
     _renderAssignedRest();
     initChat();
-  },()=>{});
+  },()=>{}));
   // Admin broadcast bildirimleri (RTDB)
   const _bcLoadTs=Date.now();
   const _seenBc=new Set();
-  window._rtdbListen&&window._rtdbListen('/broadcasts',s=>{
+  _push(window._rtdbListen&&window._rtdbListen('/broadcasts',s=>{
     const all=s.val();
     if(!all)return;
     Object.entries(all).forEach(([id,b])=>{
@@ -1151,7 +1161,7 @@ function initFB(){
       _seenBc.add(id);
       _showBcNotif(b.title,b.body);
     });
-  },()=>{});
+  },()=>{}));
 }
 let _chatUnsub1=null,_chatUnsub2=null;
 let _lastChatRestId=null; // tekrar initChat() çağrısını önler

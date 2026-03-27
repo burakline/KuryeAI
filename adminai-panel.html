@@ -911,7 +911,7 @@ import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, creat
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
          query, orderBy, onSnapshot, limit, serverTimestamp, where, arrayUnion, arrayRemove }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue }
+import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue, set as rtdbSet, update as rtdbUpdate }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
 const cfg = {
@@ -1435,6 +1435,7 @@ window.deleteGider=async(id)=>{
 let _courierMarkers={}, _restoMarkers=[], _showRestoranPins=false;
 let _zoneMode=false, _zoneDrawing=null, _zoneStart=null, _zoneColor='#00c8d7';
 let _zones=[], _zoneLayer=null;
+let _rtdbCouriers={};
 
 // Firebase bağlantı durumu göstergesi
 let _fbDotInited=false;
@@ -1478,6 +1479,7 @@ function initMap(){
   // Kurye GPS - RTDB dinle
   rtdbOnValue(rtdbRef(rtdb,'couriers'),snap=>{
     const all=snap.val()||{};
+    _rtdbCouriers=all;
     const now=Date.now();
     let count=0;
     Object.entries(all).forEach(([uid,data])=>{
@@ -1502,6 +1504,7 @@ function initMap(){
     });
     const countEl=document.getElementById('map-courier-count');
     if(countEl)countEl.textContent=count;
+    if(document.getElementById('pane-kuryeler')?.classList.contains('active'))renderKuryeler();
   });
 
   // Zone çizimi - mousedown+mousemove+mouseup
@@ -1941,11 +1944,37 @@ function userCard(u){
         <button class="bsm b-approve" style="font-size:.68rem;padding:.2rem .5rem" onclick="approvePayment('${u.id}')">✓ Onayla</button>
         <button class="bsm b-reject" style="font-size:.68rem;padding:.2rem .5rem" onclick="rejectPayment('${u.id}')">✕ Reddet</button>
       </div></div></div>`:'';
+  const phoneLink=u.phone?` · <a href="tel:${esc(u.phone)}" style="color:var(--teal);text-decoration:none">📞 ${esc(u.phone)}</a>`:'';
+  const courierSection=!isRest?(()=>{
+    const curZone=_zoneList.find(z=>(z.couriers||[]).includes(u.id));
+    const assignedRest=_rtdbCouriers[u.id]?.assignedRestaurant;
+    const activeRestos=allUsers.filter(u2=>u2.role==='restoran'&&u2.status==='active');
+    return `<div style="margin-top:.55rem;display:flex;flex-direction:column;gap:.35rem">
+      <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
+        <span style="font-size:.68rem;color:var(--text3)">🗺️ Bölge:</span>
+        ${curZone?`<span style="font-size:.68rem;font-weight:600;padding:.1rem .4rem;border-radius:6px;background:var(--bg2);color:var(--text)">${esc(curZone.name)}</span>`:'<span style="font-size:.68rem;color:var(--text3)">Atanmadı</span>'}
+        <select onchange="setCourierZone('${u.id}',this.value);this.value=''" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
+          <option value="">Bölge değiştir…</option>
+          ${_zoneList.map(z=>`<option value="${z.id}">${esc(z.name)}</option>`).join('')}
+          ${curZone?`<option value="__none__">— Bölgeden Çıkar</option>`:''}
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
+        <span style="font-size:.68rem;color:var(--text3)">🏪 Restoran:</span>
+        ${assignedRest?`<span style="font-size:.68rem;font-weight:600;padding:.1rem .4rem;border-radius:6px;background:var(--bg2);color:var(--text)">${esc(assignedRest.restoranName||'—')}</span>`:'<span style="font-size:.68rem;color:var(--text3)">Atanmadı</span>'}
+        <select onchange="setCourierRestaurant('${u.id}',this.value);this.value=''" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
+          <option value="">Restoran ata…</option>
+          ${activeRestos.map(r=>`<option value="${r.id}">${esc(r.name||r.company||r.email)}</option>`).join('')}
+          ${assignedRest?`<option value="__remove__">— Atamasını Kaldır</option>`:''}
+        </select>
+      </div>
+    </div>`;
+  })():'';
   return `<div class="litem ${u.status}">
-    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}${chiefBadge}</div><div class="litem-sub">${esc(u.email||'')}${u.phone?' · '+esc(u.phone):''}</div></div>
+    <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}${chiefBadge}</div><div class="litem-sub">${esc(u.email||'')}${phoneLink}</div></div>
     <span class="badge b-${u.status}">${statusLbl(u.status)}</span></div>
     <div class="litem-meta">${u.company?`<span style="font-size:.72rem;color:var(--text3)">🏪 ${esc(u.company)}</span>`:''}</div>
-    ${planRow}${payRow}
+    ${planRow}${payRow}${courierSection}
     <div class="litem-actions" style="margin-top:.5rem">
       ${u.status==='active'?`<button class="bsm b-suspend" onclick="toggleStatus('${u.id}','suspended')">⏸ Askıya Al</button>`
         :u.status==='pending'?`<button class="bsm b-approve" onclick="approveUser('${u.id}')">✓ Onayla</button><button class="bsm b-reject" onclick="rejectUser('${u.id}')">✕ Reddet</button>`
@@ -1965,6 +1994,37 @@ window.approvePayment=async(uid)=>{
 };
 window.rejectPayment=async(uid)=>{
   try{await updateDoc(doc(db,'users',uid),{paymentStatus:'rejected'});allUsers=allUsers.map(u=>u.id===uid?{...u,paymentStatus:'rejected'}:u);renderRestoranlar();showToast('Ödeme reddedildi','err');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.setCourierZone=async(uid,newZoneId)=>{
+  if(!newZoneId)return;
+  try{
+    for(const z of _zoneList){
+      if((z.couriers||[]).includes(uid)){
+        await updateDoc(doc(db,'zones',z.id),{couriers:arrayRemove(uid)});
+        _zoneList=_zoneList.map(zz=>zz.id===z.id?{...zz,couriers:(zz.couriers||[]).filter(id=>id!==uid)}:zz);
+      }
+    }
+    if(newZoneId!=='__none__'){
+      await updateDoc(doc(db,'zones',newZoneId),{couriers:arrayUnion(uid)});
+      _zoneList=_zoneList.map(z=>z.id===newZoneId?{...z,couriers:[...(z.couriers||[]),uid]}:z);
+    }
+    renderKuryeler();renderZoneList();showToast('✓ Bölge güncellendi','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
+};
+window.setCourierRestaurant=async(uid,restoranUid)=>{
+  if(!restoranUid)return;
+  try{
+    if(restoranUid==='__remove__'){
+      await rtdbSet(rtdbRef(rtdb,'couriers/'+uid+'/assignedRestaurant'),null);
+      if(_rtdbCouriers[uid])_rtdbCouriers[uid]={..._rtdbCouriers[uid],assignedRestaurant:null};
+      renderKuryeler();showToast('✓ Restoran ataması kaldırıldı','ok');return;
+    }
+    const rest=allUsers.find(u=>u.id===restoranUid);if(!rest)return;
+    const assignment={restoranId:rest.id,restoranName:rest.name||rest.company||rest.email,restoranAddress:rest.address||'',restoranPhone:rest.phone||'',restoranLat:rest.lat||null,restoranLng:rest.lng||null,logoURL:rest.logoURL||null,assignedAt:Date.now()};
+    await rtdbSet(rtdbRef(rtdb,'couriers/'+uid+'/assignedRestaurant'),assignment);
+    _rtdbCouriers[uid]={...(_rtdbCouriers[uid]||{}),assignedRestaurant:assignment};
+    renderKuryeler();showToast('✓ Restoran atandı','ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
 };
 window.setPlan=async(uid,plan)=>{
   if(!plan)return;const now=Date.now();const days=PLANS[plan]?.days||30;

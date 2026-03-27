@@ -2630,8 +2630,9 @@ function renderRestChat(){
     const timeStr=ts.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
     let content='';
     if(!m.type||m.type==='text')content=`<div style="font-size:.88rem">${esc(m.text||'')}</div>`;
-    else if(m.type==='location')content=`<div style="font-size:.88rem;color:${isRest?'#fff':'var(--teal)'}">📍 ${esc(m.text||'')}</div>`;
+    else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;content=`<a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="font-size:.88rem;color:${isRest?'#fff':'var(--teal)'};font-weight:600;text-decoration:none">📍 ${esc(m.text||'')}</a>`;}
     else if(m.type==='image')content=`<img src="${esc(m.url||'')}" style="max-width:200px;border-radius:8px;display:block">`;
+    else if(m.type==='audio')content=m.url?`<audio controls src="${esc(m.url)}" style="max-width:200px;border-radius:8px"></audio>`:`<span style="font-size:.85rem;opacity:.7">🎵 Sesli mesaj</span>`;
     return `<div style="display:flex;gap:8px;margin-bottom:10px;${isRest?'flex-direction:row-reverse':''}">
       ${!isRest?`<div style="width:32px;height:32px;border-radius:50%;background:var(--teal-bg);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${init}</div>`:''}
       <div style="max-width:70%">

@@ -2017,6 +2017,17 @@ const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);
 
+// ── WebSocket Teşhis (geçici) ─────────────────────────────────────────────
+const _OrigWS = window.WebSocket;
+window.WebSocket = function(url, protocols) {
+  console.log('[WS] Bağlanıyor:', url);
+  const ws = new _OrigWS(url, protocols);
+  ws.addEventListener('open',  () => console.log('[WS] Açıldı:', url));
+  ws.addEventListener('error', (e) => console.error('[WS] Hata:', url, e));
+  ws.addEventListener('close', (e) => console.log('[WS] Kapandı:', url, 'code:', e.code, 'reason:', e.reason));
+  return ws;
+};
+
 // ── RTDB REST/SSE (WebSocket SDK bağlanamıyor — SSE ile gerçek zamanlı) ──────
 const RTDB_BASE='https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app';
 const _sseMap=new Map();

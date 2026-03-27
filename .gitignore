@@ -9,4 +9,6 @@ build/
 .DS_Store
 Thumbs.db
 .git/github_token
-adminai-panel.html.bak
+*.bak
+package.json
+package-lock.json

@@ -2053,9 +2053,9 @@ function rtdbListen(path,cb,errCb){
       const tok=await _tok();
       if(es){try{es.close();}catch{}}
       es=new EventSource(`${RTDB}${path}.json?auth=${tok}`);
-      es.addEventListener('put',e=>{const d=JSON.parse(e.data);if(!d.path||d.path==='/')cb(_snap(d.data));else _rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
+      es.addEventListener('put',e=>{let d;try{d=JSON.parse(e.data);}catch{return;}if(!d.path||d.path==='/')cb(_snap(d.data));else _rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
       es.addEventListener('patch',e=>{
-        const d=JSON.parse(e.data);
+        let d;try{d=JSON.parse(e.data);}catch{return;}
         // patch eventi için full path'i tekrar oku
         _rtdbGet(path).then(s=>cb(s)).catch(()=>{});
       });
@@ -2601,7 +2601,7 @@ async function initFirebase(){
       _seenBc.add(id);
       _showBcNotif(b.title,b.body);
     });
-  },()=>{}));
+  },_err));
 
   // Seed verisi
   try{
@@ -2771,13 +2771,13 @@ function renderOrders(){
     </tr></thead><tbody>
     ${filtered.map(o=>{
       const st=STATUS[o.status]||STATUS.pending;
-      const courierName=o.courier?couriers.find(c=>c.id===o.courier)?.name||o.courier:"—";
-      const items=Array.isArray(o.items)?o.items.join(", "):o.items;
+      const courierName=o.courier?couriers.find(c=>_cid(c)===o.courier)?.name||o.courier:"—";
+      const items=Array.isArray(o.items)?o.items.map(i=>esc(String(i))).join(", "):esc(o.items||'');
       return`<tr class="order-row">
-        <td><span class="order-id">#${o.id.slice(-6).toUpperCase()}</span></td>
-        <td><span class="customer">${o.customer}</span></td>
+        <td><span class="order-id">#${esc(o.id.slice(-6).toUpperCase())}</span></td>
+        <td><span class="customer">${esc(o.customer)}</span></td>
         <td><span class="items" style="max-width:160px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${items}</span></td>
-        <td><span style="font-size:12px;color:var(--text3)">📍 ${o.address}</span></td>
+        <td><span style="font-size:12px;color:var(--text3)">📍 ${esc(o.address)}</span></td>
         <td><span style="font-family:var(--fm);font-weight:700;font-size:13px">₺${o.total}</span></td>
         <td><span style="font-size:12px">🛵 ${courierName}</span></td>
         <td><span style="font-family:var(--fm);font-size:11px;color:var(--text3)">${timeAgo(o.createdAt)}</span></td>
@@ -3108,9 +3108,9 @@ function renderTrackingCouriers(){
   const sorted=[...couriers].sort((a,b)=>(b.deliveries||0)-(a.deliveries||0));
   document.getElementById("tracking-courier-list").innerHTML=sorted.length?sorted.map((c,i)=>`
     <div style="display:flex;align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer;border-radius:var(--radius-xs)" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-      <div class="courier-avatar" style="background:${avatarColor(i)};width:36px;height:36px;font-size:13px">${c.name[0]}</div>
+      <div class="courier-avatar" style="background:${avatarColor(i)};width:36px;height:36px;font-size:13px">${esc((c.name||'?')[0])}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text)">${c.name}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">${esc(c.name)}</div>
         <div style="font-size:11px;color:var(--text3)">${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||"—"}</div>
       </div>
       <div style="text-align:right">
@@ -3365,9 +3365,9 @@ async function assignCourierAuto(orderId, orderData) {
   // 3. Her müsait kuryenin gerçek zamanlı GPS konumunu al ve mesafeyi hesapla
   const withDist = await Promise.all(available.map(async c => {
     try {
-      const locSnap = await _rtdbGet(`/couriers/${c.id}/location`);
+      const locSnap = await _rtdbGet(`/couriers/${_cid(c)}/location`);
       const loc = locSnap.exists() ? locSnap.val() : null;
-      if (loc?.lat && loc?.lng) {
+      if (loc?.lat != null && loc?.lng != null) {
         return { ...c, dist: hvsDist(restLat, restLng, loc.lat, loc.lng) };
       }
     } catch {}

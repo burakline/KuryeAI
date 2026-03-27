@@ -14,6 +14,8 @@
 
 <script type="module">
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+  function safeUrl(u){try{const p=new URL(String(u||''));return(p.protocol==='https:'||p.protocol==='http:')?p.href:'';}catch{return'';}}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 // Firebase RTDB SDK yerine REST/SSE kullanıyoruz (SDK WebSocket açmıyor)
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
@@ -1113,7 +1115,12 @@ function pushShFB(a){window._rtdbSet&&window._rtdbSet(`/couriers/${G.id}/shift`,
 
 // FIREBASE
 const _fbOffFns=[]; // tüm RTDB SSE listener kapatma fonksiyonları
-function _stopFbListeners(){_fbOffFns.forEach(off=>{try{off();}catch{}});_fbOffFns.length=0;}
+let _fsUserUnsub=null,_fsShiftsUnsub=null; // Firestore realtime listener cleanup
+function _stopFbListeners(){
+  _fbOffFns.forEach(off=>{try{off();}catch{}});_fbOffFns.length=0;
+  if(_fsUserUnsub){try{_fsUserUnsub();}catch{}}_fsUserUnsub=null;
+  if(_fsShiftsUnsub){try{_fsShiftsUnsub();}catch{}}_fsShiftsUnsub=null;
+}
 let _fbInitDone=false;
 function initFB(){
   const fb=window._fb;if(!fb)return;
@@ -1309,7 +1316,7 @@ function renderPerf(){const rat=4.8;document.getElementById('pRat').textContent=
 
 // CHAT
 function swRoom(r){G.room=r;document.getElementById('ct1').className='ctab'+(r===1?' active':'');document.getElementById('ct2').className='ctab'+(r===2?' active':'');renderChat();}
-function renderChat(){const msgs=G.msgs[G.room],c=document.getElementById('cMsgs');if(!G.assignedRest?.restoranId){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">🏪 Restorana bağlandıktan sonra chat kullanılabilir</div>';return;}if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">Henüz mesaj yok</div>';return;}c.innerHTML=msgs.slice(-50).map(m=>{const me=m.senderId===G.id,init=(m.senderName||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);let con='';if(m.type==='text'||!m.type)con=`<div class="mb2">${esc(m.text||'')}</div>`;else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;con=`<div class="mb2"><a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-weight:600;font-size:0.81rem;text-decoration:none">📍 ${esc(m.text)}</a></div>`;}else if(m.type==='image')con=`<div class="mb2"><img src="${esc(m.url)}" style="max-width:180px;border-radius:8px;display:block" alt=""></div>`;else if(m.type==='audio')con=m.url?`<div class="mb2"><audio controls src="${esc(m.url)}" style="max-width:200px;border-radius:8px"></audio></div>`:`<div class="mb2" style="color:var(--tx3);font-size:.8rem">🎵 Sesli mesaj</div>`;return `<div class="mrow ${me?'me':'them'}">${!me?`<div class="mav">${init}</div>`:''}<div>${!me?`<div class="msdr">${m.senderName||'Kurye'}</div>`:''}${con}<div class="mmeta">${fmtT(m.timestamp)}</div></div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
+function renderChat(){const msgs=G.msgs[G.room],c=document.getElementById('cMsgs');if(!G.assignedRest?.restoranId){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">🏪 Restorana bağlandıktan sonra chat kullanılabilir</div>';return;}if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">Henüz mesaj yok</div>';return;}c.innerHTML=msgs.slice(-50).map(m=>{const me=m.senderId===G.id,init=(m.senderName||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);let con='';if(m.type==='text'||!m.type)con=`<div class="mb2">${esc(m.text||'')}</div>`;else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;con=`<div class="mb2"><a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-weight:600;font-size:0.81rem;text-decoration:none">📍 ${esc(m.text)}</a></div>`;}else if(m.type==='image'){const su=safeUrl(m.url);con=su?`<div class="mb2"><img src="${esc(su)}" style="max-width:180px;border-radius:8px;display:block" alt=""></div>`:'';}else if(m.type==='audio'){const su=safeUrl(m.url);con=su?`<div class="mb2"><audio controls src="${esc(su)}" style="max-width:200px;border-radius:8px"></audio></div>`:'';}if(m.type==='audio'&&!con)con='<div class="mb2" style="color:var(--tx3);font-size:.8rem">🎵 Sesli mesaj</div>';return `<div class="mrow ${me?'me':'them'}">${!me?`<div class="mav">${init}</div>`:''}<div>${!me?`<div class="msdr">${m.senderName||'Kurye'}</div>`:''}${con}<div class="mmeta">${fmtT(m.timestamp)}</div></div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
 function fmtT(ts){if(!ts)return'şimdi';const d=ts.seconds?new Date(ts.seconds*1000):new Date(ts);return d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
 function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
 function sendMsg(){const inp=document.getElementById('cInp'),t=inp.value.trim();if(!t)return;inp.value='';pushMsg({type:'text',text:t});}
@@ -1326,7 +1333,7 @@ function calcF(){const k=+document.getElementById('fK').value||0,l=+document.get
 function startCmp(){if('DeviceOrientationEvent' in window){if(typeof DeviceOrientationEvent.requestPermission==='function'){DeviceOrientationEvent.requestPermission().then(p=>{if(p==='granted')listenC();}).catch(()=>{});}else listenC();}else simC();}
 function listenC(){window.addEventListener('deviceorientationabsolute',hO,true);window.addEventListener('deviceorientation',hO,true);}
 function hO(e){const d=e.alpha||0;document.getElementById('cNeedle').style.transform=`rotate(${-d}deg)`;document.getElementById('cDeg').textContent=Math.round(d)+'°';}
-function simC(){G.cI=setInterval(()=>{G.cI&&(()=>{const d=((G.cI||0)+1)%360;document.getElementById('cNeedle').style.transform=`rotate(${-(d%360)}deg)`;document.getElementById('cDeg').textContent=(d%360)+'°';})();},50);let dd=0;clearInterval(G.cI);G.cI=setInterval(()=>{dd=(dd+1)%360;document.getElementById('cNeedle').style.transform=`rotate(${-dd}deg)`;document.getElementById('cDeg').textContent=dd+'°';},50);}
+function simC(){if(G.cI){clearInterval(G.cI);G.cI=null;}let dd=0;G.cI=setInterval(()=>{dd=(dd+1)%360;document.getElementById('cNeedle').style.transform=`rotate(${-dd}deg)`;document.getElementById('cDeg').textContent=dd+'°';},50);}
 function stopCmp(){if(G.cI){clearInterval(G.cI);G.cI=null;}window.removeEventListener('deviceorientationabsolute',hO,true);window.removeEventListener('deviceorientation',hO,true);}
 function renderLedger(){const inc=G.ledger.filter(e=>e.tp==='income').reduce((a,b)=>a+b.amt,0),exp=G.ledger.filter(e=>e.tp==='expense').reduce((a,b)=>a+b.amt,0);document.getElementById('lInc').textContent='₺'+inc.toLocaleString('tr-TR');document.getElementById('lExp').textContent='₺'+exp.toLocaleString('tr-TR');const el=document.getElementById('lList');if(!G.ledger.length){el.innerHTML='<p style="text-align:center;color:var(--tx3);padding:20px;font-size:0.82rem">Henüz kayıt yok</p>';return;}el.innerHTML=G.ledger.slice().reverse().map(e=>`<div class="mitem"><div class="mico">${e.tp==='income'?'💚':'🔴'}</div><div class="minfo"><div class="mname">${esc(e.desc)}</div><div class="mkm">${esc(e.date)}</div></div><div><div class="mst ${e.tp==='income'?'mok':'mdue'}">${e.tp==='income'?'+':'-'}₺${e.amt}</div></div></div>`).join('');}
 let _lt='income';
@@ -1637,8 +1644,9 @@ window._initKuryeApp = async function() {
   if(fb){
     // Firestore user doc realtime listener — atanmış restoran değişimini yakalar
     try{
+      if(_fsUserUnsub){_fsUserUnsub();_fsUserUnsub=null;}
       const userDocRef=fb.doc(fb.fs,'users',G.uid);
-      fb.onSnapshot(userDocRef,snap=>{
+      _fsUserUnsub=fb.onSnapshot(userDocRef,snap=>{
         const d=snap.data();
         if(!d)return;
         // RTDB listener zaten varsa ve dolu ise Firestore'u görmezden gel
@@ -1651,7 +1659,8 @@ window._initKuryeApp = async function() {
     // Vardiya geçmişi
     try{
       const shQ=fb.query(fb.collection(fb.fs,'users',G.uid,'shifts'),fb.orderBy('createdAt','desc'),fb.limit(30));
-      fb.onSnapshot ? fb.onSnapshot(shQ,s=>{G.hist=s.docs.map(d=>d.data());renderPerf&&renderPerf();}) : null;
+      if(_fsShiftsUnsub){_fsShiftsUnsub();_fsShiftsUnsub=null;}
+      if(fb.onSnapshot){_fsShiftsUnsub=fb.onSnapshot(shQ,s=>{G.hist=s.docs.map(d=>d.data());renderPerf&&renderPerf();});}
       const shSnap=await fb.getDocs(shQ);G.hist=shSnap.docs.map(d=>d.data());
     }catch(e){}
     // Ledger — gerçek zamanlı kazanç güncellemeleri

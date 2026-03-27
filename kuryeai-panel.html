@@ -1580,7 +1580,7 @@ function renderOrdHistory(){
   el.innerHTML=G.ordHistory.slice(0,30).map(o=>{
     const ico=o.status==='delivered'?'✅':'❌';
     const dur=o.acceptedAt&&o.deliveredAt?Math.round((o.deliveredAt-o.acceptedAt)/60000)+' dk':'—';
-    return`<div class="ohcard"><div class="ohico">${ico}</div><div class="ohinf"><div class="ohtit2">${o.restaurant||'Sipariş'}</div><div class="ohdt">📍 ${o.deliveryAddr||'—'}<br>👤 ${o.deliveryName||'—'} · ${o.date||'—'} · ${dur}</div></div><div class="ohamt">₺${o.amount||0}</div></div>`;
+    return`<div class="ohcard"><div class="ohico">${ico}</div><div class="ohinf"><div class="ohtit2">${esc(o.restaurant||'Sipariş')}</div><div class="ohdt">📍 ${esc(o.deliveryAddr||'—')}<br>👤 ${esc(o.deliveryName||'—')} · ${esc(o.date||'—')} · ${esc(dur)}</div></div><div class="ohamt">₺${Number(o.amount||0)}</div></div>`;
   }).join('');
 }
 

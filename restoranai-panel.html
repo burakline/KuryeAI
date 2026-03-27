@@ -2140,7 +2140,7 @@ const SEED_SETTINGS = {
 };
 
 // ── Güvenlik yardımcısı ───────────────────────────────────────────────────
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
 // ── State ─────────────────────────────────────────────────────────────────
 let orders=[], menu=[], couriers=[], staff=[], settings={...SEED_SETTINGS};
@@ -2782,7 +2782,7 @@ function renderOrders(){
         <td><span style="font-size:12px">🛵 ${courierName}</span></td>
         <td><span style="font-family:var(--fm);font-size:11px;color:var(--text3)">${timeAgo(o.createdAt)}</span></td>
         <td><span class="badge ${st.cls}"><span class="badge-dot"></span>${st.label}</span></td>
-        <td>${st.next?`<button class="adv-btn" onclick="advanceOrder('${o.id}','${st.next}')">${STATUS[st.next].label} →</button>`:`<span style="font-size:11px;color:var(--text3)">—</span>`}</td>
+        <td>${st.next?`<button class="adv-btn" onclick="advanceOrder('${esc(o.id)}','${esc(st.next)}')">${esc(STATUS[st.next].label)} →</button>`:`<span style="font-size:11px;color:var(--text3)">—</span>`}</td>
       </tr>`;
     }).join("")}
     </tbody></table>`;
@@ -2823,7 +2823,7 @@ function renderMenu(){
     <div class="menu-card ${!item.available?"unavailable":""}">
       <div class="menu-card-top"><div class="menu-name">${item.name}</div><div class="menu-price">₺${item.price}</div></div>
       <div class="menu-cat">${item.category}</div>
-      <div class="menu-desc">${item.description}</div>
+      <div class="menu-desc">${esc(item.description)}</div>
       <div class="menu-footer">
         <div class="toggle-wrap" onclick="toggleMenuItem('${item.id}',${!item.available})">
           <button class="toggle ${item.available?"on":"off"}"></button>
@@ -2873,8 +2873,8 @@ function renderCouriers(){
         <td><span style="font-family:var(--fm);font-size:13px">${c.km||0} km</span></td>
         <td><span style="font-family:var(--fm);font-weight:700;font-size:13px;color:var(--green)">₺${(c.earnings||0).toLocaleString()}</span></td>
         <td><div style="display:flex;align-items:center;gap:8px"><div class="perf-bar"><div class="perf-fill" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--text3);font-family:var(--fm)">${pct}%</span></div></td>
-        <td><button class="btn btn-ghost btn-sm" onclick="openCourierPricing('${c.id}','${c.name}')" title="Ücret ayarları">${pricingLabel}</button></td>
-        <td><button class="btn btn-danger btn-sm" onclick="openDeleteCourier('${c.id}','${c.name}')">Sil</button></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openCourierPricing('${esc(c.id)}','${esc(c.name)}')" title="Ücret ayarları">${pricingLabel}</button></td>
+        <td><button class="btn btn-danger btn-sm" onclick="openDeleteCourier('${esc(c.id)}','${esc(c.name)}')">Sil</button></td>
       </tr>`;
     }).join("")}
     </tbody></table>`;
@@ -3314,7 +3314,7 @@ function renderQuickMenu(){
   el.innerHTML = available.length ? available.map(item=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius-xs);transition:background .1s;cursor:pointer"
       onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'"
-      onclick="addFromMenu('${item.name}',${item.price})">
+      onclick="addFromMenu('${esc(item.name)}',${item.price})">
       <div>
         <div style="font-size:12.5px;font-weight:600">${item.name}</div>
         <div style="font-size:11px;color:var(--text3)">${item.category}</div>
@@ -3693,7 +3693,7 @@ function renderKitchen() {
       <div style="font-size:12px;color:var(--text3);margin-bottom:12px">📍 ${o.address}</div>
       <div style="background:var(--bg);border-radius:10px;padding:10px;margin-bottom:14px;font-size:13px;line-height:1.7">${items}</div>
       <div style="display:flex;gap:8px">
-        ${st.next?`<button onclick="advanceOrder('${o.id}','${st.next}')" style="flex:1;padding:10px;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:13px">${STATUS[st.next].label} →</button>`:""}
+        ${st.next?`<button onclick="advanceOrder('${esc(o.id)}','${esc(st.next)}')" style="flex:1;padding:10px;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:13px">${esc(STATUS[st.next].label)} →</button>`:""}
       </div>
     </div>`;
   }).join("");
@@ -3732,7 +3732,7 @@ function renderEarnings() {
       <td><span style="font-family:var(--fm);font-weight:700;color:var(--green)">₺${total.toLocaleString("tr-TR")}</span></td>
       <td><span style="font-family:var(--fm);color:var(--text3)">₺${paid.toLocaleString("tr-TR")}</span></td>
       <td><span style="font-family:var(--fm);font-weight:700;color:${kalan>0?"var(--yellow)":"var(--text3)"}">₺${kalan.toLocaleString("tr-TR")}</span></td>
-      <td>${kalan>0?`<button class="btn btn-primary btn-sm" onclick="openMarkPaid('${c.id}','${c.name}',${kalan})">✅ Ödendi</button>`:`<span style="font-size:11px;color:var(--green)">✓ Ödendi</span>`}</td>
+      <td>${kalan>0?`<button class="btn btn-primary btn-sm" onclick="openMarkPaid('${esc(c.id)}','${esc(c.name)}',${kalan})">✅ Ödendi</button>`:`<span style="font-size:11px;color:var(--green)">✓ Ödendi</span>`}</td>
     </tr>`;
   }).join("")}
   </tbody></table>`;
@@ -3865,7 +3865,7 @@ window.renderCustomerBook=(filter="")=>{
     !filter||c.phone?.includes(filter)||c.name?.toLowerCase().includes(filter.toLowerCase())
   );
   document.getElementById("customer-book-list").innerHTML=list.length?list.map(c=>`
-    <div onclick="selectFromBook('${c.phone}')" style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+    <div onclick="selectFromBook('${esc(c.phone)}')" style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
       <div style="font-weight:600;font-size:13px">${c.name}</div>
       <div style="font-size:12px;color:var(--text3)">${c.phone} · ${c.address}</div>
     </div>`).join("")

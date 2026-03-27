@@ -2989,6 +2989,27 @@ function initMap(){
   _addRestPinToMap();
 }
 
+// Profil fotoğraflı + yön oklu kurye harita ikonu
+function _makeCourierIcon(name, photoURL, bearing, isActive){
+  const init=(name||'K').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'K';
+  const fbUrl=`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128`;
+  const av=photoURL||fbUrl;
+  const bColor=isActive?'#009688':'#6b7280';
+  return L.divIcon({
+    html:`<div style="display:flex;flex-direction:column;align-items:center;gap:0">
+      <div style="position:relative;width:54px;height:54px">
+        <div style="position:absolute;inset:0;transform:rotate(${bearing||0}deg);transition:transform 0.4s linear;pointer-events:none;z-index:2">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid ${bColor};filter:drop-shadow(0 1px 3px rgba(0,0,0,.4))"></div>
+        </div>
+        <div style="position:absolute;inset:4px;border-radius:50%;overflow:hidden;border:3px solid #fff;box-shadow:0 3px 16px rgba(0,150,136,0.4);background:${bColor}">
+          <img src="${av}" onerror="this.src='${fbUrl}'" style="width:100%;height:100%;object-fit:cover;display:block"/>
+        </div>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border-radius:4px;padding:1px 5px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px">${esc(name||'')}</div>
+    </div>`,
+    className:'',iconAnchor:[27,27],iconSize:[54,82]
+  });
+}
 // Balon şekilli restoran harita ikonu (profil fotosu veya emoji)
 function _makeRestoIcon(logoURL, name){
   const inner=logoURL
@@ -3030,12 +3051,7 @@ function updateMapDashMarkers(){
     const id=_cid(c);
     const coords=_courierCoords(c);
     if(!coords)return;
-    const color=c.status==="busy"?"#f59e0b":"#00c48c";
-    const icon=L.divIcon({
-      className:"",
-      html:`<div style="width:32px;height:32px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.2)" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
-      iconSize:[32,32],iconAnchor:[16,16],
-    });
+    const icon=_makeCourierIcon(c.name, c.photoURL, courierGPS[id]?.bearing||0, true);
     if(courierMarkersD[id]){
       courierMarkersD[id].setLatLng(coords);
       courierMarkersD[id].setIcon(icon);
@@ -3067,13 +3083,9 @@ function updateMapMarkers(){
     const id=_cid(c);
     const coords=_courierCoords(c);
     if(!coords)return; // GPS yoksa marker koyma
-    const color=c.status==="busy"?"#f59e0b":"#00c48c";
     const speed=courierGPS[id]?.speed||0;
-    const icon=L.divIcon({
-      className:"",
-      html:`<div style="width:36px;height:36px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);cursor:pointer" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
-      iconSize:[36,36],iconAnchor:[18,18],
-    });
+    const bearing=courierGPS[id]?.bearing||0;
+    const icon=_makeCourierIcon(c.name, c.photoURL, bearing, true);
     if(courierMarkers[id]){
       courierMarkers[id].setLatLng(coords);
       courierMarkers[id].setIcon(icon);
@@ -3118,7 +3130,7 @@ function syncCourierGPSListeners(){
       courierGPSListeners[id]=rtdbListen(`/couriers/${id}/location`,snap=>{
         const d=snap.val();
         if(d&&d.lat&&d.lng){
-          courierGPS[id]={lat:d.lat,lng:d.lng,speed:d.speed||0};
+          courierGPS[id]={lat:d.lat,lng:d.lng,speed:d.speed||0,bearing:d.bearing||0};
           updateMapMarkers();
           updateMapDashMarkers();
         }

@@ -3918,11 +3918,12 @@ window.addCourierFromSystem=async()=>{
     document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Hata: Kurye verisi bulunamadı. Lütfen tekrar arayın.</div>`;
     return;
   }
-  const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:uid,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
   const resultDiv=document.getElementById("courier-lookup-result");
   resultDiv.innerHTML=`<div style="padding:10px;font-size:13px">⏳ Ekleniyor…</div>`;
   try{
     const courierId = d.kuryeId || uid; // Stable ID: kuryeai-panel'deki G.id ile eşleşir
+    // kuryeUid = courierId (KAI-xxx) olmalı — _cid() bunu GPS dinleyicisi için kullanır (/couriers/{courierId}/location)
+    const newCourier={name:d.name||d.email,phone:d.phone||"",vehicle:d.vehicle||"moto",zone:"",email:d.email,kuryeUid:courierId,status:"available",activeOrder:null,rating:5.0,deliveries:0,km:0,hours:0,earnings:0,paidEarnings:0,createdAt:Date.now()};
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/couriers/${courierId}`,{...newCourier,courierId});
     // Kurye profiline restoran atamasını yaz (kurye paneli "bağlı restoran" için okur)
     await _rtdbSet(`/couriers/${courierId}/assignedRestaurant`,{

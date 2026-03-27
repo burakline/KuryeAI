@@ -1154,12 +1154,15 @@ function initFB(){
   },()=>{});
 }
 let _chatUnsub1=null,_chatUnsub2=null;
+let _lastChatRestId=null; // tekrar initChat() çağrısını önler
 function initChat(){
   const fb=window._fb;if(!fb)return;
+  const restId=G.assignedRest?.restoranId||null;
+  if(restId===_lastChatRestId)return; // aynı restoran için tekrar başlatma
+  _lastChatRestId=restId;
   if(_chatUnsub1){_chatUnsub1();_chatUnsub1=null;}
   if(_chatUnsub2){_chatUnsub2();_chatUnsub2=null;}
   G.msgs={1:[],2:[]};renderChat();
-  const restId=G.assignedRest?.restoranId;
   if(!restId)return;
   const ops=`restoran_${restId}_ops`;
   const team=`restoran_${restId}_team`;

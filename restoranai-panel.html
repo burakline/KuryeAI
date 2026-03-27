@@ -2458,8 +2458,17 @@ setTimeout(hideLoader, 2500);
 async function initFirebase(){
   goOnline(db);
 
+  // ── Hangi DB URL'i gerçek? ─────────────────────────────────────────────
+  const _dbUrls=["https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app","https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app"];
+  for(const u of _dbUrls){
+    fetch(u+"/.json?shallow=true&timeout=5s")
+      .then(r=>r.text().then(t=>showToast(u.split("//")[1].slice(0,40)+": "+t.slice(0,40))))
+      .catch(e=>showToast(u.split("//")[1].slice(0,40)+" HATA: "+e.message,"error"));
+  }
+  // ─────────────────────────────────────────────────────────────────────
+
   const _rtdbErr=err=>{
-    setFbStatus("disconnected");
+    setFbStatus("error");
     showToast("RTDB Hata: "+err.code+" — "+err.message,"error");
     console.error("RTDB listener hatası:",err);
   };

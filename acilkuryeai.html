@@ -3,132 +3,142 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Acil Kurye | KuryeAI — 7/24 Hızlı Teslimat</title>
-  <meta name="description" content="Türkiye acil kurye hizmeti. Tıbbi kurye, eczane kuryesi, evrak kuryesi, VIP kurye. 350₺/saat + 12₺/km. Formu doldurun, kurye atanınca panelden takip edin."/>
+  <title>AcilKuryeAI — 7/24 Acil Kurye Hizmeti | Türkiye</title>
+  <meta name="description" content="Türkiye'nin yapay zeka destekli acil kurye platformu. Tıbbi, eczane, evrak, VIP kurye. 15-30 dakikada kurye atanır, panelden anlık takip edin."/>
   <meta name="keywords" content="acil kurye, türkiye acil kurye, tıbbi kurye, eczane kuryesi, ilaç kuryesi, evrak kuryesi, vip kurye, express kurye, anlık kurye"/>
   <link rel="icon" type="image/png" href="/1000414615.png"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --black:#000;--dark:#0c0c0c;--card:#111;--border:rgba(255,255,255,.07);
+      --black:#000;--dark:#0a0a0a;--card:#111;--card2:#161616;
+      --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
       --gray:#555;--gray-lt:#999;--white:#fff;
-      --teal:#00c8d7;--teal-lt:#33d6e3;
-      --red:#ff5f57;--red-lt:#ff7a74;--green:#30d158;
+      --teal:#00c8d7;--teal-lt:#33d6e3;--teal-dk:#009aaa;
+      --red:#ff5f57;--red-lt:#ff7a74;
+      --green:#30d158;--orange:#ff9500;
     }
     html{scroll-behavior:smooth}
     body{background:var(--black);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-    /* NAV */
+    /* ── NAV ── */
     nav{position:fixed;top:0;left:0;right:0;z-index:300;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
-    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
-    .nav-logo img{height:32px;width:32px;border-radius:50%;object-fit:cover}
-    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em;color:var(--white)}
-    .nav-brand em{font-style:normal;color:var(--teal)}
+    .nav-brand{font-size:1rem;font-weight:700;letter-spacing:-.03em}
+    .nav-brand .acil{color:var(--red)}
+    .nav-brand .kurye{color:#fff}
+    .nav-brand .ai{color:var(--teal)}
     .nav-back{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
     .nav-back:hover{color:var(--white)}
-    .btn-wa{display:inline-flex;align-items:center;gap:.4rem;background:#25d366;color:#fff;font-size:.76rem;font-weight:700;padding:.38rem 1rem;border-radius:999px;text-decoration:none;transition:background .2s}
-    .btn-wa:hover{background:#20bd5a}
-    /* Auth dropdown */
     .auth-drop{position:relative}
-    .auth-drop-btn{display:inline-flex;align-items:center;gap:.35rem;background:#00c8d7;color:#000;font-size:.76rem;font-weight:700;padding:.4rem 1rem;border-radius:999px;cursor:pointer;border:none;font-family:inherit;transition:background .2s}
-    .auth-drop-btn:hover{background:#33d6e3}
+    .auth-drop-btn{display:inline-flex;align-items:center;gap:.35rem;background:var(--teal);color:#000;font-size:.76rem;font-weight:700;padding:.4rem 1rem;border-radius:999px;cursor:pointer;border:none;font-family:inherit;transition:background .2s}
+    .auth-drop-btn:hover{background:var(--teal-lt)}
     .auth-drop-menu{display:none;position:absolute;top:calc(100% + .5rem);right:0;background:#111;border:.5px solid rgba(255,255,255,.1);border-radius:12px;min-width:170px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
     .auth-drop.open .auth-drop-menu{display:block}
     .auth-drop-item{display:block;padding:.72rem 1rem;font-size:.8rem;font-weight:600;color:#fff;text-decoration:none;transition:background .15s}
-    .auth-drop-item:hover{background:rgba(0,200,215,.12);color:#00c8d7}
+    .auth-drop-item:hover{background:rgba(0,200,215,.12);color:var(--teal)}
 
-    /* HERO */
-    .hero{padding:5.5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden}
-    .hero-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(255,95,87,.08) 0%,transparent 65%);pointer-events:none}
-    .hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,95,87,.1);border:.5px solid rgba(255,95,87,.3);border-radius:999px;padding:.3rem .9rem;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:1.2rem}
+    /* ── HERO ── */
+    .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden}
+    .hero-glow{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(255,95,87,.1) 0%,transparent 65%);pointer-events:none}
+    .hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,95,87,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,95,87,.04) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+    .hero-badge{display:inline-flex;align-items:center;gap:.45rem;background:rgba(255,95,87,.1);border:.5px solid rgba(255,95,87,.3);border-radius:999px;padding:.32rem .9rem;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:1.5rem}
     .bdot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pls 1.5s infinite}
-    @keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
-    .hero h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:1rem}
-    .hero h1 span{color:var(--red)}
-    .hero-sub{font-size:1rem;color:var(--gray-lt);max-width:500px;margin:0 auto 2rem;line-height:1.7}
-    .price-pills{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
-    .price-pill{background:rgba(255,95,87,.1);border:.5px solid rgba(255,95,87,.25);color:var(--red);font-size:.78rem;font-weight:700;padding:.35rem .9rem;border-radius:999px}
+    @keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
+    .hero h1{font-size:clamp(2.4rem,7vw,4.5rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:1.2rem}
+    .hero h1 .hi{color:var(--red)}
+    .hero-sub{font-size:1.05rem;color:var(--gray-lt);max-width:540px;margin:0 auto 2.5rem;line-height:1.75}
+    .hero-btns{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin-bottom:3rem}
+    .btn-hero-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--red);color:#fff;font-size:.95rem;font-weight:700;padding:.85rem 2rem;border-radius:999px;text-decoration:none;transition:background .2s,transform .15s;box-shadow:0 4px 24px rgba(255,95,87,.35)}
+    .btn-hero-primary:hover{background:var(--red-lt);transform:scale(1.03)}
+    .btn-hero-secondary{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.07);color:#fff;font-size:.95rem;font-weight:700;padding:.85rem 2rem;border-radius:999px;text-decoration:none;border:.5px solid var(--border2);transition:all .2s}
+    .btn-hero-secondary:hover{background:rgba(255,255,255,.12)}
+    .hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap;justify-content:center}
+    .hero-stat{text-align:center}
+    .hero-stat-n{font-size:1.8rem;font-weight:800;color:var(--red);letter-spacing:-.03em}
+    .hero-stat-l{font-size:.68rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem}
 
-    /* MAIN LAYOUT */
-    .main{max-width:1100px;margin:0 auto;padding:0 1.5rem 5rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+    /* ── SECTION COMMON ── */
+    .section{max-width:1100px;margin:0 auto;padding:5rem 1.5rem}
+    .section-badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
+    .section-title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-.04em;line-height:1.15;margin-bottom:.8rem}
+    .section-sub{font-size:.95rem;color:var(--gray-lt);line-height:1.7;max-width:560px}
+    .divider{height:.5px;background:var(--border);margin:0}
 
-    /* FORM CARD */
-    .form-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden;top:0}
-    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
-    .form-title{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.25rem}
-    .form-sub{font-size:.78rem;color:var(--gray-lt);margin-bottom:1.5rem}
-
-    .fg{margin-bottom:.9rem}
-    .fl{display:block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:.38rem}
-    .fi,.fsel,.ftxt{width:100%;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:8px;padding:.72rem .9rem;color:var(--white);font-family:Arial;font-size:.88rem;outline:none;transition:border-color .2s,background .2s;appearance:none}
-    .fi::placeholder,.ftxt::placeholder{color:var(--gray)}
-    .fi:focus,.fsel:focus,.ftxt:focus{border-color:var(--red);background:rgba(255,95,87,.04)}
-    .fsel option{background:#111}
-    .ftxt{resize:vertical;min-height:70px}
-    .frow{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
-
-    /* address input with map pin */
-    .addr-wrap{position:relative}
-    .addr-pin{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none}
-
-    /* HESAP KUTUSU */
-    .hesap-box{background:rgba(255,95,87,.06);border:.5px solid rgba(255,95,87,.2);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;display:none}
-    .hesap-box.show{display:block}
-    .hesap-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:.8rem}
-    .hesap-row{display:flex;justify-content:space-between;font-size:.84rem;padding:.35rem 0;border-bottom:.5px solid rgba(255,255,255,.05)}
-    .hesap-row:last-child{border-bottom:none;padding-top:.6rem}
-    .hesap-l{color:var(--gray-lt)}
-    .hesap-v{font-weight:700;color:var(--white)}
-    .hesap-total{font-size:1.1rem;font-weight:700;color:var(--red)}
-
-    .btn-submit{width:100%;background:var(--red);color:#fff;font-size:.92rem;font-weight:700;padding:.88rem;border-radius:999px;border:none;cursor:pointer;font-family:Arial;transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.3rem}
-    .btn-submit:hover{background:var(--red-lt);transform:scale(1.02)}
-    .btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
-    .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
-    .btn-submit.loading .spin{display:block}
-    .btn-submit.loading .btxt{display:none}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    .form-note{font-size:.72rem;color:var(--gray);text-align:center;margin-top:.8rem;line-height:1.5}
-
-    /* MAP CARD */
-    .map-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;overflow:hidden;position:sticky;top:80px}
-    .map-header{padding:1rem 1.2rem;border-bottom:.5px solid var(--border)}
-    .map-title{font-size:.85rem;font-weight:700;margin-bottom:.2rem}
-    .map-sub{font-size:.72rem;color:var(--gray-lt)}
-    #map{height:400px;width:100%}
-    .map-footer{padding:1rem 1.2rem;border-top:.5px solid var(--border)}
-    .map-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
-    .map-stat{text-align:center}
-    .map-stat-n{font-size:1.2rem;font-weight:700;color:var(--red)}
-    .map-stat-l{font-size:.65rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:.06em}
-
-    /* KURYE TÜRLERİ */
-    .categories{max-width:1100px;margin:0 auto;padding:0 1.5rem 4rem}
-    .cat-title{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem}
-    .cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-    .cat-card{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:.9rem;text-align:center;transition:background .2s,border-color .2s;cursor:pointer}
-    .cat-card:hover{background:#161616;border-color:rgba(255,95,87,.2)}
-    .cat-icon{font-size:1.4rem;margin-bottom:.4rem}
+    /* ── KATEGORİLER ── */
+    .cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:2rem}
+    .cat-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.1rem .8rem;text-align:center;transition:all .2s;cursor:default}
+    .cat-card:hover{background:var(--card2);border-color:rgba(255,95,87,.25);transform:translateY(-2px)}
+    .cat-icon{font-size:1.6rem;margin-bottom:.5rem}
     .cat-name{font-size:.72rem;font-weight:700;color:var(--gray-lt)}
 
-    /* FOOTER */
+    /* ── NASIL ÇALIŞIR ── */
+    .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
+    .step-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:1.8rem;position:relative;overflow:hidden}
+    .step-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),transparent)}
+    .step-num{font-size:3rem;font-weight:800;color:rgba(255,95,87,.15);letter-spacing:-.05em;line-height:1;margin-bottom:.8rem}
+    .step-icon{font-size:1.6rem;margin-bottom:.7rem}
+    .step-title{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .step-desc{font-size:.82rem;color:var(--gray-lt);line-height:1.6}
+
+    /* ── ÖZELLİKLER ── */
+    .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:2.5rem}
+    .feat-card{background:var(--card);border:.5px solid var(--border);border-radius:14px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;transition:border-color .2s}
+    .feat-card:hover{border-color:rgba(0,200,215,.2)}
+    .feat-icon{font-size:1.8rem;flex-shrink:0}
+    .feat-title{font-size:.92rem;font-weight:700;margin-bottom:.35rem}
+    .feat-desc{font-size:.8rem;color:var(--gray-lt);line-height:1.6}
+
+    /* ── FİYATLANDIRMA ── */
+    .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
+    .price-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;position:relative}
+    .price-card.featured{border-color:rgba(255,95,87,.4);background:rgba(255,95,87,.04)}
+    .price-card.featured::before{content:'Popüler';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:.65rem;font-weight:700;padding:.22rem .8rem;border-radius:0 0 8px 8px;letter-spacing:.06em}
+    .price-name{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+    .price-amount{font-size:2.2rem;font-weight:800;color:var(--red);letter-spacing:-.04em;margin-bottom:.2rem}
+    .price-unit{font-size:.78rem;color:var(--gray-lt);margin-bottom:1.2rem}
+    .price-items{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+    .price-item{font-size:.82rem;color:var(--gray-lt);display:flex;align-items:center;gap:.5rem}
+    .price-item::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+
+    /* ── KARŞILAŞTIRMA ── */
+    .compare-table{width:100%;border-collapse:collapse;margin-top:2rem;font-size:.85rem}
+    .compare-table th{padding:.9rem 1rem;text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-lt);border-bottom:.5px solid var(--border)}
+    .compare-table td{padding:.85rem 1rem;border-bottom:.5px solid rgba(255,255,255,.04)}
+    .compare-table tr:last-child td{border-bottom:none}
+    .compare-table td:first-child{color:var(--gray-lt)}
+    .c-yes{color:var(--green);font-weight:700}
+    .c-no{color:var(--gray);font-weight:700}
+    .c-col-head{font-weight:700;color:var(--white)}
+    .c-col-acil{font-weight:700;color:var(--red)}
+
+    /* ── CTA ── */
+    .cta-section{background:linear-gradient(135deg,rgba(255,95,87,.08) 0%,rgba(0,200,215,.06) 100%);border:.5px solid rgba(255,95,87,.15);border-radius:24px;padding:4rem 2rem;text-align:center;margin:0 1.5rem 5rem}
+    .cta-title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-.04em;margin-bottom:.8rem}
+    .cta-sub{font-size:.95rem;color:var(--gray-lt);margin-bottom:2.5rem;line-height:1.7}
+    .cta-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+    .btn-cta-red{display:inline-flex;align-items:center;gap:.5rem;background:var(--red);color:#fff;font-size:.95rem;font-weight:700;padding:.85rem 2rem;border-radius:999px;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(255,95,87,.3)}
+    .btn-cta-red:hover{background:var(--red-lt);transform:scale(1.03)}
+    .btn-cta-teal{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#000;font-size:.95rem;font-weight:700;padding:.85rem 2rem;border-radius:999px;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(0,200,215,.25)}
+    .btn-cta-teal:hover{background:var(--teal-lt);transform:scale(1.03)}
+
+    /* ── FOOTER ── */
     .page-footer{text-align:center;padding:2rem 1.5rem;border-top:.5px solid var(--border);font-size:.76rem;color:var(--gray)}
     .page-footer a{color:var(--teal);text-decoration:none}
 
+    /* ── RESPONSIVE ── */
     @media(max-width:768px){
-      .main{grid-template-columns:1fr;padding:0 1rem 4rem}
-      .map-card{position:static}
-      #map{height:280px}
       .cat-grid{grid-template-columns:repeat(3,1fr)}
-      .frow{grid-template-columns:1fr}
-      .hero{padding:4.5rem 1rem 2rem}
+      .steps-grid{grid-template-columns:1fr}
+      .features-grid{grid-template-columns:1fr}
+      .price-grid{grid-template-columns:1fr}
+      .hero{padding:5rem 1.2rem 3rem}
+      .section{padding:3.5rem 1.2rem}
+      .compare-table{font-size:.78rem}
     }
     @media(max-width:480px){
       .cat-grid{grid-template-columns:repeat(2,1fr)}
+      .hero-stats{gap:1.5rem}
     }
   </style>
 </head>
@@ -136,8 +146,8 @@
 
 <!-- NAV -->
 <nav>
-  <a href="/acilkuryeai" class="nav-logo">
-    <span class="nav-brand"><span style="color:#ff5f57">Acil</span><span style="color:#fff">Kurye</span><em>AI</em></span>
+  <a href="/acilkuryeai" style="text-decoration:none">
+    <span class="nav-brand"><span class="acil">Acil</span><span class="kurye">Kurye</span><span class="ai">AI</span></span>
   </a>
   <a href="/" class="nav-back">← Ana Sayfa</a>
   <div class="auth-drop" id="auth-drop">
@@ -151,380 +161,197 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <div class="hero-badge"><span class="bdot"></span>7/24 Aktif · Türkiye</div>
-  <h1>Acil Kurye<br/><span>İhtiyacınız mı Var?</span></h1>
-  <p class="hero-sub">Formu doldurun, mesafe ve ücreti otomatik hesaplayalım. Talebinizi gönderin, kurye atanınca panelden anlık takip edin.</p>
-  <div class="price-pills">
-    <span class="price-pill">⏱ 350₺ / Saat</span>
-    <span class="price-pill">📍 +12₺ / KM</span>
-    <span class="price-pill">💳 Teslimat sırasında ödeme</span>
-    <span class="price-pill">🕐 15-30 dk içinde kurye</span>
+  <div class="hero-badge"><span class="bdot"></span>7/24 Aktif · Türkiye Geneli</div>
+  <h1>Acil Kurye<br/><span class="hi">Saniyeler İçinde</span><br/>Kapınızda.</h1>
+  <p class="hero-sub">Yapay zeka destekli kurye atama sistemi. Talep oluşturun, en yakın kurye otomatik atansın, panelden canlı takip edin.</p>
+  <div class="hero-btns">
+    <a href="/acilkuryeai-talepeden-login" class="btn-hero-primary">📦 Hemen Talep Oluştur</a>
+    <a href="/acilkuryeai-kurye-login" class="btn-hero-secondary">🛵 Kurye Olarak Katıl</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-n">15–30</div><div class="hero-stat-l">Dakikada Kurye</div></div>
+    <div class="hero-stat"><div class="hero-stat-n">7/24</div><div class="hero-stat-l">Kesintisiz Hizmet</div></div>
+    <div class="hero-stat"><div class="hero-stat-n">350₺</div><div class="hero-stat-l">Saat Başı</div></div>
+    <div class="hero-stat"><div class="hero-stat-n">+12₺</div><div class="hero-stat-l">KM Ücreti</div></div>
   </div>
 </section>
 
+<div class="divider"></div>
+
 <!-- KATEGORİLER -->
-<div class="categories">
-  <p class="cat-title">Hangi kurye hizmetine ihtiyacınız var?</p>
+<div class="section">
+  <span class="section-badge">Hizmet Türleri</span>
+  <h2 class="section-title">Her türlü acil teslimat<br/>için hazırız.</h2>
   <div class="cat-grid">
-    <div class="cat-card" onclick="selectCategory('Tıbbi Kurye')"><div class="cat-icon">🏥</div><div class="cat-name">Tıbbi Kurye</div></div>
-    <div class="cat-card" onclick="selectCategory('Eczane Kuryesi')"><div class="cat-icon">💊</div><div class="cat-name">Eczane Kuryesi</div></div>
-    <div class="cat-card" onclick="selectCategory('Evrak Kuryesi')"><div class="cat-icon">📄</div><div class="cat-name">Evrak Kuryesi</div></div>
-    <div class="cat-card" onclick="selectCategory('VIP Kişisel Kurye')"><div class="cat-icon">👑</div><div class="cat-name">VIP Kurye</div></div>
-    <div class="cat-card" onclick="selectCategory('Express Kurye')"><div class="cat-icon">⚡</div><div class="cat-name">Express Kurye</div></div>
-    <div class="cat-card" onclick="selectCategory('SIM Kart Dağıtım')"><div class="cat-icon">📱</div><div class="cat-name">SIM Kart</div></div>
-    <div class="cat-card" onclick="selectCategory('Kredi Kartı Dağıtım')"><div class="cat-icon">💳</div><div class="cat-name">Kredi Kartı</div></div>
-    <div class="cat-card" onclick="selectCategory('Gazete / Dergi Dağıtım')"><div class="cat-icon">📰</div><div class="cat-name">Gazete / Dergi</div></div>
-    <div class="cat-card" onclick="selectCategory('İlaç Kuryesi')"><div class="cat-icon">🧪</div><div class="cat-name">İlaç Kuryesi</div></div>
-    <div class="cat-card" onclick="selectCategory('Yedek Parça Kuryesi')"><div class="cat-icon">🔧</div><div class="cat-name">Yedek Parça</div></div>
-    <div class="cat-card" onclick="selectCategory('Diğer')"><div class="cat-icon">📦</div><div class="cat-name">Diğer</div></div>
+    <div class="cat-card"><div class="cat-icon">🏥</div><div class="cat-name">Tıbbi Kurye</div></div>
+    <div class="cat-card"><div class="cat-icon">💊</div><div class="cat-name">Eczane Kuryesi</div></div>
+    <div class="cat-card"><div class="cat-icon">🧪</div><div class="cat-name">İlaç Kuryesi</div></div>
+    <div class="cat-card"><div class="cat-icon">📄</div><div class="cat-name">Evrak Kuryesi</div></div>
+    <div class="cat-card"><div class="cat-icon">👑</div><div class="cat-name">VIP Kurye</div></div>
+    <div class="cat-card"><div class="cat-icon">⚡</div><div class="cat-name">Express Kurye</div></div>
+    <div class="cat-card"><div class="cat-icon">📱</div><div class="cat-name">SIM Kart</div></div>
+    <div class="cat-card"><div class="cat-icon">💳</div><div class="cat-name">Kredi Kartı</div></div>
+    <div class="cat-card"><div class="cat-icon">📰</div><div class="cat-name">Gazete / Dergi</div></div>
+    <div class="cat-card"><div class="cat-icon">🔧</div><div class="cat-name">Yedek Parça</div></div>
+    <div class="cat-card"><div class="cat-icon">📦</div><div class="cat-name">Diğer</div></div>
   </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<div class="divider"></div>
 
-  <!-- FORM -->
-  <div class="form-card">
-    <p class="form-title">Acil Kurye Talep Formu</p>
-    <p class="form-sub">Tüm alanları doldurun, WhatsApp'a otomatik yönlendireceğiz.</p>
-
-    <div class="frow">
-      <div class="fg"><label class="fl">Ad</label><input class="fi" id="f-ad" placeholder="Adınız"/></div>
-      <div class="fg"><label class="fl">Soyad</label><input class="fi" id="f-soyad" placeholder="Soyadınız"/></div>
+<!-- NASIL ÇALIŞIR -->
+<div class="section">
+  <span class="section-badge">Nasıl Çalışır?</span>
+  <h2 class="section-title">3 adımda acil kurye.</h2>
+  <p class="section-sub">Kayıt olun, talebinizi oluşturun — gerisini biz halledelim.</p>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-icon">📝</div>
+      <div class="step-title">Talep Oluşturun</div>
+      <div class="step-desc">Giriş yapın, alınacak ve teslim edilecek adresi girin. Kurye türünü seçin. Sistem ücret tahminini otomatik hesaplar.</div>
     </div>
-    <div class="fg"><label class="fl">Telefon</label><input class="fi" id="f-tel" type="tel" placeholder="05XX XXX XX XX"/></div>
-    <div class="fg"><label class="fl">E-posta</label><input class="fi" id="f-email" type="email" placeholder="email@ornek.com"/></div>
-
-    <div class="fg">
-      <label class="fl">Gönderi Türü</label>
-      <select class="fsel" id="f-tur">
-        <option value="">Seçiniz</option>
-        <option>Tıbbi Kurye</option>
-        <option>Eczane Kuryesi</option>
-        <option>İlaç Kuryesi</option>
-        <option>Evrak Kuryesi</option>
-        <option>VIP Kişisel Kurye</option>
-        <option>Express Kurye</option>
-        <option>SIM Kart Dağıtım</option>
-        <option>Kredi Kartı Dağıtım</option>
-        <option>Gazete / Dergi Dağıtım</option>
-        <option>Yedek Parça Kuryesi</option>
-        <option>Diğer</option>
-      </select>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-icon">🤖</div>
+      <div class="step-title">Kurye Otomatik Atanır</div>
+      <div class="step-desc">Yapay zeka sistemi müsait ve en yakın kurye ile eşleştirir. 15–30 dakika içinde kurye kabul bildirimi alırsınız.</div>
     </div>
-
-    <div class="fg">
-      <label class="fl">📍 Gönderim Adresi (Paketin Alınacağı Yer)</label>
-      <div class="addr-wrap">
-        <input class="fi" id="f-adres1" placeholder="Örn: Ankamall AVM" oninput="debounceGeocode('adres1')"/>
-      </div>
-    </div>
-
-    <div class="fg">
-      <label class="fl">📍 Teslimat Adresi (Paketin Gideceği Yer)</label>
-      <div class="addr-wrap">
-        <input class="fi" id="f-adres2" placeholder="Örn: Gordion AVM Çayyolu, Ankara" oninput="debounceGeocode('adres2')"/>
-      </div>
-    </div>
-
-    <!-- HESAPLAMA KUTUSU -->
-    <div class="hesap-box" id="hesap-box">
-      <p class="hesap-title">Tahmini Ücret Hesabı</p>
-      <div class="hesap-row"><span class="hesap-l">Mesafe</span><span class="hesap-v" id="h-mesafe">—</span></div>
-      <div class="hesap-row"><span class="hesap-l">Tahmini Süre</span><span class="hesap-v" id="h-sure">—</span></div>
-      <div class="hesap-row"><span class="hesap-l">KM Ücreti</span><span class="hesap-v" id="h-km">—</span></div>
-      <div class="hesap-row"><span class="hesap-l">Min. 1 Saat</span><span class="hesap-v" id="h-saat">350 ₺</span></div>
-      <div class="hesap-row"><span class="hesap-l">Tahmini Toplam</span><span class="hesap-v hesap-total" id="h-toplam">—</span></div>
-      <p style="font-size:.68rem;color:var(--gray-lt);margin-top:.6rem;line-height:1.5">* Tahmini hesaptır. Gerçek ücret kurye ile onaylanır. Minimum 1 saat uygulanır.</p>
-    </div>
-
-    <div class="fg">
-      <label class="fl">Ne Zaman Teslim Edilmeli?</label>
-      <input class="fi" id="f-zaman" type="datetime-local"/>
-    </div>
-
-    <div class="fg">
-      <label class="fl">Gönderi Detayı</label>
-      <textarea class="ftxt" id="f-detay" placeholder="Gönderi hakkında detay verin. Boyut, ağırlık, özel taşıma gereksinimleri vb."></textarea>
-    </div>
-
-    <div class="fg">
-      <label class="fl">Ödeme Yöntemi</label>
-      <select class="fsel" id="f-odeme">
-        <option>Nakit (Teslimat sırasında)</option>
-        <option>Havale / EFT</option>
-      </select>
-    </div>
-
-    <!-- HESAPLAMA BUTONU -->
-    <button onclick="hesaplaUcret()" style="width:100%;background:rgba(255,95,87,.1);color:var(--red);border:.5px solid rgba(255,95,87,.25);border-radius:8px;padding:.7rem;font-size:.84rem;font-weight:700;cursor:pointer;font-family:Arial;margin-bottom:.8rem;transition:background .2s">
-      📍 Mesafe & Ücreti Hesapla
-    </button>
-
-    <button class="btn-submit" id="btn-submit" onclick="submitForm()">
-      <div class="spin"></div>
-      <span class="btxt">🚀 Talep Gönder →</span>
-    </button>
-    <p class="form-note">Talep göndermek için giriş / kayıt gereklidir. Kurye atanınca panelden anlık takip edebilirsiniz.</p>
-  </div>
-
-  <!-- HARİTA -->
-  <div class="map-card">
-    <div class="map-header">
-      <p class="map-title">🗺️ Rota Haritası</p>
-      <p class="map-sub">Adreslerinizi girdikçe harita otomatik güncellenir.</p>
-    </div>
-    <div id="map"></div>
-    <div class="map-footer">
-      <div class="map-stats">
-        <div class="map-stat"><div class="map-stat-n" id="ms-mesafe">—</div><div class="map-stat-l">KM</div></div>
-        <div class="map-stat"><div class="map-stat-n" id="ms-sure">—</div><div class="map-stat-l">Dakika</div></div>
-        <div class="map-stat"><div class="map-stat-n" id="ms-ucret">—</div><div class="map-stat-l">₺ Tahmini</div></div>
-      </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-icon">📍</div>
+      <div class="step-title">Canlı Takip Edin</div>
+      <div class="step-desc">Panelden kuryenin konumunu anlık izleyin. Teslimatta bildirim alın. Teslimat onaylandıktan sonra ödeme yapın.</div>
     </div>
   </div>
-
 </div>
 
+<div class="divider"></div>
+
+<!-- ÖZELLİKLER -->
+<div class="section">
+  <span class="section-badge">Neden AcilKuryeAI?</span>
+  <h2 class="section-title">WhatsApp'tan çok daha fazlası.</h2>
+  <p class="section-sub">Geleneksel kurye siparişinin dijital ve akıllı versiyonu.</p>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🗺️</div>
+      <div><div class="feat-title">Canlı Konum Takibi</div><div class="feat-desc">Kuryenin gerçek zamanlı konumunu harita üzerinde görün. Nerede olduğunu her an bilin.</div></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <div><div class="feat-title">Şeffaf Fiyatlandırma</div><div class="feat-desc">Talep öncesinde mesafe ve süreye göre tahmini ücret gösterilir. Sürpriz fatura yok.</div></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🤖</div>
+      <div><div class="feat-title">Yapay Zeka Atama</div><div class="feat-desc">Sistem müsait, yakın ve uygun kuryeyi otomatik bulur. Manuel koordinasyon gerekmez.</div></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <div><div class="feat-title">Sipariş Geçmişi</div><div class="feat-desc">Tüm taleplerinizi panelden görüntüleyin. Durum takibi, geçmiş siparişler, fiyat detayları.</div></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <div><div class="feat-title">Anlık Bildirimler</div><div class="feat-desc">Kurye kabul ettiğinde, yola çıktığında ve teslim ettiğinde anlık durum güncellemesi alın.</div></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div><div class="feat-title">Güvenli & Kayıtlı</div><div class="feat-desc">Tüm kuryeler kimlik doğrulamalı. Her teslimat kayıt altında. E-posta doğrulamalı hesap sistemi.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FİYATLANDIRMA -->
+<div class="section">
+  <span class="section-badge">Ücretlendirme</span>
+  <h2 class="section-title">Şeffaf ve adil fiyatlar.</h2>
+  <p class="section-sub">Gizli ücret yok. Teslimat öncesi tahmini fiyatı görün, teslimat sonrası ödeyin.</p>
+  <div class="price-grid">
+    <div class="price-card featured">
+      <div class="price-name">Standart Teslimat</div>
+      <div class="price-amount">350₺</div>
+      <div class="price-unit">/ Saat (minimum 1 saat)</div>
+      <ul class="price-items">
+        <li class="price-item">+12₺ / km mesafe ücreti</li>
+        <li class="price-item">Teslimat sırasında ödeme</li>
+        <li class="price-item">Nakit veya havale</li>
+        <li class="price-item">Tüm kurye türleri dahil</li>
+        <li class="price-item">Canlı harita takibi</li>
+      </ul>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Kurumsal Hesap</div>
+      <div class="price-amount">–</div>
+      <div class="price-unit">Özel fiyatlandırma</div>
+      <ul class="price-items">
+        <li class="price-item">Aylık hacim indirimi</li>
+        <li class="price-item">Öncelikli kurye atama</li>
+        <li class="price-item">Fatura + muhasebe entegrasyonu</li>
+        <li class="price-item">Dedicated müşteri desteği</li>
+        <li class="price-item">API erişimi (yakında)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- KARŞILAŞTIRMA -->
+<div class="section">
+  <span class="section-badge">Karşılaştırma</span>
+  <h2 class="section-title">AcilKuryeAI vs Eski Yöntemler</h2>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Özellik</th>
+        <th class="c-col-acil">AcilKuryeAI</th>
+        <th class="c-col-head">WhatsApp / Telefon</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Canlı konum takibi</td><td class="c-yes">✓ Var</td><td class="c-no">✗ Yok</td></tr>
+      <tr><td>Otomatik fiyat hesabı</td><td class="c-yes">✓ Var</td><td class="c-no">✗ Yok</td></tr>
+      <tr><td>Sipariş geçmişi</td><td class="c-yes">✓ Var</td><td class="c-no">✗ Yok</td></tr>
+      <tr><td>7/24 kurye havuzu</td><td class="c-yes">✓ Var</td><td class="c-no">~ Belirsiz</td></tr>
+      <tr><td>Durum bildirimleri</td><td class="c-yes">✓ Anlık</td><td class="c-no">✗ Manuel</td></tr>
+      <tr><td>Şeffaf ücret</td><td class="c-yes">✓ Önceden</td><td class="c-no">~ Sonradan</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div style="max-width:1100px;margin:0 auto;padding:0 1.5rem 5rem">
+  <div class="cta-section">
+    <h2 class="cta-title">Hemen başlayın.<br/>İlk talebiniz dakikalar içinde.</h2>
+    <p class="cta-sub">Kayıt ücretsiz. Sadece kullandığınız kadar ödeyin.</p>
+    <div class="cta-btns">
+      <a href="/acilkuryeai-talepeden-login" class="btn-cta-red">📦 Talep Eden Girişi / Kayıt</a>
+      <a href="/acilkuryeai-kurye-login" class="btn-cta-teal">🛵 Kurye Olarak Katıl</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <div class="page-footer">
   <a href="/">← Ana Sayfa</a> &nbsp;·&nbsp;
-  <a href="/acilkuryeai-talepeden-login">🔐 Giriş / Kayıt</a> &nbsp;·&nbsp;
+  <a href="/acilkuryeai-talepeden-login">Talep Eden Girişi</a> &nbsp;·&nbsp;
+  <a href="/acilkuryeai-kurye-login">Kurye Girişi</a> &nbsp;·&nbsp;
   <a href="tel:+905072171995">📞 0 507 217 19 95</a> &nbsp;·&nbsp;
   <a href="/kvkk">Gizlilik Politikası</a>
+  <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
 </div>
 
-<!-- Firebase Auth + Auto-submit -->
-<script type="module">
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-  const FC = {
-    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
-    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
-    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
-  };
-  const app = getApps().find(a=>a.name==='acil-auth') || initializeApp(FC,'acil-auth');
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-
-  function genId() {
-    const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let id='SAI-';
-    for(let i=0;i<6;i++) id+=c[Math.floor(Math.random()*c.length)]; return id;
-  }
-
-  // Fiyatları yükle
-  try {
-    const psnap = await getDoc(doc(db,'ayarlar','fiyatlar'));
-    if (psnap.exists()) {
-      const d = psnap.data();
-      if (d.acilSaatUcreti) { window.SAAT_UCRETI = d.acilSaatUcreti; document.querySelectorAll('.price-pill')[0].textContent = `⏱ ${d.acilSaatUcreti}₺ / Saat`; }
-      if (d.acilKmUcreti)   { window.KM_UCRETI   = d.acilKmUcreti;   document.querySelectorAll('.price-pill')[1].textContent = `📍 +${d.acilKmUcreti}₺ / KM`; }
-    }
-  } catch(e) {}
-
-  // Close dropdown on outside click
+<script>
   document.addEventListener('click', e => {
     const d = document.getElementById('auth-drop');
     if (d && !d.contains(e.target)) d.classList.remove('open');
   });
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user && user.emailVerified) {
-      try {
-        const snap = await getDoc(doc(db,'users',user.uid));
-        if (snap.exists() && snap.data().role === 'acil_talep') {
-          // Bekleyen form var mı?
-          const pending = sessionStorage.getItem('pendingAcilForm');
-          if (pending) {
-            sessionStorage.removeItem('pendingAcilForm');
-            const f = JSON.parse(pending);
-            await addDoc(collection(db,'acilTalepler'), {
-              talepId: genId(),
-              userId: user.uid,
-              fromAddr: f.adres1, toAddr: f.adres2,
-              description: f.detay || '',
-              customerName: f.ad + ' ' + f.soyad,
-              customerPhone: f.tel, customerEmail: f.email || '',
-              tur: f.tur, odeme: f.odeme, zaman: f.zaman || '',
-              feeEstimate: (f.ucret && f.ucret !== '—') ? parseInt(f.ucret) : null,
-              distanceKm: (f.mesafe && f.mesafe !== '—') ? parseFloat(f.mesafe) : null,
-              durationMin: (f.sure && f.sure !== '—') ? parseInt(f.sure) : null,
-              status: 'open', createdAt: new Date().toISOString()
-            });
-            window.location.href = '/acilkuryeai-talepeden-panel';
-          }
-        }
-      } catch(e) {}
-    }
-  });
-</script>
-
-<!-- Leaflet.js -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-// ── HARİTA BAŞLAT ──
-const map = L.map('map').setView([39.9334, 32.8597], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap',
-  maxZoom: 19
-}).addTo(map);
-
-let marker1 = null, marker2 = null, routeLine = null;
-let coord1 = null, coord2 = null;
-let debounceTimer = null;
-
-// Fiyat ayarları — Firebase modülünden güncellenir, yoksa default
-var SAAT_UCRETI = 350;
-var KM_UCRETI = 12;
-
-// Fiyatlar Firebase auth modülü tarafından yüklenir (yukarıdaki <script type="module">)
-
-// ── KATEGORİ SEÇ ──
-function selectCategory(cat) {
-  document.getElementById('f-tur').value = cat;
-  document.getElementById('f-tur').style.borderColor = 'var(--red)';
-  document.getElementById('f-tur').scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-// ── DEBOUNCE GEOCODE ──
-function debounceGeocode(field) {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => geocodeAddress(field), 800);
-}
-
-// ── ADRES → KOORDİNAT (Nominatim) ──
-async function geocodeAddress(field) {
-  const input = document.getElementById(field === 'adres1' ? 'f-adres1' : 'f-adres2');
-  const query = input.value.trim();
-  if(query.length < 5) return;
-
-  const searchQuery = query + (query.toLowerCase().includes('türkiye') ? '' : ', Türkiye');
-
-  try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=tr&countrycodes=tr`);
-    const data = await res.json();
-    if(!data.length) return;
-
-    const lat = parseFloat(data[0].lat);
-    const lon = parseFloat(data[0].lon);
-    const icon = L.divIcon({
-      html: `<div style="background:${field==='adres1'?'#00c8d7':'#ff5f57'};width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
-      iconSize:[14,14], className:''
-    });
-
-    if(field === 'adres1') {
-      if(marker1) map.removeLayer(marker1);
-      marker1 = L.marker([lat,lon], {icon}).addTo(map).bindPopup('📍 Gönderim Adresi').openPopup();
-      coord1 = [lat,lon];
-    } else {
-      if(marker2) map.removeLayer(marker2);
-      marker2 = L.marker([lat,lon], {icon}).addTo(map).bindPopup('🏁 Teslimat Adresi').openPopup();
-      coord2 = [lat,lon];
-    }
-
-    if(coord1 && coord2) {
-      drawRoute();
-    } else {
-      map.setView([lat,lon], 14);
-    }
-  } catch(e) { console.error('Geocode hata:', e); }
-}
-
-// ── ROTA ÇİZ (OSRM) ──
-async function drawRoute() {
-  if(!coord1 || !coord2) return;
-  try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${coord1[1]},${coord1[0]};${coord2[1]},${coord2[0]}?overview=full&geometries=geojson`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(!data.routes || !data.routes.length) return;
-
-    const route = data.routes[0];
-    const mesafeKm = (route.distance / 1000).toFixed(1);
-    const sureDk = Math.round(route.duration / 60);
-
-    // Rota çiz
-    if(routeLine) map.removeLayer(routeLine);
-    routeLine = L.geoJSON(route.geometry, {
-      style: {color:'#ff5f57', weight:4, opacity:.8, dashArray:'8,4'}
-    }).addTo(map);
-
-    // Haritayı rotaya sığdır
-    const bounds = L.latLngBounds([coord1, coord2]);
-    map.fitBounds(bounds, {padding:[40,40]});
-
-    // Harita stats güncelle
-    const tahminiUcret = hesaplaToplamUcret(parseFloat(mesafeKm), sureDk);
-    document.getElementById('ms-mesafe').textContent = mesafeKm;
-    document.getElementById('ms-sure').textContent = sureDk;
-    document.getElementById('ms-ucret').textContent = tahminiUcret;
-
-    // Hesap kutusunu güncelle
-    gosterHesap(mesafeKm, sureDk, tahminiUcret);
-
-  } catch(e) { console.error('Rota hata:', e); }
-}
-
-function hesaplaToplamUcret(km, sureDk) {
-  const kmUcret = km * KM_UCRETI;
-  // Minimum 1 saat; 60 dk üstündeyse saat miktarı × SAAT_UCRETI
-  const saatSayisi = sureDk <= 60 ? 1 : Math.ceil(sureDk / 60);
-  const saatUcret = saatSayisi * SAAT_UCRETI;
-  return Math.round(saatUcret + kmUcret);
-}
-
-function gosterHesap(km, dk, toplam) {
-  const saatSayisi = dk <= 60 ? 1 : Math.ceil(dk / 60);
-  document.getElementById('hesap-box').classList.add('show');
-  document.getElementById('h-mesafe').textContent = km + ' km';
-  document.getElementById('h-sure').textContent = dk + ' dakika';
-  document.getElementById('h-km').textContent = (parseFloat(km) * KM_UCRETI).toFixed(0) + ' ₺ (' + km + ' km × ' + KM_UCRETI + '₺)';
-  document.getElementById('h-saat').textContent = (saatSayisi * SAAT_UCRETI) + ' ₺ (' + saatSayisi + ' saat × ' + SAAT_UCRETI + '₺' + (dk <= 60 ? ' · min. 1 saat' : '') + ')';
-  document.getElementById('h-toplam').textContent = toplam + ' ₺';
-}
-
-// ── MANUEL HESAPLA ──
-function hesaplaUcret() {
-  if(!coord1 || !coord2) {
-    alert('Lütfen önce her iki adresi girin.');
-    return;
-  }
-  drawRoute();
-}
-
-// ── FORM SUBMIT → Panel akışı ──
-function submitForm() {
-  const ad = document.getElementById('f-ad').value.trim();
-  const soyad = document.getElementById('f-soyad').value.trim();
-  const tel = document.getElementById('f-tel').value.trim();
-  const tur = document.getElementById('f-tur').value;
-  const adres1 = document.getElementById('f-adres1').value.trim();
-  const adres2 = document.getElementById('f-adres2').value.trim();
-  const zaman = document.getElementById('f-zaman').value;
-  const detay = document.getElementById('f-detay').value.trim();
-  const odeme = document.getElementById('f-odeme').value;
-  const email = document.getElementById('f-email').value.trim();
-
-  if(!ad || !soyad || !tel || !tur || !adres1 || !adres2) {
-    alert('Lütfen zorunlu alanları doldurun: Ad, Soyad, Telefon, Gönderi Türü, Adresler.');
-    return;
-  }
-
-  const btn = document.getElementById('btn-submit');
-  btn.classList.add('loading'); btn.disabled = true;
-
-  // Form verisini sessionStorage'a kaydet, login sayfasına yönlendir
-  const formData = {
-    ad, soyad, tel, email, tur, adres1, adres2, zaman, detay, odeme,
-    mesafe: document.getElementById('ms-mesafe').textContent,
-    sure: document.getElementById('ms-sure').textContent,
-    ucret: document.getElementById('ms-ucret').textContent
-  };
-  sessionStorage.setItem('pendingAcilForm', JSON.stringify(formData));
-  window.location.href = '/acilkuryeai-talepeden-login?back=/acil-kurye';
-}
 </script>
 </body>
 </html>

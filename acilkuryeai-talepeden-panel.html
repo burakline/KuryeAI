@@ -238,6 +238,24 @@
       currentUser = { uid:user.uid, ...profile };
       document.getElementById('page-loader').classList.add('hide');
       listenTaleplerim();
+      // Process pending talep from landing page form
+      const pending = sessionStorage.getItem('pendingAcilForm');
+      if (pending) {
+        sessionStorage.removeItem('pendingAcilForm');
+        try {
+          const f = JSON.parse(pending);
+          await addDoc(collection(db,'acilTalepler'), {
+            talepId: generateID('SAI'), userId: currentUser.uid,
+            fromAddr: f.adres1||'', toAddr: f.adres2||'',
+            description: f.detay||'', customerName: f.ad+' '+(f.soyad||''),
+            customerPhone: f.tel||'', tur: f.tur||'', odeme: f.odeme||'',
+            feeEstimate: (f.ucret&&f.ucret!=='—') ? parseInt(f.ucret) : null,
+            distanceKm: (f.mesafe&&f.mesafe!=='—') ? parseFloat(f.mesafe) : null,
+            status: 'open', createdAt: new Date().toISOString()
+          });
+          switchTab('taleplerim');
+        } catch(e) { console.error('Pending talep kaydedilemedi:', e); }
+      }
     } catch(e) { window.location.href = '/acilkuryeai-talepeden-login'; }
   });
 

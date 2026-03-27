@@ -964,6 +964,12 @@ tbody tr:hover{background:var(--bg)}
                 <div class="cbtn-rest" id="restTrafficBtn" onclick="toggleRestTraffic()" title="Trafik yoğunluğu">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
                 </div>
+                <div class="cbtn-rest" id="restFitBtn" onclick="fitAllCouriers()" title="Tüm kuryeyi sığdır">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                </div>
+                <div class="cbtn-rest" id="restRadiusBtn" onclick="toggleDelivRadius()" title="Teslimat alanı (3/5/10km)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </div>
               </div>
               <!-- Trafik renk göstergesi -->
               <div class="tleg-rest" id="restTrafficLegend">
@@ -2241,6 +2247,8 @@ let courierTrails={};
 let _restBaseLayer=null, _restLabelsLayer=null, _restSatMode=false;
 let _restTrafficLayer=null, _restTrafficOn=false;
 let _restIncMarkers=[], _restIncOn=false, _restIncFetchI=null;
+let _activeOrderMarkers={};          // orderId → {marker, line}
+let _delivRadiusOn=false, _delivRadiusIdx=-1, _delivRadiusCircle=null;
 let _orderDelivMarker=null, _orderRouteLine=null, _restPinMarker=null;
 let deleteCourierId=null;
 
@@ -2666,7 +2674,7 @@ async function initFirebase(){
   // SSE real-time listeners
   _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/orders`,snap=>{
     setFbStatus("connected");
-    orders=objToArr(snap.val()); renderAll();
+    orders=objToArr(snap.val()); renderAll(); if(mapInstance)_syncActiveOrdersOnMap();
   },_err));
   _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/menu`,snap=>{
     menu=objToArr(snap.val()); renderMenu();
@@ -3199,6 +3207,67 @@ function _restIncEmoji(cat){const m={0:'⚠️',1:'🚧',2:'🚗',3:'🌦️',4:
 function _restIncLabel(cat){const m={0:'Olay',1:'Yol Çalışması',2:'Trafik Sıkışıklığı',3:'Hava Durumu',4:'Tehlike',5:'Kapalı Yol',6:'Uyarı',7:'Trafik Işığı',8:'Durdurma',9:'Yakıt',10:'Afet',11:'Acil Durum'};return m[cat]||'Trafik Olayı';}
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ── Aktif siparişler haritada ─────────────────────────────────────────────────
+function _syncActiveOrdersOnMap(){
+  if(!mapInstance)return;
+  const activeOrds=orders.filter(o=>o.status==='on_the_way');
+  const activeIds=new Set(activeOrds.map(o=>o.id));
+  // Artık aktif olmayan sipariş pinlerini kaldır
+  Object.keys(_activeOrderMarkers).forEach(id=>{
+    if(!activeIds.has(id)){
+      const {marker,line}=_activeOrderMarkers[id];
+      if(marker)mapInstance.removeLayer(marker);
+      if(line)mapInstance.removeLayer(line);
+      delete _activeOrderMarkers[id];
+    }
+  });
+  // Yeni aktif siparişler için pin ekle
+  activeOrds.forEach(o=>{
+    if(_activeOrderMarkers[o.id])return;
+    const lat=o.delivLat||o.lat, lng=o.delivLng||o.lng;
+    if(!lat||!lng)return;
+    const ic=L.divIcon({
+      html:`<div style="background:#E53935;border:2.5px solid #fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 8px rgba(229,57,53,.4)">📍</div>`,
+      className:'',iconSize:[28,28],iconAnchor:[14,14]
+    });
+    const custName=o.customer||o.deliveryName||'Müşteri';
+    const addr=o.deliveryAddr||o.address||'';
+    const marker=L.marker([lat,lng],{icon:ic}).addTo(mapInstance)
+      .bindPopup(`<div style="min-width:130px"><b>👤 ${esc(custName)}</b><br><small>📍 ${esc(addr)}</small><br><small style="color:#E53935;font-weight:700;margin-top:3px;display:block">🛵 Yolda — ₺${o.total||0}</small></div>`);
+    // Restoranla arası kesik çizgi
+    let line=null;
+    if(settings.rest_lat&&settings.rest_lng){
+      line=L.polyline([[settings.rest_lat,settings.rest_lng],[lat,lng]],
+        {color:'#E53935',weight:2,dashArray:'7,5',opacity:0.6}).addTo(mapInstance);
+    }
+    _activeOrderMarkers[o.id]={marker,line};
+  });
+}
+
+// ── Tüm kuryeyi sığdır ───────────────────────────────────────────────────────
+function fitAllCouriers(){
+  const pts=Object.values(courierMarkers).map(m=>m.getLatLng());
+  if(!pts.length){showToast('Haritada aktif kurye yok');return;}
+  mapInstance.fitBounds(L.latLngBounds(pts),{padding:[55,55]});
+}
+
+// ── Teslimat yarıçapı çemberi (3 / 5 / 10 km döngüsü) ────────────────────────
+const _RADIUS_OPTS=[3,5,10];
+function toggleDelivRadius(){
+  if(_delivRadiusCircle){mapInstance.removeLayer(_delivRadiusCircle);_delivRadiusCircle=null;}
+  _delivRadiusIdx=(_delivRadiusIdx+1);
+  const btn=document.getElementById('restRadiusBtn');
+  if(_delivRadiusIdx>=_RADIUS_OPTS.length){_delivRadiusIdx=-1;_delivRadiusOn=false;if(btn)btn.classList.remove('active');showToast('Teslimat alanı kapatıldı');return;}
+  _delivRadiusOn=true;
+  const lat=settings.rest_lat, lng=settings.rest_lng;
+  if(!lat||!lng){showToast('Önce restoran konumunu ayarla');_delivRadiusIdx=-1;_delivRadiusOn=false;if(btn)btn.classList.remove('active');return;}
+  const km=_RADIUS_OPTS[_delivRadiusIdx];
+  _delivRadiusCircle=L.circle([lat,lng],{radius:km*1000,color:'#00c8d7',fillOpacity:0.06,weight:2,dashArray:'10,6'}).addTo(mapInstance);
+  if(btn)btn.classList.add('active');
+  showToast(`📏 ${km} km teslimat alanı`);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function updateMapDashMarkers(){
   if(!mapDashInstance)return;
   couriers.filter(c=>c.status==="busy"||c.status==="available").forEach(c=>{
@@ -3240,17 +3309,23 @@ function updateMapMarkers(){
     const speed=courierGPS[id]?.speed||0;
     const bearing=courierGPS[id]?.bearing||0;
     const icon=_makeCourierIcon(c.name, c.photoURL, bearing, true);
+    const popupHtml=`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:150px">
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px">${esc(c.name)}</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"🛵"} ${esc(c.zone||"—")}</div>
+      <div style="font-size:12px;margin-top:5px"><span style="background:${c.status==="busy"?"#fef3c7":"#d1fae5"};color:${c.status==="busy"?"#d97706":"#059669"};padding:2px 8px;border-radius:999px;font-weight:600">${c.status==="busy"?"Meşgul":"Müsait"}</span></div>
+      <div style="font-size:11px;color:#6b7280;margin-top:5px;line-height:1.6">
+        🚀 <b>${speed}</b> km/s &nbsp;⭐ <b>${c.rating||"—"}</b><br>
+        📦 <b>${c.deliveries||0}</b> teslimat &nbsp;📞 ${esc(c.phone||"—")}
+      </div>
+      ${c.activeOrder?`<div style="margin-top:5px;font-size:10px;background:#fef3c7;color:#d97706;padding:3px 7px;border-radius:6px;font-weight:600">🛵 Aktif sipariş var</div>`:''}
+    </div>`;
     if(courierMarkers[id]){
       courierMarkers[id].setLatLng(coords);
       courierMarkers[id].setIcon(icon);
+      courierMarkers[id].getPopup()?.setContent(popupHtml);
     }else{
       const marker=L.marker(coords,{icon}).addTo(mapInstance);
-      marker.bindPopup(`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:140px">
-        <div style="font-weight:700;font-size:14px;margin-bottom:4px">${c.name}</div>
-        <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||"—"}</div>
-        <div style="font-size:12px;margin-top:6px"><span style="background:${c.status==="busy"?"#fef3c7":"#d1fae5"};color:${c.status==="busy"?"#d97706":"#059669"};padding:2px 8px;border-radius:999px;font-weight:600">${c.status==="busy"?"Meşgul":"Müsait"}</span></div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:6px">⭐ ${c.rating} · ${c.deliveries} teslimat · ${speed}km/s</div>
-      </div>`);
+      marker.bindPopup(popupHtml);
       courierMarkers[id]=marker;
     }
   });
@@ -3265,6 +3340,8 @@ function updateMapMarkers(){
   const delivering=orders.filter(o=>o.status==="on_the_way").length;
   document.getElementById("map-active").textContent=active;
   document.getElementById("map-delivering").textContent=delivering;
+  // Aktif siparişleri haritada senkronize et
+  _syncActiveOrdersOnMap();
 }
 
 function syncCourierGPSListeners(){

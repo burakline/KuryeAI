@@ -2053,7 +2053,7 @@ function rtdbListen(path,cb,errCb){
       const tok=await _tok();
       if(es){try{es.close();}catch{}}
       es=new EventSource(`${RTDB}${path}.json?auth=${tok}`);
-      es.addEventListener('put',e=>{const d=JSON.parse(e.data);cb(_snap(d.data));});
+      es.addEventListener('put',e=>{const d=JSON.parse(e.data);if(!d.path||d.path==='/')cb(_snap(d.data));else _rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
       es.addEventListener('patch',e=>{
         const d=JSON.parse(e.data);
         // patch eventi için full path'i tekrar oku
@@ -2104,7 +2104,8 @@ async function _rtdbRemove(path){
   if(!r.ok){const e=await r.json().catch(()=>({}));throw Object.assign(new Error(e.error||r.statusText),{code:e.error||String(r.status)});}
 }
 
-let RESTAURANT_ID = "demo_restoran_001";
+let RESTAURANT_ID = "";
+let RESTAURANT_NAME = "";
 let RESTAURANT_LOGO_URL = null;
 
 // ── Seed ─────────────────────────────────────────────────────────────────
@@ -2132,8 +2133,8 @@ const SEED_COURIERS = {
 const SEED_SETTINGS = {
   assign_mode:"auto",pricing_mode:"per_package",
   notif_order:true,notif_delay:true,notif_deliver:false,notif_email:true,
-  rest_name:"Demo Restoran",rest_address:"Örnek Cad. No:1",rest_phone:"0312 000 00 00",rest_hours:"09:00 — 23:00",
-  rest_lat:39.9334,rest_lng:32.8597,
+  rest_name:"",rest_address:"",rest_phone:"",rest_hours:"09:00 — 23:00",
+  rest_lat:null,rest_lng:null,
   custom_base:0,custom_km:0,
   commission_rate:5,
 };
@@ -2291,7 +2292,8 @@ onAuthStateChanged(auth, async user=>{
 
       // Set dynamic restaurant ID — always use Firebase Auth UID (matches admin panel + courier assignment)
       RESTAURANT_ID = user.uid;
-      const n = data.name||user.displayName||user.email?.split("@")[0]||"Restoran";
+      const n = data.name||data.company||user.displayName||user.email?.split("@")[0]||"Restoran";
+      RESTAURANT_NAME = n;
       document.getElementById("user-display").textContent = n;
       document.getElementById("user-avatar").textContent = n[0].toUpperCase();
       document.getElementById("rest-id-label").textContent = user.uid;
@@ -2307,6 +2309,7 @@ onAuthStateChanged(auth, async user=>{
       // No Firestore doc — use UID as restaurant ID (admin/legacy)
       RESTAURANT_ID = user.uid;
       const n = user.displayName||user.email?.split("@")[0]||"Restoran";
+      RESTAURANT_NAME = n;
       document.getElementById("user-display").textContent = n;
       document.getElementById("user-avatar").textContent = n[0].toUpperCase();
     }
@@ -2596,8 +2599,11 @@ async function initFirebase(){
     const ms=await _rtdbGet(`/restaurants/${RESTAURANT_ID}/menu`);
     if(!ms.exists()) await _rtdbSet(`/restaurants/${RESTAURANT_ID}/menu`,SEED_MENU);
     const ss=await _rtdbGet(`/restaurants/${RESTAURANT_ID}/settings`);
-    if(!ss.exists()) await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,SEED_SETTINGS);
-    else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
+    if(!ss.exists()){
+      const initialSettings={...SEED_SETTINGS,rest_name:RESTAURANT_NAME};
+      await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,initialSettings);
+      settings={...initialSettings}; applySettings();
+    } else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
     showToast("Firebase bağlantısı kuruldu ✓");
   }catch(err){
     console.error("Firebase seed hatası:",err.code,err.message);
@@ -3921,7 +3927,7 @@ window.addCourierFromSystem=async()=>{
     // Kurye profiline restoran atamasını yaz (kurye paneli "bağlı restoran" için okur)
     await _rtdbSet(`/couriers/${courierId}/assignedRestaurant`,{
       restoranId: RESTAURANT_ID,
-      restoranName: settings.rest_name || RESTAURANT_ID,
+      restoranName: RESTAURANT_NAME || settings.rest_name || RESTAURANT_ID,
       restoranAddress: settings.rest_address || '',
       restoranPhone: settings.rest_phone || '',
       restoranLat: settings.rest_lat || null,

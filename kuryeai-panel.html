@@ -1612,9 +1612,29 @@ window._initKuryeApp = async function() {
   if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
   toast('Hoş geldin, '+G.name+'! 👋','success');
 
+  // Firestore'dan atanmış restoran bilgisini oku (admin Firestore'a yazar)
+  if(cu.assignedRestaurant&&!G.assignedRest){
+    G.assignedRest=cu.assignedRestaurant;
+    _renderAssignedRest&&_renderAssignedRest();
+    initChat&&initChat();
+  }
+
   // Firestore gerçek zamanlı dinleyiciler
   const fb=window._fb;
   if(fb){
+    // Firestore user doc realtime listener — atanmış restoran değişimini yakalar
+    try{
+      const userDocRef=fb.doc(fb.fs,'users',G.uid);
+      fb.onSnapshot(userDocRef,snap=>{
+        const d=snap.data();
+        if(!d)return;
+        // RTDB listener zaten varsa ve dolu ise Firestore'u görmezden gel
+        if(d.assignedRestaurant!==undefined&&(d.assignedRestaurant?.restoranId||d.assignedRestaurant===null)){
+          const prev=JSON.stringify(G.assignedRest);const next=JSON.stringify(d.assignedRestaurant);
+          if(prev!==next){G.assignedRest=d.assignedRestaurant||null;_renderAssignedRest&&_renderAssignedRest();initChat&&initChat();}
+        }
+      });
+    }catch(e){}
     // Vardiya geçmişi
     try{
       const shQ=fb.query(fb.collection(fb.fs,'users',G.uid,'shifts'),fb.orderBy('createdAt','desc'),fb.limit(30));

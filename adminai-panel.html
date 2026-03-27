@@ -1968,7 +1968,7 @@ function userCard(u){
       <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
         <span style="font-size:.68rem;color:var(--text3)">🏪 Restoran:</span>
         ${assignedRest?`<span style="font-size:.68rem;font-weight:600;padding:.1rem .4rem;border-radius:6px;background:var(--bg2);color:var(--text)">${esc(assignedRest.restoranName||'—')}</span>`:'<span style="font-size:.68rem;color:var(--text3)">Atanmadı</span>'}
-        <select onchange="setCourierRestaurant('${u.kuryeId||u.id}',this.value);this.value=''" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
+        <select onchange="setCourierRestaurant('${u.kuryeId||u.id}','${u.id}',this.value);this.value=''" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
           <option value="">Restoran ata…</option>
           ${activeRestos.map(r=>`<option value="${r.id}">${esc(r.name||r.company||r.email)}</option>`).join('')}
           ${assignedRest?`<option value="__remove__">— Atamasını Kaldır</option>`:''}
@@ -2017,19 +2017,23 @@ window.setCourierZone=async(uid,newZoneId)=>{
     renderKuryeler();renderZoneList();showToast('✓ Bölge güncellendi','ok');
   }catch(e){showToast('Hata: '+e.message,'err');}
 };
-window.setCourierRestaurant=async(uid,restoranUid)=>{
+window.setCourierRestaurant=async(rtdbUid,fsUid,restoranUid)=>{
   if(!restoranUid)return;
   try{
     if(restoranUid==='__remove__'){
-      await rtdbSet(rtdbRef(rtdb,'couriers/'+uid+'/assignedRestaurant'),null);
-      if(_rtdbCouriers[uid])_rtdbCouriers[uid]={..._rtdbCouriers[uid],assignedRestaurant:null};
-      else _rtdbCouriers[uid]={assignedRestaurant:null};
+      try{await rtdbSet(rtdbRef(rtdb,'couriers/'+rtdbUid+'/assignedRestaurant'),null);}catch(re){console.warn('RTDB remove warn:',re);}
+      await updateDoc(doc(db,'users',fsUid),{assignedRestaurant:null});
+      if(_rtdbCouriers[rtdbUid])_rtdbCouriers[rtdbUid]={..._rtdbCouriers[rtdbUid],assignedRestaurant:null};
+      else _rtdbCouriers[rtdbUid]={assignedRestaurant:null};
       renderKuryeler();showToast('✓ Restoran ataması kaldırıldı','ok');return;
     }
     const rest=allUsers.find(u=>u.id===restoranUid);if(!rest){showToast('Restoran bulunamadı (id: '+restoranUid+')','err');console.error('setCourierRestaurant: rest not found',restoranUid,allUsers.filter(u=>u.role==='restoran'));return;}
     const assignment={restoranId:rest.id,restoranName:rest.name||rest.company||rest.email,restoranAddress:rest.address||'',restoranPhone:rest.phone||'',restoranLat:rest.lat||null,restoranLng:rest.lng||null,logoURL:rest.logoURL||null,assignedAt:Date.now()};
-    await rtdbSet(rtdbRef(rtdb,'couriers/'+uid+'/assignedRestaurant'),assignment);
-    _rtdbCouriers[uid]={...(_rtdbCouriers[uid]||{}),assignedRestaurant:assignment};
+    // RTDB'ye yaz (kurye paneli buradan okur) — permission denied olursa yine de Firestore'a yazar
+    try{await rtdbSet(rtdbRef(rtdb,'couriers/'+rtdbUid+'/assignedRestaurant'),assignment);}catch(re){console.warn('RTDB write warn (falling back to Firestore):',re);}
+    // Firestore'a yaz (admin'in kesin yazma erişimi var, kurye panel de buradan okur)
+    await updateDoc(doc(db,'users',fsUid),{assignedRestaurant:assignment});
+    _rtdbCouriers[rtdbUid]={...(_rtdbCouriers[rtdbUid]||{}),assignedRestaurant:assignment};
     renderKuryeler();showToast('✓ Restoran atandı','ok');
   }catch(e){console.error('setCourierRestaurant error',e);showToast('Hata: '+e.message,'err');}
 };

@@ -2084,6 +2084,7 @@ async function _rtdbRemove(path){
 }
 
 let RESTAURANT_ID = "demo_restoran_001";
+let RESTAURANT_LOGO_URL = null;
 
 // ── Seed ─────────────────────────────────────────────────────────────────
 const SEED_ORDERS = {
@@ -2273,6 +2274,7 @@ onAuthStateChanged(auth, async user=>{
       document.getElementById("user-avatar").textContent = n[0].toUpperCase();
       document.getElementById("rest-id-label").textContent = data.restoranId||user.uid;
       if(data.logoURL){
+        RESTAURANT_LOGO_URL = data.logoURL;
         const logoImg=document.getElementById('restoran-logo');
         const logoPlaceholder=document.getElementById('restoran-logo-placeholder');
         logoImg.src=data.logoURL; logoImg.style.display='block';
@@ -2506,6 +2508,9 @@ window.uploadRestoranLogo=async(e)=>{
     logoImg.src=url; logoImg.style.display='block';
     logoPlaceholder.style.display='none';
     await updateDoc(doc(fs,'users',uid),{logoURL:url});
+    RESTAURANT_LOGO_URL = url;
+    // Haritadaki kendi pinimizi yenile
+    if(_restPinMarker && mapInstance){ mapInstance.removeLayer(_restPinMarker); _restPinMarker=null; _addRestPinToMap(); }
     document.getElementById('logo-status').textContent='Logo kaydedildi ✅';
   }catch(err){
     document.getElementById('logo-status').textContent='Hata: '+err.message;
@@ -2782,11 +2787,8 @@ const MOCK_COORDS={
 async function showOrderOnMap(deliveryAddress){
   if(!mapInstance)return;
   const restLat=settings.rest_lat||ANKARA_CENTER[0], restLng=settings.rest_lng||ANKARA_CENTER[1];
-  // Restoran pinini göster (ilk açılışta)
-  if(!_restPinMarker){
-    const ic=L.divIcon({html:`<div style="background:#009688;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.35)">🏪</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
-    _restPinMarker=L.marker([restLat,restLng],{icon:ic}).addTo(mapInstance).bindPopup(`<b>${settings.rest_name||'Restoranım'}</b>`);
-  }
+  // Restoran pinini göster (balon ikonla, yoksa ekle)
+  if(!_restPinMarker) _addRestPinToMap();
   // Teslimat adresini geocode et (best-effort)
   try{
     const q=encodeURIComponent(deliveryAddress+', Türkiye');
@@ -2815,6 +2817,32 @@ function initMap(){
     attribution:'© OpenStreetMap',maxZoom:18
   }).addTo(mapInstance);
   updateMapMarkers();
+  _addRestPinToMap();
+}
+
+// Balon şekilli restoran harita ikonu (profil fotosu veya emoji)
+function _makeRestoIcon(logoURL, name){
+  const inner=logoURL
+    ?`<img src="${logoURL}" style="width:34px;height:34px;object-fit:cover;border-radius:50%">`
+    :`<span style="font-size:18px;line-height:1">🍽️</span>`;
+  return L.divIcon({
+    html:`<div style="width:44px;height:55px;position:relative;text-align:center">
+      <div style="width:44px;height:44px;border-radius:50%;background:#fff;border:3.5px solid #FF9800;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">${inner}</div>
+      <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:11px solid #FF9800;margin:0 auto;margin-top:-2px"></div>
+    </div>`,
+    className:'',iconSize:[44,55],iconAnchor:[22,55]
+  });
+}
+
+// Kendi restoranın sabit pinini haritaya koy
+function _addRestPinToMap(){
+  if(!mapInstance)return;
+  const lat=settings.rest_lat, lng=settings.rest_lng;
+  if(!lat||!lng)return;
+  if(_restPinMarker)mapInstance.removeLayer(_restPinMarker);
+  _restPinMarker=L.marker([lat,lng],{icon:_makeRestoIcon(RESTAURANT_LOGO_URL, settings.rest_name)})
+    .addTo(mapInstance)
+    .bindPopup(`<div style="min-width:120px;text-align:center"><b>${settings.rest_name||'Restoranım'}</b><br><small>${settings.rest_address||''}</small></div>`);
 }
 
 function initMapDash(){
@@ -3080,6 +3108,8 @@ window.saveSettings=async()=>{
   settings.custom_km=parseFloat(document.getElementById("custom-km").value)||0;
   try{
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
+    // Haritadaki kendi pinimizi yeni isim/konum ile güncelle
+    if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
     showToast("✓ Ayarlar kaydedildi");
   }catch{showToast("Kayıt başarısız","error")}
 };
@@ -3769,6 +3799,17 @@ window.addCourierFromSystem=async()=>{
   try{
     const courierId = d.kuryeId || uid; // Stable ID: kuryeai-panel'deki G.id ile eşleşir
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/couriers/${courierId}`,{...newCourier,courierId});
+    // Kurye profiline restoran atamasını yaz (kurye paneli "bağlı restoran" için okur)
+    await _rtdbSet(`/couriers/${courierId}/assignedRestaurant`,{
+      restoranId: RESTAURANT_ID,
+      restoranName: settings.rest_name || RESTAURANT_ID,
+      restoranAddress: settings.rest_address || '',
+      restoranPhone: settings.rest_phone || '',
+      restoranLat: settings.rest_lat || null,
+      restoranLng: settings.rest_lng || null,
+      logoURL: RESTAURANT_LOGO_URL || null,
+      assignedAt: Date.now(),
+    });
     resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     window._pendingCourierAdd=null;window._pendingCourierUid=null;

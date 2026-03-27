@@ -262,6 +262,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 }
 .topbar-title{font-size:16px;font-weight:700;letter-spacing:-.3px;flex:1;color:var(--text)}
 .topbar-right{display:flex;align-items:center;gap:8px}
+.fb-dot-wrap{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text2)}
+.fb-dot{width:9px;height:9px;border-radius:50%;background:#9ca3af;transition:background .4s}
 .topbar-btn{height:32px;padding:0 12px;border-radius:var(--radius-xs);border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fh);transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .topbar-btn:hover{border-color:var(--teal);color:var(--teal)}
 .topbar-btn.active{background:var(--teal-bg);border-color:rgba(0,200,215,.3);color:var(--teal-dk)}
@@ -414,6 +416,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="topbar">
       <span class="topbar-title" id="topbar-title">Dashboard</span>
       <div class="topbar-right">
+        <div class="fb-dot-wrap" title="Firebase bağlantı durumu"><div class="fb-dot" id="adminFbDot"></div><span id="adminFbTxt">Bağlanıyor…</span></div>
         <button class="topbar-btn" id="wakelock-btn" onclick="toggleWakeLock()" title="Sürekli Açık Ekran">🔆 Wake Lock</button>
         <button class="topbar-btn" id="sound-btn" onclick="toggleSound()" title="Sesli Bildirim">🔊 Ses Açık</button>
         <button class="topbar-btn" id="theme-btn" onclick="toggleTheme()">🌙 Karanlık</button>
@@ -914,7 +917,7 @@ import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue }
 const cfg = {
   apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
   authDomain:"kuryeai-99bf9.firebaseapp.com",
-  databaseURL:"https://kuryeai-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL:"https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app",
   projectId:"kuryeai-99bf9",
   storageBucket:"kuryeai-99bf9.firebasestorage.app",
   messagingSenderId:"1012295004135",
@@ -1429,8 +1432,20 @@ let _courierMarkers={}, _restoMarkers=[], _showRestoranPins=false;
 let _zoneMode=false, _zoneDrawing=null, _zoneStart=null, _zoneColor='#00c8d7';
 let _zones=[], _zoneLayer=null;
 
+// Firebase bağlantı durumu göstergesi
+function _initAdminFbDot(){
+  const dot=document.getElementById('adminFbDot');
+  const txt=document.getElementById('adminFbTxt');
+  rtdbOnValue(rtdbRef(rtdb,'.info/connected'),snap=>{
+    const ok=snap.val()===true;
+    if(dot)dot.style.background=ok?'#22c55e':'#ef4444';
+    if(txt)txt.textContent=ok?'Firebase Bağlı':'Bağlantı Yok';
+  });
+}
+
 function initMap(){
   if(mapObj)return;
+  _initAdminFbDot();
   mapObj=L.map('map',{zoomControl:true,attributionControl:false,center:[39.92,32.85],zoom:12});
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
 
@@ -1572,20 +1587,34 @@ async function loadZones(){
     });
   }catch(e){console.error('zones',e);}
 }
+// Balon şeklinde restoran harita ikonu (profil fotosu veya emoji)
+function _makeAdminRestoIcon(u){
+  const inner=u.logoURL
+    ?`<img src="${esc(u.logoURL)}" style="width:34px;height:34px;object-fit:cover;border-radius:50%">`
+    :`<span style="font-size:18px;line-height:1">🍽️</span>`;
+  return L.divIcon({
+    html:`<div style="width:44px;height:55px;position:relative;text-align:center">
+      <div style="width:44px;height:44px;border-radius:50%;background:#fff;border:3.5px solid #FF9800;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">${inner}</div>
+      <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:11px solid #FF9800;margin:0 auto;margin-top:-2px"></div>
+    </div>`,
+    className:'',iconSize:[44,55],iconAnchor:[22,55]
+  });
+}
+function _refreshRestoMarkers(){
+  _restoMarkers.forEach(m=>mapObj.removeLayer(m));
+  _restoMarkers=[];
+  if(!_showRestoranPins)return;
+  allUsers.filter(u=>u.role==='restoran'&&u.lat&&u.lng).forEach(u=>{
+    const m=L.marker([u.lat,u.lng],{icon:_makeAdminRestoIcon(u)}).addTo(mapObj)
+      .bindPopup(`<div style="min-width:140px"><b>${esc(u.name||'—')}</b><br><small>${esc(u.email||'')}</small>${u.lat?`<br><small style="color:#888">📍 ${u.lat.toFixed(5)}, ${u.lng.toFixed(5)}</small>`:''}</div>`);
+    _restoMarkers.push(m);
+  });
+}
 window.toggleRestoPins=()=>{
   _showRestoranPins=!_showRestoranPins;
   const btn=document.getElementById('resto-pin-btn');
   if(btn){btn.textContent=_showRestoranPins?'📍 Restoranlar Gizle':'📍 Restoranlar';btn.classList.toggle('active',_showRestoranPins);}
-  if(_showRestoranPins){
-    allUsers.filter(u=>u.role==='restoran'&&u.lat&&u.lng).forEach(u=>{
-      const icon=L.divIcon({html:`<div style="background:#00c8d7;color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)">🍽️ ${esc(u.name||'Restoran')}</div>`,className:'',iconAnchor:[0,0]});
-      const m=L.marker([u.lat,u.lng],{icon}).addTo(mapObj).bindPopup(`<b>${esc(u.name||'—')}</b><br/>${esc(u.email||'')}`);
-      _restoMarkers.push(m);
-    });
-  } else {
-    _restoMarkers.forEach(m=>mapObj.removeLayer(m));
-    _restoMarkers=[];
-  }
+  _refreshRestoMarkers();
 };
 window.centerMapAll=()=>{
   const pts=Object.values(_courierMarkers).map(m=>m.getLatLng());
@@ -1628,6 +1657,8 @@ function initPinClick(){
       allUsers=allUsers.map(u=>u.id===_pinUid?{...u,lat,lng}:u);
       if(_pinMarker)mapObj.removeLayer(_pinMarker);
       _pinMarker=L.marker([lat,lng],{icon:L.divIcon({html:'<div style="background:#00c8d7;color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓ Kaydedildi</div>',className:'',iconAnchor:[0,0]})}).addTo(mapObj);
+      // Restoran pinleri aktifse yenile (yeni konumun hemen haritada çıkması için)
+      if(_showRestoranPins)_refreshRestoMarkers();
       showToast('✓ Restoran konumu kaydedildi','ok');
       setTimeout(()=>cancelPinMode(),1500);
       renderRestoranlar();

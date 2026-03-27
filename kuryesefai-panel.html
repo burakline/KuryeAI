@@ -180,7 +180,7 @@ function rtdbListen(path,cb,errCb){
       const tok=await _tok();
       if(es){try{es.close();}catch{}}
       es=new EventSource(`${RTDB_URL}${path}.json?auth=${tok}`);
-      es.addEventListener('put',e=>{const d=JSON.parse(e.data);cb({val:()=>d.data});});
+      es.addEventListener('put',e=>{let d;try{d=JSON.parse(e.data);}catch{return;}cb({val:()=>d.data});});
       es.addEventListener('patch',e=>{
         _tok().then(tok2=>fetch(`${RTDB_URL}${path}.json?auth=${tok2}`).then(r=>r.json()).then(data=>cb({val:()=>data}))).catch(()=>{});
       });
@@ -196,17 +196,22 @@ function rtdbListen(path,cb,errCb){
 let _zone=null,_zoneUsers=[],_mapReady=false,_mapObj=null;
 let _zoneCircle=null,_courierMarkers={},_restMarkers={};
 let _couriersData=[],_restsData=[],_ordersData=[];
+// Firestore listener temizleme fonksiyonları
+let _unsubCouriers=null,_unsubRestorans=null,_unsubOrders=null;
+let _dataLoaded=false; // onAuthStateChanged tekrar çalışırsa duplicate önle
 
-const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 onAuthStateChanged(auth,async user=>{
   const loader=document.getElementById('loader');
-  if(!user){window.location.href='/kuryesefai-login';return;}
+  if(!user){_stopAllListeners();window.location.href='/kuryesefai-login';return;}
+  if(_dataLoaded)return; // token refresh tetiklemesi — tekrar yükleme
   const snap=await getDoc(doc(db,'users',user.uid));
   if(!snap.exists()||snap.data().isZoneChief!==true){
     await signOut(auth);window.location.href='/kuryesefai-login';return;
   }
+  _dataLoaded=true;
   const ud=snap.data();
   document.getElementById('sb-uname').textContent=ud.name||user.email;
   document.getElementById('sb-av').textContent=(ud.name||'?')[0].toUpperCase();
@@ -215,7 +220,14 @@ onAuthStateChanged(auth,async user=>{
   await loadZone(ud.bolgeId,user.uid);
 });
 
-window.doSignOut=async()=>{await signOut(auth);window.location.href='/kuryesefai-login';};
+function _stopAllListeners(){
+  if(_unsubCouriers){_unsubCouriers();_unsubCouriers=null;}
+  if(_unsubRestorans){_unsubRestorans();_unsubRestorans=null;}
+  if(_unsubOrders){_unsubOrders();_unsubOrders=null;}
+  Object.values(_courierGPSListeners).forEach(off=>{try{off();}catch{}});
+  _courierGPSListeners={};
+}
+window.doSignOut=async()=>{_stopAllListeners();await signOut(auth);window.location.href='/kuryesefai-login';};
 
 // ── Harita ───────────────────────────────────────────────────────────────────
 function initMap(){
@@ -248,7 +260,7 @@ function loadAllData(uid){
   loadCouriers();
   loadRestorants();
   listenOrders();
-  listenRTDB();
+  // GPS dinleyicileri loadCouriers → syncGPSListeners zinciri ile başlatılır
 }
 
 // ── Kuryeler (Firestore) ──────────────────────────────────────────────────────
@@ -256,7 +268,8 @@ function loadCouriers(){
   const q=_zone?.id
     ? query(collection(db,'users'),where('role','==','kurye'),where('bolgeId','==',_zone.id))
     : query(collection(db,'users'),where('role','==','kurye'));
-  onSnapshot(q,snap=>{
+  if(_unsubCouriers){_unsubCouriers();_unsubCouriers=null;}
+  _unsubCouriers=onSnapshot(q,snap=>{
     _couriersData=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderKuryeler();updateTopbarStats();
     syncGPSListeners();
@@ -284,7 +297,8 @@ function loadRestorants(){
   const q=_zone?.id
     ? query(collection(db,'users'),where('role','==','restoran'),where('bolgeId','==',_zone.id))
     : query(collection(db,'users'),where('role','==','restoran'));
-  onSnapshot(q,snap=>{
+  if(_unsubRestorans){_unsubRestorans();_unsubRestorans=null;}
+  _unsubRestorans=onSnapshot(q,snap=>{
     _restsData=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderRestoranlar();addRestMarkers();
   });
@@ -315,9 +329,10 @@ function addRestMarkers(){
 // ── Siparişler (Firestore) ────────────────────────────────────────────────────
 function listenOrders(){
   const q=query(collection(db,'orders'),orderBy('createdAt','desc'));
-  onSnapshot(q,snap=>{
+  if(_unsubOrders){_unsubOrders();_unsubOrders=null;}
+  _unsubOrders=onSnapshot(q,snap=>{
     _ordersData=snap.docs.map(d=>({id:d.id,...d.data()}))
-      .filter(o=>!_zone||!_zone.id||_restsData.some(r=>r.id===o.restaurantId)||_couriersData.some(c=>c.id===o.courierId));
+      .filter(o=>!_zone||!_zone.id||_restsData.some(r=>r.id===o.restaurantId)||_couriersData.some(c=>c.id===o.courierId||c.id===o.courier));
     renderOrders();updateTopbarStats();
   });
 }
@@ -340,24 +355,25 @@ function renderOrders(){
 // ── RTDB GPS (REST/SSE) ───────────────────────────────────────────────────────
 let _courierGPSListeners={};
 
-function listenRTDB(){
-  // Tüm kuryeler için Firestore onSnapshot'tan sonra çağrılır
-  // Kurye listesi değişince GPS dinleyicilerini güncelle
-}
-
 function syncGPSListeners(){
-  const activeIds=new Set(_couriersData.map(c=>c.id));
+  // Kurye RTDB key: kuryeId varsa onu kullan (kuryeai-panel G.id = kuryeId || uid)
+  const activeEntries=_couriersData.map(c=>({fsId:c.id,rtdbId:c.kuryeId||c.id}));
+  const activeRtdbIds=new Set(activeEntries.map(e=>e.rtdbId));
   // Eski dinleyicileri kaldır
-  Object.keys(_courierGPSListeners).forEach(uid=>{
-    if(!activeIds.has(uid)){_courierGPSListeners[uid]();delete _courierGPSListeners[uid];}
+  Object.keys(_courierGPSListeners).forEach(rtdbId=>{
+    if(!activeRtdbIds.has(rtdbId)){
+      try{_courierGPSListeners[rtdbId]();}catch{}
+      delete _courierGPSListeners[rtdbId];
+      if(_courierMarkers[rtdbId]){_mapObj&&_mapObj.removeLayer(_courierMarkers[rtdbId]);delete _courierMarkers[rtdbId];}
+    }
   });
   // Yeni kurye için dinleyici başlat
-  activeIds.forEach(uid=>{
-    if(!_courierGPSListeners[uid]){
-      _courierGPSListeners[uid]=rtdbListen(`/couriers/${uid}/location`,snap=>{
+  activeEntries.forEach(({fsId,rtdbId})=>{
+    if(!_courierGPSListeners[rtdbId]){
+      _courierGPSListeners[rtdbId]=rtdbListen(`/couriers/${rtdbId}/location`,snap=>{
         const loc=snap.val();
-        if(loc&&loc.lat&&loc.lng){
-          updateOneCourierMarker(uid,loc);
+        if(loc&&loc.lat!=null&&loc.lng!=null){
+          updateOneCourierMarker(rtdbId,fsId,loc);
           updateOnlineCount();
         }
       },()=>{});
@@ -366,28 +382,32 @@ function syncGPSListeners(){
 }
 
 function updateOnlineCount(){
-  const online=Object.keys(_courierMarkers).length;
-  document.getElementById('stat-online').textContent=online;
+  // Sadece vardiyada olan (shiftActive) kuryeleri say
+  const online=Object.values(_courierMarkers).filter(m=>m._shiftActive).length;
+  document.getElementById('stat-online').textContent=online||Object.keys(_courierMarkers).length;
 }
 
 function updateTopbarStats(){
   document.getElementById('stat-orders').textContent=_ordersData.filter(o=>o.status==='active'||o.status==='new').length;
 }
 
-function updateOneCourierMarker(uid,loc){
+function updateOneCourierMarker(rtdbId,fsId,loc){
   if(!_mapObj)return;
   const isOnline=loc.shiftActive||false;
   const html=`<div style="background:${isOnline?'#22c55e':'#9ca3af'};width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`;
   const icon=L.divIcon({html,className:'',iconSize:[14,14],iconAnchor:[7,7]});
-  const courier=_couriersData.find(u=>u.id===uid);
-  const name=courier?.name||uid.slice(0,8);
+  const courier=_couriersData.find(u=>u.id===fsId);
+  const name=esc(courier?.name||rtdbId.slice(0,8));
   const speed=loc.speed||0;
-  if(_courierMarkers[uid]){
-    _courierMarkers[uid].setLatLng([loc.lat,loc.lng]);
-    _courierMarkers[uid].setIcon(icon);
+  if(_courierMarkers[rtdbId]){
+    _courierMarkers[rtdbId].setLatLng([loc.lat,loc.lng]);
+    _courierMarkers[rtdbId].setIcon(icon);
+    _courierMarkers[rtdbId]._shiftActive=isOnline;
   }else{
-    _courierMarkers[uid]=L.marker([loc.lat,loc.lng],{icon}).addTo(_mapObj)
-      .bindPopup(`<b>${esc(name)}</b><br>${isOnline?'Vardiyada':'Offline'}<br>${speed} km/s`);
+    const m=L.marker([loc.lat,loc.lng],{icon}).addTo(_mapObj)
+      .bindPopup(`<b>${name}</b><br>${isOnline?'Vardiyada':'Offline'}<br>${speed} km/s`);
+    m._shiftActive=isOnline;
+    _courierMarkers[rtdbId]=m;
   }
 }
 

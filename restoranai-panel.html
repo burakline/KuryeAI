@@ -315,6 +315,34 @@ tbody tr:hover{background:var(--bg)}
 .map-overlay-card .value{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px}
 .map-overlay-card .sub{font-size:11px;color:var(--text3)}
 
+/* ── MAP BUTTONS (traffic / incidents) ── */
+.map-btns-rest{
+  position:absolute;right:12px;bottom:14px;z-index:10;
+  display:flex;flex-direction:column;gap:6px;
+}
+.cbtn-rest{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.95);border:1px solid var(--border);
+  box-shadow:var(--shadow-md);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;color:var(--text2);
+}
+.cbtn-rest:hover{background:#f0fdfa;}
+.cbtn-rest.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+.tleg-rest{
+  position:absolute;right:54px;bottom:14px;z-index:10;
+  background:rgba(255,255,255,.95);border:1px solid var(--border);
+  border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);
+  display:none;flex-direction:column;gap:4px;
+}
+.tleg-row-r{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text2);}
+.tleg-dot-r{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.inc-marker-r{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.95);border:2px solid #e74c3c;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;
+}
 /* ── COURIER ROW ── */
 .courier-row td:first-child{font-weight:600}
 .courier-avatar{
@@ -922,6 +950,21 @@ tbody tr:hover{background:var(--bg)}
             </div>
             <div class="map-container" style="margin:0;border-radius:0 0 var(--radius) var(--radius)">
               <div id="map"></div>
+              <!-- Harita sağ-alt butonlar -->
+              <div class="map-btns-rest">
+                <div class="cbtn-rest" id="restIncidentBtn" onclick="toggleRestIncidents()" title="Trafik olayları">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="cbtn-rest" id="restTrafficBtn" onclick="toggleRestTraffic()" title="Trafik yoğunluğu">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+                </div>
+              </div>
+              <!-- Trafik renk göstergesi -->
+              <div class="tleg-rest" id="restTrafficLegend">
+                <div class="tleg-row-r"><div class="tleg-dot-r" style="background:#27ae60"></div>Akıcı</div>
+                <div class="tleg-row-r"><div class="tleg-dot-r" style="background:#f39c12"></div>Yavaş</div>
+                <div class="tleg-row-r"><div class="tleg-dot-r" style="background:#e74c3c"></div>Tıkalı</div>
+              </div>
               <div class="map-overlay">
                 <div class="map-overlay-card">
                   <div class="label">Aktif Kurye</div>
@@ -2185,8 +2228,12 @@ let currentPlan = null; // { plan, planStartDate, planEndDate, planActive }
 let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
 
+const TOMTOM_KEY='cf8LiJcnBulkjibau4e9uA58HsrmHovP';
 let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
 let courierGPS={}, courierGPSListeners={};
+let courierTrails={};
+let _restTrafficLayer=null, _restTrafficOn=false;
+let _restIncMarkers=[], _restIncOn=false, _restIncFetchI=null;
 let _orderDelivMarker=null, _orderRouteLine=null, _restPinMarker=null;
 let deleteCourierId=null;
 
@@ -3047,6 +3094,71 @@ function initMapDash(){
   updateMapDashMarkers();
 }
 
+// ── TomTom Traffic (Restoran Haritası) ───────────────────────────────────────
+function toggleRestTraffic(){
+  if(!mapInstance)return;
+  _restTrafficOn=!_restTrafficOn;
+  const btn=document.getElementById('restTrafficBtn');
+  const leg=document.getElementById('restTrafficLegend');
+  if(btn)btn.classList.toggle('active',_restTrafficOn);
+  if(_restTrafficOn){
+    if(_restTrafficLayer){mapInstance.removeLayer(_restTrafficLayer);_restTrafficLayer=null;}
+    _restTrafficLayer=L.tileLayer(
+      `https://api.tomtom.com/traffic/map/4/tile/flow/relative0-dark/{z}/{x}/{y}.png?key=${TOMTOM_KEY}&tileSize=256`,
+      {maxZoom:19,opacity:0.75,attribution:'© TomTom'}
+    ).addTo(mapInstance);
+    if(leg)leg.style.display='flex';
+    showToast('🟢 Trafik katmanı açık');
+  }else{
+    if(_restTrafficLayer){mapInstance.removeLayer(_restTrafficLayer);_restTrafficLayer=null;}
+    if(leg)leg.style.display='none';
+    showToast('Trafik katmanı kapalı');
+  }
+}
+function toggleRestIncidents(){
+  if(!mapInstance)return;
+  _restIncOn=!_restIncOn;
+  const btn=document.getElementById('restIncidentBtn');
+  if(btn)btn.classList.toggle('active',_restIncOn);
+  if(_restIncOn){
+    _fetchRestIncidents();
+    _restIncFetchI=setInterval(_fetchRestIncidents,60000);
+    showToast('⚠️ Trafik olayları açık');
+  }else{
+    clearInterval(_restIncFetchI);_restIncFetchI=null;
+    _restIncMarkers.forEach(m=>mapInstance.removeLayer(m));
+    _restIncMarkers=[];
+    showToast('Trafik olayları kapalı');
+  }
+}
+async function _fetchRestIncidents(){
+  if(!mapInstance)return;
+  const b=mapInstance.getBounds();
+  const bbox=`${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+  try{
+    const url=`https://api.tomtom.com/traffic/services/5/incidentDetails?key=${TOMTOM_KEY}&bbox=${bbox}&fields={incidents{type,geometry{type,coordinates},properties{id,iconCategory,events{description,iconCategory}}}}&language=tr-TR&t=1111&expandCluster=true`;
+    const r=await fetch(url);if(!r.ok)return;
+    const data=await r.json();
+    _restIncMarkers.forEach(m=>mapInstance.removeLayer(m));_restIncMarkers=[];
+    (data.incidents||[]).forEach(inc=>{
+      const coords=inc.geometry&&inc.geometry.coordinates;if(!coords)return;
+      let lat,lng;
+      if(inc.geometry.type==='Point'){lng=coords[0];lat=coords[1];}
+      else if(inc.geometry.type==='LineString'){lng=coords[0][0];lat=coords[0][1];}
+      else return;
+      const cat=inc.properties&&inc.properties.iconCategory;
+      const emoji=_restIncEmoji(cat),label=_restIncLabel(cat);
+      const desc=(inc.properties?.events?.[0]?.description)||label;
+      const ic=L.divIcon({html:`<div class="inc-marker-r">${emoji}</div>`,className:'',iconSize:[26,26],iconAnchor:[13,13]});
+      const m=L.marker([lat,lng],{icon:ic}).addTo(mapInstance).bindPopup(`<b>${emoji} ${label}</b><br><small>${desc}</small>`);
+      _restIncMarkers.push(m);
+    });
+  }catch{}
+}
+function _restIncEmoji(cat){const m={0:'⚠️',1:'🚧',2:'🚗',3:'🌦️',4:'🚨',5:'🚧',6:'⚠️',7:'🚦',8:'🛑',9:'⛽',10:'🌪️',11:'🚑'};return m[cat]||'⚠️';}
+function _restIncLabel(cat){const m={0:'Olay',1:'Yol Çalışması',2:'Trafik Sıkışıklığı',3:'Hava Durumu',4:'Tehlike',5:'Kapalı Yol',6:'Uyarı',7:'Trafik Işığı',8:'Durdurma',9:'Yakıt',10:'Afet',11:'Acil Durum'};return m[cat]||'Trafik Olayı';}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function updateMapDashMarkers(){
   if(!mapDashInstance)return;
   couriers.filter(c=>c.status==="busy"||c.status==="available").forEach(c=>{
@@ -3124,6 +3236,7 @@ function syncCourierGPSListeners(){
       delete courierGPSListeners[id];
       delete courierGPS[id];
       if(courierMarkers[id]){courierMarkers[id].remove();delete courierMarkers[id];}
+      if(courierTrails[id]&&mapInstance){mapInstance.removeLayer(courierTrails[id]);delete courierTrails[id];}
     }
   });
   // Yeni kuryeler için dinleyici başlat
@@ -3133,6 +3246,17 @@ function syncCourierGPSListeners(){
         const d=snap.val();
         if(d&&d.lat&&d.lng){
           courierGPS[id]={lat:d.lat,lng:d.lng,speed:d.speed||0,bearing:d.bearing||0};
+          // Trail çizgisi: her GPS güncellemesinde bir nokta ekle
+          if(mapInstance){
+            if(!courierTrails[id]){
+              courierTrails[id]=L.polyline([],{color:'#009688',weight:2.5,opacity:0.7,dashArray:'5,4'}).addTo(mapInstance);
+            }
+            const ll=courierTrails[id].getLatLngs();
+            // Max 200 nokta — en eski noktayı at
+            if(ll.length>=200)ll.shift();
+            ll.push([d.lat,d.lng]);
+            courierTrails[id].setLatLngs(ll);
+          }
           updateMapMarkers();
           updateMapDashMarkers();
         }
@@ -3145,6 +3269,10 @@ window.refreshMap=()=>{
   if(mapInstance){
     mapInstance.remove();mapInstance=null;
     Object.keys(courierMarkers).forEach(k=>delete courierMarkers[k]);
+    Object.keys(courierTrails).forEach(k=>delete courierTrails[k]);
+    _restTrafficLayer=null;_restTrafficOn=false;
+    _restIncMarkers=[];_restIncOn=false;
+    clearInterval(_restIncFetchI);_restIncFetchI=null;
   }
   initMap();showToast("Harita yenilendi","info");
 };

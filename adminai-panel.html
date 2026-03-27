@@ -306,6 +306,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .bolge-user-name{font-size:13px;color:var(--text);flex:1}
 .bolge-add-row{display:flex;gap:8px;margin-top:8px}
 .bolge-add-row .fsel{flex:1;font-size:12px;padding:.45rem .7rem}
+/* Admin harita butonları */
+.admin-map-btns{position:absolute;right:10px;bottom:12px;z-index:10;display:flex;flex-direction:column;gap:6px;}
+.admin-cbtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.95);border:1px solid var(--border);box-shadow:var(--shadow-md);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;color:var(--text2);}
+.admin-cbtn:hover{background:#f0fdfa;}
+.admin-cbtn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+.admin-tleg{position:absolute;right:50px;bottom:12px;z-index:10;background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);display:none;flex-direction:column;gap:4px;}
+.admin-tleg-row{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text2);}
+.admin-tleg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.inc-marker-adm{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #e74c3c;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -456,6 +465,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           </div>
           <div style="position:relative">
             <div id="map" style="width:100%;height:420px;background:#e8edf2;border-radius:0 0 var(--radius) var(--radius)"></div>
+            <!-- TomTom harita butonları -->
+            <div class="admin-map-btns">
+              <div class="admin-cbtn" id="admIncidentBtn" onclick="toggleAdminIncidents()" title="Trafik olayları">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="admin-cbtn" id="admTrafficBtn" onclick="toggleAdminTraffic()" title="Trafik yoğunluğu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+              </div>
+            </div>
+            <!-- Trafik renk göstergesi -->
+            <div class="admin-tleg" id="admTrafficLegend">
+              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#27ae60"></div>Akıcı</div>
+              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#f39c12"></div>Yavaş</div>
+              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#e74c3c"></div>Tıkalı</div>
+            </div>
             <!-- Harita üst köşe bilgi kutusu -->
             <div style="position:absolute;top:10px;left:10px;z-index:10;display:flex;flex-direction:column;gap:6px">
               <div style="background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;box-shadow:var(--shadow-md)">
@@ -1458,7 +1482,11 @@ window.deleteGider=async(id)=>{
 };
 
 // ── HARİTA ──
+const TOMTOM_KEY='cf8LiJcnBulkjibau4e9uA58HsrmHovP';
 let _courierMarkers={}, _restoMarkers=[], _showRestoranPins=false;
+let _adminTrafficLayer=null, _adminTrafficOn=false;
+let _adminIncMarkers=[], _adminIncOn=false, _adminIncFetchI=null;
+let _adminCourierTrails={};
 let _zoneMode=false, _zoneDrawing=null, _zoneStart=null, _zoneColor='#00c8d7';
 let _zones=[], _zoneLayer=null;
 let _rtdbCouriers={};
@@ -1512,6 +1540,16 @@ function initMap(){
         const m=L.marker([loc.lat,loc.lng],{icon}).addTo(mapObj);
         m.bindPopup(`<b>${esc(loc.name||uid.slice(-6))}</b><br/>Hız: ${loc.speed||0} km/h<br/>Vardiya: ${isActive?'✅ Aktif':'⏸ Pasif'}${ageTxt}`);
         _courierMarkers[uid]=m;
+      }
+      // Trail: sadece aktif vardiya
+      if(isActive&&!isStale){
+        if(!_adminCourierTrails[uid]){
+          _adminCourierTrails[uid]=L.polyline([],{color:'#009688',weight:2.5,opacity:0.7,dashArray:'5,4'}).addTo(mapObj);
+        }
+        const ll=_adminCourierTrails[uid].getLatLngs();
+        if(ll.length>=200)ll.shift();
+        ll.push([loc.lat,loc.lng]);
+        _adminCourierTrails[uid].setLatLngs(ll);
       }
     });
     const countEl=document.getElementById('map-courier-count');
@@ -1629,6 +1667,71 @@ async function loadZones(){
   }catch(e){console.error('zones',e);}
 }
 // Profil fotoğraflı + yön oklu kurye harita ikonu
+// ── TomTom Traffic (Admin Haritası) ──────────────────────────────────────────
+function toggleAdminTraffic(){
+  if(!mapObj)return;
+  _adminTrafficOn=!_adminTrafficOn;
+  const btn=document.getElementById('admTrafficBtn');
+  const leg=document.getElementById('admTrafficLegend');
+  if(btn)btn.classList.toggle('active',_adminTrafficOn);
+  if(_adminTrafficOn){
+    if(_adminTrafficLayer){mapObj.removeLayer(_adminTrafficLayer);_adminTrafficLayer=null;}
+    _adminTrafficLayer=L.tileLayer(
+      `https://api.tomtom.com/traffic/map/4/tile/flow/relative0-dark/{z}/{x}/{y}.png?key=${TOMTOM_KEY}&tileSize=256`,
+      {maxZoom:19,opacity:0.75,attribution:'© TomTom'}
+    ).addTo(mapObj);
+    if(leg)leg.style.display='flex';
+    showToast('🟢 Trafik katmanı açık','ok');
+  }else{
+    if(_adminTrafficLayer){mapObj.removeLayer(_adminTrafficLayer);_adminTrafficLayer=null;}
+    if(leg)leg.style.display='none';
+    showToast('Trafik katmanı kapalı','ok');
+  }
+}
+function toggleAdminIncidents(){
+  if(!mapObj)return;
+  _adminIncOn=!_adminIncOn;
+  const btn=document.getElementById('admIncidentBtn');
+  if(btn)btn.classList.toggle('active',_adminIncOn);
+  if(_adminIncOn){
+    _fetchAdminIncidents();
+    _adminIncFetchI=setInterval(_fetchAdminIncidents,60000);
+    showToast('⚠️ Trafik olayları açık','ok');
+  }else{
+    clearInterval(_adminIncFetchI);_adminIncFetchI=null;
+    _adminIncMarkers.forEach(m=>mapObj.removeLayer(m));
+    _adminIncMarkers=[];
+    showToast('Trafik olayları kapalı','ok');
+  }
+}
+async function _fetchAdminIncidents(){
+  if(!mapObj)return;
+  const b=mapObj.getBounds();
+  const bbox=`${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+  try{
+    const url=`https://api.tomtom.com/traffic/services/5/incidentDetails?key=${TOMTOM_KEY}&bbox=${bbox}&fields={incidents{type,geometry{type,coordinates},properties{id,iconCategory,events{description,iconCategory}}}}&language=tr-TR&t=1111&expandCluster=true`;
+    const r=await fetch(url);if(!r.ok)return;
+    const data=await r.json();
+    _adminIncMarkers.forEach(m=>mapObj.removeLayer(m));_adminIncMarkers=[];
+    (data.incidents||[]).forEach(inc=>{
+      const coords=inc.geometry&&inc.geometry.coordinates;if(!coords)return;
+      let lat,lng;
+      if(inc.geometry.type==='Point'){lng=coords[0];lat=coords[1];}
+      else if(inc.geometry.type==='LineString'){lng=coords[0][0];lat=coords[0][1];}
+      else return;
+      const cat=inc.properties&&inc.properties.iconCategory;
+      const emoji=_admIncEmoji(cat),label=_admIncLabel(cat);
+      const desc=(inc.properties?.events?.[0]?.description)||label;
+      const ic=L.divIcon({html:`<div class="inc-marker-adm">${emoji}</div>`,className:'',iconSize:[26,26],iconAnchor:[13,13]});
+      const m=L.marker([lat,lng],{icon:ic}).addTo(mapObj).bindPopup(`<b>${emoji} ${label}</b><br><small>${desc}</small>`);
+      _adminIncMarkers.push(m);
+    });
+  }catch{}
+}
+function _admIncEmoji(cat){const m={0:'⚠️',1:'🚧',2:'🚗',3:'🌦️',4:'🚨',5:'🚧',6:'⚠️',7:'🚦',8:'🛑',9:'⛽',10:'🌪️',11:'🚑'};return m[cat]||'⚠️';}
+function _admIncLabel(cat){const m={0:'Olay',1:'Yol Çalışması',2:'Trafik Sıkışıklığı',3:'Hava Durumu',4:'Tehlike',5:'Kapalı Yol',6:'Uyarı',7:'Trafik Işığı',8:'Durdurma',9:'Yakıt',10:'Afet',11:'Acil Durum'};return m[cat]||'Trafik Olayı';}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function _makeCourierIcon(name, photoURL, bearing, isActive, isStale){
   const init=(name||'K').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'K';
   const fbUrl=`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128`;

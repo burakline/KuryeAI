@@ -165,7 +165,7 @@
   </ul>
   <div class="nav-right">
     <a href="/" class="nav-back">← Ana Sayfa</a>
-    <a href="#isletme" class="btn-pill">İzinci Kurye Bul</a>
+    <span id="nav-auth-area"><a href="/izincikuryeai-login" class="btn-pill" style="background:#00c8d7;color:#000">🔐 Giriş / Kayıt</a></span>
   </div>
 </nav>
 
@@ -300,7 +300,7 @@
 
           <button class="fbtn" id="i-btn" onclick="submitIsletme()">
             <div class="spin"></div>
-            <span class="fbtxt">💬 Talep Gönder → WhatsApp</span>
+            <span class="fbtxt">Talep Gönder →</span>
           </button>
           <p class="fnote">Formu gönderdikten sonra WhatsApp açılacak. Mesajı gönderin, 2 saat içinde dönüş yapacağız.</p>
         </div>
@@ -473,7 +473,7 @@
 
           <button class="fbtn" id="k-btn" onclick="submitKurye()">
             <div class="spin"></div>
-            <span class="fbtxt">💬 Başvuruyu Gönder → WhatsApp</span>
+            <span class="fbtxt">Başvuruyu Gönder →</span>
           </button>
           <p class="fnote">Başvurunuz WhatsApp üzerinden gönderilecek. Ekibimiz 24 saat içinde sizinle iletişime geçecektir.</p>
         </div>
@@ -538,34 +538,7 @@
     const btn = document.getElementById('i-btn');
     btn.classList.add('loading'); btn.disabled = true;
 
-    const tarihStr = new Date(tarih).toLocaleDateString('tr-TR');
-    const msg = `🏪 *İZİNCİ KURYE TALEBİ — İzinciKuryeAI*
-
-👤 *İşletme Bilgileri:*
-• Yetkili: ${adsoyad}
-• İşletme: ${isletme}
-• Telefon: ${tel}
-• Adres: ${adres}
-
-📅 *İhtiyaç Detayları:*
-• Tarih: ${tarihStr}
-• Saatler: ${saatler}
-• Teslimat Alanı: ${alan}
-• Yemek: ${yemek}
-• Ödeme Zamanı: ${odemeZaman}
-• Ödeme Şekli: ${odeemSekil}
-
-📝 *Ek Bilgi:* ${bilgi||'Yok'}
-
----
-_İzinciKuryeAI — kuryeai.com/izinci_`;
-
-    setTimeout(() => {
-      window.open(`https://wa.me/905072171995?text=${encodeURIComponent(msg)}`, '_blank');
-      btn.classList.remove('loading'); btn.disabled = false;
-      document.getElementById('isletme-form-card').style.display = 'none';
-      document.getElementById('isletme-success').classList.add('show');
-    }, 800);
+    _saveIsletme({adsoyad,isletme,tel,adres,tarih,saatler,alan,yemek,odemeZaman,odeemSekil,bilgi}, btn);
   }
 
   // Kurye formu
@@ -583,57 +556,78 @@ _İzinciKuryeAI — kuryeai.com/izinci_`;
     const btn = document.getElementById('k-btn');
     btn.classList.add('loading'); btn.disabled = true;
 
-    const msg = `🛵 *İZİNCİ KURYE BAŞVURUSU — İzinciKuryeAI*
+    _saveKurye({
+      ad, soyad, tel,
+      email: document.getElementById('k-email').value,
+      adres: document.getElementById('k-adres').value,
+      dogumTarih: document.getElementById('k-dogum-tarih').value,
+      dogumYer: document.getElementById('k-dogum-yer').value,
+      askerlik: document.getElementById('k-askerlik').value,
+      askerlikDetay: document.getElementById('k-askerlik-detay').value,
+      egitim: document.getElementById('k-egitim').value,
+      sabika: document.getElementById('k-sabika').value,
+      acilAd: document.getElementById('k-acil-ad').value,
+      acilTel: document.getElementById('k-acil-tel').value,
+      aracMarka: arac, plaka,
+      sigorta: document.getElementById('k-sigorta').value,
+      muayene: document.getElementById('k-muayene').value,
+      src: document.getElementById('k-src').value,
+      p1: document.getElementById('k-p1').value,
+      cantaLitre: document.getElementById('k-canta-litre').value,
+      cantaMarka: document.getElementById('k-canta-marka').value,
+      cantaRuhsat: document.getElementById('k-canta-ruhsat').value,
+      ehliyetTarih: document.getElementById('k-ehliyet-tarih').value,
+      ehliyetTipler: document.getElementById('k-ehliyet-tipler').value,
+      tecrube: document.getElementById('k-tecrube').value,
+      maksSaat: document.getElementById('k-maks-saat').value,
+      gecmis: document.getElementById('k-gecmis').value,
+      ilceler: document.getElementById('k-ilceler').value,
+      tercihIlce: document.getElementById('k-tercih-ilce').value,
+      tercihSaat: document.getElementById('k-tercih-saat').value,
+      iban: document.getElementById('k-iban').value,
+      saglik: document.getElementById('k-saglik').value,
+    }, btn);
+  }
+</script>
 
-👤 *Kişisel Bilgiler:*
-• Ad Soyad: ${ad} ${soyad}
-• Doğum: ${document.getElementById('k-dogum-tarih').value} / ${document.getElementById('k-dogum-yer').value}
-• Telefon: ${tel}
-• E-posta: ${document.getElementById('k-email').value}
-• İkamet: ${document.getElementById('k-adres').value}
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-📋 *Askerlik & Eğitim:*
-• Askerlik: ${document.getElementById('k-askerlik').value} - ${document.getElementById('k-askerlik-detay').value}
-• Eğitim: ${document.getElementById('k-egitim').value}
-• Sabıka: ${document.getElementById('k-sabika').value}
+  const app = initializeApp({
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  });
+  const db = getFirestore(app);
 
-🚨 *Acil İletişim:*
-• ${document.getElementById('k-acil-ad').value} — ${document.getElementById('k-acil-tel').value}
+  window._saveIsletme = async (data, btn) => {
+    try {
+      await addDoc(collection(db,'izinciTalepler'), {
+        ...data, status:'pending', createdAt: new Date().toISOString()
+      });
+      btn.classList.remove('loading'); btn.disabled = false;
+      document.getElementById('isletme-form-card').style.display = 'none';
+      document.getElementById('isletme-success').classList.add('show');
+    } catch(e) {
+      btn.classList.remove('loading'); btn.disabled = false;
+      alert('Talep gönderilemedi, lütfen tekrar deneyin.');
+    }
+  };
 
-🏍️ *Araç Bilgileri:*
-• Araç: ${arac} / Plaka: ${plaka}
-• Sigorta Bitiş: ${document.getElementById('k-sigorta').value}
-• Muayene Bitiş: ${document.getElementById('k-muayene').value}
-• SRC: ${document.getElementById('k-src').value} | P1*: ${document.getElementById('k-p1').value}
-• Çanta: ${document.getElementById('k-canta-litre').value} ${document.getElementById('k-canta-marka').value} (Ruhsata işli: ${document.getElementById('k-canta-ruhsat').value})
-
-📜 *Ehliyet:*
-• Alma tarihi: ${document.getElementById('k-ehliyet-tarih').value}
-• Tipler: ${document.getElementById('k-ehliyet-tipler').value}
-
-💪 *Tecrübe:*
-• Deneyim: ${document.getElementById('k-tecrube').value}
-• Maks. çalışma: ${document.getElementById('k-maks-saat').value}
-• Geçmiş: ${document.getElementById('k-gecmis').value||'Belirtilmedi'}
-• Tecrübeli ilçeler: ${document.getElementById('k-ilceler').value}
-
-⚙️ *Çalışma Tercihleri:*
-• Tercih bölge: ${document.getElementById('k-tercih-ilce').value}
-• Tercih saatler: ${document.getElementById('k-tercih-saat').value}
-
-🏦 *IBAN:* ${document.getElementById('k-iban').value||'Belirtilmedi'}
-❤️ *Sağlık:* ${document.getElementById('k-saglik').value}
-
----
-_İzinciKuryeAI — kuryeai.com/izinci_`;
-
-    setTimeout(() => {
-      window.open(`https://wa.me/905072171995?text=${encodeURIComponent(msg)}`, '_blank');
+  window._saveKurye = async (data, btn) => {
+    try {
+      await addDoc(collection(db,'izinciBasvurular'), {
+        ...data, status:'pending', createdAt: new Date().toISOString()
+      });
       btn.classList.remove('loading'); btn.disabled = false;
       document.getElementById('kurye-form-card').style.display = 'none';
       document.getElementById('kurye-success').classList.add('show');
-    }, 800);
-  }
+    } catch(e) {
+      btn.classList.remove('loading'); btn.disabled = false;
+      alert('Başvuru gönderilemedi, lütfen tekrar deneyin.');
+    }
+  };
 </script>
 </body>
 </html>

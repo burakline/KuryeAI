@@ -485,6 +485,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .aordaddr{font-size:0.77rem;color:var(--tx2);line-height:1.3;flex:1;}
 .aordbtn{margin:8px 14px 10px;width:calc(100% - 28px);background:var(--teal);color:#fff;border:none;border-radius:var(--r2);padding:12px;font-family:var(--f);font-size:0.88rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
 .aordbtn:hover{background:var(--teal2);}
+.aordnavbtn{margin:4px 14px 0;width:calc(100% - 28px);background:#1976D2;color:#fff;border:none;border-radius:var(--r2);padding:10px;font-family:var(--f);font-size:0.84rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.aordnavbtn:hover{background:#1565C0;}
 
 /* ORDERS HISTORY */
 .ohcard{background:var(--card);border-radius:var(--r2);box-shadow:var(--sh);padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
@@ -565,6 +567,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="aordrow"><div class="aordico">📍</div><div class="aordaddr" id="aordAddr">—</div></div>
       <div class="aordrow"><div class="aordico">👤</div><div class="aordaddr" id="aordCust">—</div></div>
       <div class="aordrow" style="padding-bottom:4px"><div class="aordico">💰</div><div class="aordaddr" id="aordAmt" style="font-weight:800;color:var(--teal)">—</div></div>
+      <button class="aordnavbtn" id="aordNavBtn" onclick="openDelivNav()" style="display:none">🗺️ Müşteriye Yol Tarifi Al</button>
       <button class="aordbtn" id="aordBtn" onclick="advOrderStatus()">Restorana Vardım — Teslim Alıyorum</button>
     </div>
     <div class="sbwrap">
@@ -913,7 +916,7 @@ const G={
   shift:{on:false,t0:null,sk:null},
   stats:{dur:0,km:0,speeds:[],earn:0},
   gps:{lat:39.9334,lng:32.8597,speed:0},
-  map:null,marker:null,trail:null,restMarker:null,
+  map:null,marker:null,trail:null,restMarker:null,delivMarker:null,delivRouteLine:null,
   follow:true,bearing:0,lastGPS:0,
   gpsW:null,gpsI:null,stI:null,wl:null,
   room:1,msgs:{1:[],2:[]},
@@ -1289,7 +1292,7 @@ function renderActiveOrder(){
   const card=document.getElementById('aord');
   if(!G.activeOrder){
     card.classList.remove('show');
-    // Haritadan restoran pinini kaldır
+    _clearDelivMapLayers();
     if(G.restMarker&&G.map){G.map.removeLayer(G.restMarker);G.restMarker=null;}
     return;
   }
@@ -1301,29 +1304,103 @@ function renderActiveOrder(){
   document.getElementById('aordAmt').textContent='₺'+(o.amount||o.total||0);
   const st=document.getElementById('aordSt');
   const btn=document.getElementById('aordBtn');
+  const navBtn=document.getElementById('aordNavBtn');
   if(o.status==='accepted'){
     st.className='aordst ast-acc';st.textContent='Kabul Edildi';
     btn.textContent='Restorana Vardım — Teslim Alıyorum';btn.style.display='block';
+    navBtn.style.display='none'; // Önce restorana git, navigasyon gizli
   }else if(o.status==='pickedUp'){
     st.className='aordst ast-pk';st.textContent='Paket Alındı';
     btn.textContent='Müşteriye Teslim Ettim ✓';btn.style.display='block';
+    navBtn.style.display='block'; // Paket alındı → müşteriye navigasyon göster
+    _showDelivOnMap(o); // Teslimat pinini ve rotayı haritaya çiz
   }else if(o.status==='delivered'){
     st.className='aordst ast-dl';st.textContent='Teslim Edildi';
-    btn.style.display='none';
+    btn.style.display='none';navBtn.style.display='none';
+    _clearDelivMapLayers();
     if(G.restMarker&&G.map){G.map.removeLayer(G.restMarker);G.restMarker=null;}
     setTimeout(()=>{G.activeOrder=null;renderActiveOrder();},3000);
   }
-  // Haritada restoran pinini göster
-  if(G.map&&o.restLat&&o.restLng){
-    if(G.restMarker)G.map.removeLayer(G.restMarker);
-    const ic=L.divIcon({
-      html:`<div style="background:#FF9800;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.35)">🏪</div>`,
-      className:'',iconSize:[34,34],iconAnchor:[17,17]
-    });
-    G.restMarker=L.marker([o.restLat,o.restLng],{icon:ic}).addTo(G.map)
-      .bindPopup(`<b>${o.restaurant||o.restoranName||'Restoran'}</b><br><small>${o.deliveryAddr||''}</small>`);
+  // Haritada restoran pinini göster (accepted + pickedUp)
+  if(o.status!=='delivered'&&G.map&&o.restLat&&o.restLng){
+    if(!G.restMarker){
+      const ic=L.divIcon({
+        html:`<div style="background:#FF9800;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.35)">🏪</div>`,
+        className:'',iconSize:[34,34],iconAnchor:[17,17]
+      });
+      G.restMarker=L.marker([o.restLat,o.restLng],{icon:ic}).addTo(G.map)
+        .bindPopup(`<b>${o.restaurant||o.restoranName||'Restoran'}</b>`);
+    }
   }
 }
+function _clearDelivMapLayers(){
+  if(!G.map)return;
+  if(G.delivMarker){G.map.removeLayer(G.delivMarker);G.delivMarker=null;}
+  if(G.delivRouteLine){G.map.removeLayer(G.delivRouteLine);G.delivRouteLine=null;}
+}
+
+// Teslimat pinini ve kuryeden müşteriye rotayı haritada göster
+async function _showDelivOnMap(o){
+  if(!G.map)return;
+  const addr=o.deliveryAddr||o.address;
+  const custName=o.deliveryName||o.customer||'Müşteri';
+  const custPhone=o.deliveryPhone||o.phone||'';
+  // Zaten çizilmişse tekrar çizme
+  if(G.delivMarker)return;
+  let dlat,dlng;
+  // Siparişte lat/lng varsa kullan, yoksa Nominatim ile geocode et
+  if(o.delivLat&&o.delivLng){
+    dlat=o.delivLat;dlng=o.delivLng;
+  }else if(addr){
+    try{
+      const q=encodeURIComponent(addr+', Türkiye');
+      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,{headers:{'Accept-Language':'tr','User-Agent':'KuryeAI/1.0'}});
+      const data=await r.json();
+      if(data&&data.length){dlat=parseFloat(data[0].lat);dlng=parseFloat(data[0].lon);}
+    }catch(e){}
+  }
+  if(!dlat||!dlng)return;
+  // Teslimat pini
+  const dic=L.divIcon({
+    html:`<div style="background:#E53935;border:3px solid #fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.4)">📍</div>`,
+    className:'',iconSize:[36,36],iconAnchor:[18,18]
+  });
+  G.delivMarker=L.marker([dlat,dlng],{icon:dic}).addTo(G.map).bindPopup(
+    `<div style="min-width:160px"><b style="font-size:0.95rem">👤 ${custName}</b>${custPhone?`<br><small>📞 ${custPhone}</small>`:''}<br><small style="color:#555">📍 ${addr||''}</small></div>`
+  ).openPopup();
+  // Kuryeden müşteriye rota çizgisi
+  const kLat=G.gps.lat,kLng=G.gps.lng;
+  G.delivRouteLine=L.polyline([[kLat,kLng],[dlat,dlng]],{
+    color:'#E53935',weight:3,dashArray:'8,6',opacity:0.8
+  }).addTo(G.map);
+  // Haritayı her iki noktayı kapsayacak şekilde ayarla
+  G.map.fitBounds([[kLat,kLng],[dlat,dlng]],{padding:[60,60]});
+  // Koordinatları G'ye sakla (openDelivNav için)
+  G._delivLat=dlat;G._delivLng=dlng;
+}
+
+// Google Maps / Yandex Maps ile yol tarifi aç
+function openDelivNav(){
+  const dlat=G._delivLat||(G.activeOrder&&G.activeOrder.delivLat);
+  const dlng=G._delivLng||(G.activeOrder&&G.activeOrder.delivLng);
+  const addr=G.activeOrder&&(G.activeOrder.deliveryAddr||G.activeOrder.address);
+  let url;
+  if(dlat&&dlng){
+    // iOS: Apple Maps öncelikli, Android: Google Maps
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    if(isIOS){
+      url=`maps://?daddr=${dlat},${dlng}`;
+    }else{
+      url=`https://www.google.com/maps/dir/?api=1&destination=${dlat},${dlng}&travelmode=driving`;
+    }
+  }else if(addr){
+    url=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr+', Türkiye')}&travelmode=driving`;
+  }else{
+    showToast('Teslimat adresi bulunamadı','error');return;
+  }
+  window.open(url,'_blank');
+}
+
 function renderOrdHistory(){
   const el=document.getElementById('ordList');
   if(!G.ordHistory.length){el.innerHTML='<p style="text-align:center;color:var(--tx3);padding:32px 0;font-size:0.84rem">Henüz tamamlanan sipariş yok</p>';return;}

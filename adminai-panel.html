@@ -911,8 +911,6 @@ import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, creat
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
          query, orderBy, onSnapshot, limit, serverTimestamp, where, arrayUnion, arrayRemove }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-import { getDatabase, ref as rtdbRef, onValue as rtdbOnValue, set as rtdbSet, update as rtdbUpdate }
-  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
 const cfg = {
   apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
@@ -928,7 +926,29 @@ const cfg = {
 const app  = initializeApp(cfg);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-const rtdb = getDatabase(app);
+// RTDB REST/SSE — WebSocket gerektirmez, tüm ağlarda çalışır
+const RTDB_URL="https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app";
+async function _adminTok(){const u=auth.currentUser;if(!u)throw new Error("Giriş yapılmamış");return u.getIdToken();}
+function _adminSnap(data){return{val:()=>data,exists:()=>data!==null&&data!==undefined};}
+function rtdbListen(path,cb,errCb){
+  let es=null,active=true;
+  async function connect(){
+    if(!active)return;
+    try{
+      const tok=await _adminTok();
+      if(es){try{es.close();}catch{}}
+      es=new EventSource(`${RTDB_URL}${path}.json?auth=${tok}`);
+      es.addEventListener('put',e=>{let d;try{d=JSON.parse(e.data);}catch{return;}if(!d.path||d.path==='/')cb(_adminSnap(d.data));else _rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
+      es.addEventListener('patch',()=>{_rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
+      es.onerror=()=>{if(es){try{es.close();}catch{}}if(active)setTimeout(connect,5000);};
+    }catch(e){if(errCb)errCb(e);if(active)setTimeout(connect,5000);}
+  }
+  connect();
+  return ()=>{active=false;if(es){try{es.close();}catch{}}};
+}
+async function _rtdbGet(path){const tok=await _adminTok();const r=await fetch(`${RTDB_URL}${path}.json?auth=${tok}`);if(!r.ok)throw new Error(r.statusText);return _adminSnap(await r.json());}
+async function _rtdbSet(path,data){const tok=await _adminTok();await fetch(`${RTDB_URL}${path}.json?auth=${tok}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}
+async function _rtdbUpdate(path,data){const tok=await _adminTok();await fetch(`${RTDB_URL}${path}.json?auth=${tok}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}
 
 // ── STATE ──
 let allBasvurular=[], allUsers=[], allSiparisler=[], allGiderler=[];
@@ -1135,7 +1155,7 @@ let _unsubDemo=null;
 function watchDemoSessions(){
   if(_unsubDemo){_unsubDemo();_unsubDemo=null;}
   const TIMEOUT=30000;
-  _unsubDemo=rtdbOnValue(rtdbRef(rtdb,'demoSessions'),snap=>{
+  _unsubDemo=rtdbListen('/demoSessions',snap=>{
     const all=snap.val()||{};
     const now=Date.now();
     const online=Object.values(all).filter(s=>s.isOnline&&(now-s.lastActive)<TIMEOUT);
@@ -1177,7 +1197,7 @@ window.fSiparis=(f,btn)=>{fSip=f;setActive(btn,'#pane-siparisler .ftab');renderS
 function listenSiparisler(){
   if(_unsubSiparisler){_unsubSiparisler();_unsubSiparisler=null;}
   // RTDB /orders yolunu dinle (restoran paneli buraya yazar, Firestore security rules engeli yok)
-  _unsubSiparisler=rtdbOnValue(rtdbRef(rtdb,'orders'),snap=>{
+  _unsubSiparisler=rtdbListen('/orders',snap=>{
     const all=snap.val()||{};
     const prev=new Set(allSiparisler.map(s=>s.id));
     allSiparisler=Object.entries(all)
@@ -1443,30 +1463,24 @@ let _zoneMode=false, _zoneDrawing=null, _zoneStart=null, _zoneColor='#00c8d7';
 let _zones=[], _zoneLayer=null;
 let _rtdbCouriers={};
 
-// Firebase bağlantı durumu göstergesi
+// Firebase bağlantı durumu göstergesi — REST ile kontrol
 let _fbDotInited=false;
 function _initAdminFbDot(){
   if(_fbDotInited)return;_fbDotInited=true;
   const dot=document.getElementById('adminFbDot');
   const txt=document.getElementById('adminFbTxt');
-  // RTDB SDK .info/connected listener — tek kaynak gerçek bağlantı durumu için
-  rtdbOnValue(rtdbRef(rtdb,'.info/connected'),snap=>{
-    const ok=snap.val()===true;
-    if(dot)dot.style.background=ok?'#22c55e':'#f59e0b';
-    if(txt)txt.textContent=ok?'Firebase Bağlı':'Bağlanıyor…';
-  });
-  // 20 saniye sonra hâlâ bağlanmadıysa "Bağlantı Yok" göster
-  setTimeout(()=>{
-    const dot2=document.getElementById('adminFbDot');
-    if(dot2&&dot2.style.background==='rgb(240, 158, 11)'||dot2?.style.background===''){
-      if(dot2)dot2.style.background='#ef4444';
-      const t2=document.getElementById('adminFbTxt');
-      if(t2&&t2.textContent==='Bağlanıyor…')t2.textContent='Bağlantı Yok';
-    }
-  },20000);
-  // Online/offline browser events
+  async function check(){
+    try{
+      const tok=await _adminTok().catch(()=>null);
+      if(!tok){if(txt)txt.textContent='Bağlanıyor…';return;}
+      const r=await fetch(`${RTDB_URL}/settings.json?shallow=true&auth=${tok}`,{signal:AbortSignal.timeout(5000)});
+      if(r.ok){if(dot)dot.style.background='#22c55e';if(txt)txt.textContent='Firebase Bağlı';}
+      else{if(dot)dot.style.background='#ef4444';if(txt)txt.textContent='Bağlantı Yok';}
+    }catch{if(dot)dot.style.background='#ef4444';if(txt)txt.textContent='Bağlantı Yok';}
+  }
+  check();setInterval(check,30000);
   window.addEventListener('offline',()=>{if(dot)dot.style.background='#ef4444';if(txt)txt.textContent='İnternet Yok';});
-  window.addEventListener('online',()=>{if(dot)dot.style.background='#f59e0b';if(txt)txt.textContent='Yeniden Bağlanıyor…';});
+  window.addEventListener('online',()=>{if(dot)dot.style.background='#f59e0b';if(txt)txt.textContent='Yeniden Bağlanıyor…';check();});
 }
 
 function initMap(){
@@ -1476,7 +1490,7 @@ function initMap(){
 
   // Kurye GPS - RTDB dinle
   if(_unsubMapCouriers){_unsubMapCouriers();_unsubMapCouriers=null;}
-  _unsubMapCouriers=rtdbOnValue(rtdbRef(rtdb,'couriers'),snap=>{
+  _unsubMapCouriers=rtdbListen('/couriers',snap=>{
     const all=snap.val()||{};
     _rtdbCouriers=all;
     const now=Date.now();
@@ -1771,7 +1785,7 @@ window.sendBroadcast=async()=>{
   try{
     const docRef=await addDoc(collection(db,'broadcasts'),{target,userId:userId||null,title,body,createdAt:serverTimestamp(),sentBy:'admin'});
     // RTDB'ye de yaz → kurye ve restoran panelleri gerçek zamanlı alır
-    rtdbSet(rtdbRef(rtdb,'broadcasts/'+docRef.id),{target,userId:userId||null,title,body,createdAt:Date.now(),sentBy:'admin'}).catch(()=>{});
+    _rtdbSet('/broadcasts/'+docRef.id,{target,userId:userId||null,title,body,createdAt:Date.now(),sentBy:'admin'}).catch(()=>{});
     document.getElementById('notif-title').value='';document.getElementById('notif-body').value='';
     showToast('✓ Bildirim gönderildi','ok');loadBroadcasts();
   }catch(e){showToast('Hata: '+e.message,'err');}
@@ -2038,7 +2052,7 @@ window.setCourierRestaurant=async(rtdbUid,fsUid,restoranUid)=>{
   if(!restoranUid)return;
   try{
     if(restoranUid==='__remove__'){
-      try{await rtdbSet(rtdbRef(rtdb,'couriers/'+rtdbUid+'/assignedRestaurant'),null);}catch(re){console.warn('RTDB remove warn:',re);}
+      try{await _rtdbSet('/couriers/'+rtdbUid+'/assignedRestaurant',null);}catch(re){console.warn('RTDB remove warn:',re);}
       await updateDoc(doc(db,'users',fsUid),{assignedRestaurant:null});
       if(_rtdbCouriers[rtdbUid])_rtdbCouriers[rtdbUid]={..._rtdbCouriers[rtdbUid],assignedRestaurant:null};
       else _rtdbCouriers[rtdbUid]={assignedRestaurant:null};
@@ -2049,7 +2063,7 @@ window.setCourierRestaurant=async(rtdbUid,fsUid,restoranUid)=>{
     // Firestore'a yaz (admin kesin erişim — kaynak doğruluğu sağlar)
     await updateDoc(doc(db,'users',fsUid),{assignedRestaurant:assignment});
     // RTDB'ye yaz (kurye paneli SSE ile anlık okur — hata olursa Firestore fallback devrede)
-    rtdbSet(rtdbRef(rtdb,'couriers/'+rtdbUid+'/assignedRestaurant'),assignment).catch(re=>{console.warn('RTDB assign warn:',re);});
+    _rtdbSet('/couriers/'+rtdbUid+'/assignedRestaurant',assignment).catch(re=>{console.warn('RTDB assign warn:',re);});
     _rtdbCouriers[rtdbUid]={...(_rtdbCouriers[rtdbUid]||{}),assignedRestaurant:assignment};
     renderKuryeler();showToast('✓ Restoran atandı','ok');
   }catch(e){console.error('setCourierRestaurant error',e);showToast('Hata: '+e.message,'err');}

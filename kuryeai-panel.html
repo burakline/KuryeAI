@@ -1207,11 +1207,10 @@ function _initFbDot(){
   async function check(){
     try{
       const tok=await window._tok().catch(()=>null);
-      const url=`https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app/.info/connected.json${tok?`?auth=${tok}`:''}`;
-      const r=await fetch(url,{signal:AbortSignal.timeout(4000)});
-      const v=await r.json();
-      dot.style.background=v===true?'#22c55e':'#f59e0b';
-      dot.title=v===true?'Firebase Bağlı':'Firebase Bekleniyor';
+      if(!tok){dot.style.background='#f59e0b';dot.title='Firebase Bekleniyor';return;}
+      const r=await fetch(`https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app/settings.json?shallow=true&auth=${tok}`,{signal:AbortSignal.timeout(4000)});
+      if(r.ok){dot.style.background='#22c55e';dot.title='Firebase Bağlı';}
+      else{dot.style.background='#ef4444';dot.title='Firebase Bağlantı Yok';}
     }catch{dot.style.background='#ef4444';dot.title='Firebase Bağlantı Yok';}
   }
   check();setInterval(check,30000);

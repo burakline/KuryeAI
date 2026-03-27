@@ -2017,16 +2017,27 @@ const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);
 
-// ── WebSocket Teşhis (geçici) ─────────────────────────────────────────────
+// ── WebSocket Teşhis (ekranda göster) ────────────────────────────────────
+const _wsLog=[];
+function _showWsLog(){
+  let el=document.getElementById('_ws_diag');
+  if(!el){el=document.createElement('div');el.id='_ws_diag';
+    el.style.cssText='position:fixed;bottom:60px;left:8px;right:8px;background:#1a1a2e;color:#0ff;font-size:11px;font-family:monospace;padding:8px;border-radius:8px;z-index:99999;max-height:160px;overflow-y:auto;';
+    document.body.appendChild(el);}
+  el.innerHTML=_wsLog.slice(-8).map(l=>`<div>${l}</div>`).join('');}
 const _OrigWS = window.WebSocket;
 window.WebSocket = function(url, protocols) {
-  console.log('[WS] Bağlanıyor:', url);
+  const short=url.replace('wss://','').substring(0,50);
+  _wsLog.push('🔵 '+short);_showWsLog();
   const ws = new _OrigWS(url, protocols);
-  ws.addEventListener('open',  () => console.log('[WS] Açıldı:', url));
-  ws.addEventListener('error', (e) => console.error('[WS] Hata:', url, e));
-  ws.addEventListener('close', (e) => console.log('[WS] Kapandı:', url, 'code:', e.code, 'reason:', e.reason));
+  ws.addEventListener('open',  ()=>{_wsLog.push('✅ AÇILDI: '+short);_showWsLog();});
+  ws.addEventListener('error', ()=>{_wsLog.push('❌ HATA: '+short);_showWsLog();});
+  ws.addEventListener('close', e=>{_wsLog.push(`🔴 KAPANDI code:${e.code} ${e.reason||''}`);_showWsLog();});
   return ws;
 };
+setTimeout(()=>{
+  if(!_wsLog.length){_wsLog.push('⚠️ SDK hiç WebSocket açmadı');_showWsLog();}
+},8000);
 
 // ── RTDB REST/SSE (WebSocket SDK bağlanamıyor — SSE ile gerçek zamanlı) ──────
 const RTDB_BASE='https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app';

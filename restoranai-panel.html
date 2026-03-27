@@ -2204,11 +2204,13 @@ const avatarColor=i=>COLORS[i%COLORS.length];
 const vehicleIcon={moto:"🛵",bike:"🚲",car:"🚗"};
 
 const STATUS={
-  pending:   {label:"Bekliyor",   cls:"pending",  next:"preparing"},
-  preparing: {label:"Hazırlanıyor",cls:"preparing",next:"on_the_way"},
-  on_the_way:{label:"Yolda",      cls:"onway",    next:"delivered"},
-  delivered: {label:"Teslim",     cls:"delivered",next:null},
-  cancelled: {label:"İptal",      cls:"cancelled",next:null},
+  pending:   {label:"Bekliyor",       cls:"pending",   next:"preparing"},
+  preparing: {label:"Hazırlanıyor",   cls:"preparing", next:"on_the_way"},
+  accepted:  {label:"Kurye Kabul Etti",cls:"preparing",next:"on_the_way"},
+  on_the_way:{label:"Yolda",          cls:"onway",     next:"delivered"},
+  delivered: {label:"Teslim",         cls:"delivered", next:null},
+  cancelled: {label:"İptal",          cls:"cancelled", next:null},
+  rejected:  {label:"Kurye Reddetti", cls:"cancelled", next:null},
 };
 
 // ── Toast ─────────────────────────────────────────────────────────────────

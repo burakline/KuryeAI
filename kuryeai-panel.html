@@ -1379,7 +1379,10 @@ function acceptOrder(){
   if(window._rtdbSet){
     window._rtdbSet(`/couriers/${G.id}/activeOrder`,G.activeOrder).catch(()=>{});
     window._rtdbSet(`/couriers/${G.id}/pendingOrder`,null).catch(()=>{});
-    if(d.orderId)window._rtdbSet(`/orders/${d.orderId}/status`,'accepted').catch(()=>{});
+    if(d.orderId){
+      window._rtdbSet(`/orders/${d.orderId}/status`,'accepted').catch(()=>{});
+      if(d.restoranId)window._rtdbSet(`/restaurants/${d.restoranId}/orders/${d.orderId}/status`,'accepted').catch(()=>{});
+    }
   }
   document.getElementById('ordNotif').classList.remove('active');
   document.getElementById('ordTopdot').classList.remove('show');
@@ -1393,7 +1396,13 @@ function rejectOrder(){
   const d=G.pendingOrderData;
   if(window._rtdbSet&&d){
     window._rtdbSet(`/couriers/${G.id}/pendingOrder`,null).catch(()=>{});
-    if(d.orderId)window._rtdbSet(`/orders/${d.orderId}/status`,'rejected').catch(()=>{});
+    if(d.orderId){
+      window._rtdbSet(`/orders/${d.orderId}/status`,'rejected').catch(()=>{});
+      if(d.restoranId){
+        window._rtdbSet(`/restaurants/${d.restoranId}/orders/${d.orderId}/status`,'rejected').catch(()=>{});
+        window._rtdbSet(`/restaurants/${d.restoranId}/couriers/${G.id}/status`,'available').catch(()=>{});
+      }
+    }
   }
   document.getElementById('ordNotif').classList.remove('active');
   document.getElementById('ordTopdot').classList.remove('show');
@@ -1405,13 +1414,16 @@ function advOrderStatus(){
   if(!G.activeOrder)return;
   const st=G.activeOrder.status;
   let nst,msg;
-  if(st==='accepted'){nst='pickedUp';msg='Paket teslim alındı! 🛵';}
-  else if(st==='pickedUp'){nst='delivered';msg='Sipariş teslim edildi! ✅';}
+  if(st==='accepted'){nst='on_the_way';msg='Paket teslim alındı, yola çıkılıyor! 🛵';}
+  else if(st==='on_the_way'){nst='delivered';msg='Sipariş teslim edildi! ✅';}
   else return;
   G.activeOrder.status=nst;
   if(window._rtdbSet){
     window._rtdbSet(`/couriers/${G.id}/activeOrder/status`,nst).catch(()=>{});
-    if(G.activeOrder.orderId)window._rtdbSet(`/orders/${G.activeOrder.orderId}/status`,nst).catch(()=>{});
+    if(G.activeOrder.orderId){
+      window._rtdbSet(`/orders/${G.activeOrder.orderId}/status`,nst).catch(()=>{});
+      if(G.activeOrder.restoranId)window._rtdbSet(`/restaurants/${G.activeOrder.restoranId}/orders/${G.activeOrder.orderId}/status`,nst).catch(()=>{});
+    }
   }
   if(nst==='delivered'){
     G.activeOrder.deliveredAt=Date.now();
@@ -1419,8 +1431,9 @@ function advOrderStatus(){
     G.ordHistory.unshift(rec);
     if(G.ordHistory.length>50)G.ordHistory.pop();
     const fb3=window._fb;if(fb3&&G.uid){try{fb3.addDoc(fb3.collection(fb3.fs,'users',G.uid,'orders'),{...rec,createdAt:new Date().toISOString()});}catch(e){}}
-    // RTDB'de siparişi bitir (sistem açısından done)
+    // RTDB'de siparişi bitir ve kuryeyi müsait yap
     window._rtdbSet&&window._rtdbSet(`/couriers/${G.id}/activeOrder`,null).catch(()=>{});
+    if(G.activeOrder.restoranId)window._rtdbSet&&window._rtdbSet(`/restaurants/${G.activeOrder.restoranId}/couriers/${G.id}/status`,'available').catch(()=>{});
     // Gidiş-dönüş rota km hesapla (restoran → müşteri → restoran)
     const o=G.activeOrder;
     if(o.restLat&&o.restLng&&G._delivLat&&G._delivLng){
@@ -1462,8 +1475,8 @@ function renderActiveOrder(){
   if(o.status==='accepted'){
     stEl.className='aordst ast-acc';stEl.textContent='Kabul Edildi';
     btn.textContent='Restorana Vardım — Teslim Alıyorum';btn.style.display='block';
-  }else if(o.status==='pickedUp'){
-    stEl.className='aordst ast-pk';stEl.textContent='Paket Alındı';
+  }else if(o.status==='on_the_way'){
+    stEl.className='aordst ast-pk';stEl.textContent='Yolda';
     btn.textContent='Müşteriye Teslim Ettim ✓';btn.style.display='block';
     navBtn.style.display='block';
     _showDelivOnMap(o);

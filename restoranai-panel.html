@@ -2012,12 +2012,17 @@ const FB = {
   appId:"1:1012295004135:web:0cceac0476175e19395742",
 };
 const app     = initializeApp(FB);
-const db      = getDatabase(app, "https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app");
+const db      = getDatabase(app);
 const auth    = getAuth(app);
 const fs      = getFirestore(app);
 const storage = getStorage(app);
 
-
+// ── WebSocket Tanılama ────────────────────────────────────────────────────
+const _OrigWS=window.WebSocket;
+const _wsLog=[];
+function _showWsLog(){let el=document.getElementById('_wsd');if(!el){el=document.createElement('div');el.id='_wsd';el.style.cssText='position:fixed;bottom:60px;left:8px;right:8px;background:#111;color:#0ff;font-size:11px;font-family:monospace;padding:8px;border-radius:8px;z-index:99999;max-height:140px;overflow-y:auto;';document.body.appendChild(el);}el.innerHTML=_wsLog.slice(-6).map(l=>`<div>${l}</div>`).join('');}
+window.WebSocket=function(url,p){const s=url.replace('wss://','').slice(0,55);_wsLog.push('🔵 '+s);_showWsLog();const ws=new _OrigWS(url,p);ws.addEventListener('open',()=>{_wsLog.push('✅ AÇILDI');_showWsLog();});ws.addEventListener('error',()=>{_wsLog.push('❌ HATA: '+s);_showWsLog();});ws.addEventListener('close',e=>{_wsLog.push(`🔴 KAPANDI ${e.code} ${e.reason||''}`);_showWsLog();});return ws;};
+setTimeout(()=>{if(!_wsLog.length){_wsLog.push('⚠️ SDK WebSocket açmadı — initFirebase çalışmadı?');_showWsLog();}},10000);
 
 let RESTAURANT_ID = "demo_restoran_001";
 

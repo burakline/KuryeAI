@@ -21,6 +21,7 @@
       --white:   #ffffff;
       --teal:    #00c8d7;
       --teal-lt: #33d6e3;
+      --orange:  #ff9f0a;
     }
 
     html { scroll-behavior: smooth; }
@@ -107,13 +108,25 @@
     .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pls 2s infinite; }
     @keyframes pls { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
 
-    .hero-logo-wrap {
+    .hero-text-logo {
       margin-bottom: 2.5rem;
-      opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .2s;
+      font-size: clamp(2.8rem, 9vw, 5rem);
+      font-weight: 800; letter-spacing: -.05em; line-height: 1;
+      opacity: 0; animation: logoReveal 1s cubic-bezier(.16,1,.3,1) forwards .2s;
+      text-shadow: 0 0 60px rgba(0,200,215,.2);
     }
-    .hero-logo-wrap img {
-      height: 120px; width: 120px; border-radius: 50%; object-fit: cover;
-      box-shadow: 0 0 60px rgba(0,200,215,.25), 0 0 120px rgba(0,200,215,.08);
+    .hero-text-logo .logo-restoran { color: var(--orange); }
+    .hero-text-logo .logo-ai {
+      color: var(--teal);
+      animation: aiGlow 3s ease-in-out infinite 1.2s;
+    }
+    @keyframes logoReveal {
+      from { opacity:0; transform:scale(.88) translateY(24px); filter:blur(10px); }
+      to   { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
+    }
+    @keyframes aiGlow {
+      0%,100% { text-shadow:0 0 20px rgba(0,200,215,.4); }
+      50%      { text-shadow:0 0 50px rgba(0,200,215,.9), 0 0 80px rgba(0,200,215,.3); }
     }
 
     .hero-h1 {
@@ -443,6 +456,52 @@
     .footer-links a:hover { color: var(--white); }
     .footer-copy { font-size: .72rem; color: #333; }
 
+    /* ── STATS STRIP ── */
+    .stats-strip { background: var(--dark); border-top: .5px solid var(--border); border-bottom: .5px solid var(--border); padding: 3.5rem 2rem; }
+    .stats-strip-inner { max-width:1060px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border-radius:16px; overflow:hidden; }
+    .stat-box { background:var(--card); padding:2rem 1.5rem; text-align:center; }
+    .stat-n { font-size:2.2rem; font-weight:800; letter-spacing:-.04em; color:var(--white); }
+    .stat-n em { font-style:normal; color:var(--teal); font-size:1.4rem; }
+    .stat-n .orange { color:var(--orange); }
+    .stat-l { font-size:.72rem; color:var(--gray-lt); margin-top:.4rem; letter-spacing:.04em; }
+
+    /* ── WHY SECTION ── */
+    .why-section { background:var(--black); border-top:.5px solid var(--border); }
+    .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; margin-top:3rem; }
+    .why-img-block {
+      border-radius:20px; overflow:hidden; position:relative;
+      background:linear-gradient(135deg,#111 0%,#0c0c0c 100%);
+      border:.5px solid var(--border); min-height:380px;
+      display:flex; flex-direction:column; justify-content:flex-end;
+    }
+    .why-img-block .img-label {
+      padding:2rem; background:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 100%);
+    }
+    .why-img-block .img-label p { font-size:.78rem; color:var(--gray-lt); line-height:1.6; }
+    .why-img-block .img-tag { font-size:.62rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); margin-bottom:.5rem; }
+    .why-img-bg {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:4rem; opacity:.15;
+    }
+    .why-points { display:flex; flex-direction:column; gap:1.5rem; margin-top:2rem; }
+    .wp { display:flex; gap:1rem; align-items:flex-start; }
+    .wp-icon { width:40px; height:40px; border-radius:10px; background:rgba(0,200,215,.08); border:.5px solid rgba(0,200,215,.15); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .wp-title { font-size:.92rem; font-weight:700; margin-bottom:.25rem; }
+    .wp-desc { font-size:.82rem; color:var(--gray-lt); line-height:1.6; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { background:var(--dark); border-top:.5px solid var(--border); }
+    .testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3rem; }
+    .testi-card { background:var(--card); border:.5px solid var(--border); border-radius:16px; padding:2rem; position:relative; }
+    .testi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
+    .testi-stars { color:var(--orange); font-size:.85rem; margin-bottom:1rem; letter-spacing:.05em; }
+    .testi-text { font-size:.88rem; color:var(--gray-lt); line-height:1.7; margin-bottom:1.5rem; font-style:italic; }
+    .testi-author { display:flex; align-items:center; gap:.8rem; }
+    .testi-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--teal)); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700; color:#000; flex-shrink:0; }
+    .testi-name { font-size:.82rem; font-weight:700; }
+    .testi-place { font-size:.72rem; color:var(--gray-lt); }
+
     /* ── ANIMATION ── */
     @keyframes up { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
@@ -459,10 +518,13 @@
       .form-row { grid-template-columns: 1fr; }
       .section { padding: 5rem 1.4rem; }
       footer { flex-direction: column; align-items: flex-start; padding: 2rem 1.4rem; }
+      .stats-strip-inner { grid-template-columns: repeat(2,1fr); }
+      .why-grid { grid-template-columns: 1fr; gap:2.5rem; }
+      .testi-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
-      .hero-logo-wrap img { height: 90px; width: 90px; }
       .platform-grid { grid-template-columns: repeat(2,1fr); }
+      .stats-strip-inner { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -471,8 +533,7 @@
 <!-- NAV -->
 <nav id="main-nav">
   <a href="/" class="nav-logo">
-    <img src="1000417932.png" alt="RestoranAI Logo" onerror="this.style.display='none'"/>
-    <span class="nav-brand">Restoran<em>AI</em></span>
+    <span class="nav-brand"><span style="color:var(--orange)">Restoran</span><em>AI</em></span>
   </a>
   <ul class="nav-links">
     <li><a href="#ozellikler">Özellikler</a></li>
@@ -497,8 +558,8 @@
     RestoranAI — Akıllı İşletme
   </p>
 
-  <div class="hero-logo-wrap">
-    <img src="1000417932.png" alt="RestoranAI" onerror="this.style.display='none'"/>
+  <div class="hero-text-logo">
+    <span class="logo-restoran">Restoran</span><span class="logo-ai">AI</span>
   </div>
 
   <h1 class="hero-h1">
@@ -596,6 +657,100 @@
         <p class="bc-desc">Teslimat sonrası otomatik değerlendirme bildirimi. Yorum takibi ve müşteri memnuniyet skoru.</p>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-strip-inner reveal">
+    <div class="stat-box">
+      <div class="stat-n">+<span class="orange">2.500</span></div>
+      <div class="stat-l">Günlük İşlenen Sipariş</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-n">150<em>+</em></div>
+      <div class="stat-l">Aktif Restoran</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-n">23<em>dk</em></div>
+      <div class="stat-l">Ortalama Teslimat Süresi</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-n">4.8<em>⭐</em></div>
+      <div class="stat-l">Müşteri Memnuniyeti</div>
+    </div>
+  </div>
+</div>
+
+<!-- WHY RESTORANAI -->
+<section class="section why-section">
+  <div class="inner">
+    <div class="why-grid">
+      <div class="reveal">
+        <p class="lbl">Neden RestoranAI?</p>
+        <h2 class="h2">Platform kaosuyla<br/><span class="muted">bitirin.</span></h2>
+        <p class="body-lg">5 farklı uygulamaya bakmak, sipariş kaçırmak, raporları elle toplamak — bunların hepsi geçmişte kaldı.</p>
+        <div class="why-points">
+          <div class="wp">
+            <div class="wp-icon">🚫</div>
+            <div>
+              <p class="wp-title">Platform Geçişi Yok</p>
+              <p class="wp-desc">Yemeksepeti, Trendyol, Getir, Migros — hepsi tek ekranda. Sekmeler arası geçiş tarihe karışıyor.</p>
+            </div>
+          </div>
+          <div class="wp">
+            <div class="wp-icon">🤖</div>
+            <div>
+              <p class="wp-title">AI Sizi Analiz Ediyor</p>
+              <p class="wp-desc">En çok satan ürünler, karlılık analizi, yoğun saatler. Yapay zeka size özel öneriler sunuyor.</p>
+            </div>
+          </div>
+          <div class="wp">
+            <div class="wp-icon">⚡</div>
+            <div>
+              <p class="wp-title">24 Saatte Kurulum</p>
+              <p class="wp-desc">Başvurun, entegrasyonunuz kurulsun, kullanmaya başlayın. Teknik bilgi gerekmez.</p>
+            </div>
+          </div>
+          <div class="wp">
+            <div class="wp-icon">📊</div>
+            <div>
+              <p class="wp-title">Gerçek Zamanlı Raporlar</p>
+              <p class="wp-desc">Anlık ciro, sipariş sayısı ve platform bazında karşılaştırma. Tek tıkla PDF export.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-img-block reveal">
+        <div class="why-img-bg">🍽️</div>
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,159,10,.06) 0%,rgba(0,200,215,.08) 100%)"></div>
+        <!-- mock panel screenshot -->
+        <div style="position:absolute;top:1.5rem;left:1.5rem;right:1.5rem;background:rgba(0,0,0,.7);border-radius:12px;padding:1.2rem;border:.5px solid rgba(255,255,255,.1)">
+          <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem">● Canlı Panel — 19:42</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,159,10,.08);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem;border:.5px solid rgba(255,159,10,.2)">
+            <span style="font-size:.78rem;font-weight:700">Yemeksepeti #5841</span>
+            <span style="font-size:.65rem;background:rgba(255,159,10,.2);color:#ff9f0a;padding:.2rem .6rem;border-radius:999px;font-weight:700">Yeni</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,200,215,.06);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem;border:.5px solid rgba(0,200,215,.15)">
+            <span style="font-size:.78rem;font-weight:700">Trendyol #3012</span>
+            <span style="font-size:.65rem;background:rgba(0,200,215,.15);color:var(--teal);padding:.2rem .6rem;border-radius:999px;font-weight:700">Hazırlanıyor</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(40,200,64,.06);border-radius:8px;padding:.7rem 1rem;border:.5px solid rgba(40,200,64,.15)">
+            <span style="font-size:.78rem;font-weight:700">WhatsApp Sipariş</span>
+            <span style="font-size:.65rem;background:rgba(40,200,64,.15);color:#28c840;padding:.2rem .6rem;border-radius:999px;font-weight:700">Teslim Edildi</span>
+          </div>
+          <div style="margin-top:1rem;padding-top:.8rem;border-top:.5px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;font-size:.78rem">
+            <span style="color:var(--gray-lt)">Bugün Toplam</span>
+            <span style="font-weight:700;color:var(--orange)">₺ 8.340</span>
+          </div>
+        </div>
+        <div class="img-label">
+          <p class="img-tag">RestoranAI Panel</p>
+          <p>Tüm platformlardan gelen siparişler tek ekranda, gerçek zamanlı.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -783,6 +938,51 @@
   </div>
 </section>
 
+<!-- TESTIMONIALS -->
+<section class="section testimonials">
+  <div class="inner">
+    <div class="reveal" style="text-align:center;margin-bottom:0">
+      <p class="lbl">Müşterilerimiz</p>
+      <h2 class="h2">Gerçek işletmeler,<br/><span class="muted">gerçek sonuçlar.</span></h2>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"RestoranAI ile tüm platformlarımızı tek yerden yönetiyoruz. Sipariş kaçırmak tarihe karıştı. Ciro raporları çok detaylı, her gün sabah kahvemi içerken bakıyorum."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <p class="testi-name">Ahmet K.</p>
+            <p class="testi-place">Kebap Dünyası — İstanbul</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Yemeksepeti + Trendyol + Getir üçünü ayrı ayrı takip etmek çok yorucuydu. Şimdi tek ekran, tek bildirim. Siparişler artık hiç kaçmıyor. Kurulum da gerçekten 24 saatte tamamlandı."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">FY</div>
+          <div>
+            <p class="testi-name">Fatma Y.</p>
+            <p class="testi-place">Ev Yemekleri — Ankara</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"AI analiz özelliği inanılmaz. 'Cumartesi 18-21 arası %55 daha fazla sipariş geliyor' diyor, ben de o saate personel takviyesi yapıyorum. Gerçekten işe yarıyor."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">MÖ</div>
+          <div>
+            <p class="testi-name">Murat Ö.</p>
+            <p class="testi-place">Pizza Nostra — İzmir</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- BAŞVURU FORMU -->
 <section class="section basvuru" id="basvuru">
   <div class="inner">
@@ -804,8 +1004,7 @@
         <div style="margin-top:2.5rem;padding:1.5rem;background:rgba(0,200,215,.06);border:.5px solid rgba(0,200,215,.15);border-radius:12px">
           <p style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem">İletişim</p>
           <p style="font-size:.88rem;color:var(--gray-lt);line-height:1.7">
-            ✉ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f666169604f647a7d766a6e66216c6062">[email&#160;protected]</a><br/>
-            ✉ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8aeeeff9feefe1cae1fff8f3efebe3a4e9e5e7">[email&#160;protected]</a><br/>
+            ✉ <a href="mailto:info@kuryeai.com" style="color:inherit">info@kuryeai.com</a><br/>
             🌐 www.kuryeai.com
           </p>
         </div>
@@ -881,7 +1080,7 @@
         <div class="form-success" id="form-success">
           <div class="success-icon">✅</div>
           <p class="success-title">Başvurunuz Alındı!</p>
-          <p class="success-desc">En geç 24 saat içinde sizi arayacağız.<br/><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="244d4a424b644f51565d41454d0a474b49">[email&#160;protected]</a> adresinden de ulaşabilirsiniz.</p>
+          <p class="success-desc">En geç 24 saat içinde sizi arayacağız.<br/><a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> adresinden de ulaşabilirsiniz.</p>
         </div>
       </div>
     </div>
@@ -891,7 +1090,6 @@
 <!-- FOOTER -->
 <footer>
   <a href="/" class="footer-logo">
-    <img src="1000415338.png" alt="AI Teknoloji" onerror="this.style.display='none'"/>
     <span class="footer-brand">Kurye<em>AI</em></span>
   </a>
   <ul class="footer-links">
@@ -899,7 +1097,7 @@
     <li><a href="/#urunler">Ürünler</a></li>
     <li><a href="/kuryeai">KuryeAI</a></li>
     <li><a href="/restoranai#basvuru">Başvur</a></li>
-    <li><a href="/cdn-cgi/l/email-protection#40292e262f002b3532392521296e232f2d">İletişim</a></li>
+    <li><a href="mailto:info@kuryeai.com">İletişim</a></li>
   </ul>
   <p class="footer-copy">© 2025 AI Teknoloji ve Lojistik Ltd. Şti.</p>
 </footer>

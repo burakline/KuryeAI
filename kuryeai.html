@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8"/>
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('kuryeai-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+  <link rel="stylesheet" href="/theme.css"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KuryeAI — Kurye Ol | Akıllı Teslimat</title>
   <meta name="description" content="KuryeAI ile kurye olun. Havuz kurye veya SGK'lı sabit kurye modeli. Paket başı kazanç, esnek çalışma saatleri, ücretsiz yemek."/>
@@ -145,11 +147,7 @@
     .h2 .muted { color: var(--gray-lt); font-weight: 400; }
     .body-lg { font-size: .98rem; color: var(--gray-lt); line-height: 1.75; max-width: 480px; margin-top: 1.2rem; }
 
-    .reveal {
-      opacity: 0; transform: translateY(22px);
-      transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal { opacity: 1; transform: none; }
 
     /* ── MODELLER ── */
     .modeller { background: var(--dark); border-top: .5px solid var(--border); }
@@ -785,7 +783,7 @@
       </div>
 
       <div class="form-card reveal">
-        <div id="form-content">
+        <div id="form-body">
           <p class="form-title">Kurye Başvuru Formu</p>
           <p class="form-sub">Tüm alanları doldurun, sizi arayalım.</p>
 
@@ -857,7 +855,7 @@
         <div class="form-success" id="form-success">
           <div class="success-icon">🎉</div>
           <p class="success-title">Başvurunuz Alındı!</p>
-          <p class="success-desc">24 saat içinde sizi arayacağız.<br/>Sorularınız için <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb92959d94bb908e89829e9a92d5989496">[email&#160;protected]</a> adresine yazabilirsiniz.</p>
+          <p class="success-desc">24 saat içinde sizi arayacağız.<br/>Sorularınız için <a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> adresine yazabilirsiniz.</p>
         </div>
       </div>
     </div>
@@ -875,24 +873,41 @@
     <li><a href="/#urunler">Ürünler</a></li>
     <li><a href="/restoranai">RestoranAI</a></li>
     <li><a href="#basvuru">Başvur</a></li>
-    <li><a href="/cdn-cgi/l/email-protection#157c7b737a557e60676c70747c3b767a78">İletişim</a></li>
+    <li><a href="mailto:info@kuryeai.com">İletişim</a></li>
   </ul>
   <p class="footer-copy">© 2025 AI Teknoloji ve Lojistik Ltd. Şti.</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // Scroll reveal
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
+<script>
   // Nav scroll
   const nav = document.getElementById('main-nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
 
   // Model select
   function selectModel(btn, val) {
-    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('act
+    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('f-model').value = val;
+  }
+
+  // Form submit
+  function submitForm() {
+    const required = ['f-ad', 'f-tel', 'f-email', 'f-sehir'];
+    let ok = true;
+    required.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !el.value.trim()) {
+        if (el) el.style.borderColor = '#ff5f57';
+        ok = false;
+      } else {
+        el.style.borderColor = '';
+      }
+    });
+    if (!ok) { alert('Lütfen zorunlu alanları doldurun.'); return; }
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+</script>
+<script src="/theme.js"></script>
+</body>
+</html>

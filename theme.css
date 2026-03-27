@@ -227,6 +227,43 @@ html[data-theme="light"] .page-footer {
 /* ── DIVIDER ── */
 html[data-theme="light"] .divider { background: rgba(0,0,0,0.08); }
 
+/* ── KURYEAI.HTML SPECIFIC ── */
+html[data-theme="light"] .model-card,
+html[data-theme="light"] .av-card,
+html[data-theme="light"] .earn-visual,
+html[data-theme="light"] .ger-item {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.08);
+}
+html[data-theme="light"] .model-card:hover,
+html[data-theme="light"] .av-card:hover { background: #f0f2f7; }
+html[data-theme="light"] .mc-rates {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.08);
+}
+html[data-theme="light"] .mc-rate-row { border-bottom-color: rgba(0,0,0,0.06); }
+html[data-theme="light"] .mc-perk { color: #555; }
+html[data-theme="light"] .ger-text { color: #444; }
+html[data-theme="light"] .ip { color: #444; }
+html[data-theme="light"] .er-row {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.06);
+}
+html[data-theme="light"] .model-btn {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.12);
+  color: #555;
+}
+html[data-theme="light"] .model-btn:hover { border-color: var(--teal); color: var(--teal); }
+html[data-theme="light"] .model-btn.active {
+  background: rgba(0,150,170,.08);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+html[data-theme="light"] .footer-copy { color: #999; }
+html[data-theme="light"] .footer-links a { color: #666; }
+html[data-theme="light"] .footer-links a:hover { color: #0d0d0d; }
+
 /* ── THEME TOGGLE BUTTON ── */
 .theme-toggle {
   position: fixed;

@@ -2289,6 +2289,7 @@ onAuthStateChanged(auth, async user=>{
       document.getElementById("user-avatar").textContent = n[0].toUpperCase();
     }
     // Start Firebase RTDB connection with real restaurant ID
+    if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
     initFirebase();
     listenExtras();
   } catch(e){
@@ -2551,6 +2552,21 @@ async function initFirebase(){
   rtdbListen(`/restaurants/${RESTAURANT_ID}/staff`,snap=>{
     staff=objToArr(snap.val()); renderStaff();
   },_err);
+  // Admin broadcast bildirimleri (RTDB)
+  const _bcLoadTs=Date.now();
+  const _seenBc=new Set();
+  rtdbListen('/broadcasts',s=>{
+    const all=s.val();
+    if(!all)return;
+    Object.entries(all).forEach(([id,b])=>{
+      if(!b||!b.createdAt||b.createdAt<_bcLoadTs)return;
+      if(_seenBc.has(id))return;
+      const isForMe=b.target==='all'||b.target==='restoran'||(b.target==='single'&&b.userId===RESTAURANT_ID);
+      if(!isForMe)return;
+      _seenBc.add(id);
+      _showBcNotif(b.title,b.body);
+    });
+  },()=>{});
 
   // Seed verisi
   try{
@@ -2563,6 +2579,18 @@ async function initFirebase(){
   }catch(err){
     console.error("Firebase seed hatası:",err.code,err.message);
   }
+}
+
+function _showBcNotif(title,body){
+  showToast(`📢 ${title||'Bildirim'}: ${body||''}`);
+  if(!('Notification' in window))return;
+  const show=()=>{
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification(title||'KuryeAI',{body:body||'',icon:'/1000417933.png',badge:'/1000417933.png'});
+    }).catch(()=>{try{new Notification(title||'KuryeAI',{body:body||''});}catch{}});
+  };
+  if(Notification.permission==='granted')show();
+  else if(Notification.permission!=='denied')Notification.requestPermission().then(p=>{if(p==='granted')show();});
 }
 
 // ── Render All ─────────────────────────────────────────────────────────────

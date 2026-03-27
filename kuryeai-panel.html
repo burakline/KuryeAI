@@ -1140,6 +1140,32 @@ function initFB(){
     G.assignedRest=d||null;
     _renderAssignedRest();
   },()=>{});
+  // Admin broadcast bildirimleri (RTDB)
+  const _bcLoadTs=Date.now();
+  const _seenBc=new Set();
+  window._rtdbListen&&window._rtdbListen('/broadcasts',s=>{
+    const all=s.val();
+    if(!all)return;
+    Object.entries(all).forEach(([id,b])=>{
+      if(!b||!b.createdAt||b.createdAt<_bcLoadTs)return;
+      if(_seenBc.has(id))return;
+      const isForMe=b.target==='all'||b.target==='kurye'||(b.target==='single'&&b.userId===G.id);
+      if(!isForMe)return;
+      _seenBc.add(id);
+      _showBcNotif(b.title,b.body);
+    });
+  },()=>{});
+}
+function _showBcNotif(title,body){
+  toast(`📢 ${title||'Bildirim'}: ${body||''}`,'info');
+  if(!('Notification' in window))return;
+  const show=()=>{
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification(title||'KuryeAI',{body:body||'',icon:'/1000417933.png',badge:'/1000417933.png'});
+    }).catch(()=>{try{new Notification(title||'KuryeAI',{body:body||''});}catch{}});
+  };
+  if(Notification.permission==='granted')show();
+  else if(Notification.permission!=='denied')Notification.requestPermission().then(p=>{if(p==='granted')show();});
 }
 
 // Firebase bağlantı noktası — RTDB'e kısa GET ile kontrol
@@ -1571,6 +1597,7 @@ window._initKuryeApp = async function() {
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('mainApp').classList.add('active');
   setTimeout(()=>{initMap();initGPS();initFB();initWL();initStats();},300);
+  if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
   toast('Hoş geldin, '+G.name+'! 👋','success');
 
   // Firestore gerçek zamanlı dinleyiciler

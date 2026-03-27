@@ -1749,7 +1749,9 @@ window.sendBroadcast=async()=>{
   const userId=target==='single'?document.getElementById('notif-user-id')?.value:null;
   if(!title||!body){showToast('Başlık ve mesaj zorunlu','err');return;}
   try{
-    await addDoc(collection(db,'broadcasts'),{target,userId:userId||null,title,body,createdAt:serverTimestamp(),sentBy:'admin'});
+    const docRef=await addDoc(collection(db,'broadcasts'),{target,userId:userId||null,title,body,createdAt:serverTimestamp(),sentBy:'admin'});
+    // RTDB'ye de yaz → kurye ve restoran panelleri gerçek zamanlı alır
+    rtdbSet(rtdbRef(rtdb,'broadcasts/'+docRef.id),{target,userId:userId||null,title,body,createdAt:Date.now(),sentBy:'admin'}).catch(()=>{});
     document.getElementById('notif-title').value='';document.getElementById('notif-body').value='';
     showToast('✓ Bildirim gönderildi','ok');loadBroadcasts();
   }catch(e){showToast('Hata: '+e.message,'err');}

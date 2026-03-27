@@ -1179,7 +1179,44 @@ tbody tr:hover{background:var(--bg)}
                   </div>
                   <div class="form-group" style="margin-bottom:0">
                     <label class="form-label">Çalışma Saatleri</label>
-                    <input class="form-input" type="text" id="rest-hours" placeholder="09:00 — 23:00"/>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                      <!-- Açılış -->
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+                        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px">Açılış</div>
+                        <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:6px 10px">
+                          <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+                            <button onclick="adjHour('open',1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▲</button>
+                            <span id="hours-oh" style="font-size:22px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;min-width:30px;text-align:center;line-height:1.2">09</span>
+                            <button onclick="adjHour('open',-1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▼</button>
+                          </div>
+                          <span style="font-size:20px;font-weight:800;color:var(--text3);margin:0 1px;align-self:center">:</span>
+                          <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+                            <button onclick="adjMin('open',1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▲</button>
+                            <span id="hours-om" style="font-size:22px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;min-width:30px;text-align:center;line-height:1.2">00</span>
+                            <button onclick="adjMin('open',-1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▼</button>
+                          </div>
+                        </div>
+                      </div>
+                      <span style="font-size:18px;font-weight:700;color:var(--text3);margin-top:18px">—</span>
+                      <!-- Kapanış -->
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+                        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px">Kapanış</div>
+                        <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:6px 10px">
+                          <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+                            <button onclick="adjHour('close',1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▲</button>
+                            <span id="hours-ch" style="font-size:22px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;min-width:30px;text-align:center;line-height:1.2">23</span>
+                            <button onclick="adjHour('close',-1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▼</button>
+                          </div>
+                          <span style="font-size:20px;font-weight:800;color:var(--text3);margin:0 1px;align-self:center">:</span>
+                          <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+                            <button onclick="adjMin('close',1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▲</button>
+                            <span id="hours-cm" style="font-size:22px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;min-width:30px;text-align:center;line-height:1.2">00</span>
+                            <button onclick="adjMin('close',-1)" style="width:28px;height:22px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--teal);font-weight:700;border-radius:4px;line-height:1" onmouseover="this.style.background='var(--teal-bg)'" onmouseout="this.style.background='none'">▼</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <input type="hidden" id="rest-hours"/>
                   </div>
                 </div>
                 <div style="margin-top:14px">
@@ -3212,7 +3249,18 @@ function applySettings(){
   if(settings.rest_name)document.getElementById("rest-name").value=settings.rest_name;
   if(settings.rest_address)document.getElementById("rest-address").value=settings.rest_address;
   if(settings.rest_phone)document.getElementById("rest-phone").value=settings.rest_phone;
-  if(settings.rest_hours)document.getElementById("rest-hours").value=settings.rest_hours;
+  if(settings.rest_hours){
+    const parts=settings.rest_hours.split('—').map(s=>s.trim());
+    if(parts.length===2){
+      const [oh=9,om=0]=(parts[0]||'09:00').split(':').map(Number);
+      const [ch=23,cm=0]=(parts[1]||'23:00').split(':').map(Number);
+      const el=id=>document.getElementById(id);
+      el('hours-oh').textContent=String(isNaN(oh)?9:oh).padStart(2,'0');
+      el('hours-om').textContent=String(isNaN(om)?0:om).padStart(2,'0');
+      el('hours-ch').textContent=String(isNaN(ch)?23:ch).padStart(2,'0');
+      el('hours-cm').textContent=String(isNaN(cm)?0:cm).padStart(2,'0');
+    }
+  }
 }
 
 window.selectMode=(el,type)=>{
@@ -3226,6 +3274,23 @@ window.selectMode=(el,type)=>{
   if(type==="pricing")document.getElementById("custom-pricing").style.display=el.dataset.mode==="custom"?"block":"none";
 };
 
+window.adjHour=(type,delta)=>{
+  const id=type==='open'?'hours-oh':'hours-ch';
+  const el=document.getElementById(id);
+  let v=(parseInt(el.textContent)||0)+delta;
+  if(v<0)v=23; if(v>23)v=0;
+  el.textContent=String(v).padStart(2,'0');
+};
+window.adjMin=(type,delta)=>{
+  const id=type==='open'?'hours-om':'hours-cm';
+  const el=document.getElementById(id);
+  const steps=[0,15,30,45];
+  let cur=parseInt(el.textContent)||0;
+  let idx=steps.findIndex(s=>s>=cur);
+  if(idx===-1)idx=0;
+  idx=(idx+delta+steps.length)%steps.length;
+  el.textContent=String(steps[idx]).padStart(2,'0');
+};
 window.toggleSetting=(el,key)=>{
   const isOn=el.classList.contains("on");
   el.className=`toggle ${isOn?"off":"on"}`;
@@ -3236,7 +3301,8 @@ window.saveSettings=async()=>{
   settings.rest_name=document.getElementById("rest-name").value;
   settings.rest_address=document.getElementById("rest-address").value;
   settings.rest_phone=document.getElementById("rest-phone").value;
-  settings.rest_hours=document.getElementById("rest-hours").value;
+  const _g=id=>document.getElementById(id).textContent.trim();
+  settings.rest_hours=`${_g('hours-oh')}:${_g('hours-om')} — ${_g('hours-ch')}:${_g('hours-cm')}`;
   settings.custom_base=parseFloat(document.getElementById("custom-base").value)||0;
   settings.custom_km=parseFloat(document.getElementById("custom-km").value)||0;
   try{

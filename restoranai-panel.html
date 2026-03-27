@@ -2289,12 +2289,12 @@ onAuthStateChanged(auth, async user=>{
         setTimeout(showOnboarding, 800);
       }
 
-      // Set dynamic restaurant ID
-      RESTAURANT_ID = data.restoranId || user.uid;
+      // Set dynamic restaurant ID — always use Firebase Auth UID (matches admin panel + courier assignment)
+      RESTAURANT_ID = user.uid;
       const n = data.name||user.displayName||user.email?.split("@")[0]||"Restoran";
       document.getElementById("user-display").textContent = n;
       document.getElementById("user-avatar").textContent = n[0].toUpperCase();
-      document.getElementById("rest-id-label").textContent = data.restoranId||user.uid;
+      document.getElementById("rest-id-label").textContent = user.uid;
       if(data.logoURL){
         RESTAURANT_LOGO_URL = data.logoURL;
         const logoImg=document.getElementById('restoran-logo');

@@ -2042,6 +2042,11 @@ setTimeout(()=>{
 // ── RTDB REST/SSE (WebSocket SDK bağlanamıyor — SSE ile gerçek zamanlı) ──────
 const RTDB_BASE='https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app';
 const _sseMap=new Map();
+// SDK WebSocket testi — onValue çağrılmazsa SDK hiç bağlanmaz
+onValue(ref(db,'.info/connected'),snap=>{
+  _wsLog.push(snap.val()?'✅ SDK WebSocket BAĞLANDI!':'🟡 SDK bağlantı bekliyor…');
+  _showWsLog();
+});
 async function _rtdbToken(){
   if(!auth.currentUser) throw new Error('Oturum açılmamış');
   return auth.currentUser.getIdToken();

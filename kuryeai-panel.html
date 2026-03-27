@@ -923,7 +923,7 @@ const G={
   stats:{dur:0,km:0,speeds:[],earn:0,routeKm:0},
   gps:{lat:39.9334,lng:32.8597,speed:0},
   map:null,marker:null,trail:null,restMarker:null,delivMarker:null,delivRouteLine:null,
-  returning:null,_delivLat:null,_delivLng:null,
+  returning:null,_delivLat:null,_delivLng:null,followTimer:null,
   assignedRest:null,
   follow:true,bearing:0,lastGPS:0,
   gpsW:null,gpsI:null,simI:null,stI:null,cI:null,wl:null,
@@ -961,8 +961,14 @@ function initMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
   G.map=m; mkMarker();
   G.trail=L.polyline([],{color:'#009688',weight:3.5,opacity:0.75,dashArray:'6,5'}).addTo(m);
-  // Disable follow mode when user manually drags the map
-  m.on('dragstart',()=>{G.follow=false;updFollowBtn();});
+  // Auto-refollow: kullanıcı haritadan el çekince 5sn sonra takip moduna geri dön
+  function _resetFollowTimer(){
+    clearTimeout(G.followTimer);
+    G.followTimer=setTimeout(()=>{G.follow=true;updFollowBtn();},5000);
+  }
+  m.on('dragstart',()=>{G.follow=false;updFollowBtn();_resetFollowTimer();});
+  m.getContainer().addEventListener('wheel',()=>{G.follow=false;updFollowBtn();_resetFollowTimer();},{passive:true});
+  m.getContainer().addEventListener('touchstart',()=>{if(!G.follow)_resetFollowTimer();},{passive:true});
   // Bağlı restoran pini (assignedRest yüklendiyse)
   if(G.assignedRest)_showAssignedRestOnMap();
 }
@@ -990,9 +996,15 @@ function updFollowBtn(){const b=document.getElementById('followBtn');if(b)b.clas
 function toggleFollow(){
   G.follow=!G.follow;
   updFollowBtn();
-  if(G.follow&&G.map)G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
+  if(G.follow&&G.map){
+    if(G.map.getZoom()<14)G.map.flyTo([G.gps.lat,G.gps.lng],15,{animate:true,duration:1.0});
+    else G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
+  }
 }
-function centerMap(){if(!G.follow){G.follow=true;updFollowBtn();}if(G.map)G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});}
+function centerMap(){
+  if(!G.follow){G.follow=true;updFollowBtn();}
+  if(G.map)G.map.flyTo([G.gps.lat,G.gps.lng],Math.max(G.map.getZoom(),15),{animate:true,duration:1.0});
+}
 function calcBearing(a,b,c,d){const dL=(d-b)*Math.PI/180,a1=a*Math.PI/180,a2=c*Math.PI/180,y=Math.sin(dL)*Math.cos(a2),x=Math.cos(a1)*Math.sin(a2)-Math.sin(a1)*Math.cos(a2)*Math.cos(dL);return(Math.atan2(y,x)*180/Math.PI+360)%360;}
 
 // GPS
@@ -1025,7 +1037,10 @@ function initGPS(){
       const el=document.getElementById('kurMrkArrow');
       if(el)el.style.transform=`rotate(${G.bearing}deg)`;
     }
-    if(G.follow&&G.map)G.map.panTo([la,ln],{animate:true,duration:0.8});
+    if(G.follow&&G.map){
+      if(G.map.getZoom()<14)G.map.flyTo([la,ln],15,{animate:true,duration:1.0});
+      else G.map.panTo([la,ln],{animate:true,duration:0.8});
+    }
     document.getElementById('gpsDot').style.background='var(--green)';
     // Adaptif push: hareket varsa normal, duruyorsa yavaş
     G._moving=(curSpeed>0.5);
@@ -1047,7 +1062,10 @@ function simGPS(){
       if(el)el.style.transform=`rotate(${G.bearing}deg)`;
     }
     if(G.shift.on){G.stats.km+=0.01;G.trail.addLatLng([G.gps.lat,G.gps.lng]);}
-    if(G.follow&&G.map)G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
+    if(G.follow&&G.map){
+      if(G.map.getZoom()<14)G.map.flyTo([G.gps.lat,G.gps.lng],15,{animate:true,duration:1.0});
+      else G.map.panTo([G.gps.lat,G.gps.lng],{animate:true,duration:0.8});
+    }
   },3000);
   if(!G.gpsI)G.gpsI=setInterval(pushGPS,3000);
 }

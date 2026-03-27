@@ -313,9 +313,12 @@
   let currentUser = null;
   let shiftStart = null;
   let shiftTimer = null;
+  let _dataLoaded = false;
 
   onAuthStateChanged(auth, async (user) => {
+    if (_dataLoaded) return;
     if (!user || !user.emailVerified) { window.location.href = '/izincikuryeai-izinci-login'; return; }
+    _dataLoaded = true;
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || (snap.data().role !== 'izinci_kurye' && snap.data().role !== 'admin')) {
@@ -403,9 +406,9 @@
           <span class="st-badge st-open">Bekliyor</span>
         </div>
         <div class="order-info">
-          📍 ${o.address||o.fromAddr||'—'}<br/>
+          📍 ${esc(o.address||o.fromAddr||'—')}<br/>
           🍽️ ${esc(o.restoranName||'—')}<br/>
-          💰 ₺${o.total||0}
+          💰 ₺${parseFloat(o.total||0).toFixed(2)}
         </div>
       </div>`).join('');
   }
@@ -460,9 +463,11 @@
       </div>`).join('');
   }
 
+  let _unsubLedger = null;
   function loadLedger() {
+    if (_unsubLedger) _unsubLedger();
     const q = query(collection(db,'users',currentUser.uid,'ledger'), orderBy('createdAt','desc'));
-    onSnapshot(q, snap => {
+    _unsubLedger = onSnapshot(q, snap => {
       const entries = snap.docs.map(d=>({id:d.id,...d.data()}));
       let total = 0, ayTotal = 0;
       const now = new Date();
@@ -635,6 +640,7 @@
 
   // ---- AÇIK TALEPLER ----
   let _sentTeklifler = new Set(); // talepIds already sent by this kurye
+  let _unsubAcikTalepler = null;
 
   async function listenAcikTalepler() {
     // Pre-load sent teklifler for this kurye
@@ -644,12 +650,13 @@
       ssnap.docs.forEach(d => _sentTeklifler.add(d.data().talepId));
     } catch(e) {}
 
+    if (_unsubAcikTalepler) _unsubAcikTalepler();
     const q = query(
       collection(db,'izinciTalepler'),
       where('status','==','open'),
       orderBy('createdAt','desc')
     );
-    onSnapshot(q, snap => {
+    _unsubAcikTalepler = onSnapshot(q, snap => {
       const talepler = snap.docs.map(d=>({id:d.id,...d.data()}));
       renderAcikTalepler(talepler);
     }, ()=>{});
@@ -665,17 +672,17 @@
       const already = _sentTeklifler.has(t.id);
       return `<div class="talep-item">
         <div class="talep-head">
-          <span class="talep-id">${t.talepId || t.id}</span>
+          <span class="talep-id">${esc(t.talepId || t.id)}</span>
           <span class="st-badge st-teal">Açık</span>
         </div>
         <div class="talep-info">
-          📅 ${t.tarih || '—'} ${t.saat ? '· ' + t.saat : ''}<br>
-          📍 <strong>${t.adres || '—'}</strong><br>
-          ${t.aciklama ? `💬 ${t.aciklama}` : ''}
+          📅 ${esc(t.tarih || '—')} ${t.saat ? '· ' + esc(t.saat) : ''}<br>
+          📍 <strong>${esc(t.adres || '—')}</strong><br>
+          ${t.aciklama ? `💬 ${esc(t.aciklama)}` : ''}
         </div>
         ${already
           ? `<div class="teklif-sent">✅ Teklif gönderildi</div>`
-          : `<button class="btn-teklif" id="tbtn-${t.id}" onclick="sendTeklif('${t.id}')">Teklif Gönder</button>`
+          : `<button class="btn-teklif" id="tbtn-${esc(t.id)}" onclick="sendTeklif('${esc(t.id)}')">Teklif Gönder</button>`
         }
       </div>`;
     }).join('');
@@ -683,6 +690,7 @@
 
   window.sendTeklif = async (talepId) => {
     if (_sentTeklifler.has(talepId)) return;
+    _sentTeklifler.add(talepId); // optimistic lock to prevent double-click race
     const btn = document.getElementById('tbtn-' + talepId);
     if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
     try {
@@ -702,14 +710,19 @@
       if (btn) { btn.outerHTML = '<div class="teklif-sent">✅ Teklif gönderildi</div>'; }
       toast('Teklif gönderildi ✅','success');
     } catch(e) {
+      _sentTeklifler.delete(talepId); // rollback optimistic lock on failure
       if (btn) { btn.disabled = false; btn.textContent = 'Teklif Gönder'; }
-      toast('Hata: ' + e.message,'error');
+      toast('Teklif gönderilemedi','error');
     }
   };
   // ---- /AÇIK TALEPLER ----
 
   window.doLogout = async () => {
     clearInterval(shiftTimer);
+    if (_unsubOrders)       { try{_unsubOrders();}catch{} _unsubOrders=null; }
+    if (_unsubRouteOrders)  { try{_unsubRouteOrders();}catch{} _unsubRouteOrders=null; }
+    if (_unsubLedger)       { try{_unsubLedger();}catch{} _unsubLedger=null; }
+    if (_unsubAcikTalepler) { try{_unsubAcikTalepler();}catch{} _unsubAcikTalepler=null; }
     await signOut(auth);
     window.location.href = '/izincikuryeai-izinci-login';
   };

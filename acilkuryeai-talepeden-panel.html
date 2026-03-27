@@ -126,6 +126,8 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
   let currentUser = null;
+  let _dataLoaded = false;
+  let _unsubTaleplerim = null;
 
   function generateID(prefix) {
     const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -135,7 +137,9 @@
   }
 
   onAuthStateChanged(auth, async (user) => {
+    if (_dataLoaded) return;
     if (!user || !user.emailVerified) { window.location.href = '/acilkuryeai-talepeden-login'; return; }
+    _dataLoaded = true;
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || snap.data().role !== 'acil_talep') {
@@ -148,8 +152,9 @@
   });
 
   function listenTaleplerim() {
+    if (_unsubTaleplerim) _unsubTaleplerim();
     const q = query(collection(db,'acilTalepler'), where('userId','==',currentUser.uid), orderBy('createdAt','desc'));
-    onSnapshot(q, snap => {
+    _unsubTaleplerim = onSnapshot(q, snap => {
       const list = snap.docs.map(d=>({id:d.id,...d.data()}));
       renderTaleplerim(list);
     }, ()=>{});
@@ -164,7 +169,7 @@
       const st = t.status||'open';
       const fee = t.feeEstimate ? `<br/>💰 Tahmini Ücret: <strong>₺${t.feeEstimate}</strong>` : '';
       const cancelBtn = st === 'open'
-        ? `<button onclick="cancelTalep('${t.id}')" style="margin-top:.6rem;width:100%;background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:.5rem;font-size:.8rem;font-weight:700;cursor:pointer">✕ Talebi İptal Et</button>`
+        ? `<button onclick="cancelTalep('${esc(t.id)}')" style="margin-top:.6rem;width:100%;background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:.5rem;font-size:.8rem;font-weight:700;cursor:pointer">✕ Talebi İptal Et</button>`
         : '';
       return `<div class="talep-item">
         <div class="talep-item-head">
@@ -176,7 +181,7 @@
           📦 ${esc(t.description||'—')}${fee}<br/>
           🕐 ${t.createdAt ? new Date(t.createdAt).toLocaleString('tr-TR') : ''}
         </div>
-        ${t.kuryeName ? `<div class="kurye-info">🛵 Kurye: <strong>${t.kuryeName}</strong></div>` : ''}
+        ${t.kuryeName ? `<div class="kurye-info">🛵 Kurye: <strong>${esc(t.kuryeName)}</strong></div>` : ''}
         ${cancelBtn}
       </div>`;
     }).join('');
@@ -208,7 +213,7 @@
       await updateDoc(doc(db,'acilTalepler',talepDocId), { status:'cancelled' });
       toast('Talep iptal edildi.','info');
     } catch(e) {
-      toast('İptal işlemi başarısız: ' + e.message,'error');
+      toast('İptal işlemi başarısız','error');
     }
   };
 
@@ -245,13 +250,17 @@
       toast('Talebiniz oluşturuldu! 📦','success');
       setTimeout(()=>window.switchTab('taleplerim'),1500);
     } catch(e) {
-      err.textContent = 'Talep oluşturulamadı: ' + e.message;
+      err.textContent = 'Talep oluşturulamadı. Lütfen tekrar deneyin.';
       err.style.display = 'block';
     }
     btn.disabled = false; btn.textContent = 'Talep Gönder →';
   };
 
-  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkuryeai-talepeden-login'; };
+  window.doLogout = async () => {
+    if (_unsubTaleplerim) { try{_unsubTaleplerim();}catch{} _unsubTaleplerim=null; }
+    await signOut(auth);
+    window.location.href='/acilkuryeai-talepeden-login';
+  };
   window.switchTab = (t) => {
     document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));

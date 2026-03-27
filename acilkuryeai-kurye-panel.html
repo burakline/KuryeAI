@@ -181,9 +181,12 @@
   let currentUser = null;
   let activeOrder = null;
   let unsubTalepler = null;
+  let _dataLoaded = false;
 
   onAuthStateChanged(auth, async (user) => {
+    if (_dataLoaded) return;
     if (!user || !user.emailVerified) { window.location.href = '/acilkuryeai-kurye-login'; return; }
+    _dataLoaded = true;
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       if (!snap.exists() || snap.data().role !== 'acil_kurye') {
@@ -248,15 +251,15 @@
         <div class="talep-addr">📍 ${esc(t.toAddr||'—')}</div>
         <div class="talep-detail">📦 ${esc(t.description||'—')} · ${t.fee?'₺'+t.fee:''}</div>
         <div class="talep-actions">
-          <button class="btn-accept" onclick="acceptTalep('${t.id}')">Kabul Et</button>
-          <button class="btn-reject" onclick="rejectTalep('${t.id}')">Reddet</button>
+          <button class="btn-accept" onclick="acceptTalep('${esc(t.id)}')">Kabul Et</button>
+          <button class="btn-reject" onclick="rejectTalep('${esc(t.id)}')">Reddet</button>
         </div>
       </div>`).join('');
   }
 
   window.acceptTalep = async (id) => {
     try {
-      await updateDoc(doc(db,'acilTalepler',id), { status:'accepted', kuryeId:currentUser.uid, kuryeName:currentUser.displayName, acceptedAt:new Date().toISOString() });
+      await updateDoc(doc(db,'acilTalepler',id), { status:'accepted', kuryeId:currentUser.uid, kuryeName:currentUser.displayName||currentUser.name||'', acceptedAt:new Date().toISOString() });
       const snap = await getDoc(doc(db,'acilTalepler',id));
       activeOrder = { id, ...snap.data() };
       renderAktif();
@@ -327,7 +330,11 @@
     } catch(e) { toast('Kayıt hatası','error'); }
   };
 
-  window.doLogout = async () => { await signOut(auth); window.location.href='/acilkuryeai-kurye-login'; };
+  window.doLogout = async () => {
+    if (unsubTalepler) { try{unsubTalepler();}catch{} unsubTalepler=null; }
+    await signOut(auth);
+    window.location.href='/acilkuryeai-kurye-login';
+  };
 
   window.switchTab = (t) => {
     document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));

@@ -2457,23 +2457,29 @@ setTimeout(hideLoader, 2500);
 // ── Firebase'i ARKA PLANDA bağla ──────────────────────────────────────────
 async function initFirebase(){
   goOnline(db);
-  setFbStatus("connected");
+
+  const _rtdbErr=err=>{
+    setFbStatus("disconnected");
+    showToast("RTDB Hata: "+err.code+" — "+err.message,"error");
+    console.error("RTDB listener hatası:",err);
+  };
 
   // SDK onValue listeners — gerçek zamanlı
   onValue(ref(db,`restaurants/${RESTAURANT_ID}/orders`),snap=>{
+    setFbStatus("connected");
     orders=objToArr(snap.val()); renderAll();
-  });
+  },_rtdbErr);
   onValue(ref(db,`restaurants/${RESTAURANT_ID}/menu`),snap=>{
     menu=objToArr(snap.val()); renderMenu();
-  });
+  },_rtdbErr);
   onValue(ref(db,`restaurants/${RESTAURANT_ID}/couriers`),snap=>{
     couriers=objToArr(snap.val());
     renderCouriers();renderTrackingCouriers();renderDashCouriers();
     updateMapMarkers();updateMapDashMarkers();updateMetrics();
-  });
+  },_rtdbErr);
   onValue(ref(db,`restaurants/${RESTAURANT_ID}/staff`),snap=>{
     staff=objToArr(snap.val()); renderStaff();
-  });
+  },_rtdbErr);
 
   // Seed verisi
   try{
@@ -2484,7 +2490,8 @@ async function initFirebase(){
     else { settings={...SEED_SETTINGS,...ss.val()}; applySettings(); }
     showToast("Firebase bağlantısı kuruldu ✓");
   }catch(err){
-    console.error("Firebase seed hatası:",err);
+    console.error("Firebase seed hatası:",err.code,err.message);
+    showToast("Seed hatası: "+err.code+" — "+err.message,"error");
   }
 }
 

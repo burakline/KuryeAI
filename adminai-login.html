@@ -126,7 +126,7 @@
   const loader = document.getElementById('page-loader');
 
   onAuthStateChanged(auth, async (user) => {
-    if (user) {
+    if (user && user.emailVerified) {
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
         if (snap.exists() && snap.data().role === 'admin') {

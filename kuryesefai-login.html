@@ -83,7 +83,7 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 onAuthStateChanged(auth,async user=>{
   const loader=document.getElementById('loader');
-  if(user){
+  if(user&&user.emailVerified){
     const snap=await getDoc(doc(db,'users',user.uid));
     if(snap.exists()&&snap.data().isZoneChief===true){
       window.location.href='/kuryesefai-panel';return;
@@ -103,6 +103,11 @@ window.doLogin=async()=>{
   btn.classList.add('loading');btn.disabled=true;
   try{
     const cred=await signInWithEmailAndPassword(auth,email,pw);
+    if(!cred.user.emailVerified){
+      await signOut(auth);
+      err.textContent='E-posta adresinizi doğrulamanız gerekiyor.';err.classList.add('show');
+      btn.classList.remove('loading');btn.disabled=false;return;
+    }
     const snap=await getDoc(doc(db,'users',cred.user.uid));
     if(!snap.exists()||snap.data().isZoneChief!==true){
       await signOut(auth);

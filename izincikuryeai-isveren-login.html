@@ -236,7 +236,7 @@
       setTimeout(() => window.switchTab('giris'), 5000);
     } catch(e) {
       const msgs = { 'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.', 'auth/invalid-email':'Geçersiz e-posta adresi.', 'auth/weak-password':'Şifre çok zayıf.' };
-      err.textContent = msgs[e.code] || e.message;
+      err.textContent = msgs[e.code] || 'Kayıt yapılamadı. Lütfen tekrar deneyin.';
       err.style.display = 'block';
     }
     btn.disabled = false; btn.textContent = 'Kayıt Ol & E-posta Doğrula →';

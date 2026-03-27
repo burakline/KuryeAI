@@ -2126,6 +2126,7 @@ let IS_DEMO = false;    // demo@kuryeai.com hesabı aktifse true
 let currentPage="dashboard", orderFilter="all", menuFilter="all";
 
 let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
+let courierGPS={}, courierGPSListeners={};
 let deleteCourierId=null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -2539,6 +2540,7 @@ async function initFirebase(){
     couriers=objToArr(snap.val());
     renderCouriers();renderTrackingCouriers();renderDashCouriers();
     updateMapMarkers();updateMapDashMarkers();updateMetrics();
+    syncCourierGPSListeners();
   },_err);
   rtdbListen(`/restaurants/${RESTAURANT_ID}/staff`,snap=>{
     staff=objToArr(snap.val()); renderStaff();
@@ -2795,51 +2797,100 @@ function initMapDash(){
 
 function updateMapDashMarkers(){
   if(!mapDashInstance)return;
-  Object.values(courierMarkersD).forEach(m=>m.remove());
-  courierMarkersD={};
   couriers.filter(c=>c.status==="busy"||c.status==="available").forEach(c=>{
-    const coords=MOCK_COORDS[c.id]||[ANKARA_CENTER[0]+(Math.random()-.5)*.02,ANKARA_CENTER[1]+(Math.random()-.5)*.02];
+    const coords=_courierCoords(c);
+    if(!coords)return;
     const color=c.status==="busy"?"#f59e0b":"#00c48c";
     const icon=L.divIcon({
       className:"",
       html:`<div style="width:32px;height:32px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.2)" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
       iconSize:[32,32],iconAnchor:[16,16],
     });
-    const marker=L.marker(coords,{icon}).addTo(mapDashInstance);
-    marker.bindPopup(`<b>${c.name}</b><br><small>${c.status==="busy"?"Meşgul":"Müsait"}</small>`);
-    courierMarkersD[c.id]=marker;
+    if(courierMarkersD[c.id]){
+      courierMarkersD[c.id].setLatLng(coords);
+      courierMarkersD[c.id].setIcon(icon);
+    }else{
+      const marker=L.marker(coords,{icon}).addTo(mapDashInstance);
+      marker.bindPopup(`<b>${c.name}</b><br><small>${c.status==="busy"?"Meşgul":"Müsait"}</small>`);
+      courierMarkersD[c.id]=marker;
+    }
   });
+  Object.keys(courierMarkersD).forEach(id=>{
+    if(!couriers.find(c=>c.id===id&&(c.status==="busy"||c.status==="available"))){
+      courierMarkersD[id].remove();delete courierMarkersD[id];
+    }
+  });
+}
+
+function _courierCoords(c){
+  const g=courierGPS[c.id];
+  if(g&&g.lat&&g.lng)return[g.lat,g.lng];
+  return null;
 }
 
 function updateMapMarkers(){
   if(!mapInstance)return;
-  // Mevcut markerları temizle
-  Object.values(courierMarkers).forEach(m=>m.remove());
-  courierMarkers={};
-
-  couriers.filter(c=>c.status==="busy"||c.status==="available").forEach((c,i)=>{
-    const coords=MOCK_COORDS[c.id]||[ANKARA_CENTER[0]+(Math.random()-.5)*.02,ANKARA_CENTER[1]+(Math.random()-.5)*.02];
+  couriers.filter(c=>c.status==="busy"||c.status==="available").forEach((c)=>{
+    const coords=_courierCoords(c);
+    if(!coords)return; // GPS yoksa marker koyma
     const color=c.status==="busy"?"#f59e0b":"#00c48c";
+    const speed=courierGPS[c.id]?.speed||0;
     const icon=L.divIcon({
       className:"",
       html:`<div style="width:36px;height:36px;border-radius:50%;background:white;border:3px solid ${color};display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);cursor:pointer" title="${c.name}">${vehicleIcon[c.vehicle]||"🛵"}</div>`,
       iconSize:[36,36],iconAnchor:[18,18],
     });
-    const marker=L.marker(coords,{icon}).addTo(mapInstance);
-    marker.bindPopup(`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:140px">
-      <div style="font-weight:700;font-size:14px;margin-bottom:4px">${c.name}</div>
-      <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||"—"}</div>
-      <div style="font-size:12px;margin-top:6px"><span style="background:${c.status==="busy"?"#fef3c7":"#d1fae5"};color:${c.status==="busy"?"#d97706":"#059669"};padding:2px 8px;border-radius:999px;font-weight:600">${c.status==="busy"?"Meşgul":"Müsait"}</span></div>
-      <div style="font-size:11px;color:#9ca3af;margin-top:6px">⭐ ${c.rating} · ${c.deliveries} teslimat</div>
-    </div>`);
-    courierMarkers[c.id]=marker;
+    if(courierMarkers[c.id]){
+      courierMarkers[c.id].setLatLng(coords);
+      courierMarkers[c.id].setIcon(icon);
+    }else{
+      const marker=L.marker(coords,{icon}).addTo(mapInstance);
+      marker.bindPopup(`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:140px">
+        <div style="font-weight:700;font-size:14px;margin-bottom:4px">${c.name}</div>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||"—"}</div>
+        <div style="font-size:12px;margin-top:6px"><span style="background:${c.status==="busy"?"#fef3c7":"#d1fae5"};color:${c.status==="busy"?"#d97706":"#059669"};padding:2px 8px;border-radius:999px;font-weight:600">${c.status==="busy"?"Meşgul":"Müsait"}</span></div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:6px">⭐ ${c.rating} · ${c.deliveries} teslimat · ${speed}km/s</div>
+      </div>`);
+      courierMarkers[c.id]=marker;
+    }
   });
-
+  // Artık listede olmayan marker'ları kaldır
+  Object.keys(courierMarkers).forEach(id=>{
+    if(!couriers.find(c=>c.id===id&&(c.status==="busy"||c.status==="available"))){
+      courierMarkers[id].remove();delete courierMarkers[id];
+    }
+  });
   // Sayıları güncelle
   const active=couriers.filter(c=>c.status==="busy").length;
   const delivering=orders.filter(o=>o.status==="on_the_way").length;
   document.getElementById("map-active").textContent=active;
   document.getElementById("map-delivering").textContent=delivering;
+}
+
+function syncCourierGPSListeners(){
+  const activeIds=new Set(couriers.filter(c=>c.status==="busy"||c.status==="available").map(c=>c.id));
+  // Kaldırılan kuryeler için dinleyiciyi durdur
+  Object.keys(courierGPSListeners).forEach(id=>{
+    if(!activeIds.has(id)){
+      courierGPSListeners[id]();
+      delete courierGPSListeners[id];
+      delete courierGPS[id];
+      if(courierMarkers[id]){courierMarkers[id].remove();delete courierMarkers[id];}
+    }
+  });
+  // Yeni kuryeler için dinleyici başlat
+  activeIds.forEach(id=>{
+    if(!courierGPSListeners[id]){
+      courierGPSListeners[id]=rtdbListen(`/couriers/${id}/location`,snap=>{
+        const d=snap.val();
+        if(d&&d.lat&&d.lng){
+          courierGPS[id]={lat:d.lat,lng:d.lng,speed:d.speed||0};
+          updateMapMarkers();
+          updateMapDashMarkers();
+        }
+      },()=>{});
+    }
+  });
 }
 
 window.refreshMap=()=>{

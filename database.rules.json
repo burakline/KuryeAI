@@ -1,0 +1,84 @@
+{
+  "rules": {
+
+    ".read":  false,
+    ".write": false,
+
+    "couriers": {
+      "$courierId": {
+
+        ".read": "auth != null",
+
+        "location": {
+          ".read":  "auth != null",
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['lat','lng']) && newData.child('lat').isNumber() && newData.child('lng').isNumber()"
+        },
+
+        "shift": {
+          ".read":  "auth != null",
+          ".write": "auth != null",
+          ".validate": "newData.hasChild('active') && newData.child('active').isBoolean()"
+        },
+
+        "profile": {
+          ".read":  "auth != null",
+          ".write": "auth != null"
+        },
+
+        "pendingOrder": {
+          ".read":  "auth != null",
+          ".write": "auth != null"
+        },
+
+        "activeOrder": {
+          ".read":  "auth != null",
+          ".write": "auth != null"
+        },
+
+        "assignedRestaurant": {
+          ".read":  "auth != null",
+          ".write": "auth != null"
+        },
+
+        "paymentNotification": {
+          ".read":  "auth != null",
+          ".write": "auth != null"
+        }
+      }
+    },
+
+    "restaurants": {
+      "$restaurantId": {
+        ".read":  "auth != null && auth.uid === $restaurantId",
+        ".write": "auth != null && auth.uid === $restaurantId"
+      }
+    },
+
+    "orders": {
+      ".read":  "auth != null",
+      ".write": "auth != null"
+    },
+
+    "settings": {
+      ".read":  "auth != null",
+      ".write": "auth != null"
+    },
+
+    "broadcasts": {
+      ".read":  "auth != null",
+      ".write": "auth != null"
+    },
+
+    "demoSessions": {
+      ".read":  "auth != null",
+      ".write": "auth != null"
+    },
+
+    ".info": {
+      "connected": {
+        ".read": "auth != null"
+      }
+    }
+  }
+}

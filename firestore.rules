@@ -34,12 +34,24 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isZoneChief == true;
     }
 
+    // ─── Hassas alan koruma yardımcısı ──────────────────────────────────────
+    // Kullanıcının kendi belgesini yazarken role/isZoneChief/status/plan alanlarını
+    // değiştirmesini engeller (privilege escalation önlemi)
+    function notEscalating() {
+      return !request.resource.data.diff(resource.data)
+               .affectedKeys()
+               .hasAny(['role', 'isZoneChief', 'status', 'plan']);
+    }
+
     // ─── users/{userId} ──────────────────────────────────────────────────────
     match /users/{userId} {
       // Restoran: kendi bölgesindeki kuryeleri (Kurye Bul & Ekle) okuyabilir
       allow read:  if isOwner(userId) || isAdmin() || isBolgeSefi()
                    || (isRestoran() && resource.data.role == 'kurye' && resource.data.status == 'active');
-      allow write: if isOwner(userId) || isAdmin();
+      // Admin: tüm alanları yazabilir
+      // Kullanıcı: kendi belgesi üzerinde role/isZoneChief/status/plan değiştiremez
+      allow write: if isAdmin();
+      allow write: if isOwner(userId) && notEscalating();
 
       match /shifts/{doc} {
         allow read, write: if isOwner(userId) || isAdmin();
@@ -63,8 +75,10 @@ service cloud.firestore {
       allow read: if isBolgeSefi();
 
       // Kurye: kendine atanmış siparişi okuyabilir ve güncelleyebilir
+      // Not: Kod 'courier' alanını kullanır; courierId geriye dönük uyumluluk için
       allow read, update: if isKurye()
-        && resource.data.courierId == request.auth.uid;
+        && (resource.data.courier == request.auth.uid
+            || resource.data.courierId == request.auth.uid);
 
       // Restoran: kendi siparişlerini okuyabilir ve güncelleyebilir
       allow read, update: if isRestoran()
@@ -119,7 +133,11 @@ service cloud.firestore {
         && request.auth.uid in request.resource.data.participants;
 
       match /messages/{msgId} {
-        allow read, write: if isSignedIn();
+        // Sadece sohbet odasının katılımcıları mesajları okuyup yazabilir
+        allow read, write: if isSignedIn() && (
+          isAdmin() ||
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(roomId)).data.participants
+        );
       }
     }
 
@@ -187,11 +205,11 @@ service cloud.firestore {
     match /izinciTeklifler/{doc} {
       allow read: if isSignedIn();
       allow create: if isSignedIn()
-        && request.resource.data.kureyeId == request.auth.uid;
+        && request.resource.data.kuryeId == request.auth.uid;
       allow update: if isSignedIn() && (
         isAdmin() ||
         request.auth.uid == resource.data.isverenId ||
-        request.auth.uid == resource.data.kureyeId
+        request.auth.uid == resource.data.kuryeId
       );
       allow delete: if isAdmin();
     }

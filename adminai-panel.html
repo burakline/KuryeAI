@@ -307,11 +307,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .bolge-add-row{display:flex;gap:8px;margin-top:8px}
 .bolge-add-row .fsel{flex:1;font-size:12px;padding:.45rem .7rem}
 /* Admin harita butonları */
-.admin-map-btns{position:absolute;right:10px;bottom:12px;z-index:10;display:flex;flex-direction:column;gap:6px;}
+.admin-map-btns{position:absolute;right:10px;bottom:12px;z-index:1000;display:flex;flex-direction:column;gap:6px;}
 .admin-cbtn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.95);border:1px solid var(--border);box-shadow:var(--shadow-md);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;color:var(--text2);}
 .admin-cbtn:hover{background:#f0fdfa;}
 .admin-cbtn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
-.admin-tleg{position:absolute;right:50px;bottom:12px;z-index:10;background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);display:none;flex-direction:column;gap:4px;}
+.admin-tleg{position:absolute;right:50px;bottom:12px;z-index:1000;background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);display:none;flex-direction:column;gap:4px;}
+/* Fullscreen wrapper */
+#admMapWrap.adm-fs{position:fixed!important;inset:0!important;z-index:9000!important;border-radius:0!important;background:#e8edf2;}
+#admMapWrap.adm-fs #map{height:100%!important;border-radius:0!important;}
+#admMapWrap:fullscreen{background:#e8edf2;}
+#admMapWrap:fullscreen #map{height:100%!important;}
+#admMapWrap:-webkit-full-screen{background:#e8edf2;}
+#admMapWrap:-webkit-full-screen #map{height:100%!important;}
 .admin-tleg-row{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text2);}
 .admin-tleg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .inc-marker-adm{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #e74c3c;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;}
@@ -463,7 +470,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             📍 <span id="pin-mode-label">Haritaya tıklayarak konumu belirleyin</span>
             <button class="bsm b-reject" style="margin-left:auto" onclick="cancelPinMode()">İptal</button>
           </div>
-          <div style="position:relative">
+          <div id="admMapWrap" style="position:relative">
             <div id="map" style="width:100%;height:420px;background:#e8edf2;border-radius:0 0 var(--radius) var(--radius)"></div>
             <!-- TomTom harita butonları -->
             <div class="admin-map-btns">
@@ -1527,7 +1534,9 @@ function initMap(){
   _adminBaseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
   document.addEventListener('fullscreenchange',()=>{
     const btn=document.getElementById('admFsBtn');
+    const wrap=document.getElementById('admMapWrap');
     if(btn)btn.classList.toggle('active',!!document.fullscreenElement);
+    if(!document.fullscreenElement&&wrap)wrap.classList.remove('adm-fs');
     setTimeout(()=>mapObj&&mapObj.invalidateSize(),100);
   });
 
@@ -1720,15 +1729,16 @@ function toggleAdminSatellite(){
   }
 }
 function toggleAdminFullscreen(){
-  const el=document.getElementById('map');
+  const el=document.getElementById('admMapWrap');
   if(!document.fullscreenElement){
     el.requestFullscreen().catch(()=>{
-      el.style.cssText='position:fixed!important;inset:0!important;z-index:9000!important;height:100vh!important;width:100vw!important;border-radius:0!important';
+      el.classList.add('adm-fs');
       setTimeout(()=>mapObj&&mapObj.invalidateSize(),50);
       document.getElementById('admFsBtn').classList.add('active');
     });
   }else{
     document.exitFullscreen();
+    el.classList.remove('adm-fs');
   }
 }
 // ── TomTom Traffic (Admin Haritası) ──────────────────────────────────────────

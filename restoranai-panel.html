@@ -317,7 +317,7 @@ tbody tr:hover{background:var(--bg)}
 
 /* ── MAP BUTTONS (traffic / incidents) ── */
 .map-btns-rest{
-  position:absolute;right:12px;bottom:14px;z-index:10;
+  position:absolute;right:12px;bottom:14px;z-index:1000;
   display:flex;flex-direction:column;gap:6px;
 }
 .cbtn-rest{
@@ -330,11 +330,18 @@ tbody tr:hover{background:var(--bg)}
 .cbtn-rest:hover{background:#f0fdfa;}
 .cbtn-rest.active{background:var(--teal);color:#fff;border-color:var(--teal);}
 .tleg-rest{
-  position:absolute;right:54px;bottom:14px;z-index:10;
+  position:absolute;right:54px;bottom:14px;z-index:1000;
   background:rgba(255,255,255,.95);border:1px solid var(--border);
   border-radius:8px;padding:7px 10px;box-shadow:var(--shadow-md);
   display:none;flex-direction:column;gap:4px;
 }
+/* Restoran harita fullscreen wrapper */
+#restMapWrap.rest-fs{position:fixed!important;inset:0!important;z-index:9000!important;border-radius:0!important;overflow:hidden;background:#e8edf2;}
+#restMapWrap.rest-fs #map{height:100%!important;border-radius:0!important;}
+#restMapWrap:fullscreen{background:#e8edf2;}
+#restMapWrap:fullscreen #map{height:100%!important;}
+#restMapWrap:-webkit-full-screen{background:#e8edf2;}
+#restMapWrap:-webkit-full-screen #map{height:100%!important;}
 .tleg-row-r{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text2);}
 .tleg-dot-r{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .inc-marker-r{
@@ -948,7 +955,7 @@ tbody tr:hover{background:var(--bg)}
                 <button class="btn btn-ghost btn-sm" onclick="refreshMap()">↻ Yenile</button>
               </div>
             </div>
-            <div class="map-container" style="margin:0;border-radius:0 0 var(--radius) var(--radius)">
+            <div id="restMapWrap" class="map-container" style="margin:0;border-radius:0 0 var(--radius) var(--radius);overflow:visible">
               <div id="map"></div>
               <!-- Harita sağ-alt butonlar -->
               <div class="map-btns-rest">
@@ -2244,6 +2251,7 @@ const TOMTOM_KEY='cf8LiJcnBulkjibau4e9uA58HsrmHovP';
 let mapInstance=null, mapDashInstance=null, courierMarkers={}, courierMarkersD={};
 let courierGPS={}, courierGPSListeners={};
 let courierTrails={};
+let _courierIdleStart={}, _courierLastPos={};
 let _restBaseLayer=null, _restLabelsLayer=null, _restSatMode=false;
 let _restTrafficLayer=null, _restTrafficOn=false;
 let _restIncMarkers=[], _restIncOn=false, _restIncFetchI=null;
@@ -3053,17 +3061,19 @@ function initMap(){
   _addRestPinToMap();
   document.addEventListener('fullscreenchange',()=>{
     const btn=document.getElementById('restFsBtn');
+    const wrap=document.getElementById('restMapWrap');
     if(btn)btn.classList.toggle('active',!!document.fullscreenElement);
+    if(!document.fullscreenElement&&wrap)wrap.classList.remove('rest-fs');
     setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),100);
   });
 }
 
 // Profil fotoğraflı + yön oklu kurye harita ikonu
-function _makeCourierIcon(name, photoURL, bearing, isActive){
+function _makeCourierIcon(name, photoURL, bearing, isActive, isIdle){
   const init=(name||'K').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'K';
   const fbUrl=`https://ui-avatars.com/api/?name=${encodeURIComponent(init)}&background=009688&color=fff&bold=true&size=128`;
   const av=photoURL||fbUrl;
-  const bColor=isActive?'#009688':'#6b7280';
+  const bColor=isIdle?'#f59e0b':(isActive?'#009688':'#6b7280');
   return L.divIcon({
     html:`<div style="display:flex;flex-direction:column;align-items:center;gap:0">
       <div style="position:relative;width:54px;height:54px">
@@ -3131,15 +3141,16 @@ function toggleRestSatellite(){
   }
 }
 function toggleRestFullscreen(){
-  const el=document.getElementById('map');
+  const el=document.getElementById('restMapWrap');
   if(!document.fullscreenElement){
     el.requestFullscreen().catch(()=>{
-      el.style.cssText='position:fixed!important;inset:0!important;z-index:9000!important;height:100vh!important;width:100vw!important;border-radius:0!important';
+      el.classList.add('rest-fs');
       setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),50);
       document.getElementById('restFsBtn').classList.add('active');
     });
   }else{
     document.exitFullscreen();
+    el.classList.remove('rest-fs');
   }
 }
 // ── TomTom Traffic (Restoran Haritası) ───────────────────────────────────────
@@ -3308,7 +3319,9 @@ function updateMapMarkers(){
     if(!coords)return; // GPS yoksa marker koyma
     const speed=courierGPS[id]?.speed||0;
     const bearing=courierGPS[id]?.bearing||0;
-    const icon=_makeCourierIcon(c.name, c.photoURL, bearing, true);
+    const isIdle=courierGPS[id]?.isIdle||false;
+    const icon=_makeCourierIcon(c.name, c.photoURL, bearing, true, isIdle);
+    const idleBadge=isIdle?`<div style="margin-top:4px;font-size:10px;background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:6px;font-weight:600">⚠️ 5+ dk hareketsiz</div>`:''
     const popupHtml=`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:150px">
       <div style="font-weight:700;font-size:14px;margin-bottom:4px">${esc(c.name)}</div>
       <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"🛵"} ${esc(c.zone||"—")}</div>
@@ -3318,6 +3331,7 @@ function updateMapMarkers(){
         📦 <b>${c.deliveries||0}</b> teslimat &nbsp;📞 ${esc(c.phone||"—")}
       </div>
       ${c.activeOrder?`<div style="margin-top:5px;font-size:10px;background:#fef3c7;color:#d97706;padding:3px 7px;border-radius:6px;font-weight:600">🛵 Aktif sipariş var</div>`:''}
+      ${idleBadge}
     </div>`;
     if(courierMarkers[id]){
       courierMarkers[id].setLatLng(coords);
@@ -3352,6 +3366,8 @@ function syncCourierGPSListeners(){
       courierGPSListeners[id]();
       delete courierGPSListeners[id];
       delete courierGPS[id];
+      delete _courierIdleStart[id];
+      delete _courierLastPos[id];
       if(courierMarkers[id]){courierMarkers[id].remove();delete courierMarkers[id];}
       if(courierTrails[id]&&mapInstance){mapInstance.removeLayer(courierTrails[id]);delete courierTrails[id];}
     }
@@ -3362,7 +3378,18 @@ function syncCourierGPSListeners(){
       courierGPSListeners[id]=rtdbListen(`/couriers/${id}/location`,snap=>{
         const d=snap.val();
         if(d&&d.lat&&d.lng){
-          courierGPS[id]={lat:d.lat,lng:d.lng,speed:d.speed||0,bearing:d.bearing||0};
+          // Hareketsizlik takibi
+          const now=Date.now();
+          const prevPos=_courierLastPos[id];
+          const moved=!prevPos||(Math.abs(d.lat-prevPos.lat)>0.0001||Math.abs(d.lng-prevPos.lng)>0.0001);
+          if((d.speed||0)<2&&!moved){
+            if(!_courierIdleStart[id])_courierIdleStart[id]=now;
+          }else{
+            _courierIdleStart[id]=null;
+          }
+          _courierLastPos[id]={lat:d.lat,lng:d.lng};
+          const isIdle=!!(_courierIdleStart[id]&&(now-_courierIdleStart[id])>=300000);
+          courierGPS[id]={lat:d.lat,lng:d.lng,speed:d.speed||0,bearing:d.bearing||0,isIdle};
           // Trail çizgisi: her GPS güncellemesinde bir nokta ekle
           if(mapInstance){
             if(!courierTrails[id]){
@@ -3387,6 +3414,8 @@ window.refreshMap=()=>{
     mapInstance.remove();mapInstance=null;
     Object.keys(courierMarkers).forEach(k=>delete courierMarkers[k]);
     Object.keys(courierTrails).forEach(k=>delete courierTrails[k]);
+    Object.keys(_courierIdleStart).forEach(k=>delete _courierIdleStart[k]);
+    Object.keys(_courierLastPos).forEach(k=>delete _courierLastPos[k]);
     _restTrafficLayer=null;_restTrafficOn=false;
     _restIncMarkers=[];_restIncOn=false;
     clearInterval(_restIncFetchI);_restIncFetchI=null;

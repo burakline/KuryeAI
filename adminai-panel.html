@@ -1949,7 +1949,8 @@ function userCard(u){
   const phoneLink=u.phone?` · <a href="tel:${esc(u.phone)}" style="color:var(--teal);text-decoration:none">📞 ${esc(u.phone)}</a>`:'';
   const courierSection=!isRest?(()=>{
     const curZone=_zoneList.find(z=>(z.couriers||[]).includes(u.id));
-    const assignedRest=_rtdbCouriers[u.id]?.assignedRestaurant;
+    const _rtdbKey=u.kuryeId||u.id;
+    const assignedRest=_rtdbCouriers[_rtdbKey]?.assignedRestaurant;
     const activeRestos=allUsers.filter(u2=>u2.role==='restoran'&&u2.status==='active');
     return `<div style="margin-top:.55rem;display:flex;flex-direction:column;gap:.35rem">
       <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
@@ -1964,7 +1965,7 @@ function userCard(u){
       <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
         <span style="font-size:.68rem;color:var(--text3)">🏪 Restoran:</span>
         ${assignedRest?`<span style="font-size:.68rem;font-weight:600;padding:.1rem .4rem;border-radius:6px;background:var(--bg2);color:var(--text)">${esc(assignedRest.restoranName||'—')}</span>`:'<span style="font-size:.68rem;color:var(--text3)">Atanmadı</span>'}
-        <select onchange="setCourierRestaurant('${u.id}',this.value);this.value=''" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
+        <select onchange="setCourierRestaurant('${u.kuryeId||u.id}',this.value);this.value=''" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
           <option value="">Restoran ata…</option>
           ${activeRestos.map(r=>`<option value="${r.id}">${esc(r.name||r.company||r.email)}</option>`).join('')}
           ${assignedRest?`<option value="__remove__">— Atamasını Kaldır</option>`:''}
@@ -2019,6 +2020,7 @@ window.setCourierRestaurant=async(uid,restoranUid)=>{
     if(restoranUid==='__remove__'){
       await rtdbSet(rtdbRef(rtdb,'couriers/'+uid+'/assignedRestaurant'),null);
       if(_rtdbCouriers[uid])_rtdbCouriers[uid]={..._rtdbCouriers[uid],assignedRestaurant:null};
+      else _rtdbCouriers[uid]={assignedRestaurant:null};
       renderKuryeler();showToast('✓ Restoran ataması kaldırıldı','ok');return;
     }
     const rest=allUsers.find(u=>u.id===restoranUid);if(!rest)return;

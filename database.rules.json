@@ -12,19 +12,19 @@
 
         "location": {
           ".read":  "auth != null",
-          ".write": "auth != null",
+          ".write": "auth != null && auth.uid === $courierId",
           ".validate": "newData.hasChildren(['lat','lng']) && newData.child('lat').isNumber() && newData.child('lng').isNumber()"
         },
 
         "shift": {
           ".read":  "auth != null",
-          ".write": "auth != null",
+          ".write": "auth != null && auth.uid === $courierId",
           ".validate": "newData.hasChild('active') && newData.child('active').isBoolean()"
         },
 
         "profile": {
           ".read":  "auth != null",
-          ".write": "auth != null"
+          ".write": "auth != null && auth.uid === $courierId"
         },
 
         "pendingOrder": {
@@ -63,12 +63,12 @@
 
     "settings": {
       ".read":  "auth != null",
-      ".write": "auth != null"
+      ".write": false
     },
 
     "broadcasts": {
       ".read":  "auth != null",
-      ".write": "auth != null"
+      ".write": false
     },
 
     "demoSessions": {

@@ -214,6 +214,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ─── izinciBasvurular ────────────────────────────────────────────────────
+    // İzinci başvuruları: giriş yapmış kullanıcı oluşturabilir; admin okur/yazar
+    match /izinciBasvurular/{doc} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
     // ─── contact_messages ────────────────────────────────────────────────────
     // İletişim formu: herkes gönderebilir; sadece admin okuyabilir
     match /contact_messages/{doc} {

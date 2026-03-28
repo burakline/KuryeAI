@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kuryeai-v4';
+const CACHE_NAME = 'kuryeai-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -11,6 +11,15 @@ const STATIC_ASSETS = [
   '/kvkk',
   '/iletisim',
   '/hakkimizda',
+  '/blog',
+  '/blog/p1-belgesi/',
+  '/blog/tasima-cantasi-ruhsat/',
+  '/blog/motokurye-src-belgesi/',
+  '/blog/psikoteknik-belgesi/',
+  '/blog/2026-trafik-cezalari/',
+  '/blog/guvenli-suruc-teknikleri/',
+  '/blog/motosiklet-ekipmanlari/',
+  '/blog.js',
   '/manifest.json',
   '/theme.css',
   '/theme.js',

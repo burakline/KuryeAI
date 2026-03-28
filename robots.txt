@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /sw.js
+Disallow: /.firebaserc
+Disallow: /firebase.json
 
+Sitemap: https://kuryeai.com/sitemap.xml
 Sitemap: https://www.kuryeai.com/sitemap.xml

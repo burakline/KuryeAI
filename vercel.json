@@ -30,7 +30,10 @@
     { "source": "/reset-password",                 "destination": "/reset-password.html" },
     { "source": "/kuryesefai",                     "destination": "/kuryesefai-login.html" },
     { "source": "/kuryesefai-login",               "destination": "/kuryesefai-login.html" },
-    { "source": "/kuryesefai-panel",               "destination": "/kuryesefai-panel.html" }
+    { "source": "/kuryesefai-panel",               "destination": "/kuryesefai-panel.html" },
+    { "source": "/qrmenuai",                       "destination": "/qrmenuai.html" },
+    { "source": "/takip",                          "destination": "/takip.html" },
+    { "source": "/:slug([a-zA-Z0-9_-]+[Qq][Rr][Mm]enu[Aa][Ii])", "destination": "/qrmenu-viewer.html" }
   ],
   "headers": [
     {

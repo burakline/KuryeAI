@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Dijital Menü — QRMenuAI</title>
+<meta name="theme-color" content="#00c8d7"/>
+<link rel="icon" href="/1000417933.png"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--teal:#00c8d7;--bg:#f8fafc;--card:#fff;--text:#1a202c;--text2:#374151;--text3:#6b7280;--border:#e5e7eb}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* Header */
+.qr-header{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--border);padding:0}
+.qr-header-inner{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.rest-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#0891b2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;flex-shrink:0;overflow:hidden}
+.rest-avatar img{width:100%;height:100%;object-fit:cover}
+.rest-info h1{font-size:15px;font-weight:800;color:var(--text);line-height:1.2}
+.rest-info p{font-size:11px;color:var(--text3);margin-top:2px}
+.qr-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(0,200,215,.1);border:1px solid rgba(0,200,215,.2);color:var(--teal);font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:999px;text-transform:uppercase;margin-top:4px}
+
+/* Category tabs */
+.cat-tabs-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:var(--card);border-bottom:1px solid var(--border)}
+.cat-tabs-wrap::-webkit-scrollbar{display:none}
+.cat-tabs{display:flex;gap:0;padding:0 12px;min-width:max-content}
+.cat-tab{padding:10px 14px;font-size:12px;font-weight:600;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.cat-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* Menu */
+.menu-wrap{padding:12px 14px;max-width:600px;margin:0 auto}
+.menu-section{margin-bottom:20px}
+.menu-section-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;padding:0 2px}
+.menu-item{background:var(--card);border-radius:14px;border:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;padding:14px;margin-bottom:8px;transition:box-shadow .2s}
+.menu-item:active{box-shadow:0 0 0 2px var(--teal)}
+.menu-item-img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px}
+.menu-item-body{flex:1;min-width:0}
+.menu-item-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.3}
+.menu-item-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.menu-item-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.menu-item-price{font-size:15px;font-weight:800;color:var(--teal)}
+.menu-item-badge{font-size:9px;background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 5px;font-weight:700}
+.menu-item-badge.new{background:#d1fae5;color:#065f46}
+.menu-item-badge.popular{background:#fce7f3;color:#9d174d}
+.add-btn{width:32px;height:32px;border-radius:50%;background:var(--teal);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,background .15s;line-height:1}
+.add-btn:active{transform:scale(.9);background:#009aaa}
+.unavail{opacity:.45;pointer-events:none}
+.unavail .add-btn{background:#d1d5db}
+
+/* Sepet */
+.cart-bar{position:fixed;bottom:0;left:0;right:0;background:var(--teal);color:#000;padding:14px 20px;display:none;align-items:center;justify-content:space-between;z-index:100;padding-bottom:max(14px,env(safe-area-inset-bottom));box-shadow:0 -4px 24px rgba(0,200,215,.3)}
+.cart-bar.show{display:flex}
+.cart-info{font-size:13px;font-weight:700}
+.cart-count{font-size:11px;font-weight:600;opacity:.8}
+.cart-total{font-size:16px;font-weight:800}
+
+/* Empty / loading */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.loading{text-align:center;padding:60px 20px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-view{text-align:center;padding:60px 20px;color:var(--text3)}
+.error-view .icon{font-size:52px;margin-bottom:14px}
+
+/* Powered by */
+.powered{text-align:center;padding:24px 20px 32px;font-size:11px;color:var(--text3)}
+.powered a{color:var(--teal);text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <p style="font-size:.84rem;color:#6b7280">Menü yükleniyor...</p>
+</div>
+
+<div id="error-view" class="error-view" style="display:none">
+  <div class="icon">❌</div>
+  <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px">Menü Bulunamadı</h3>
+  <p style="font-size:.84rem">Bu bağlantı geçersiz veya restoran menüsü kapalı olabilir.</p>
+  <a href="/" style="display:inline-block;margin-top:20px;color:var(--teal);font-size:.84rem;font-weight:700;text-decoration:none">← Ana Sayfaya Dön</a>
+</div>
+
+<div id="main" style="display:none">
+  <!-- Header -->
+  <div class="qr-header">
+    <div class="qr-header-inner">
+      <div class="rest-avatar" id="rest-avatar">🍽️</div>
+      <div class="rest-info">
+        <h1 id="rest-name">Restoran</h1>
+        <p id="rest-hours"></p>
+        <span class="qr-badge">✦ QRMenuAI Dijital Menü</span>
+      </div>
+    </div>
+    <!-- Kategori sekmeleri -->
+    <div class="cat-tabs-wrap"><div class="cat-tabs" id="cat-tabs"></div></div>
+  </div>
+
+  <!-- Menü içeriği -->
+  <div class="menu-wrap" id="menu-wrap"></div>
+
+  <!-- Powered by -->
+  <div class="powered">Dijital menü <a href="/qrmenuai" target="_blank" rel="noopener">QRMenuAI</a> tarafından sağlanmaktadır.</div>
+</div>
+
+<!-- Sepet bar (opsiyonel interaktivite) -->
+<div class="cart-bar" id="cart-bar">
+  <div>
+    <div class="cart-count" id="cart-count">0 ürün</div>
+    <div class="cart-total" id="cart-total">₺0</div>
+  </div>
+  <div class="cart-info">🛒 Sepeti Gör</div>
+</div>
+
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const FB_CONFIG = {
+  apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y",
+  authDomain:"kuryeai-99bf9.firebaseapp.com",
+  databaseURL:"https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"kuryeai-99bf9",storageBucket:"kuryeai-99bf9.firebasestorage.app",
+  messagingSenderId:"976977511578",appId:"1:976977511578:web:fc4bb2b09e9a8b6b12bcd3"
+};
+const app = initializeApp(FB_CONFIG);
+const db  = getDatabase(app);
+
+// Slug'u URL'den çıkar: /tavamakarnaQRmenuAI → tavamakarnarestoran
+const rawSlug = decodeURIComponent(location.pathname.replace(/^\//, '').replace(/[Qq][Rr][Mm]enu[Aa][Ii]$/, '').replace(/\/$/, ''));
+const restId  = rawSlug || null;
+
+function esc(s){ const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+
+// Sepet state
+const cart={items:{}, get count(){ return Object.values(this.items).reduce((s,v)=>s+v.qty,0); }, get total(){ return Object.values(this.items).reduce((s,v)=>s+v.qty*v.price,0); }};
+
+function addToCart(id, name, price){
+  if(!cart.items[id]) cart.items[id]={name,price,qty:0};
+  cart.items[id].qty++;
+  updateCartBar();
+}
+
+function updateCartBar(){
+  const bar=document.getElementById('cart-bar');
+  const c=cart.count, t=cart.total;
+  if(c>0){
+    bar.classList.add('show');
+    document.getElementById('cart-count').textContent=`${c} ürün`;
+    document.getElementById('cart-total').textContent=`₺${t}`;
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+window._addToCart = addToCart;
+
+async function loadMenu(){
+  if(!restId){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('error-view').style.display='block';
+    return;
+  }
+
+  let settings={}, menuItems=[];
+  try{
+    const [sSnap, mSnap] = await Promise.all([
+      get(ref(db,`/restaurants/${restId}/settings`)),
+      get(ref(db,`/restaurants/${restId}/menu`))
+    ]);
+    if(sSnap.exists()) settings=sSnap.val();
+    if(mSnap.exists()){
+      const raw=mSnap.val();
+      menuItems=Array.isArray(raw)?raw:Object.values(raw);
+    }
+  } catch(e){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('error-view').style.display='block';
+    return;
+  }
+
+  // Menü kapalı kontrolü
+  if(!menuItems.length){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('error-view').style.display='block';
+    return;
+  }
+
+  // Başlık bilgileri
+  document.title=`${settings.rest_name||restId} — Dijital Menü`;
+  const nameEl=document.getElementById('rest-name');
+  nameEl.textContent=settings.rest_name||restId;
+  const hoursEl=document.getElementById('rest-hours');
+  if(settings.rest_hours) hoursEl.textContent=`⏰ ${settings.rest_hours}`;
+  const avatarEl=document.getElementById('rest-avatar');
+  if(settings.rest_logo){ avatarEl.innerHTML=`<img src="${esc(settings.rest_logo)}" alt="logo"/>`; }
+  else { avatarEl.textContent=(settings.rest_name||'R')[0].toUpperCase(); }
+
+  // Kategoriler
+  const cats=['Tümü',...new Set(menuItems.filter(i=>i.category).map(i=>i.category))];
+  let activeCat='Tümü';
+  const tabsEl=document.getElementById('cat-tabs');
+  tabsEl.innerHTML=cats.map((c,i)=>`<button class="cat-tab${i===0?' active':''}" onclick="setCat('${esc(c)}')" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
+  window.setCat=function(cat){
+    activeCat=cat;
+    document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
+    renderMenu(cat);
+    // Scroll to section
+    const sec=document.getElementById('sec-'+btoa(cat).replace(/[^a-z0-9]/gi,''));
+    if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  renderMenu('Tümü');
+  document.getElementById('loading').style.display='none';
+  document.getElementById('main').style.display='block';
+
+  function renderMenu(filterCat){
+    const wrap=document.getElementById('menu-wrap');
+    const filtered=filterCat==='Tümü'?menuItems:menuItems.filter(i=>i.category===filterCat);
+    if(!filtered.length){ wrap.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div><p>Bu kategoride ürün yok</p></div>'; return; }
+
+    // Kategorilere göre grupla
+    const grouped={};
+    filtered.forEach(item=>{
+      const c=item.category||'Diğer';
+      if(!grouped[c]) grouped[c]=[];
+      grouped[c].push(item);
+    });
+
+    wrap.innerHTML=Object.entries(grouped).map(([cat,items])=>{
+      const secId='sec-'+btoa(cat).replace(/[^a-z0-9]/gi,'');
+      return `<div class="menu-section" id="${secId}">
+        <div class="menu-section-title">${esc(cat)}</div>
+        ${items.map(item=>{
+          const avail=item.available!==false;
+          const imgHtml=item.image
+            ?`<img class="menu-item-img" src="${esc(item.image)}" alt="${esc(item.name)}" loading="lazy" onerror="this.style.display='none'">`
+            :`<div class="menu-item-img">${item.emoji||'🍽️'}</div>`;
+          const badge=item.isNew?'<span class="menu-item-badge new">Yeni</span>':item.popular?'<span class="menu-item-badge popular">Popüler</span>':'';
+          return `<div class="menu-item${avail?'':' unavail'}">
+            ${imgHtml}
+            <div class="menu-item-body">
+              <div class="menu-item-name">${esc(item.name)}${badge}</div>
+              ${item.description?`<div class="menu-item-desc">${esc(item.description)}</div>`:''}
+              <div class="menu-item-bottom">
+                <span class="menu-item-price">₺${item.price||0}</span>
+                ${avail?`<button class="add-btn" onclick="_addToCart('${esc(item.id||item.name)}','${esc(item.name)}',${Number(item.price)||0})" title="Sepete ekle">+</button>`:'<span style="font-size:.72rem;color:#9ca3af">Tükendi</span>'}
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('');
+    // Ekstra padding for cart bar
+    if(wrap.nextElementSibling) wrap.style.paddingBottom='80px';
+  }
+}
+
+loadMenu();
+</script>
+</body>
+</html>

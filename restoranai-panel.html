@@ -1328,6 +1328,64 @@ tbody tr:hover{background:var(--bg)}
               </div>
             </div>
 
+            <!-- QRMenuAI Kartı -->
+            <div class="card" id="qrmenu-card">
+              <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                <div>
+                  <div class="card-title"><span style="color:var(--teal)">QR</span>Menu<span style="color:var(--teal)">AI</span> — Dijital Menü</div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">Müşteriler QR kodu okutunca menünüzü görür</div>
+                </div>
+                <span id="qrmenu-status-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(245,158,11,.12);color:#f59e0b">Pasif</span>
+              </div>
+              <div class="card-body">
+                <div id="qrmenu-inactive" style="text-align:center;padding:16px 0">
+                  <div style="font-size:36px;margin-bottom:10px">📱</div>
+                  <div style="font-size:13px;font-weight:600;margin-bottom:6px">QRMenuAI henüz aktif değil</div>
+                  <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6">RestoranAI menünüz ile senkronize dijital QR menü. Müşteri uygulama indirmeden kamerayla okutunca menüyü görür.</div>
+                  <div style="background:rgba(0,200,215,.06);border:.5px solid rgba(0,200,215,.2);border-radius:12px;padding:12px;margin-bottom:16px;text-align:left">
+                    <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">✦ Özellikler</div>
+                    <div style="font-size:11px;color:var(--text3);line-height:1.8">
+                      ✓ Sınırsız ürün & kategori<br/>
+                      ✓ Anlık menü güncelleme<br/>
+                      ✓ Özel URL + QR kod tasarımı<br/>
+                      ✓ Görüntülenme analitiği
+                    </div>
+                  </div>
+                  <div style="font-size:18px;font-weight:900;color:var(--teal);margin-bottom:4px">4.995₺<span style="font-size:12px;font-weight:600;color:var(--text3)">/yıl</span></div>
+                  <div style="font-size:11px;color:var(--text3);margin-bottom:14px">≈ Aylık 416₺ — Tek bir menü baskısından ucuz</div>
+                  <a href="/qrmenuai" target="_blank" style="display:inline-block;background:var(--teal);color:#000;font-size:13px;font-weight:700;padding:9px 20px;border-radius:999px;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#33d6e3'" onmouseout="this.style.background='var(--teal)'">Detaylı Bilgi & Satın Al →</a>
+                  <!-- Demo aktive et butonu -->
+                  <div style="margin-top:12px">
+                    <button onclick="activateQRMenu()" style="background:none;border:.5px solid var(--border);border-radius:8px;padding:7px 16px;font-size:12px;color:var(--text3);cursor:pointer">🎮 Demo Olarak Aktive Et</button>
+                  </div>
+                </div>
+
+                <div id="qrmenu-active" style="display:none">
+                  <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+                    <div id="qrmenu-qr-wrap" style="flex-shrink:0;text-align:center">
+                      <img id="qrmenu-qr-img" src="" alt="QR Kod" style="width:140px;height:140px;border-radius:12px;border:2px solid var(--teal);background:#fff"/>
+                      <div style="margin-top:8px;display:flex;gap:6px;justify-content:center">
+                        <button onclick="downloadQR()" style="background:var(--teal);color:#000;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer">⬇ İndir</button>
+                        <button onclick="printQR()" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer">🖨️ Yazdır</button>
+                      </div>
+                    </div>
+                    <div style="flex:1;min-width:180px">
+                      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Menü Linki</div>
+                      <div id="qrmenu-url" style="font-family:monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;word-break:break-all;color:var(--teal);cursor:pointer" onclick="copyQRUrl()" title="Kopyala"></div>
+                      <div style="font-size:10px;color:var(--text3);margin-top:4px">Tıkla → Kopyala</div>
+                      <div style="margin-top:12px">
+                        <a id="qrmenu-open-link" href="#" target="_blank" style="font-size:12px;color:var(--teal);text-decoration:none;font-weight:600">↗ Menüyü Önizle</a>
+                      </div>
+                      <div style="margin-top:12px;padding:10px;background:rgba(0,200,215,.06);border-radius:8px;font-size:11px;color:var(--text3);line-height:1.6">
+                        ✅ Aktif — Menünüz canlı<br/>
+                        📊 Görüntüleme: <span id="qrmenu-views">—</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="card">
               <div class="card-header"><div class="card-title" style="color:var(--red)">⚠️ Tehlikeli Bölge</div></div>
               <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
@@ -3677,6 +3735,7 @@ function applySettings(){
       el('hours-cm').textContent=String(isNaN(cm)?0:cm).padStart(2,'0');
     }
   }
+  renderQRMenuCard();
 }
 
 window.selectMode=(el,type)=>{
@@ -3711,6 +3770,73 @@ window.toggleSetting=(el,key)=>{
   const isOn=el.classList.contains("on");
   el.className=`toggle ${isOn?"off":"on"}`;
   settings[key]=!isOn;
+};
+// QRMenuAI kartını applySettings'de güncelle
+const _origApplySettings=window._applySettingsDone;
+setTimeout(renderQRMenuCard,200);
+
+// ── QRMenuAI ──────────────────────────────────────────────────────────────────
+function _qrSlug(){ return (RESTAURANT_ID||'restoran').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function _qrUrl(){ return `${location.origin}/${_qrSlug()}QRmenuAI`; }
+
+function renderQRMenuCard(){
+  const isActive=settings.qrmenu_active||false;
+  const badge=document.getElementById('qrmenu-status-badge');
+  const inactive=document.getElementById('qrmenu-inactive');
+  const active=document.getElementById('qrmenu-active');
+  if(!badge||!inactive||!active) return;
+  if(isActive){
+    badge.textContent='Aktif ✓';badge.style.background='rgba(0,200,215,.12)';badge.style.color='var(--teal)';
+    inactive.style.display='none';active.style.display='block';
+    const url=_qrUrl();
+    const urlEl=document.getElementById('qrmenu-url');
+    if(urlEl) urlEl.textContent=url;
+    const openLink=document.getElementById('qrmenu-open-link');
+    if(openLink){openLink.href=url;}
+    const qrImg=document.getElementById('qrmenu-qr-img');
+    if(qrImg) qrImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(url)}&color=00c8d7&bgcolor=ffffff`;
+  } else {
+    badge.textContent='Pasif';badge.style.background='rgba(245,158,11,.12)';badge.style.color='#f59e0b';
+    inactive.style.display='block';active.style.display='none';
+  }
+}
+
+window.activateQRMenu=async()=>{
+  settings.qrmenu_active=true;
+  try{ await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{qrmenu_active:true}); }catch{}
+  renderQRMenuCard();
+  showToast('✓ QRMenuAI aktive edildi');
+};
+
+window.copyQRUrl=()=>{
+  navigator.clipboard?.writeText(_qrUrl()).then(()=>showToast('✓ Link kopyalandı')).catch(()=>showToast('Kopyalanamadı','error'));
+};
+
+window.downloadQR=()=>{
+  const url=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(_qrUrl())}&color=00c8d7&bgcolor=ffffff`;
+  const a=document.createElement('a');a.href=url;a.download=`qrmenu-${_qrSlug()}.png`;a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+
+window.printQR=()=>{
+  const url=_qrUrl();
+  const restName=settings.rest_name||RESTAURANT_ID;
+  const qrSrc=`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(url)}&color=000000&bgcolor=ffffff`;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>QR Menü — ${restName}</title><style>
+    body{font-family:Arial,sans-serif;text-align:center;padding:40px}
+    h2{font-size:22px;margin-bottom:4px}
+    p{font-size:13px;color:#666;margin-bottom:20px}
+    img{width:260px;height:260px}
+    .url{font-size:11px;color:#555;margin-top:14px;word-break:break-all}
+    @media print{@page{margin:1.5cm}}
+  </style></head><body>
+    <h2>${restName}</h2>
+    <p>Dijital Menü — QRMenuAI</p>
+    <img src="${qrSrc}" alt="QR Kod"/>
+    <div class="url">${url}</div>
+    <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
 };
 
 window.saveSettings=async()=>{

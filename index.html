@@ -1386,8 +1386,6 @@
   // Nav scroll
   const nav = document.getElementById('main-nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
-  if(window.innerWidth > 900) document.getElementById('nav-tel').style.display = 'block';
-
   // Scroll reveal
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });

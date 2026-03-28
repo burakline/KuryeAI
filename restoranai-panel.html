@@ -703,7 +703,7 @@ tbody tr:hover{background:var(--bg)}
 
 <div id="page-loader">
   <div class="loader-content">
-    <div class="loader-logo">🍽️</div>
+    <div class="loader-logo"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>️</div>
     <div class="loader-name">Restoran<em>AI</em></div>
     <div style="font-size:12px;color:var(--text3);margin-top:4px">Panel yükleniyor…</div>
     <div class="loader-bar"><div class="loader-bar-fill"></div></div>
@@ -712,10 +712,10 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- Mobil üst bar -->
 <div class="mob-topbar">
-  <div class="mob-menu-btn" onclick="toggleSidebar()">☰</div>
+  <div class="mob-menu-btn" onclick="toggleSidebar()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></div>
   <div class="mob-brand">Restoran<em>AI</em></div>
   <div class="mob-status" style="display:flex;align-items:center;gap:6px">
-    <button class="dm-toggle" onclick="toggleDarkMode()" id="dm-btn-mob" title="Karanlık mod">🌙</button>
+    <button class="dm-toggle" onclick="toggleDarkMode()" id="dm-btn-mob" title="Karanlık mod"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
     <div class="status-pill fb-load" id="fb-status-mob" style="font-size:10px;padding:3px 8px">
       <span class="pill-dot"></span><span id="fb-status-mob-txt">…</span>
     </div>
@@ -730,7 +730,7 @@ tbody tr:hover{background:var(--bg)}
   <aside class="sidebar">
     <div class="sb-header">
       <a href="#" class="sb-brand">
-        <div class="sb-logo">🍽️</div>
+        <div class="sb-logo"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>️</div>
         <div>
           <div class="sb-name">Restoran<em>AI</em></div>
         </div>
@@ -824,14 +824,14 @@ tbody tr:hover{background:var(--bg)}
       </div>
       <div id="user-dropdown" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);overflow:hidden;z-index:100">
         <div onclick="goPage('settings');toggleUserMenu()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-          <span>⚙️</span> Sistem Ayarları
+          <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>️</span> Sistem Ayarları
         </div>
         <div onclick="goPage('financials');toggleUserMenu()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-          <span>💹</span> Finansal Analiz
+          <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> Finansal Analiz
         </div>
         <div style="height:1px;background:var(--border);margin:4px 0"></div>
         <div onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:var(--red);font-weight:600;transition:background .1s" onmouseover="this.style.background='var(--red-bg)'" onmouseout="this.style.background='transparent'">
-          <span>🚪</span> Oturumu Kapat
+          <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"/></svg></span> Oturumu Kapat
         </div>
       </div>
     </div>
@@ -841,7 +841,7 @@ tbody tr:hover{background:var(--bg)}
   <div class="main">
     <!-- Demo Banner (inside main so it scrolls with layout) -->
     <div id="demo-banner-inner" style="display:none;background:linear-gradient(90deg,#7c3aed,#4f46e5);color:#fff;text-align:center;padding:.4rem 1rem;font-size:.79rem;font-weight:600">
-      🎮 Demo Moddasın &nbsp;·&nbsp; <span style="opacity:.75;font-weight:400">Gerçek sipariş oluşturulmaz</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg> Demo Moddasın &nbsp;·&nbsp; <span style="opacity:.75;font-weight:400">Gerçek sipariş oluşturulmaz</span>
     </div>
 
     <!-- Topbar -->
@@ -858,7 +858,7 @@ tbody tr:hover{background:var(--bg)}
         <div class="status-pill live">
           <span class="pill-dot pulse"></span>Canlı
         </div>
-        <button class="dm-toggle" onclick="toggleDarkMode()" id="dm-btn" title="Karanlık mod">🌙</button>
+        <button class="dm-toggle" onclick="toggleDarkMode()" id="dm-btn" title="Karanlık mod"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
       </div>
     </div>
 
@@ -870,7 +870,7 @@ tbody tr:hover{background:var(--bg)}
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-top">
-              <div class="stat-icon teal">📋</div>
+              <div class="stat-icon teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
               <span class="stat-change neutral" id="dash-pending-lbl">bekleyen</span>
             </div>
             <div class="stat-value" id="dash-orders">0</div>
@@ -878,7 +878,7 @@ tbody tr:hover{background:var(--bg)}
           </div>
           <div class="stat-card">
             <div class="stat-top">
-              <div class="stat-icon green">💰</div>
+              <div class="stat-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div>
               <span class="stat-change up">+12%</span>
             </div>
             <div class="stat-value" id="dash-rev">₺0</div>
@@ -886,7 +886,7 @@ tbody tr:hover{background:var(--bg)}
           </div>
           <div class="stat-card">
             <div class="stat-top">
-              <div class="stat-icon blue">🛵</div>
+              <div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div>
               <span class="stat-change neutral" id="dash-courier-lbl">aktif</span>
             </div>
             <div class="stat-value" id="dash-couriers">0</div>
@@ -930,7 +930,7 @@ tbody tr:hover{background:var(--bg)}
         <!-- Canlı Harita -->
         <div class="card" style="margin-top:14px;position:relative;z-index:0;isolation:isolate">
           <div class="card-header">
-            <div class="card-title">🗺️ Canlı Kurye Haritası</div>
+            <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>️ Canlı Kurye Haritası</div>
             <button class="btn btn-ghost btn-sm" onclick="window.goPage('tracking')">Detaylı Görünüm →</button>
           </div>
           <div id="map-dash" style="height:320px;border-radius:0 0 var(--radius) var(--radius)"></div>
@@ -941,10 +941,10 @@ tbody tr:hover{background:var(--bg)}
       <div class="view" id="view-orders">
         <div class="stats-grid" style="grid-template-columns:repeat(5,1fr)">
           <div class="stat-card"><div class="stat-top"><div class="stat-icon yellow">⏳</div></div><div class="stat-value" id="cnt-pending">0</div><div class="stat-label">Bekleyen</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue">👨‍🍳</div></div><div class="stat-value" id="cnt-preparing">0</div><div class="stat-label">Hazırlanan</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">🛵</div></div><div class="stat-value" id="cnt-onway">0</div><div class="stat-label">Yolda</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon green">✅</div></div><div class="stat-value" id="cnt-delivered">0</div><div class="stat-label">Teslim Edildi</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon red">❌</div></div><div class="stat-value" id="cnt-cancelled">0</div><div class="stat-label">İptal</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div></div><div class="stat-value" id="cnt-preparing">0</div><div class="stat-label">Hazırlanan</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div></div><div class="stat-value" id="cnt-onway">0</div><div class="stat-label">Yolda</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div><div class="stat-value" id="cnt-delivered">0</div><div class="stat-label">Teslim Edildi</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon red"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div><div class="stat-value" id="cnt-cancelled">0</div><div class="stat-label">İptal</div></div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -960,7 +960,7 @@ tbody tr:hover{background:var(--bg)}
             <div class="card-actions" style="flex-wrap:wrap;gap:8px">
               <!-- Arama kutusu -->
               <div style="position:relative;display:flex;align-items:center">
-                <span style="position:absolute;left:10px;font-size:12px;color:var(--text3)">🔍</span>
+                <span style="position:absolute;left:10px;font-size:12px;color:var(--text3)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
                 <input id="order-search" type="search" placeholder="Müşteri, adres, #no ara..." oninput="renderOrders()" style="padding:6px 10px 6px 28px;border:1px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;width:200px;outline:none"/>
               </div>
               <span style="font-size:12px;color:var(--text3)" id="order-count-label"></span>
@@ -980,7 +980,7 @@ tbody tr:hover{background:var(--bg)}
           <!-- Map -->
           <div class="card" style="overflow:visible">
             <div class="card-header">
-              <div class="card-title">🗺️ Canlı Kurye Takibi</div>
+              <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>️ Canlı Kurye Takibi</div>
               <div class="card-actions">
                 <div class="status-pill live" style="font-size:11px"><span class="pill-dot pulse"></span>Realtime</div>
                 <button class="btn btn-ghost btn-sm" onclick="refreshMap()">↻ Yenile</button>
@@ -1059,7 +1059,7 @@ tbody tr:hover{background:var(--bg)}
         <!-- Email ile kurye arama -->
         <div class="card" style="margin-bottom:14px">
           <div class="card-header">
-            <div class="card-title">🔍 KuryeAI Sisteminden Kurye Ekle</div>
+            <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> KuryeAI Sisteminden Kurye Ekle</div>
           </div>
           <div class="card-body">
             <div style="font-size:12px;color:var(--text3);margin-bottom:12px">KuryeAI'ye kayıtlı ve admin tarafından onaylanmış kurye mail adresini girin.</div>
@@ -1126,10 +1126,10 @@ tbody tr:hover{background:var(--bg)}
           </div>
         </div>
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon green">💰</div></div><div class="stat-value" id="rep-rev">₺0</div><div class="stat-label" id="rep-rev-lbl">Ciro</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">📦</div></div><div class="stat-value" id="rep-orders">0</div><div class="stat-label">Toplam Sipariş</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue">🧾</div></div><div class="stat-value" id="rep-avg">₺0</div><div class="stat-label">Ort. Sepet</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon yellow">✅</div></div><div class="stat-value" id="rep-rate">0%</div><div class="stat-label">Teslim Oranı</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div></div><div class="stat-value" id="rep-rev">₺0</div><div class="stat-label" id="rep-rev-lbl">Ciro</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div></div><div class="stat-value" id="rep-orders">0</div><div class="stat-label">Toplam Sipariş</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M12 16H8"/></svg></div></div><div class="stat-value" id="rep-avg">₺0</div><div class="stat-label">Ort. Sepet</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon yellow"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div><div class="stat-value" id="rep-rate">0%</div><div class="stat-label">Teslim Oranı</div></div>
         </div>
         <div style="display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px">
           <div class="card">
@@ -1165,11 +1165,11 @@ tbody tr:hover{background:var(--bg)}
           <!-- Sol -->
           <div style="display:flex;flex-direction:column;gap:14px">
             <div class="card">
-              <div class="card-header"><div class="card-title">🏪 İşletme Logosu</div></div>
+              <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a3 3 0 0 0-3-3v0a3 3 0 0 0-3 3v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg> İşletme Logosu</div></div>
               <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:12px">
                 <div style="position:relative;width:96px;height:96px">
                   <img id="restoran-logo" src="" alt="" style="width:96px;height:96px;border-radius:16px;object-fit:cover;border:2px solid var(--border);display:none">
-                  <div id="restoran-logo-placeholder" style="width:96px;height:96px;border-radius:16px;background:var(--teal-bg);border:2px dashed var(--teal);display:flex;align-items:center;justify-content:center;font-size:32px">🍽️</div>
+                  <div id="restoran-logo-placeholder" style="width:96px;height:96px;border-radius:16px;background:var(--teal-bg);border:2px dashed var(--teal);display:flex;align-items:center;justify-content:center;font-size:32px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>️</div>
                   <div onclick="document.getElementById('logo-inp').click()" style="position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--white)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="13" height="13"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                   </div>
@@ -1179,24 +1179,24 @@ tbody tr:hover{background:var(--bg)}
               </div>
             </div>
             <div class="card">
-              <div class="card-header"><div class="card-title">⚙️ Atama Modu</div></div>
+              <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>️ Atama Modu</div></div>
               <div class="card-body">
                 <div class="radio-grid" id="assign-mode-grid">
                   <div class="radio-card selected" data-mode="auto" onclick="selectMode(this,'assign')">
-                    <div class="rc-check">✓</div>
-                    <div class="rc-icon">🤖</div>
+                    <div class="rc-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="rc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>
                     <div class="rc-title">Otomatik</div>
                     <div class="rc-desc">AI en yakın kurye'ye atar</div>
                   </div>
                   <div class="radio-card" data-mode="manual" onclick="selectMode(this,'assign')">
                     <div class="rc-check"></div>
-                    <div class="rc-icon">👤</div>
+                    <div class="rc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
                     <div class="rc-title">Manuel</div>
                     <div class="rc-desc">Sen seçersin</div>
                   </div>
                   <div class="radio-card" data-mode="hybrid" onclick="selectMode(this,'assign')">
                     <div class="rc-check"></div>
-                    <div class="rc-icon">⚡</div>
+                    <div class="rc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
                     <div class="rc-title">Karma</div>
                     <div class="rc-desc">AI önerir, sen onaylarsın</div>
                   </div>
@@ -1205,12 +1205,12 @@ tbody tr:hover{background:var(--bg)}
             </div>
 
             <div class="card">
-              <div class="card-header"><div class="card-title">💰 Ücretlendirme Modeli</div></div>
+              <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> Ücretlendirme Modeli</div></div>
               <div class="card-body">
                 <div class="radio-grid" id="pricing-mode-grid">
                   <div class="radio-card selected" data-mode="per_package" onclick="selectMode(this,'pricing')">
-                    <div class="rc-check">✓</div>
-                    <div class="rc-icon">📦</div>
+                    <div class="rc-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="rc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div>
                     <div class="rc-title">Paket Başı</div>
                     <div class="rc-desc">₺170 / paket + ₺12/km</div>
                   </div>
@@ -1222,7 +1222,7 @@ tbody tr:hover{background:var(--bg)}
                   </div>
                   <div class="radio-card" data-mode="custom" onclick="selectMode(this,'pricing')">
                     <div class="rc-check"></div>
-                    <div class="rc-icon">✏️</div>
+                    <div class="rc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>️</div>
                     <div class="rc-title">Özel</div>
                     <div class="rc-desc">Kendi fiyatını gir</div>
                   </div>
@@ -1246,7 +1246,7 @@ tbody tr:hover{background:var(--bg)}
           <!-- Sağ -->
           <div style="display:flex;flex-direction:column;gap:14px">
             <div class="card">
-              <div class="card-header"><div class="card-title">🔔 Bildirim Ayarları</div></div>
+              <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Bildirim Ayarları</div></div>
               <div class="card-body" style="padding:8px 20px">
                 <div class="settings-section" style="margin-bottom:0">
                   <div class="settings-row">
@@ -1270,7 +1270,7 @@ tbody tr:hover{background:var(--bg)}
             </div>
 
             <div class="card">
-              <div class="card-header"><div class="card-title">🏪 Restoran Bilgileri</div></div>
+              <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a3 3 0 0 0-3-3v0a3 3 0 0 0-3 3v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg> Restoran Bilgileri</div></div>
               <div class="card-body">
                 <div class="form-group">
                   <label class="form-label">Restoran Adı</label>
@@ -1344,16 +1344,16 @@ tbody tr:hover{background:var(--bg)}
               </div>
               <div class="card-body">
                 <div id="qrmenu-inactive" style="text-align:center;padding:16px 0">
-                  <div style="font-size:36px;margin-bottom:10px">📱</div>
+                  <div style="font-size:36px;margin-bottom:10px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></div>
                   <div style="font-size:13px;font-weight:600;margin-bottom:6px">QRMenuAI henüz aktif değil</div>
                   <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6">RestoranAI menünüz ile senkronize dijital QR menü. Müşteri uygulama indirmeden kamerayla okutunca menüyü görür.</div>
                   <div style="background:rgba(0,200,215,.06);border:.5px solid rgba(0,200,215,.2);border-radius:12px;padding:12px;margin-bottom:16px;text-align:left">
-                    <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">✦ Özellikler</div>
+                    <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5L12 2z"/></svg> Özellikler</div>
                     <div style="font-size:11px;color:var(--text3);line-height:1.8">
-                      ✓ Sınırsız ürün & kategori<br/>
-                      ✓ Anlık menü güncelleme<br/>
-                      ✓ Özel URL + QR kod tasarımı<br/>
-                      ✓ Görüntülenme analitiği
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sınırsız ürün & kategori<br/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Anlık menü güncelleme<br/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Özel URL + QR kod tasarımı<br/>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Görüntülenme analitiği
                     </div>
                   </div>
                   <div style="font-size:18px;font-weight:900;color:var(--teal);margin-bottom:4px">4.995₺<span style="font-size:12px;font-weight:600;color:var(--text3)">/yıl</span></div>
@@ -1361,7 +1361,7 @@ tbody tr:hover{background:var(--bg)}
                   <a href="/qrmenuai" target="_blank" style="display:inline-block;background:var(--teal);color:#000;font-size:13px;font-weight:700;padding:9px 20px;border-radius:999px;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#33d6e3'" onmouseout="this.style.background='var(--teal)'">Detaylı Bilgi & Satın Al →</a>
                   <!-- Demo aktive et butonu -->
                   <div style="margin-top:12px">
-                    <button onclick="activateQRMenu()" style="background:none;border:.5px solid var(--border);border-radius:8px;padding:7px 16px;font-size:12px;color:var(--text3);cursor:pointer">🎮 Demo Olarak Aktive Et</button>
+                    <button onclick="activateQRMenu()" style="background:none;border:.5px solid var(--border);border-radius:8px;padding:7px 16px;font-size:12px;color:var(--text3);cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg> Demo Olarak Aktive Et</button>
                   </div>
                 </div>
 
@@ -1371,7 +1371,7 @@ tbody tr:hover{background:var(--bg)}
                       <img id="qrmenu-qr-img" src="" alt="QR Kod" style="width:140px;height:140px;border-radius:12px;border:2px solid var(--teal);background:#fff"/>
                       <div style="margin-top:8px;display:flex;gap:6px;justify-content:center">
                         <button onclick="downloadQR()" style="background:var(--teal);color:#000;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer">⬇ İndir</button>
-                        <button onclick="printQR()" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer">🖨️ Yazdır</button>
+                        <button onclick="printQR()" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>️ Yazdır</button>
                       </div>
                     </div>
                     <div style="flex:1;min-width:180px">
@@ -1382,8 +1382,8 @@ tbody tr:hover{background:var(--bg)}
                         <a id="qrmenu-open-link" href="#" target="_blank" style="font-size:12px;color:var(--teal);text-decoration:none;font-weight:600">↗ Menüyü Önizle</a>
                       </div>
                       <div style="margin-top:12px;padding:10px;background:rgba(0,200,215,.06);border-radius:8px;font-size:11px;color:var(--text3);line-height:1.6">
-                        ✅ Aktif — Menünüz canlı<br/>
-                        📊 Görüntüleme: <span id="qrmenu-views">—</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Aktif — Menünüz canlı<br/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg> Görüntüleme: <span id="qrmenu-views">—</span>
                       </div>
                     </div>
                   </div>
@@ -1392,7 +1392,7 @@ tbody tr:hover{background:var(--bg)}
             </div>
 
             <div class="card">
-              <div class="card-header"><div class="card-title" style="color:var(--red)">⚠️ Tehlikeli Bölge</div></div>
+              <div class="card-header"><div class="card-title" style="color:var(--red)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️ Tehlikeli Bölge</div></div>
               <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
                 <div style="display:flex;align-items:center;justify-content:space-between">
                   <div><div style="font-size:13px;font-weight:600">Tüm Siparişleri Sıfırla</div><div style="font-size:12px;color:var(--text3)">Demo verileri temizle</div></div>
@@ -1415,7 +1415,7 @@ tbody tr:hover{background:var(--bg)}
           <!-- Form -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title">✏️ Manuel Sipariş Oluştur</div>
+              <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>️ Manuel Sipariş Oluştur</div>
               <div class="card-actions">
                 <span style="font-size:12px;color:var(--text3)">Online, WhatsApp veya ALO PAKET siparişi</span>
               </div>
@@ -1457,7 +1457,7 @@ tbody tr:hover{background:var(--bg)}
               <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
                   <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px">Müşteri Bilgileri</div>
-                  <button class="btn btn-ghost btn-sm" onclick="openCustomerBook()" style="font-size:11px">📖 Adres Defterinden Bul</button>
+                  <button class="btn btn-ghost btn-sm" onclick="openCustomerBook()" style="font-size:11px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Adres Defterinden Bul</button>
                 </div>
                 <div class="form-row">
                   <div class="form-group" style="margin-bottom:0">
@@ -1474,7 +1474,7 @@ tbody tr:hover{background:var(--bg)}
                   <input class="form-input" id="mo-address" placeholder="Cadde, mahalle, kapı no…" style="background:var(--white)"/>
                 </div>
                 <div id="customer-suggestion" style="display:none;margin-top:8px;padding:10px;background:var(--teal-bg);border:1px solid rgba(0,200,215,.2);border-radius:8px;font-size:12px;cursor:pointer" onclick="applyCustomerSuggestion()">
-                  <span style="color:var(--teal-dk);font-weight:600">🔍 Geçmiş Müşteri:</span>
+                  <span style="color:var(--teal-dk);font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Geçmiş Müşteri:</span>
                   <span id="customer-suggestion-text"></span>
                 </div>
               </div>
@@ -1519,8 +1519,8 @@ tbody tr:hover{background:var(--bg)}
               <div class="form-group">
                 <label class="form-label">Not (İsteğe Bağlı)</label>
                 <div style="display:flex;gap:6px;margin-bottom:6px">
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="addDeliveryNote('🔔 Zili çalınız.')" style="font-size:11px;flex:1">🔔 Zili Çal</button>
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="addDeliveryNote('📞 Müşteriyi arayınız.')" style="font-size:11px;flex:1">📞 Aranacak</button>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="addDeliveryNote('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Zili çalınız.')" style="font-size:11px;flex:1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Zili Çal</button>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="addDeliveryNote('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.54 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Müşteriyi arayınız.')" style="font-size:11px;flex:1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.54 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Aranacak</button>
                 </div>
                 <textarea class="form-textarea" id="mo-note" placeholder="Kapı zili çalışmıyor, 3. kat…" style="min-height:60px"></textarea>
               </div>
@@ -1550,7 +1550,7 @@ tbody tr:hover{background:var(--bg)}
               </div>
               <div id="recent-manual-orders">
                 <div class="empty-state" style="padding:24px">
-                  <div class="empty-icon" style="font-size:24px">📝</div>
+                  <div class="empty-icon" style="font-size:24px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
                   <div class="empty-title" style="font-size:12px">Henüz manuel sipariş yok</div>
                 </div>
               </div>
@@ -1570,7 +1570,7 @@ tbody tr:hover{background:var(--bg)}
             Yemeksepeti, Trendyol Yemek, Getir ve Migros Yemek'in kurumsal API'leri hazır. Panel altyapısı tam entegrasyon için hazırlandı — partnerlik anlaşması tamamlandığında tek tıkla aktif olacak.
           </div>
           <div style="display:flex;gap:8px;margin-top:16px">
-            <div style="background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.25);color:var(--teal);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600">✓ Altyapı Hazır</div>
+            <div style="background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.25);color:var(--teal);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Altyapı Hazır</div>
             <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600">⏳ API Görüşmeleri Devam Ediyor</div>
           </div>
         </div>
@@ -1592,9 +1592,9 @@ tbody tr:hover{background:var(--bg)}
                 <span class="platform-status-badge coming">Yakında</span>
               </div>
               <div class="platform-features">
-                <div class="pf-item done">✓ Sipariş webhook altyapısı</div>
-                <div class="pf-item done">✓ Sipariş objesi mapping</div>
-                <div class="pf-item done">✓ Durum güncelleme endpoint'i</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş webhook altyapısı</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş objesi mapping</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Durum güncelleme endpoint'i</div>
                 <div class="pf-item pending">⏳ Resmi API anahtarı</div>
                 <div class="pf-item pending">⏳ Partnerlik onayı</div>
               </div>
@@ -1622,9 +1622,9 @@ tbody tr:hover{background:var(--bg)}
                 <span class="platform-status-badge coming">Yakında</span>
               </div>
               <div class="platform-features">
-                <div class="pf-item done">✓ REST API şeması hazır</div>
-                <div class="pf-item done">✓ Sipariş normalizer</div>
-                <div class="pf-item done">✓ Webhook receiver</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> REST API şeması hazır</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş normalizer</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Webhook receiver</div>
                 <div class="pf-item pending">⏳ Supplier ID gerekli</div>
                 <div class="pf-item pending">⏳ Trendyol partner başvurusu</div>
               </div>
@@ -1658,9 +1658,9 @@ tbody tr:hover{background:var(--bg)}
                 <span class="platform-status-badge coming">Yakında</span>
               </div>
               <div class="platform-features">
-                <div class="pf-item done">✓ GraphQL sorguları hazır</div>
-                <div class="pf-item done">✓ Sipariş lifecycle mapping</div>
-                <div class="pf-item done">✓ Gerçek zamanlı sync altyapısı</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> GraphQL sorguları hazır</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş lifecycle mapping</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Gerçek zamanlı sync altyapısı</div>
                 <div class="pf-item pending">⏳ Getir Business hesabı</div>
                 <div class="pf-item pending">⏳ API erişim başvurusu</div>
               </div>
@@ -1688,8 +1688,8 @@ tbody tr:hover{background:var(--bg)}
                 <span class="platform-status-badge coming">Yakında</span>
               </div>
               <div class="platform-features">
-                <div class="pf-item done">✓ REST endpoint'leri hazır</div>
-                <div class="pf-item done">✓ Kategori & ürün sync</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> REST endpoint'leri hazır</div>
+                <div class="pf-item done"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kategori & ürün sync</div>
                 <div class="pf-item pending">⏳ Migros partner programı</div>
                 <div class="pf-item pending">⏳ Kurumsal API başvurusu</div>
                 <div class="pf-item pending">⏳ Test ortamı erişimi</div>
@@ -1804,22 +1804,22 @@ tbody tr:hover{background:var(--bg)}
         <!-- Top stat cards -->
         <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-icon green">💰</div></div>
+            <div class="stat-top"><div class="stat-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div></div>
             <div class="stat-value" id="fin-total-rev">₺0</div>
             <div class="stat-label">Toplam Ciro</div>
           </div>
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-icon teal">📦</div></div>
+            <div class="stat-top"><div class="stat-icon teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div></div>
             <div class="stat-value" id="fin-delivery-rev">₺0</div>
             <div class="stat-label">Paket Cirosu</div>
           </div>
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-icon blue">🪑</div></div>
+            <div class="stat-top"><div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg></div></div>
             <div class="stat-value" id="fin-table-rev">₺0</div>
             <div class="stat-label">Masa Cirosu</div>
           </div>
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-icon red">🛵</div></div>
+            <div class="stat-top"><div class="stat-icon red"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div></div>
             <div class="stat-value" id="fin-courier-cost">₺0</div>
             <div class="stat-label">Kurye Gideri</div>
           </div>
@@ -1828,7 +1828,7 @@ tbody tr:hover{background:var(--bg)}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
           <!-- Kurye maliyet analizi -->
           <div class="card">
-            <div class="card-header"><div class="card-title">📊 Kurye Maliyet Analizi</div></div>
+            <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg> Kurye Maliyet Analizi</div></div>
             <div class="card-body">
               <div style="display:flex;flex-direction:column;gap:14px">
                 <div>
@@ -1856,7 +1856,7 @@ tbody tr:hover{background:var(--bg)}
 
           <!-- En çok satılan ürünler -->
           <div class="card">
-            <div class="card-header"><div class="card-title">🏆 En Çok Satılan Ürünler</div></div>
+            <div class="card-header"><div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> En Çok Satılan Ürünler</div></div>
             <div class="card-body" style="padding:0">
               <div id="fin-top-products"></div>
             </div>
@@ -1875,7 +1875,7 @@ tbody tr:hover{background:var(--bg)}
           <!-- Saatlik / Haftalık özet -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title">📈 Ciro Dağılımı</div>
+              <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> Ciro Dağılımı</div>
             </div>
             <div class="card-body" id="fin-breakdown"></div>
           </div>
@@ -1886,7 +1886,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="view" id="view-kitchen">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div>
-            <div style="font-size:22px;font-weight:800">👨‍🍳 Mutfak Ekranı</div>
+            <div style="font-size:22px;font-weight:800"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Mutfak Ekranı</div>
             <div style="font-size:12px;color:var(--text3);margin-top:2px">Hazırlanması gereken siparişler</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -1897,7 +1897,7 @@ tbody tr:hover{background:var(--bg)}
               <option value="3" selected>3 Sütun</option>
               <option value="4">4 Sütun</option>
             </select>
-            <button class="btn btn-ghost btn-sm" onclick="toggleKitchenFullscreen()" id="kitchen-fs-btn" title="Tam Ekran">⛶ Tablet Modu</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleKitchenFullscreen()" id="kitchen-fs-btn" title="Tam Ekran"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> Tablet Modu</button>
             <button class="btn btn-ghost btn-sm" onclick="renderKitchen()">↻ Yenile</button>
           </div>
         </div>
@@ -1910,7 +1910,7 @@ tbody tr:hover{background:var(--bg)}
       <div id="kitchen-fs-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:var(--dark);overflow-y:auto;padding:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:24px;font-weight:900">👨‍🍳 Mutfak Ekranı</div>
+            <div style="font-size:24px;font-weight:900"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Mutfak Ekranı</div>
             <div class="status-pill live"><span class="pill-dot pulse"></span>Canlı</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
@@ -1921,7 +1921,7 @@ tbody tr:hover{background:var(--bg)}
               <option value="4">4 Sütun</option>
               <option value="5">5 Sütun</option>
             </select>
-            <button onclick="toggleKitchenFullscreen()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-size:13px;font-weight:600">✕ Kapat</button>
+            <button onclick="toggleKitchenFullscreen()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-size:13px;font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Kapat</button>
           </div>
         </div>
         <div id="kitchen-fs-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px"></div>
@@ -1930,16 +1930,16 @@ tbody tr:hover{background:var(--bg)}
       <!-- ═══════════════ KURYE HAKEDİŞLERİ ═══════════════ -->
       <div class="view" id="view-earnings">
         <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon green">💰</div></div><div class="stat-value" id="earn-total">₺0</div><div class="stat-label">Toplam Hakediş</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon green"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div></div><div class="stat-value" id="earn-total">₺0</div><div class="stat-label">Toplam Hakediş</div></div>
           <div class="stat-card"><div class="stat-top"><div class="stat-icon red">⏳</div></div><div class="stat-value" id="earn-unpaid">₺0</div><div class="stat-label">Ödenmemiş</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">✅</div></div><div class="stat-value" id="earn-paid">₺0</div><div class="stat-label">Ödenen</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue">🛵</div></div><div class="stat-value" id="earn-couriers">0</div><div class="stat-label">Aktif Kurye</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div><div class="stat-value" id="earn-paid">₺0</div><div class="stat-label">Ödenen</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div></div><div class="stat-value" id="earn-couriers">0</div><div class="stat-label">Aktif Kurye</div></div>
         </div>
         <div class="card">
           <div class="card-header">
             <div class="card-title">Kurye Hakediş Tablosu</div>
             <div class="card-actions">
-              <span style="font-size:12px;color:var(--text3)">💡 "Ödendi" işaretlenince kuryeye bildirim gider</span>
+              <span style="font-size:12px;color:var(--text3)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> "Ödendi" işaretlenince kuryeye bildirim gider</span>
             </div>
           </div>
           <div class="table-wrap" id="earnings-table-wrap">
@@ -1952,7 +1952,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="view" id="view-chat">
         <div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 120px);overflow:hidden">
           <div class="card-header" style="flex-shrink:0;flex-wrap:wrap;gap:8px">
-            <div class="card-title">💬 Operasyon Chat</div>
+            <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Operasyon Chat</div>
           </div>
           <div style="flex:1;overflow-y:auto;padding:12px 16px" id="rest-chat-msgs">
             <div style="text-align:center;color:var(--text3);font-size:.85rem;padding:40px 0">Yükleniyor…</div>
@@ -1967,7 +1967,7 @@ tbody tr:hover{background:var(--bg)}
       <div class="view" id="view-staff">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">👥 Personel Yönetimi</div>
+            <div class="card-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Personel Yönetimi</div>
             <button class="btn btn-primary btn-sm" onclick="openAddStaffModal()">+ Personel Ekle</button>
           </div>
           <div class="table-wrap" id="staff-table-wrap">
@@ -1986,7 +1986,7 @@ tbody tr:hover{background:var(--bg)}
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" style="color:var(--red)">Kurye Sil</div>
-      <div class="modal-close" onclick="closeModal('modal-delete-courier')">✕</div>
+      <div class="modal-close" onclick="closeModal('modal-delete-courier')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
     <div class="modal-body">
       <p style="font-size:13.5px;color:var(--text2);line-height:1.6">
@@ -2005,7 +2005,7 @@ tbody tr:hover{background:var(--bg)}
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Yeni Ürün Ekle</div>
-      <div class="modal-close" onclick="closeModal('modal-add-menu-item')">✕</div>
+      <div class="modal-close" onclick="closeModal('modal-add-menu-item')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -2038,8 +2038,8 @@ tbody tr:hover{background:var(--bg)}
 <div class="modal-overlay" id="modal-customer-book">
   <div class="modal" style="max-width:520px">
     <div class="modal-header">
-      <div class="modal-title">📖 Müşteri Adres Defteri</div>
-      <div class="modal-close" onclick="closeModal('modal-customer-book')">✕</div>
+      <div class="modal-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Müşteri Adres Defteri</div>
+      <div class="modal-close" onclick="closeModal('modal-customer-book')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -2058,8 +2058,8 @@ tbody tr:hover{background:var(--bg)}
 <div class="modal-overlay" id="modal-courier-pricing">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">💰 Kurye Ücret Ayarları</div>
-      <div class="modal-close" onclick="closeModal('modal-courier-pricing')">✕</div>
+      <div class="modal-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> Kurye Ücret Ayarları</div>
+      <div class="modal-close" onclick="closeModal('modal-courier-pricing')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
     <div class="modal-body">
       <div id="cp-courier-name" style="font-weight:700;margin-bottom:14px;font-size:15px"></div>
@@ -2085,8 +2085,8 @@ tbody tr:hover{background:var(--bg)}
 <div class="modal-overlay" id="modal-mark-paid">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">✅ Ödemeyi Onayla</div>
-      <div class="modal-close" onclick="closeModal('modal-mark-paid')">✕</div>
+      <div class="modal-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Ödemeyi Onayla</div>
+      <div class="modal-close" onclick="closeModal('modal-mark-paid')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
     <div class="modal-body">
       <div id="mp-info" style="margin-bottom:10px;font-size:14px"></div>
@@ -2097,7 +2097,7 @@ tbody tr:hover{background:var(--bg)}
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-mark-paid')">İptal</button>
-      <button class="btn btn-primary" onclick="confirmMarkPaid()" style="background:var(--green)">✅ Ödendi Olarak İşaretle</button>
+      <button class="btn btn-primary" onclick="confirmMarkPaid()" style="background:var(--green)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Ödendi Olarak İşaretle</button>
     </div>
   </div>
 </div>
@@ -2107,7 +2107,7 @@ tbody tr:hover{background:var(--bg)}
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Personel Ekle</div>
-      <div class="modal-close" onclick="closeModal('modal-add-staff')">✕</div>
+      <div class="modal-close" onclick="closeModal('modal-add-staff')"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -2139,7 +2139,7 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- ── DEMO BANNER ── -->
 <div id="demo-banner">
-  🎮 Demo Moddasın &nbsp;·&nbsp; <span>Gerçek sipariş oluşturulmaz — veriler örnek</span>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg> Demo Moddasın &nbsp;·&nbsp; <span>Gerçek sipariş oluşturulmaz — veriler örnek</span>
   &nbsp;&nbsp;<a href="/restoranai-login" style="color:#fff;font-size:.75rem;text-decoration:underline;opacity:.8">Çıkış</a>
 </div>
 
@@ -2147,7 +2147,7 @@ tbody tr:hover{background:var(--bg)}
 <div id="onboarding-overlay">
   <div id="onboarding-box">
     <div style="text-align:center;margin-bottom:1.2rem">
-      <div style="font-size:2rem;margin-bottom:.4rem">👋</div>
+      <div style="font-size:2rem;margin-bottom:.4rem"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
       <div style="font-size:1.2rem;font-weight:700">KuryeAI'ye Hoş Geldin!</div>
       <div style="font-size:.85rem;color:var(--text3);margin-top:.3rem" id="ob-sub">Başlamak için 3 adım</div>
     </div>
@@ -2217,13 +2217,13 @@ document.addEventListener("DOMContentLoaded", function(){
 window.toggleDarkMode = function(){
   var isDark = document.body.classList.toggle('dark');
   localStorage.setItem('restoran_dark', isDark ? '1' : '0');
-  var icon = isDark ? '☀️' : '🌙';
+  var icon = isDark ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>️' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
   ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=icon; });
 };
 // İkon senkronizasyonu
 document.addEventListener('DOMContentLoaded', function(){
   if(document.body.classList.contains('dark')){
-    ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent='☀️'; });
+    ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>️'; });
   }
 });
 
@@ -2409,7 +2409,7 @@ const timeAgo = ts=>{
 };
 const COLORS=["#00c8d7","#3b82f6","#8b5cf6","#f59e0b","#ef4444","#00c48c"];
 const avatarColor=i=>COLORS[i%COLORS.length];
-const vehicleIcon={moto:"🛵",bike:"🚲",car:"🚗"};
+const vehicleIcon={moto:"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>",bike:"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>",car:"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h10l4 4v6a2 2 0 0 1-2 2z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>"};
 
 const STATUS={
   pending:   {label:"Bekliyor",       cls:"pending",   next:"preparing"},
@@ -2437,7 +2437,7 @@ const setFbStatus=s=>{
   const m={loading:["Bağlanıyor","fb-load"],connected:["Firebase ●","fb-ok"],error:["Bağlantı Hatası","fb-err"]};
   if(el){el.innerHTML=`<span class="pill-dot ${s==="connected"?"pulse":""}"></span>${m[s][0]}`;el.className=`status-pill ${m[s][1]}`;}
   if(mob){mob.className=`status-pill ${m[s][1]}`;mob.style.cssText="font-size:10px;padding:3px 8px";}
-  if(mobtxt)mobtxt.textContent=s==="connected"?"●":s==="error"?"✕":"…";
+  if(mobtxt)mobtxt.textContent=s==="connected"?"●":s==="error"?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>":"…";
 };
 
 // ── Navigation ─────────────────────────────────────────────────────────────
@@ -2551,7 +2551,7 @@ onAuthStateChanged(auth, async user=>{
         const logoPlaceholder=document.getElementById('restoran-logo-placeholder');
         logoImg.src=data.logoURL; logoImg.style.display='block';
         logoPlaceholder.style.display='none';
-        document.getElementById('logo-status').textContent='Logo yüklü ✅';
+        document.getElementById('logo-status').textContent='Logo yüklü <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
       }
     } else {
       // No Firestore doc — use UID as restaurant ID (admin/legacy)
@@ -2602,13 +2602,13 @@ function renderPlanInfo() {
     </div>
     <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.84rem">
       <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Durum</span>
-        <span style="font-weight:700;color:${expired?'#ff5f57':'#30d158'}">${expired?'⚠ Süresi Doldu':'● Aktif'}</span></div>
+        <span style="font-weight:700;color:${expired?'#ff5f57':'#30d158'}">${expired?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Süresi Doldu':'● Aktif'}</span></div>
       <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Bitiş Tarihi</span><span style="font-weight:600">${endStr}</span></div>
       <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Kalan Süre</span>
         <span style="font-weight:700;color:${daysLeft<=3?'#ff5f57':daysLeft<=7?'#ffd60a':'#30d158'}">${expired?'—':daysLeft+' gün'}</span></div>
     </div>
     ${expired ? `<div style="margin-top:.9rem;padding:.7rem;background:rgba(255,95,87,.1);border:1px solid rgba(255,95,87,.3);border-radius:10px;font-size:.8rem;color:#ff5f57;text-align:center">
-      ⚠ Planınız sona erdi. Sipariş oluşturamazsınız. Lütfen admin ile iletişime geçin.
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Planınız sona erdi. Sipariş oluşturamazsınız. Lütfen admin ile iletişime geçin.
     </div>` : ''}
   `;
   renderPaymentSection();
@@ -2619,21 +2619,21 @@ let obStep = 1;
 const OB_STEPS = [
   {
     title:'Restoran Bilgilerini Tamamla',
-    icon:'🏪',
+    icon:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a3 3 0 0 0-3-3v0a3 3 0 0 0-3 3v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg>',
     desc:'Restoran adın, adresi ve iletişim bilgilerini güncelle. Kuryeler ve müşteriler bu bilgileri görecek.',
     action:'Ayarlara Git',
     fn: ()=>{ closeOnboarding(); goPage('settings'); },
   },
   {
     title:'İlk Siparişini Oluştur',
-    icon:'📦',
+    icon:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>',
     desc:'Manuel sipariş ekranından deneme siparişi oluştur. Tüm özellikleri keşfet.',
     action:'Sipariş Ekranına Git',
     fn: ()=>{ closeOnboarding(); goPage('manual-order'); },
   },
   {
     title:'Kurye Ata',
-    icon:'🛵',
+    icon:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>',
     desc:'Kurye yönetimi ekranından kuryelerini yönet ve siparişlerine atama yap.',
     action:'Kuryeler',
     fn: ()=>{ closeOnboarding(); goPage('couriers'); },
@@ -2662,7 +2662,7 @@ function renderObStep() {
     <button onclick="OB_STEPS[${obStep-1}].fn()" style="width:100%;margin-top:1.1rem;padding:.6rem;background:var(--teal-bg);border:1px solid var(--teal);border-radius:10px;color:var(--teal);font-weight:700;cursor:pointer;font-size:.85rem">${s.action} →</button>
   `;
   const nextBtn = document.getElementById('ob-next');
-  nextBtn.textContent = obStep < OB_STEPS.length ? 'Sonraki →' : 'Başla 🚀';
+  nextBtn.textContent = obStep < OB_STEPS.length ? 'Sonraki →' : 'Başla <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>';
 }
 
 window.obNext = () => {
@@ -2689,13 +2689,13 @@ function renderPaymentSection() {
     </div>
 
     <div style="background:rgba(0,200,215,.07);border:1px solid rgba(0,200,215,.22);border-radius:12px;padding:.9rem;margin-bottom:.85rem">
-      <div style="font-size:.7rem;color:var(--text3);margin-bottom:.55rem;font-weight:600">🏦 Banka Havale / EFT Bilgileri</div>
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:.55rem;font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg> Banka Havale / EFT Bilgileri</div>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem">
         <div>
           <div style="font-size:.65rem;color:var(--text3);margin-bottom:.15rem">IBAN</div>
           <div style="font-size:.9rem;font-weight:700;letter-spacing:.04em;color:#00c8d7;font-family:monospace">TR71 0015 7000 0000 0154 8330 53</div>
         </div>
-        <button id="copy-iban-btn" onclick="copyIBAN()" style="flex-shrink:0;background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.35);border-radius:8px;color:#00c8d7;font-size:.72rem;padding:.35rem .65rem;cursor:pointer;white-space:nowrap">📋 Kopyala</button>
+        <button id="copy-iban-btn" onclick="copyIBAN()" style="flex-shrink:0;background:rgba(0,200,215,.15);border:1px solid rgba(0,200,215,.35);border-radius:8px;color:#00c8d7;font-size:.72rem;padding:.35rem .65rem;cursor:pointer;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Kopyala</button>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:.83rem">
         <span style="color:var(--text3)">Alıcı Adı</span>
@@ -2704,7 +2704,7 @@ function renderPaymentSection() {
     </div>
 
     <div style="background:rgba(255,214,10,.07);border:1px solid rgba(255,214,10,.22);border-radius:10px;padding:.75rem;margin-bottom:.85rem">
-      <div style="font-size:.75rem;font-weight:700;color:#ffd60a;margin-bottom:.35rem">⚠ Açıklama kısmına mutlaka yazınız</div>
+      <div style="font-size:.75rem;font-weight:700;color:#ffd60a;margin-bottom:.35rem"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Açıklama kısmına mutlaka yazınız</div>
       <div style="font-size:.82rem;color:var(--text2)">Restoran Adı / RestoranID</div>
       <div style="font-family:monospace;font-size:.78rem;color:#00c8d7;margin-top:.3rem;word-break:break-all">${restName} / ${restId}</div>
     </div>
@@ -2717,13 +2717,13 @@ function renderPaymentSection() {
     <div style="margin-bottom:.9rem">
       <label style="font-size:.72rem;color:var(--text3);display:block;margin-bottom:.3rem">Dekont <span style="color:#ff5f57;font-weight:700">*</span> <span style="color:var(--text3)">(JPG / PNG / PDF, max 5 MB)</span></label>
       <div onclick="document.getElementById('dekont-input').click()" style="background:var(--bg2);border:2px dashed var(--border);border-radius:10px;padding:.85rem;text-align:center;cursor:pointer">
-        <div id="dekont-label" style="font-size:.82rem;color:var(--text3)">📎 Dekont seçmek için tıkla</div>
+        <div id="dekont-label" style="font-size:.82rem;color:var(--text3)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Dekont seçmek için tıkla</div>
       </div>
       <input type="file" id="dekont-input" accept="image/*,.pdf" style="display:none" onchange="onDekontSelect(event)">
     </div>
 
     <button id="payment-notify-btn" onclick="submitPaymentNotification()" style="width:100%;padding:.7rem;background:linear-gradient(135deg,#00c8d7,#009aaa);border:none;border-radius:10px;color:#fff;font-size:.88rem;font-weight:700;cursor:pointer;transition:opacity .2s">
-      ✓ Ödeme Bildirdim
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödeme Bildirdim
     </button>
     <div id="payment-status-row" style="display:none;margin-top:.55rem;text-align:center;font-size:.78rem;color:#ffd60a">⏳ Ödeme doğrulaması bekleniyor…</div>
   `;
@@ -2732,7 +2732,7 @@ function renderPaymentSection() {
 window.copyIBAN = () => {
   navigator.clipboard.writeText('TR710015700000000154833053').then(() => {
     const btn = document.getElementById('copy-iban-btn');
-    if (btn) { btn.textContent = '✓ Kopyalandı'; setTimeout(() => { btn.textContent = '📋 Kopyala'; }, 2200); }
+    if (btn) { btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kopyalandı'; setTimeout(() => { btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Kopyala'; }, 2200); }
   }).catch(() => showToast('Kopyalama desteklenmiyor', 'error'));
 };
 
@@ -2742,7 +2742,7 @@ window.onDekontSelect = (e) => {
   if (f.size > 5 * 1024 * 1024) { showToast('Dekont max 5MB olmalı', 'error'); return; }
   selectedDekontFile = f;
   const lbl = document.getElementById('dekont-label');
-  if (lbl) lbl.textContent = '✅ ' + f.name;
+  if (lbl) lbl.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + f.name;
 };
 
 window.submitPaymentNotification = async () => {
@@ -2763,14 +2763,14 @@ window.submitPaymentNotification = async () => {
       paymentDekontURL: dekontURL,
       paymentDate:      Date.now(),
     });
-    showToast('✓ Ödeme bildirimi gönderildi! Admin onayı bekleniyor.', 'success');
-    if (btn) { btn.textContent = '✓ Bildirim Gönderildi'; }
+    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödeme bildirimi gönderildi! Admin onayı bekleniyor.', 'success');
+    if (btn) { btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bildirim Gönderildi'; }
     const row = document.getElementById('payment-status-row');
     if (row) row.style.display = 'block';
     selectedDekontFile = null;
   } catch (e) {
     showToast('Hata: ' + e.message, 'error');
-    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '✓ Ödeme Bildirdim'; }
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödeme Bildirdim'; }
   }
 };
 
@@ -2791,7 +2791,7 @@ window.uploadRestoranLogo=async(e)=>{
     RESTAURANT_LOGO_URL = url;
     // Haritadaki kendi pinimizi yenile
     if(_restPinMarker && mapInstance){ mapInstance.removeLayer(_restPinMarker); _restPinMarker=null; _addRestPinToMap(); }
-    document.getElementById('logo-status').textContent='Logo kaydedildi ✅';
+    document.getElementById('logo-status').textContent='Logo kaydedildi <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
   }catch(err){
     document.getElementById('logo-status').textContent='Hata: '+err.message;
   }
@@ -2839,7 +2839,7 @@ function _checkOrderNotifs(newOrders){
     if(!_pwaSeenOrders.has(o.id)){
       _pwaSeenOrders.add(o.id);
       _pwaOrderStatuses[o.id]=o.status;
-      _showOrderNotif('🆕 Yeni Sipariş',`${o.customer||'Müşteri'} — ₺${o.total||0}`);
+      _showOrderNotif('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg> Yeni Sipariş',`${o.customer||'Müşteri'} — ₺${o.total||0}`);
     } else {
       const prev=_pwaOrderStatuses[o.id];
       if(prev && prev!==o.status){
@@ -2847,7 +2847,7 @@ function _checkOrderNotifs(newOrders){
         const statusLabel={preparing:'Hazırlanıyor',on_the_way:'Yolda',delivered:'Teslim Edildi',cancelled:'İptal Edildi'};
         const lbl=statusLabel[o.status];
         if(lbl){
-          const icons={preparing:'👨‍🍳',on_the_way:'🛵',delivered:'✅',cancelled:'❌'};
+          const icons={preparing:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>',on_the_way:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>',delivered:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',cancelled:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'};
           _showOrderNotif(`${icons[o.status]||''} Sipariş Güncellendi`,`#${o.id.slice(-6).toUpperCase()} — ${lbl}`);
         }
       }
@@ -2916,7 +2916,7 @@ async function initFirebase(){
       }
       applySettings();
     }
-    showToast("Firebase bağlantısı kuruldu ✓");
+    showToast("Firebase bağlantısı kuruldu <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>");
   }catch(err){
     console.error("Firebase seed hatası:",err.code,err.message);
   }
@@ -2949,9 +2949,9 @@ function renderRestChat(){
     const timeStr=ts.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
     let content='';
     if(!m.type||m.type==='text')content=`<div style="font-size:.88rem">${esc(m.text||'')}</div>`;
-    else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;content=`<a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="font-size:.88rem;color:${isRest?'#fff':'var(--teal)'};font-weight:600;text-decoration:none">📍 ${esc(m.text||'')}</a>`;}
+    else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;content=`<a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="font-size:.88rem;color:${isRest?'#fff':'var(--teal)'};font-weight:600;text-decoration:none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(m.text||'')}</a>`;}
     else if(m.type==='image')content=`<img src="${esc(m.url||'')}" style="max-width:200px;border-radius:8px;display:block">`;
-    else if(m.type==='audio')content=m.url?`<audio controls src="${esc(m.url)}" style="max-width:200px;border-radius:8px"></audio>`:`<span style="font-size:.85rem;opacity:.7">🎵 Sesli mesaj</span>`;
+    else if(m.type==='audio')content=m.url?`<audio controls src="${esc(m.url)}" style="max-width:200px;border-radius:8px"></audio>`:`<span style="font-size:.85rem;opacity:.7"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Sesli mesaj</span>`;
     return `<div style="display:flex;gap:8px;margin-bottom:10px;${isRest?'flex-direction:row-reverse':''}">
       ${!isRest?`<div style="width:32px;height:32px;border-radius:50%;background:var(--teal-bg);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${init}</div>`:''}
       <div style="max-width:70%">
@@ -2980,7 +2980,7 @@ window.sendRestMsg=function(){
   });
 };
 function _showBcNotif(title,body){
-  showToast(`📢 ${title||'Bildirim'}: ${body||''}`);
+  showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> ${title||'Bildirim'}: ${body||''}`);
   if(!('Notification' in window))return;
   const show=()=>{
     navigator.serviceWorker.ready.then(reg=>{
@@ -3030,19 +3030,19 @@ function renderDashboard(){
       <td><span style="font-family:var(--fm);font-size:13px;font-weight:700">₺${o.total}</span></td>
       <td><span class="badge ${STATUS[o.status]?.cls||"pending"}"><span class="badge-dot"></span>${STATUS[o.status]?.label||o.status}</span></td>
     </tr>`).join("")}
-    </tbody></table>`:`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Sipariş yok</div></div>`;
+    </tbody></table>`:`<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg></div><div class="empty-title">Sipariş yok</div></div>`;
 }
 
 function renderDashCouriers(){
   document.getElementById("dash-courier-list").innerHTML=couriers.length?`
     <table><thead><tr><th>Kurye</th><th>Durum</th><th>Teslimat</th><th>Puan</th></tr></thead><tbody>
     ${couriers.map((c,i)=>`<tr>
-      <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div><div class="phone">${vehicleIcon[c.vehicle]||"🛵"}</div></div></div></td>
+      <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div><div class="phone">${vehicleIcon[c.vehicle]||"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>"}</div></div></div></td>
       <td><span class="badge ${c.status==="busy"?"busy":c.status==="available"?"available":"offline"}"><span class="badge-dot"></span>${c.status==="busy"?"Meşgul":c.status==="available"?"Müsait":"Çevrimdışı"}</span></td>
       <td><span style="font-family:var(--fm);font-size:13px;font-weight:700">${c.deliveries}</span></td>
       <td><span style="font-size:13px;font-weight:700;color:var(--yellow)">⭐ ${c.rating}</span></td>
     </tr>`).join("")}
-    </tbody></table>`:`<div class="empty-state"><div class="empty-icon">🛵</div><div class="empty-title">Kurye yok</div></div>`;
+    </tbody></table>`:`<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div><div class="empty-title">Kurye yok</div></div>`;
 }
 
 // ── ORDERS ─────────────────────────────────────────────────────────────────
@@ -3068,14 +3068,14 @@ function renderOrders(){
     const isAll = (orderFilter||'all') === 'all';
     document.getElementById("orders-table-wrap").innerHTML = isAll
       ? `<div class="empty-state">
-           <div class="empty-icon">📭</div>
+           <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg></div>
            <div class="empty-title">Henüz sipariş yok</div>
            <div style="font-size:.84rem;color:var(--text3);margin-top:.4rem">İlk siparişini oluşturmak için aşağıya tıkla</div>
            <button onclick="goPage('manual-order')" style="margin-top:1rem;padding:.6rem 1.4rem;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:.88rem">
              + İlk Siparişini Oluştur
            </button>
          </div>`
-      : `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Bu kategoride sipariş yok</div></div>`;
+      : `<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="m16 19 2 2 4-4"/></svg></div><div class="empty-title">Bu kategoride sipariş yok</div></div>`;
     return;
   }
   document.getElementById("orders-table-wrap").innerHTML=`
@@ -3090,9 +3090,9 @@ function renderOrders(){
         <td><span class="order-id">#${esc(o.id.slice(-6).toUpperCase())}</span></td>
         <td><span class="customer">${esc(o.customer)}</span></td>
         <td><span class="items" style="max-width:160px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${items}</span></td>
-        <td><span style="font-size:12px;color:var(--text3)">📍 ${esc(o.address)}</span></td>
+        <td><span style="font-size:12px;color:var(--text3)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(o.address)}</span></td>
         <td><span style="font-family:var(--fm);font-weight:700;font-size:13px">₺${o.total}</span></td>
-        <td><span style="font-size:12px">🛵 ${courierName}</span></td>
+        <td><span style="font-size:12px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg> ${courierName}</span></td>
         <td><span style="font-family:var(--fm);font-size:11px;color:var(--text3)">${timeAgo(o.createdAt)}</span></td>
         <td><span class="badge ${st.cls}"><span class="badge-dot"></span>${st.label}</span></td>
         <td>${st.next?`<button class="adv-btn" onclick="advanceOrder('${esc(o.id)}','${esc(st.next)}')">${esc(STATUS[st.next].label)} →</button>`:`<span style="font-size:11px;color:var(--text3)">—</span>`}</td>
@@ -3120,7 +3120,7 @@ window.advanceOrder=async(id,next)=>{
     await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/orders/${id}`,{status:next});
     // Admin panel global siparişler yolunu da güncelle
     _rtdbUpdate(`/orders/${id}`,{status:next,updatedAt:Date.now()}).catch(()=>{});
-    showToast(`✓ ${STATUS[next].label}`);
+    showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${STATUS[next].label}`);
     // Müşteri yolda WhatsApp bildirimi
     if(next==='on_the_way' && order){
       _sendTrackingWhatsApp(order, id);
@@ -3133,10 +3133,10 @@ function _sendTrackingWhatsApp(order, orderId){
   if(!phone) return; // telefon yoksa sessizce geç
   const trackUrl=`${location.origin}/takip.html?orderId=${encodeURIComponent(orderId)}&restId=${encodeURIComponent(RESTAURANT_ID)}`;
   const restName=settings.rest_name||'Restoran';
-  const msg=`🛵 Siparişiniz yola çıktı!\n\n`+
+  const msg=`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg> Siparişiniz yola çıktı!\n\n`+
     `Merhaba ${order.customer||''}! ${restName} siparişiniz kuryemizle yolda.\n\n`+
-    `📍 Canlı takip bağlantısı:\n${trackUrl}\n\n`+
-    `Afiyet olsun! 🍽️`;
+    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Canlı takip bağlantısı:\n${trackUrl}\n\n`+
+    `Afiyet olsun! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>️`;
   const waPhone=phone.startsWith('0')?`90${phone.slice(1)}`:phone.startsWith('90')?phone:`90${phone}`;
   const waUrl=`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl,'_blank','noopener');
@@ -3171,14 +3171,14 @@ window.toggleMenuItem=async(id,val)=>{
   renderMenu();
   try{
     await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/menu/${id}`,{available:val});
-    showToast(val?"✓ Ürün aktif":"✓ Ürün pasif");
+    showToast(val?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ürün aktif":"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ürün pasif");
   }catch{showToast("Menü güncellenemedi","error")}
 };
 
 // ── COURIERS ───────────────────────────────────────────────────────────────
 function renderCouriers(){
   if(!couriers.length){
-    document.getElementById("couriers-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon">🛵</div><div class="empty-title">Henüz kurye yok</div><div class="empty-desc">Yukarıdaki "Kurye Ekle" butonunu kullanın</div></div>`;
+    document.getElementById("couriers-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div><div class="empty-title">Henüz kurye yok</div><div class="empty-desc">Yukarıdaki "Kurye Ekle" butonunu kullanın</div></div>`;
     return;
   }
   // Sort by deliveries descending
@@ -3191,13 +3191,13 @@ function renderCouriers(){
     ${sorted.map((c,i)=>{
       const maxD=Math.max(...couriers.map(x=>x.deliveries||0))||1;
       const pct=Math.round(((c.deliveries||0)/maxD)*100);
-      const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+      const medal=i===0?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 15v4"/></svg>":i===1?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 15v4"/></svg>":i===2?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 15v4"/></svg>":"";
       const pricingLabel=c.pricingBase?`₺${c.pricingBase}${c.pricingType==="per_package"||c.pricingType==="per_package_km"?"/paket":"/sa"}`:"—";
       return`<tr>
         <td><span style="font-weight:700;color:var(--text3);font-size:13px">${medal||`#${i+1}`}</span></td>
         <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div></div></div></td>
         <td><span style="font-family:var(--fm);font-size:12px;color:var(--text3)">${c.phone||"—"}</span></td>
-        <td><span style="font-size:14px">${vehicleIcon[c.vehicle]||"🛵"}</span></td>
+        <td><span style="font-size:14px">${vehicleIcon[c.vehicle]||"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>"}</span></td>
         <td><span class="badge ${c.status==="busy"?"busy":c.status==="available"?"available":"offline"}"><span class="badge-dot"></span>${c.status==="busy"?"Meşgul":c.status==="available"?"Müsait":"Çevrimdışı"}</span></td>
         <td><span style="font-size:12px;color:var(--text3)">${c.zone||"—"}</span></td>
         <td><span style="font-family:var(--fm);font-weight:700;font-size:13px">${c.deliveries||0}</span></td>
@@ -3224,7 +3224,7 @@ window.confirmDeleteCourier=async()=>{
   try{
     await _rtdbRemove(`/restaurants/${RESTAURANT_ID}/couriers/${deleteCourierId}`);
     closeModal("modal-delete-courier");
-    showToast("✓ Kurye silindi");
+    showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kurye silindi");
     deleteCourierId=null;
   }catch(e){showToast("Silinemedi: "+(e.message||e),"error");console.error("Kurye sil:",e);}
 };
@@ -3254,7 +3254,7 @@ async function showOrderOnMap(deliveryAddress){
     const dlat=parseFloat(data[0].lat),dlng=parseFloat(data[0].lon);
     // Teslimat pini
     if(_orderDelivMarker)mapInstance.removeLayer(_orderDelivMarker);
-    const dic=L.divIcon({html:`<div style="font-size:26px;text-shadow:0 2px 4px rgba(0,0,0,.4);line-height:1">📍</div>`,className:'',iconSize:[28,28],iconAnchor:[14,28]});
+    const dic=L.divIcon({html:`<div style="font-size:26px;text-shadow:0 2px 4px rgba(0,0,0,.4);line-height:1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,className:'',iconSize:[28,28],iconAnchor:[14,28]});
     _orderDelivMarker=L.marker([dlat,dlng],{icon:dic}).addTo(mapInstance).bindPopup(`<b>Teslimat</b><br>${deliveryAddress}`);
     // Rota çizgisi
     if(_orderRouteLine)mapInstance.removeLayer(_orderRouteLine);
@@ -3308,7 +3308,7 @@ function _makeCourierIcon(name, photoURL, bearing, isActive, isIdle){
 function _makeRestoIcon(logoURL, name){
   const inner=logoURL
     ?`<img src="${logoURL}" style="width:34px;height:34px;object-fit:cover;border-radius:50%">`
-    :`<span style="font-size:18px;line-height:1">🍽️</span>`;
+    :`<span style="font-size:18px;line-height:1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>️</span>`;
   return L.divIcon({
     html:`<div style="width:44px;height:55px;position:relative;text-align:center">
       <div style="width:44px;height:44px;border-radius:50%;background:#fff;border:3.5px solid #00c8d7;overflow:hidden;box-shadow:0 3px 12px rgba(0,200,215,.35);display:flex;align-items:center;justify-content:center">${inner}</div>
@@ -3349,10 +3349,10 @@ function toggleRestSatellite(){
   if(_restSatMode){
     _restBaseLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}).addTo(mapInstance);
     _restLabelsLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:0.85}).addTo(mapInstance);
-    showToast('🛰️ Uydu görüntüsü');
+    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 7 9 3 5 7l4 4"/><path d="m17 11 4 4-4 4-4-4"/><path d="m8 12 4 4 6-6-4-4Z"/><path d="m16 8 3-3"/><path d="M9 21a6 6 0 0 0-6-6"/></svg>️ Uydu görüntüsü');
   }else{
     _restBaseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(mapInstance);
-    showToast('🗺️ Sokak haritası');
+    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>️ Sokak haritası');
   }
 }
 function toggleRestFullscreen(){
@@ -3382,7 +3382,7 @@ function toggleRestTraffic(){
       {maxZoom:19,opacity:0.75,attribution:'© TomTom'}
     ).addTo(mapInstance);
     if(leg)leg.style.display='flex';
-    showToast('🟢 Trafik katmanı açık');
+    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#22c55e"/></svg> Trafik katmanı açık');
   }else{
     if(_restTrafficLayer){mapInstance.removeLayer(_restTrafficLayer);_restTrafficLayer=null;}
     if(leg)leg.style.display='none';
@@ -3397,7 +3397,7 @@ function toggleRestIncidents(){
   if(_restIncOn){
     _fetchRestIncidents();
     _restIncFetchI=setInterval(_fetchRestIncidents,60000);
-    showToast('⚠️ Trafik olayları açık');
+    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️ Trafik olayları açık');
   }else{
     clearInterval(_restIncFetchI);_restIncFetchI=null;
     _restIncMarkers.forEach(m=>mapInstance.removeLayer(m));
@@ -3429,7 +3429,7 @@ async function _fetchRestIncidents(){
     });
   }catch{}
 }
-function _restIncEmoji(cat){const m={0:'⚠️',1:'🚧',2:'🚗',3:'🌦️',4:'🚨',5:'🚧',6:'⚠️',7:'🚦',8:'🛑',9:'⛽',10:'🌪️',11:'🚑'};return m[cat]||'⚠️';}
+function _restIncEmoji(cat){const m={0:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️',1:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10"/><path d="m21 9-5-4"/><path d="M3 19h18"/><path d="M3 15l9-10"/><path d="M8 19V9"/></svg>',2:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h10l4 4v6a2 2 0 0 1-2 2z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>',3:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/><path d="M11 19v3"/><path d="M17 21v1"/></svg>️',4:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',5:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10"/><path d="m21 9-5-4"/><path d="M3 19h18"/><path d="M3 15l9-10"/><path d="M8 19V9"/></svg>',6:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️',7:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="20" rx="3"/><circle cx="12" cy="7" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>',8:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 2h7l5.5 5.5v7L15.5 22h-7L3 15.5v-7L8.5 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',9:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h12V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v18Z"/><path d="M15 14h3a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1"/><path d="M3 7h12"/><path d="M18 8v5"/></svg>',10:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H3"/><path d="M18 8H6"/><path d="M19 12H9"/><path d="M16 16h-6"/><path d="M11 20H9"/></svg>️',11:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.28a1 1 0 0 0-.684-.948l-1.923-.641a1 1 0 0 1-.578-.502l-1.539-3.076A1 1 0 0 0 16.382 8H14"/><path d="M8 8v4"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>'};return m[cat]||'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️';}
 function _restIncLabel(cat){const m={0:'Olay',1:'Yol Çalışması',2:'Trafik Sıkışıklığı',3:'Hava Durumu',4:'Tehlike',5:'Kapalı Yol',6:'Uyarı',7:'Trafik Işığı',8:'Durdurma',9:'Yakıt',10:'Afet',11:'Acil Durum'};return m[cat]||'Trafik Olayı';}
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -3453,13 +3453,13 @@ function _syncActiveOrdersOnMap(){
     const lat=o.delivLat||o.lat, lng=o.delivLng||o.lng;
     if(!lat||!lng)return;
     const ic=L.divIcon({
-      html:`<div style="background:#E53935;border:2.5px solid #fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 8px rgba(229,57,53,.4)">📍</div>`,
+      html:`<div style="background:#E53935;border:2.5px solid #fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 8px rgba(229,57,53,.4)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
       className:'',iconSize:[28,28],iconAnchor:[14,14]
     });
     const custName=o.customer||o.deliveryName||'Müşteri';
     const addr=o.deliveryAddr||o.address||'';
     const marker=L.marker([lat,lng],{icon:ic}).addTo(mapInstance)
-      .bindPopup(`<div style="min-width:130px"><b>👤 ${esc(custName)}</b><br><small>📍 ${esc(addr)}</small><br><small style="color:#E53935;font-weight:700;margin-top:3px;display:block">🛵 Yolda — ₺${o.total||0}</small></div>`);
+      .bindPopup(`<div style="min-width:130px"><b><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${esc(custName)}</b><br><small><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(addr)}</small><br><small style="color:#E53935;font-weight:700;margin-top:3px;display:block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg> Yolda — ₺${o.total||0}</small></div>`);
     // Restoranla arası kesik çizgi
     let line=null;
     if(settings.rest_lat&&settings.rest_lng){
@@ -3490,7 +3490,7 @@ function toggleDelivRadius(){
   const km=_RADIUS_OPTS[_delivRadiusIdx];
   _delivRadiusCircle=L.circle([lat,lng],{radius:km*1000,color:'#00c8d7',fillOpacity:0.06,weight:2,dashArray:'10,6'}).addTo(mapInstance);
   if(btn)btn.classList.add('active');
-  showToast(`📏 ${km} km teslimat alanı`);
+  showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.89 8.11 2.7a1 1 0 0 0-1.41 0L2.7 6.7a1 1 0 0 0 0 1.41L15.9 21.3a1 1 0 0 0 1.41 0l4-4a1 1 0 0 0 0-1.41Z"/><path d="m6.5 11.5 2-2"/><path d="m10.5 7.5 2-2"/><path d="m14.5 15.5 2-2"/></svg> ${km} km teslimat alanı`);
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -3536,16 +3536,16 @@ function updateMapMarkers(){
     const bearing=courierGPS[id]?.bearing||0;
     const isIdle=courierGPS[id]?.isIdle||false;
     const icon=_makeCourierIcon(c.name, c.photoURL, bearing, true, isIdle);
-    const idleBadge=isIdle?`<div style="margin-top:4px;font-size:10px;background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:6px;font-weight:600">⚠️ 5+ dk hareketsiz</div>`:''
+    const idleBadge=isIdle?`<div style="margin-top:4px;font-size:10px;background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:6px;font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️ 5+ dk hareketsiz</div>`:''
     const popupHtml=`<div style="font-family:Plus Jakarta Sans,sans-serif;min-width:150px">
       <div style="font-weight:700;font-size:14px;margin-bottom:4px">${esc(c.name)}</div>
-      <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"🛵"} ${esc(c.zone||"—")}</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${vehicleIcon[c.vehicle]||"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>"} ${esc(c.zone||"—")}</div>
       <div style="font-size:12px;margin-top:5px"><span style="background:${c.status==="busy"?"#fef3c7":"#d1fae5"};color:${c.status==="busy"?"#d97706":"#059669"};padding:2px 8px;border-radius:999px;font-weight:600">${c.status==="busy"?"Meşgul":"Müsait"}</span></div>
       <div style="font-size:11px;color:#6b7280;margin-top:5px;line-height:1.6">
-        🚀 <b>${speed}</b> km/s &nbsp;⭐ <b>${c.rating||"—"}</b><br>
-        📦 <b>${c.deliveries||0}</b> teslimat &nbsp;📞 ${esc(c.phone||"—")}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> <b>${speed}</b> km/s &nbsp;⭐ <b>${c.rating||"—"}</b><br>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg> <b>${c.deliveries||0}</b> teslimat &nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.54 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${esc(c.phone||"—")}
       </div>
-      ${c.activeOrder?`<div style="margin-top:5px;font-size:10px;background:#fef3c7;color:#d97706;padding:3px 7px;border-radius:6px;font-weight:600">🛵 Aktif sipariş var</div>`:''}
+      ${c.activeOrder?`<div style="margin-top:5px;font-size:10px;background:#fef3c7;color:#d97706;padding:3px 7px;border-radius:6px;font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg> Aktif sipariş var</div>`:''}
       ${idleBadge}
     </div>`;
     if(courierMarkers[id]){
@@ -3660,13 +3660,13 @@ function renderTrackingCouriers(){
       <div class="courier-avatar" style="background:${avatarColor(i)};width:36px;height:36px;font-size:13px">${esc((c.name||'?')[0])}</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:600;color:var(--text)">${esc(c.name)}</div>
-        <div style="font-size:11px;color:var(--text3)">${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||"—"}</div>
+        <div style="font-size:11px;color:var(--text3)">${vehicleIcon[c.vehicle]||"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>"} ${c.zone||"—"}</div>
       </div>
       <div style="text-align:right">
         <span class="badge ${c.status==="busy"?"busy":c.status==="available"?"available":"offline"}" style="font-size:10px"><span class="badge-dot"></span>${c.status==="busy"?"Meşgul":"Müsait"}</span>
         <div style="font-size:10px;color:var(--text3);font-family:var(--fm);margin-top:2px">${c.deliveries} teslimat</div>
       </div>
-    </div>`).join(""):`<div class="empty-state" style="padding:24px"><div class="empty-icon">🛵</div><div class="empty-title">Kurye yok</div></div>`;
+    </div>`).join(""):`<div class="empty-state" style="padding:24px"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div><div class="empty-title">Kurye yok</div></div>`;
 }
 
 // ── REPORTS ────────────────────────────────────────────────────────────────
@@ -3734,7 +3734,7 @@ function renderPerfRanking(){
   const maxD=Math.max(...sorted.map(c=>c.deliveries||0))||1;
   document.getElementById("perf-ranking").innerHTML=sorted.length?sorted.map((c,i)=>{
     const pct=Math.round(((c.deliveries||0)/maxD)*100);
-    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+    const medal=i===0?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 15v4"/></svg>":i===1?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 15v4"/></svg>":i===2?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 15v4"/></svg>":`#${i+1}`;
     return`<div class="bar-chart-row" style="margin-bottom:12px">
       <div class="bar-label" style="display:flex;align-items:center;gap:6px;width:110px">
         <span style="font-size:13px">${medal}</span>
@@ -3743,7 +3743,7 @@ function renderPerfRanking(){
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${i===0?"var(--teal)":"var(--border2)"}"></div></div>
       <div class="bar-val">${c.deliveries||0}</div>
     </div>`;
-  }).join(""):`<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">Veri yok</div></div>`;
+  }).join(""):`<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div><div class="empty-title">Veri yok</div></div>`;
 }
 
 // ── SETTINGS ───────────────────────────────────────────────────────────────
@@ -3751,12 +3751,12 @@ function applySettings(){
   // assign mode
   document.querySelectorAll("#assign-mode-grid .radio-card").forEach(el=>{
     el.classList.toggle("selected",el.dataset.mode===settings.assign_mode);
-    el.querySelector(".rc-check").textContent=el.dataset.mode===settings.assign_mode?"✓":"";
+    el.querySelector(".rc-check").textContent=el.dataset.mode===settings.assign_mode?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>":"";
   });
   // pricing mode
   document.querySelectorAll("#pricing-mode-grid .radio-card").forEach(el=>{
     el.classList.toggle("selected",el.dataset.mode===settings.pricing_mode);
-    el.querySelector(".rc-check").textContent=el.dataset.mode===settings.pricing_mode?"✓":"";
+    el.querySelector(".rc-check").textContent=el.dataset.mode===settings.pricing_mode?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>":"";
   });
   document.getElementById("custom-pricing").style.display=settings.pricing_mode==="custom"?"block":"none";
   // toggles
@@ -3790,7 +3790,7 @@ window.selectMode=(el,type)=>{
   document.querySelectorAll(`#${grid} .radio-card`).forEach(c=>{
     c.classList.remove("selected");c.querySelector(".rc-check").textContent="";
   });
-  el.classList.add("selected");el.querySelector(".rc-check").textContent="✓";
+  el.classList.add("selected");el.querySelector(".rc-check").textContent="<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>";
   settings[key]=el.dataset.mode;
   if(type==="pricing")document.getElementById("custom-pricing").style.display=el.dataset.mode==="custom"?"block":"none";
 };
@@ -3832,7 +3832,7 @@ function renderQRMenuCard(){
   const active=document.getElementById('qrmenu-active');
   if(!badge||!inactive||!active) return;
   if(isActive){
-    badge.textContent='Aktif ✓';badge.style.background='rgba(0,200,215,.12)';badge.style.color='var(--teal)';
+    badge.textContent='Aktif <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';badge.style.background='rgba(0,200,215,.12)';badge.style.color='var(--teal)';
     inactive.style.display='none';active.style.display='block';
     const url=_qrUrl();
     const urlEl=document.getElementById('qrmenu-url');
@@ -3851,11 +3851,11 @@ window.activateQRMenu=async()=>{
   settings.qrmenu_active=true;
   try{ await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{qrmenu_active:true}); }catch{}
   renderQRMenuCard();
-  showToast('✓ QRMenuAI aktive edildi');
+  showToast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> QRMenuAI aktive edildi');
 };
 
 window.copyQRUrl=()=>{
-  navigator.clipboard?.writeText(_qrUrl()).then(()=>showToast('✓ Link kopyalandı')).catch(()=>showToast('Kopyalanamadı','error'));
+  navigator.clipboard?.writeText(_qrUrl()).then(()=>showToast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Link kopyalandı')).catch(()=>showToast('Kopyalanamadı','error'));
 };
 
 window.downloadQR=()=>{
@@ -3897,7 +3897,7 @@ window.saveSettings=async()=>{
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
     // Haritadaki kendi pinimizi yeni isim/konum ile güncelle
     if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
-    showToast("✓ Ayarlar kaydedildi");
+    showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ayarlar kaydedildi");
   }catch{showToast("Kayıt başarısız","error")}
 };
 
@@ -3905,7 +3905,7 @@ window.confirmReset=async()=>{
   if(!confirm("Tüm demo siparişleri sıfırlanacak. Emin misin?"))return;
   try{
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/orders`,SEED_ORDERS);
-    showToast("✓ Siparişler sıfırlandı","info");
+    showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Siparişler sıfırlandı","info");
   }catch{showToast("Sıfırlama başarısız","error")}
 };
 
@@ -3918,7 +3918,7 @@ window.addDeliveryNote = (text) => {
   if(!ta) return;
   const cur = ta.value.trim();
   ta.value = cur ? cur + ' ' + text : text;
-  showToast('✓ Not eklendi', 'info');
+  showToast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Not eklendi', 'info');
 };
 
 window.selectSource = el => {
@@ -3941,7 +3941,7 @@ function renderOrderLines(){
         oninput="orderLines[${i}].qty=parseInt(this.value)||1;updateTotal()" style="background:var(--white)"/>
       <input class="form-input" type="number" value="${l.price}" placeholder="₺"
         oninput="orderLines[${i}].price=parseFloat(this.value)||0;updateTotal()" style="background:var(--white)"/>
-      <button class="btn-icon" onclick="removeOrderLine(${i})" style="color:var(--red);border-color:rgba(239,68,68,.2)">✕</button>
+      <button class="btn-icon" onclick="removeOrderLine(${i})" style="color:var(--red);border-color:rgba(239,68,68,.2)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`).join("");
   updateTotal();
 }
@@ -3967,7 +3967,7 @@ window.addFromMenu = (name, price) => {
   if(existing){ existing.qty++; }
   else{ orderLines.push({name, qty:1, price}); }
   renderOrderLines();
-  showToast(`✓ ${name} eklendi`,"info");
+  showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${name} eklendi`,"info");
 };
 
 function renderQuickMenu(){
@@ -3995,7 +3995,7 @@ function refreshCourierSelect(){
   if(!sel) return;
   const available = couriers.filter(c=>c.status==="available");
   sel.innerHTML = `<option value="">Otomatik Ata</option>` +
-    available.map(c=>`<option value="${c.kuryeUid||c.courierId||c.id}">${c.name} (${vehicleIcon[c.vehicle]||"🛵"} ${c.zone||""})</option>`).join("");
+    available.map(c=>`<option value="${c.kuryeUid||c.courierId||c.id}">${c.name} (${vehicleIcon[c.vehicle]||"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>"} ${c.zone||""})</option>`).join("");
 }
 
 window.clearManualOrder = () => {
@@ -4088,7 +4088,7 @@ window.submitManualOrder = async () => {
 
   // Abonelik plan kontrolü — sadece planActive kesin false ise engelle, yoksa geçir
   if (currentPlan && currentPlan.planActive === false) {
-    showToast("⚠ Abonelik planınız pasif. Lütfen admin ile iletişime geçin.", "error");
+    showToast("<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Abonelik planınız pasif. Lütfen admin ile iletişime geçin.", "error");
     return;
   }
 
@@ -4122,7 +4122,7 @@ window.submitManualOrder = async () => {
     const demoId = 'demo_' + Date.now();
     orders = [{ id: demoId, ...newOrder }, ...orders];
     renderOrders();
-    showToast('🎮 Demo sipariş oluşturuldu (kaydedilmedi)', 'success');
+    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg> Demo sipariş oluşturuldu (kaydedilmedi)', 'success');
     document.getElementById("manual-order-form")?.reset?.();
     orderLines = [];
     renderOrderLines();
@@ -4177,23 +4177,23 @@ window.submitManualOrder = async () => {
         });
         await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/couriers/${courierId}`,{status:"busy"});
       } catch(ne) { console.error('Kurye notify error:', ne); }
-      showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+      showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş oluşturuldu — ₺${total}`);
     } else if (settings.assign_mode === "auto") {
       // Otomatik atama
       try {
         const result = await assignCourierAuto(orderId, newOrder);
         if (result) {
           const km = result.dist.toFixed(1);
-          showToast(`✓ Sipariş oluşturuldu · 🛵 ${result.name} atandı (${km} km)`,"success");
+          showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş oluşturuldu · <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg> ${result.name} atandı (${km} km)`,"success");
         } else {
-          showToast(`✓ Sipariş oluşturuldu — müsait kurye yok, beklemede`,"info");
+          showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş oluşturuldu — müsait kurye yok, beklemede`,"info");
         }
       } catch(ae) {
         console.error('Otomatik atama hatası:', ae);
-        showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+        showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş oluşturuldu — ₺${total}`);
       }
     } else {
-      showToast(`✓ Sipariş oluşturuldu — ₺${total}`);
+      showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sipariş oluşturuldu — ₺${total}`);
     }
 
     clearManualOrder();
@@ -4216,14 +4216,14 @@ function renderRecentManualOrders(){
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border)">
       <div>
         <div style="font-size:13px;font-weight:600">${o.customer}</div>
-        <div style="font-size:11px;color:var(--text3)">${timeAgo(o.createdAt)} · ${o.source==="whatsapp"?"💬":o.source==="phone"?"📞":o.source==="door"?"🚪":"📝"} ${o.source||"manuel"}</div>
+        <div style="font-size:11px;color:var(--text3)">${timeAgo(o.createdAt)} · ${o.source==="whatsapp"?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>":o.source==="phone"?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.54 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>":o.source==="door"?"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"/></svg>":"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>"} ${o.source||"manuel"}</div>
       </div>
       <div style="text-align:right">
         <div style="font-family:var(--fm);font-size:13px;font-weight:700">₺${o.total}</div>
         <span class="badge ${STATUS[o.status]?.cls||"pending"}" style="font-size:10px"><span class="badge-dot"></span>${STATUS[o.status]?.label||o.status}</span>
       </div>
     </div>`).join("")
-  : `<div class="empty-state" style="padding:20px"><div class="empty-icon" style="font-size:20px">📝</div><div class="empty-title" style="font-size:12px">Henüz manuel sipariş yok</div></div>`;
+  : `<div class="empty-state" style="padding:20px"><div class="empty-icon" style="font-size:20px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="empty-title" style="font-size:12px">Henüz manuel sipariş yok</div></div>`;
 }
 
 // (Manuel sipariş init goPage hook'una taşındı)
@@ -4304,7 +4304,7 @@ function renderFinancials(period="daily") {
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round((cnt/maxCnt)*100)}%;background:var(--teal)"></div></div>
         <div class="bar-val">${cnt}</div>
       </div>`).join("")
-    : `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Veri yok</div></div>`;
+    : `<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div><div class="empty-title">Veri yok</div></div>`;
 
   // Saatlik yoğunluk
   const hourCounts = Array(24).fill(0);
@@ -4392,10 +4392,10 @@ function _kitchenCardHtml(o, bigMode=false){
   return `<div style="background:${bg};border:${urgent?'2px solid #ef4444':'1px solid '+(bigMode?'rgba(255,255,255,.1)':'var(--border)')};border-radius:${bigMode?'20px':'16px'};padding:${bigMode?'22px':'20px'};position:relative;display:flex;flex-direction:column;gap:0">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:${bigMode?'10px':'6px'}">
       <div style="font-size:${bigMode?'13px':'12px'};font-family:var(--fm);color:${subCol}">#${o.id.slice(-5).toUpperCase()}</div>
-      <div style="background:${urgent?'#ef4444':'rgba(0,200,215,.15)'};color:${urgent?'#fff':'var(--teal)'};font-size:${bigMode?'13px':'10px'};font-weight:800;padding:${bigMode?'4px 10px':'3px 8px'};border-radius:999px">${urgent?'⚠':''} ${elapsed}dk</div>
+      <div style="background:${urgent?'#ef4444':'rgba(0,200,215,.15)'};color:${urgent?'#fff':'var(--teal)'};font-size:${bigMode?'13px':'10px'};font-weight:800;padding:${bigMode?'4px 10px':'3px 8px'};border-radius:999px">${urgent?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>':''} ${elapsed}dk</div>
     </div>
     <div style="font-size:${bigMode?'22px':'16px'};font-weight:800;color:${textCol};margin-bottom:4px">${esc(o.customer)}</div>
-    <div style="font-size:${bigMode?'13px':'12px'};color:${subCol};margin-bottom:${bigMode?'14px':'12px'}">📍 ${esc(o.address)}</div>
+    <div style="font-size:${bigMode?'13px':'12px'};color:${subCol};margin-bottom:${bigMode?'14px':'12px'}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(o.address)}</div>
     <div style="background:${itemBg};border-radius:${bigMode?'12px':'10px'};padding:${bigMode?'14px':'10px'};margin-bottom:${bigMode?'16px':'14px'};flex:1">
       ${items.map(i=>`<div style="font-size:${fs};color:${textCol};padding:2px 0;line-height:1.6;border-bottom:1px solid ${bigMode?'rgba(255,255,255,.06)':'var(--border)'};last-child:border:none">• ${esc(String(i))}</div>`).join('')}
     </div>
@@ -4410,7 +4410,7 @@ function renderKitchen() {
   const el = document.getElementById("kitchen-grid");
   const fsEl = document.getElementById("kitchen-fs-grid");
 
-  const emptyHtml=(cols)=>`<div style="grid-column:span ${cols};text-align:center;padding:60px 20px;color:var(--text3)"><div style="font-size:52px;margin-bottom:14px">✅</div><div style="font-size:18px;font-weight:700">Hazırlanacak sipariş yok</div><div style="font-size:13px;margin-top:6px;opacity:.7">Yeni sipariş gelince burada görünür</div></div>`;
+  const emptyHtml=(cols)=>`<div style="grid-column:span ${cols};text-align:center;padding:60px 20px;color:var(--text3)"><div style="font-size:52px;margin-bottom:14px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div style="font-size:18px;font-weight:700">Hazırlanacak sipariş yok</div><div style="font-size:13px;margin-top:6px;opacity:.7">Yeni sipariş gelince burada görünür</div></div>`;
 
   if(el){
     el.style.gridTemplateColumns=`repeat(${_kitchenCols},1fr)`;
@@ -4438,7 +4438,7 @@ function renderEarnings() {
 
   const el = document.getElementById("earnings-table-wrap");
   if(!couriers.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛵</div><div class="empty-title">Kurye yok</div></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div><div class="empty-title">Kurye yok</div></div>`;
     return;
   }
   el.innerHTML=`<table><thead><tr>
@@ -4451,13 +4451,13 @@ function renderEarnings() {
     const kalan=total-paid;
     return`<tr>
       <td><div class="courier-meta"><div class="courier-avatar" style="background:${avatarColor(i)}">${c.name[0]}</div><div class="courier-info"><div class="name">${c.name}</div><div class="phone">${c.phone||"—"}</div></div></div></td>
-      <td>${vehicleIcon[c.vehicle]||"🛵"}</td>
+      <td>${vehicleIcon[c.vehicle]||"<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>"}</td>
       <td><span style="font-family:var(--fm);font-weight:700">${c.deliveries||0}</span></td>
       <td><span style="font-family:var(--fm)">${c.km||0} km</span></td>
       <td><span style="font-family:var(--fm);font-weight:700;color:var(--green)">₺${total.toLocaleString("tr-TR")}</span></td>
       <td><span style="font-family:var(--fm);color:var(--text3)">₺${paid.toLocaleString("tr-TR")}</span></td>
       <td><span style="font-family:var(--fm);font-weight:700;color:${kalan>0?"var(--yellow)":"var(--text3)"}">₺${kalan.toLocaleString("tr-TR")}</span></td>
-      <td>${kalan>0?`<button class="btn btn-primary btn-sm" onclick="openMarkPaid('${esc(c.id)}','${esc(c.name)}',${kalan})">✅ Ödendi</button>`:`<span style="font-size:11px;color:var(--green)">✓ Ödendi</span>`}</td>
+      <td>${kalan>0?`<button class="btn btn-primary btn-sm" onclick="openMarkPaid('${esc(c.id)}','${esc(c.name)}',${kalan})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Ödendi</button>`:`<span style="font-size:11px;color:var(--green)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödendi</span>`}</td>
     </tr>`;
   }).join("")}
   </tbody></table>`;
@@ -4579,7 +4579,7 @@ function exportKuryePDF(){
     const unpaid=(c.earnings||0)-(c.paidEarnings||0);
     return`<tr>
       <td>${i+1}</td><td style="font-weight:600">${esc(c.name)}</td>
-      <td>${{moto:'🛵 Moto',bike:'🚲 Bisiklet',car:'🚗 Araç'}[c.vehicle]||'—'}</td>
+      <td>${{moto:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg> Moto',bike:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg> Bisiklet',car:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h10l4 4v6a2 2 0 0 1-2 2z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg> Araç'}[c.vehicle]||'—'}</td>
       <td>${esc(c.zone||'—')}</td>
       <td style="text-align:center">${c.deliveries||0}</td>
       <td style="text-align:center">${c.km||0} km</td>
@@ -4767,7 +4767,7 @@ window.confirmMarkPaid=async()=>{
       amount,restoranName:settings.rest_name||RESTAURANT_ID,createdAt:Date.now(),read:false
     });
     closeModal("modal-mark-paid");
-    showToast(`✓ ${name} için ₺${amount.toLocaleString("tr-TR")} ödendi olarak işaretlendi`,"success");
+    showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${name} için ₺${amount.toLocaleString("tr-TR")} ödendi olarak işaretlendi`,"success");
     _markPaidCourierId=null;
   }catch{showToast("İşlem başarısız","error");}
 };
@@ -4777,7 +4777,7 @@ const STAFF_ROLES={kitchen:"Mutfak",cashier:"Kasiyer",waiter:"Garson",manager:"M
 
 function renderStaff(){
   if(!staff.length){
-    document.getElementById("staff-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Henüz personel yok</div><div class="empty-desc">Yukarıdan ekle</div></div>`;
+    document.getElementById("staff-table-wrap").innerHTML=`<div class="empty-state"><div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="empty-title">Henüz personel yok</div><div class="empty-desc">Yukarıdan ekle</div></div>`;
     return;
   }
   document.getElementById("staff-table-wrap").innerHTML=`<table><thead><tr><th>Ad Soyad</th><th>Rol</th><th>Telefon</th><th>Eklenme</th><th></th></tr></thead><tbody>
@@ -4801,12 +4801,12 @@ window.addStaff=async()=>{
     await _rtdbPush(`/restaurants/${RESTAURANT_ID}/staff`,{name,role,phone,createdAt:Date.now()});
     closeModal("modal-add-staff");
     document.getElementById("staff-name").value="";document.getElementById("staff-phone").value="";
-    showToast(`✓ ${name} eklendi`);
+    showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${name} eklendi`);
   }catch{showToast("Personel eklenemedi","error");}
 };
 window.removeStaff=async(id)=>{
   if(!confirm("Personel silinsin mi?"))return;
-  try{await _rtdbRemove(`/restaurants/${RESTAURANT_ID}/staff/${id}`);showToast("✓ Silindi");}
+  try{await _rtdbRemove(`/restaurants/${RESTAURANT_ID}/staff/${id}`);showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Silindi");}
   catch{showToast("Silinemedi","error");}
 };
 
@@ -4827,12 +4827,12 @@ window.addMenuItem=async()=>{
   try{
     await _rtdbPush(`/restaurants/${RESTAURANT_ID}/menu`,{name,price,category,description,available:true,createdAt:Date.now()});
     closeModal("modal-add-menu-item");
-    showToast(`✓ ${name} menüye eklendi`);
+    showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${name} menüye eklendi`);
   }catch{showToast("Ürün eklenemedi","error");}
 };
 window.deleteMenuItem=async(id)=>{
   if(!confirm("Ürün silinsin mi?"))return;
-  try{await _rtdbRemove(`/restaurants/${RESTAURANT_ID}/menu/${id}`);showToast("✓ Ürün silindi");}
+  try{await _rtdbRemove(`/restaurants/${RESTAURANT_ID}/menu/${id}`);showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ürün silindi");}
   catch{showToast("Silinemedi","error");}
 };
 
@@ -4909,18 +4909,18 @@ window.lookupCourierByEmail=async()=>{
   if(!email||!email.includes("@")){showToast("Geçerli bir e-mail girin","error");return;}
   const res=document.getElementById("courier-lookup-result");
   res.style.display="block";
-  res.innerHTML=`<div style="font-size:13px;color:var(--text3)">🔍 Aranıyor…</div>`;
+  res.innerHTML=`<div style="font-size:13px;color:var(--text3)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Aranıyor…</div>`;
   try{
     const q=query(collection(fs,"users"),where("email","==",email),where("role","==","kurye"),where("status","==","active"),limit(1));
     const snap=await getDocs(q);
     if(snap.empty){
-      res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Onaylı kurye bulunamadı. Kurye KuryeAI'ye kayıtlı ve admin tarafından onaylanmış olmalı.</div>`;
+      res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Onaylı kurye bulunamadı. Kurye KuryeAI'ye kayıtlı ve admin tarafından onaylanmış olmalı.</div>`;
       return;
     }
     const data=snap.docs[0].data();
     const uid=snap.docs[0].id;
     res.innerHTML=`<div style="padding:12px;background:var(--green-bg);border:1px solid rgba(0,196,140,.2);border-radius:8px">
-      <div style="font-weight:700;margin-bottom:4px">✅ ${esc(data.name||email)} bulundu</div>
+      <div style="font-weight:700;margin-bottom:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${esc(data.name||email)} bulundu</div>
       <div style="font-size:12px;color:var(--text3);margin-bottom:10px">${esc(data.email)} · ${esc(data.vehicle||"Araç belirtilmemiş")}</div>
       <button class="btn btn-primary btn-sm" onclick="addCourierFromSystem()">Restorana Ekle</button>
     </div>`;
@@ -4933,7 +4933,7 @@ window.addCourierFromSystem=async()=>{
   const d=window._pendingCourierAdd;
   const uid=window._pendingCourierUid;
   if(!d||!uid){
-    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Hata: Kurye verisi bulunamadı. Lütfen tekrar arayın.</div>`;
+    document.getElementById("courier-lookup-result").innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Hata: Kurye verisi bulunamadı. Lütfen tekrar arayın.</div>`;
     return;
   }
   const resultDiv=document.getElementById("courier-lookup-result");
@@ -4954,13 +4954,13 @@ window.addCourierFromSystem=async()=>{
       logoURL: RESTAURANT_LOGO_URL || null,
       assignedAt: Date.now(),
     });
-    resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)">✅ ${esc(d.name||d.email)} sisteme eklendi</div>`;
+    resultDiv.innerHTML=`<div style="padding:10px;background:var(--green-bg);border-radius:8px;font-size:13px;color:var(--green)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${esc(d.name||d.email)} sisteme eklendi</div>`;
     document.getElementById("courier-email-lookup").value="";
     window._pendingCourierAdd=null;window._pendingCourierUid=null;
-    showToast(`✓ ${d.name||d.email} kuryeye eklendi`);
+    showToast(`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${d.name||d.email} kuryeye eklendi`);
   }catch(e){
     console.error("Kurye ekle hatası:",e);
-    resultDiv.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Eklenemedi: ${esc(e.message||String(e))}</div>`;
+    resultDiv.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Eklenemedi: ${esc(e.message||String(e))}</div>`;
     showToast("Eklenemedi: "+(e.message||e),"error");
   }
 };
@@ -4996,7 +4996,7 @@ window.savePlatformLinks=async()=>{
   const data={ys:getData("ys"),ty:getData("ty"),gr:getData("gr"),mg:getData("mg")};
   try{
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/platforms`,data);
-    showToast("✓ Platform bilgileri kaydedildi");
+    showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Platform bilgileri kaydedildi");
     updatePlatformAvg(data);
     ["ys","ty","gr","mg"].forEach(k=>{
       const rb=document.getElementById(`${k}-rating-badge`);
@@ -5052,7 +5052,7 @@ window.saveCourierPricing=async()=>{
   try{
     await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/couriers/${_pricingCourierId}`,{pricingType:type,pricingBase:base,pricingKm:km});
     closeModal("modal-courier-pricing");
-    showToast("✓ Ücret ayarları kaydedildi");
+    showToast("<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ücret ayarları kaydedildi");
   }catch{showToast("Kayıt başarısız","error");}
 };
 

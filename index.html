@@ -406,6 +406,15 @@
     .pc-btn-fill:hover { background:var(--teal-lt); transform:scale(1.02); }
     .pc-btn-ol { background:transparent; color:var(--white); border:.5px solid rgba(255,255,255,.18); }
     .pc-btn-ol:hover { background:rgba(255,255,255,.07); transform:scale(1.02); }
+    /* price teaser strip */
+    .price-teaser { display:flex; align-items:stretch; background:var(--card); border:.5px solid var(--border); border-radius:20px; overflow:hidden; max-width:860px; }
+    .pt-item { flex:1; display:flex; flex-direction:column; gap:.25rem; padding:1.6rem 1.4rem; }
+    .pt-divider { width:1px; background:var(--border); flex-shrink:0; }
+    .pt-product { font-size:.62rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--teal); }
+    .pt-price { font-size:1.55rem; font-weight:800; letter-spacing:-.04em; color:var(--white); line-height:1.1; }
+    .pt-per { font-size:.75rem; font-weight:500; color:var(--gray); letter-spacing:0; }
+    .pt-note { font-size:.73rem; color:var(--gray); }
+    @media(max-width:768px) { .price-teaser { flex-direction:column; } .pt-divider { width:auto; height:1px; } }
 
     /* ── CTA ── */
     .cta-section { background:var(--black); border-top:.5px solid var(--border); text-align:center; padding:8rem 2rem; position:relative; }
@@ -1123,41 +1132,38 @@
     <div class="pricing-header reveal">
       <p class="lbl">Fiyatlandırma</p>
       <h2 class="h2">Şeffaf. <span class="muted">Basit.</span></h2>
-      <p class="body-lg">Gizli ücret yok. İhtiyacınıza göre seçin.</p>
+      <p class="body-lg">Gizli ücret yok. İhtiyacına göre seç.</p>
     </div>
-    <div class="price-grid reveal">
-      <div class="pc">
-        <p class="pc-lbl">RestoranAI</p>
-        <p class="pc-name">Akıllı İşletme Paketi</p>
-        <p class="pc-slogan">Tüm sipariş kanalları + AI analiz</p>
-        <div class="pc-price"><sup>₺</sup>10.000<sub>/yıl</sub></div>
-        <p class="pc-note">İşletme başına · KDV dahil</p>
-        <ul class="pc-list">
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tüm platform entegrasyonları</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Sınırsız sipariş takibi</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Masa & paket yönetimi</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI destekli analizler</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>KuryeAI entegrasyonu</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>7/24 destek</li>
-        </ul>
-        <a href="/restoranai#basvuru" class="pc-btn pc-btn-fill">Hemen Başla</a>
+    <div class="price-teaser reveal">
+      <div class="pt-item">
+        <span class="pt-product">RestoranAI</span>
+        <span class="pt-price">1.499₺<span class="pt-per">/ay</span></span>
+        <span class="pt-note">7 gün ücretsiz dene</span>
       </div>
-      <div class="pc featured">
-        <p class="pc-lbl">KuryeAI + Acil Kurye</p>
-        <p class="pc-name">Kurye Hizmet Modeli</p>
-        <p class="pc-slogan">Komisyon bazlı · Sabit maliyet yok</p>
-        <div class="pc-price" style="font-size:1.45rem;padding-top:.5rem;line-height:1.4">Kullandığın<br/>kadar öde</div>
-        <p class="pc-note">Paket başı veya saatlik</p>
-        <ul class="pc-list">
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Acil kurye: 350₺/saat + 12₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Esnaf kurye: 170₺/paket + 12₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>SGK'lı kurye: 250₺/saat + 12₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>İzinci kurye: 250₺/saat + 8₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Canlı takip dahil</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Teslimat sırasında ödeme</li>
-        </ul>
-        <a href="https://wa.me/905072171995" target="_blank" class="pc-btn pc-btn-ol">Teklif Al</a>
+      <div class="pt-divider"></div>
+      <div class="pt-item">
+        <span class="pt-product">AcilKuryeAI</span>
+        <span class="pt-price">350₺<span class="pt-per">/saat</span></span>
+        <span class="pt-note">+ 12₺/km · abonelik yok</span>
       </div>
+      <div class="pt-divider"></div>
+      <div class="pt-item">
+        <span class="pt-product">İzinciKuryeAI</span>
+        <span class="pt-price">250₺<span class="pt-per">/saat</span></span>
+        <span class="pt-note">+ 8₺/km · kullandıkça öde</span>
+      </div>
+      <div class="pt-divider"></div>
+      <div class="pt-item">
+        <span class="pt-product">QRMenuAI</span>
+        <span class="pt-price">4.995₺<span class="pt-per">/yıl</span></span>
+        <span class="pt-note">~416₺/ay · tek seferlik</span>
+      </div>
+    </div>
+    <div class="reveal" style="text-align:center;margin-top:2.2rem">
+      <a href="/fiyatlandirma" class="btn-lg btn-teal" style="display:inline-flex;align-items:center;gap:.5rem;text-decoration:none">
+        Tüm Fiyatları ve Paketleri Gör
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
     </div>
   </div>
 </section>

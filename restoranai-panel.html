@@ -2936,6 +2936,7 @@ document.querySelectorAll(".tab[data-ofilter]").forEach(btn=>{
 });
 
 window.advanceOrder=async(id,next)=>{
+  const order=orders.find(o=>o.id===id);
   orders=orders.map(o=>o.id===id?{...o,status:next}:o);
   renderOrders();renderDashboard();
   if(currentPage==="kitchen")renderKitchen();
@@ -2944,8 +2945,26 @@ window.advanceOrder=async(id,next)=>{
     // Admin panel global siparişler yolunu da güncelle
     _rtdbUpdate(`/orders/${id}`,{status:next,updatedAt:Date.now()}).catch(()=>{});
     showToast(`✓ ${STATUS[next].label}`);
+    // Müşteri yolda WhatsApp bildirimi
+    if(next==='on_the_way' && order){
+      _sendTrackingWhatsApp(order, id);
+    }
   }catch{showToast("Güncelleme başarısız","error")}
 };
+
+function _sendTrackingWhatsApp(order, orderId){
+  const phone=(order.phone||order.deliveryPhone||'').replace(/\D/g,'');
+  if(!phone) return; // telefon yoksa sessizce geç
+  const trackUrl=`${location.origin}/takip.html?orderId=${encodeURIComponent(orderId)}&restId=${encodeURIComponent(RESTAURANT_ID)}`;
+  const restName=settings.rest_name||'Restoran';
+  const msg=`🛵 Siparişiniz yola çıktı!\n\n`+
+    `Merhaba ${order.customer||''}! ${restName} siparişiniz kuryemizle yolda.\n\n`+
+    `📍 Canlı takip bağlantısı:\n${trackUrl}\n\n`+
+    `Afiyet olsun! 🍽️`;
+  const waPhone=phone.startsWith('0')?`90${phone.slice(1)}`:phone.startsWith('90')?phone:`90${phone}`;
+  const waUrl=`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl,'_blank','noopener');
+}
 
 // ── MENU ───────────────────────────────────────────────────────────────────
 function renderMenu(){

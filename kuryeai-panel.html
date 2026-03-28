@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>KuryeAI — Kurye Paneli</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -122,10 +123,15 @@ onAuthStateChanged(auth, async (user) => {
   --red:#F44336;--red-bg:#FFEBEE;
   --orange:#FF9800;--orange-bg:#FFF3E0;
   --sh:0 2px 12px rgba(0,0,0,0.07);--sh2:0 4px 20px rgba(0,0,0,0.10);
-  --r:18px;--r2:12px;--f:'Inter',sans-serif;
+  --r:18px;--r2:12px;--f:'Inter',system-ui,-apple-system,sans-serif;
+  --font-size-xs:.72rem;--font-size-sm:.8125rem;--font-size-md:.9375rem;--font-size-lg:1.0625rem;
+  --font-weight-normal:400;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;
+  --line-height-tight:1.2;--line-height-normal:1.5;--line-height-relaxed:1.75;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
+  --icon-sm:16px;--icon-md:20px;--icon-lg:24px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--f);}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--f);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 
 .screen{position:fixed;inset:0;display:none;flex-direction:column;}
 .screen.active{display:flex;}
@@ -555,7 +561,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div class="ll">
     <img src="https://www.kuryeai.com/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'">
     <h1>Kurye<span>AI</span></h1>
-    <p>Kurye Paneline Hoş Geldin <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></p>
+    <p>Kurye Paneline Hoş Geldin <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></p>
   </div>
   <div class="lcard">
     <div class="lg"><label>Telefon / E-posta</label><input type="text" id="lEmail" placeholder="kurye@kuryeai.com"></div>
@@ -570,7 +576,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   <div id="map"></div>
   <div class="topbar">
     <div class="hbtn" onclick="openSB()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="17" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="17" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <span class="logo">Kurye<span>AI</span></span>
@@ -592,22 +598,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
   <div class="wakeind" id="wakeind"><div class="wdot" id="wdot"></div><span id="wtxt">Ekran</span></div>
   <div class="speed-badge"><div class="snum" id="spnum">0</div><div class="sunit">km/s</div></div>
-  <div class="rev-geo-pill" id="revGeoPill"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <span id="revGeoText"></span></div>
+  <div class="rev-geo-pill" id="revGeoPill"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <span id="revGeoText"></span></div>
   <div class="map-btns">
     <div class="cbtn" id="fsBtn" onclick="toggleMapFullscreen()" title="Tam ekran">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
     </div>
     <div class="cbtn" id="satBtn" onclick="toggleSatellite()" title="Uydu görüntüsü">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
     <div class="cbtn" id="incidentBtn" onclick="toggleIncidents()" title="Trafik olayları (kaza/çalışma)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     </div>
     <div class="cbtn" id="trafficBtn" onclick="toggleTraffic()" title="Trafik yoğunluğu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
     </div>
     <div class="cbtn active" id="followBtn" onclick="toggleFollow()" title="Takip modu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
     </div>
   </div>
   <!-- Trafik renk göstergesi -->
@@ -628,16 +634,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <!-- ACTIVE ORDER CARD -->
     <div class="aord" id="aord">
       <div class="aordhd">
-        <div class="aordt"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Aktif Sipariş</div>
+        <div class="aordt"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Aktif Sipariş</div>
         <div class="aordst ast-acc" id="aordSt">Kabul Edildi</div>
       </div>
-      <div class="aordrow"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>️</div><div class="aordaddr" id="aordRest">—</div></div>
-      <div class="aordrow"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="aordaddr" id="aordAddr">—</div></div>
-      <div class="aordrow"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="aordaddr" id="aordCust">—</div></div>
-      <div class="aordrow" style="padding-bottom:4px"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="aordaddr" id="aordAmt" style="font-weight:800;color:var(--teal)">—</div></div>
+      <div class="aordrow"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>️</div><div class="aordaddr" id="aordRest">—</div></div>
+      <div class="aordrow"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="aordaddr" id="aordAddr">—</div></div>
+      <div class="aordrow"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="aordaddr" id="aordCust">—</div></div>
+      <div class="aordrow" style="padding-bottom:4px"><div class="aordico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="aordaddr" id="aordAmt" style="font-weight:800;color:var(--teal)">—</div></div>
       <div class="aordrow" id="aordEtaRow" style="display:none;padding-bottom:4px"><div class="aordico">⏱️</div><div class="aordaddr" id="aordEta" style="font-weight:700;color:#43A047">—</div></div>
-      <button class="aordnavbtn" id="aordNavBtn" onclick="openDelivNav()" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Müşteriye Yol Tarifi Al</button>
-      <button class="aordnavbtn" id="aordRetNavBtn" onclick="openRestNav()" style="display:none;background:#43A047"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Restorana Dön — Yol Tarifi Al</button>
+      <button class="aordnavbtn" id="aordNavBtn" onclick="openDelivNav()" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Müşteriye Yol Tarifi Al</button>
+      <button class="aordnavbtn" id="aordRetNavBtn" onclick="openRestNav()" style="display:none;background:#43A047"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Restorana Dön — Yol Tarifi Al</button>
 
 <!-- Navigasyon uygulama seçim sheet'i -->
 <div id="navPickerOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeNavPicker()">
@@ -671,7 +677,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
 </div>
       <button class="aordbtn" id="aordBtn" onclick="advOrderStatus()">Restorana Vardım — Teslim Alıyorum</button>
-      <button class="aordbtn" id="aordDoneBtn" onclick="confirmReturn()" style="display:none;background:#388E3C;margin-top:0"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Restorana Döndüm — Bitti</button>
+      <button class="aordbtn" id="aordDoneBtn" onclick="confirmReturn()" style="display:none;background:#388E3C;margin-top:0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Restorana Döndüm — Bitti</button>
     </div>
     <div class="sbwrap">
       <button class="sbtn start" id="shBtn" onclick="handleSh()">
@@ -697,22 +703,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
   </div>
   <nav class="sbnav">
     <div class="nsec">Ana Menü</div>
-    <div class="ni active" onclick="closeSB()"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>Ana Ekran</div>
-    <div class="ni" onclick="closeSB();openS('profileScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>Profilim</div>
+    <div class="ni active" onclick="closeSB()"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>Ana Ekran</div>
+    <div class="ni" onclick="closeSB();openS('profileScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>Profilim</div>
     <div class="nsec">Finans</div>
-    <div class="ni" onclick="closeSB();openS('earningsScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>Kazançlarım</div>
-    <div class="ni" onclick="closeSB();openS('perfScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>Performansım</div>
+    <div class="ni" onclick="closeSB();openS('earningsScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>Kazançlarım</div>
+    <div class="ni" onclick="closeSB();openS('perfScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>Performansım</div>
     <div class="nsec">Siparişler</div>
-    <div class="ni" onclick="closeSB();openS('ordersScreen')" id="ordNI"><div class="nico" style="position:relative"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><div class="ordtopdot" id="ordSBdot"></div></div>Siparişlerim<div class="nbadge" id="ordNBadge" style="display:none">0</div></div>
+    <div class="ni" onclick="closeSB();openS('ordersScreen')" id="ordNI"><div class="nico" style="position:relative"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><div class="ordtopdot" id="ordSBdot"></div></div>Siparişlerim<div class="nbadge" id="ordNBadge" style="display:none">0</div></div>
     <div class="nsec">İletişim</div>
-    <div class="ni" onclick="closeSB();openS('chatScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Chat<div class="nbadge" id="chatBadge" style="display:none">3</div></div>
+    <div class="ni" onclick="closeSB();openS('chatScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Chat<div class="nbadge" id="chatBadge" style="display:none">3</div></div>
     <div class="nsec">Araçlar</div>
-    <div class="ni" onclick="closeSB();openS('toolsScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>Araçlar</div>
-    <div class="ni" onclick="closeSB();openS('tRouteOpt')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️</div>Rota Planlayıcı</div>
+    <div class="ni" onclick="closeSB();openS('toolsScreen')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>Araçlar</div>
+    <div class="ni" onclick="closeSB();openS('tRouteOpt')"><div class="nico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️</div>Rota Planlayıcı</div>
   </nav>
   <div class="sbft">
     <button class="lgout" onclick="doLogout()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       Oturumu Kapat
     </button>
   </div>
@@ -722,21 +728,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <div class="mover" id="mStart">
   <div class="msh">
     <div class="mh"></div>
-    <div class="mt"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg> Vardiyayı Başlat</div>
+    <div class="mt"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg> Vardiyayı Başlat</div>
     <div class="ms">KM göstergesi fotoğrafı çek ve başlangıç km'ini gir</div>
     <div class="mb">
-      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> KM Göstergesi Fotoğrafı</label>
+      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> KM Göstergesi Fotoğrafı</label>
       <div class="photobtn" id="sPBtn" onclick="document.getElementById('sPInp').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="5" width="22" height="15" rx="2"/><circle cx="12" cy="12" r="4"/><path d="m8 8-1-3h10l-1 3"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="22" height="15" rx="2"/><circle cx="12" cy="12" r="4"/><path d="m8 8-1-3h10l-1 3"/></svg>
         <span id="sPTxt">Kamera ile Fotoğraf Çek</span>
       </div>
       <img id="sPPrev" class="ppreview" alt="">
       <input type="file" id="sPInp" accept="image/*" capture="environment" style="display:none" onchange="handlePh(event,'s')">
-      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Başlangıç KM</label>
+      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Başlangıç KM</label>
       <div class="kmw"><input class="fi" type="number" id="sKmIn" placeholder="Örn: 12450" inputmode="numeric"><span class="kmu">km</span></div>
       <div class="mbtns">
         <button class="bgh" onclick="closeM('mStart')">İptal</button>
-        <button class="bteal" id="sConfBtn" onclick="confirmStart()" disabled>Başlat <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="bteal" id="sConfBtn" onclick="confirmStart()" disabled>Başlat <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
       </div>
     </div>
   </div>
@@ -749,14 +755,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     <div class="mt">■ Vardiyayı Bitir</div>
     <div class="ms">Bitiş KM fotoğrafı çek ve bitiş km'ini gir</div>
     <div class="mb">
-      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> KM Göstergesi Fotoğrafı</label>
+      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> KM Göstergesi Fotoğrafı</label>
       <div class="photobtn" id="ePBtn" onclick="document.getElementById('ePInp').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="5" width="22" height="15" rx="2"/><circle cx="12" cy="12" r="4"/><path d="m8 8-1-3h10l-1 3"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="22" height="15" rx="2"/><circle cx="12" cy="12" r="4"/><path d="m8 8-1-3h10l-1 3"/></svg>
         <span id="ePTxt">Kamera ile Fotoğraf Çek</span>
       </div>
       <img id="ePPrev" class="ppreview" alt="">
       <input type="file" id="ePInp" accept="image/*" capture="environment" style="display:none" onchange="handlePh(event,'e')">
-      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Bitiş KM</label>
+      <label class="fl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Bitiş KM</label>
       <div class="kmw"><input class="fi" type="number" id="eKmIn" placeholder="Örn: 12680" inputmode="numeric"><span class="kmu">km</span></div>
       <div class="sumbox" id="eSum" style="display:none"></div>
       <div class="mbtns">
@@ -769,17 +775,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- PROFILE -->
 <div class="isc" id="profileScreen">
-  <div class="ihd"><div class="bbtn" onclick="closeS('profileScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Profilim</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('profileScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Profilim</div></div>
   <div class="ibody">
     <div class="pavsec">
       <div class="pavwrap">
         <img id="pAvImg" class="pav" src="https://ui-avatars.com/api/?name=K&background=009688&color=fff&bold=true" alt="">
-        <div class="pavedit" onclick="document.getElementById('avFInp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div class="pavedit" onclick="document.getElementById('avFInp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
         <input type="file" id="avFInp" accept="image/*" style="display:none" onchange="handleAv(event)">
       </div>
       <div class="pname" id="pNameDisp">Kurye</div>
       <div style="font-size:0.72rem;color:var(--teal);font-weight:700;margin-top:4px;letter-spacing:0.05em" id="kuryeIdBadge"></div>
-      <div id="assignedRestBadge" style="display:none;margin-top:6px;font-size:0.75rem;font-weight:600;color:var(--tx2);background:var(--card2);border-radius:20px;padding:4px 12px;border:1px solid var(--border)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> <span id="assignedRestName">—</span></div>
+      <div id="assignedRestBadge" style="display:none;margin-top:6px;font-size:0.75rem;font-weight:600;color:var(--tx2);background:var(--card2);border-radius:20px;padding:4px 12px;border:1px solid var(--border)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> <span id="assignedRestName">—</span></div>
     </div>
     <div class="card">
       <div class="fsec">Kişisel Bilgiler</div>
@@ -792,10 +798,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="fsec">Araç Bilgileri</div>
       <label class="fl">Araç Tipi</label>
       <div class="vchips">
-        <div class="vc active" onclick="selV(this,'motosiklet')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg> Moto</div>
-        <div class="vc" onclick="selV(this,'bisiklet')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg> Bisiklet</div>
-        <div class="vc" onclick="selV(this,'otomobil')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg> Otomobil</div>
-        <div class="vc" onclick="selV(this,'yaya')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><path d="M9 20l1-6 2 2 2-4"/><path d="M7 9l4-1 2 3"/><line x1="5" y1="20" x2="9" y2="20"/><line x1="15" y1="20" x2="19" y2="20"/></svg> Yaya</div>
+        <div class="vc active" onclick="selV(this,'motosiklet')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg> Moto</div>
+        <div class="vc" onclick="selV(this,'bisiklet')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg> Bisiklet</div>
+        <div class="vc" onclick="selV(this,'otomobil')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg> Otomobil</div>
+        <div class="vc" onclick="selV(this,'yaya')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><path d="M9 20l1-6 2 2 2-4"/><path d="M7 9l4-1 2 3"/><line x1="5" y1="20" x2="9" y2="20"/><line x1="15" y1="20" x2="19" y2="20"/></svg> Yaya</div>
       </div>
       <label class="fl">Plaka</label><input class="fi" type="text" id="pPlate" placeholder="06 AA 000" style="text-transform:uppercase">
       <label class="fl">Ehliyet</label><input class="fi" type="text" id="pLic" placeholder="A, B, A2..." style="margin-bottom:0">
@@ -812,7 +818,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- EARNINGS -->
 <div class="isc" id="earningsScreen">
-  <div class="ihd"><div class="bbtn" onclick="closeS('earningsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Kazançlarım</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('earningsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Kazançlarım</div></div>
   <div class="ibody">
     <!-- Dönem seçici -->
     <div style="display:flex;gap:6px;margin-bottom:14px">
@@ -838,36 +844,36 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
     </div>
     <div class="hcard" id="eHist">
       <div class="hchd"><span class="hcht">Son Vardiyalar</span></div>
-      <div class="hrow"><div class="hico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></div><div class="hinfo"><div class="ht">Henüz vardiya yok</div><div class="hd">İlk vardiyayı başlatmak için ana ekrana dön</div></div></div>
+      <div class="hrow"><div class="hico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></div><div class="hinfo"><div class="ht">Henüz vardiya yok</div><div class="hd">İlk vardiyayı başlatmak için ana ekrana dön</div></div></div>
     </div>
   </div>
 </div>
 
 <!-- PERF -->
 <div class="isc" id="perfScreen">
-  <div class="ihd"><div class="bbtn" onclick="closeS('perfScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Performansım</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('perfScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Performansım</div></div>
   <div class="ibody">
     <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Müşteri Puanı</div><div class="pval" id="pRat">4.8</div></div><div class="stars" id="pStars"></div></div>
-    <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Tamamlanan Sipariş</div><div class="pval" id="pOrd">—</div></div></div>
+    <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Tamamlanan Sipariş</div><div class="pval" id="pOrd">—</div></div></div>
     <div class="pcard"><div class="ptop"><div class="plbl">⏱ Ort. Teslimat Süresi</div><div class="pval" id="pAvgT">—</div></div></div>
-    <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Zamanında Teslimat</div><div class="pval" id="pOn" style="color:var(--green)">%96</div></div><div class="pbar" style="margin-top:8px"><div class="pfill" style="width:96%"></div></div></div>
-    <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Bu Haftaki Sıralama</div><div class="pval" id="pRnk" style="color:var(--orange)">—</div></div></div>
+    <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Zamanında Teslimat</div><div class="pval" id="pOn" style="color:var(--green)">%96</div></div><div class="pbar" style="margin-top:8px"><div class="pfill" style="width:96%"></div></div></div>
+    <div class="pcard"><div class="ptop"><div class="plbl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Bu Haftaki Sıralama</div><div class="pval" id="pRnk" style="color:var(--orange)">—</div></div></div>
   </div>
 </div>
 
 <!-- CHAT -->
 <div class="isc" id="chatScreen">
-  <div class="ihd"><div class="bbtn" onclick="closeS('chatScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Chat</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('chatScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Chat</div></div>
   <div class="ibody" style="display:flex;flex-direction:column;overflow:hidden;padding:12px 14px;">
     <div class="ctabs">
-      <div class="ctab active" id="ct1" onclick="swRoom(1)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Operasyon</div>
-      <div class="ctab" id="ct2" onclick="swRoom(2)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Ekip</div>
+      <div class="ctab active" id="ct1" onclick="swRoom(1)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Operasyon</div>
+      <div class="ctab" id="ct2" onclick="swRoom(2)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Ekip</div>
     </div>
     <div class="cmsgs" id="cMsgs"></div>
     <div class="cbar">
-      <div class="cibtn" onclick="sendLoc()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg></div>
-      <div class="cibtn" onclick="document.getElementById('cFInp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-      <div class="cibtn" id="vBtn" onmousedown="startV()" onmouseup="stopV()" ontouchstart="startV()" ontouchend="stopV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+      <div class="cibtn" onclick="sendLoc()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="17" height="17"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg></div>
+      <div class="cibtn" onclick="document.getElementById('cFInp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="17" height="17"><rect x="3" y="3" width="20" height="20" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+      <div class="cibtn" id="vBtn" onmousedown="startV()" onmouseup="stopV()" ontouchstart="startV()" ontouchend="stopV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="17" height="17"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
       <input type="file" id="cFInp" accept="image/*,video/*" style="display:none" onchange="chatFile(event)">
       <textarea class="cinp" id="cInp" placeholder="Mesaj yaz..." rows="1" onkeydown="chatKey(event)"></textarea>
       <div class="csend" onclick="sendMsg()"><svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
@@ -877,22 +883,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- TOOLS -->
 <div class="isc" id="toolsScreen">
-  <div class="ihd"><div class="bbtn" onclick="closeS('toolsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Araçlar</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('toolsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Araçlar</div></div>
   <div class="ibody">
     <div class="tgrid">
-      <div class="tcard" onclick="openS('tCalc')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="tname">Hızlı Kazanç</div><div class="tdesc">Anlık kazanç hesapla</div></div>
-      <div class="tcard" onclick="openS('tComp')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div><div class="tname">Pusula</div><div class="tdesc">Yön bul</div></div>
-      <div class="tcard" onclick="openS('tFuel')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg></div><div class="tname">KM / Yakıt</div><div class="tdesc">Yakıt verimliliği</div></div>
-      <div class="tcard" onclick="openS('tLedger')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="tname">Gelir / Gider</div><div class="tdesc">Mali defterim</div></div>
-      <div class="tcard" onclick="openS('tMaint')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="tname">Araç Bakım</div><div class="tdesc">Bakım takibi</div></div>
-      <div class="tcard" onclick="openS('tRouteOpt')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️</div><div class="tname">Rota Planlayıcı</div><div class="tdesc">En hızlı teslimat sırası</div></div>
+      <div class="tcard" onclick="openS('tCalc')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="tname">Hızlı Kazanç</div><div class="tdesc">Anlık kazanç hesapla</div></div>
+      <div class="tcard" onclick="openS('tComp')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div><div class="tname">Pusula</div><div class="tdesc">Yön bul</div></div>
+      <div class="tcard" onclick="openS('tFuel')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg></div><div class="tname">KM / Yakıt</div><div class="tdesc">Yakıt verimliliği</div></div>
+      <div class="tcard" onclick="openS('tLedger')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="tname">Gelir / Gider</div><div class="tdesc">Mali defterim</div></div>
+      <div class="tcard" onclick="openS('tMaint')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="tname">Araç Bakım</div><div class="tdesc">Bakım takibi</div></div>
+      <div class="tcard" onclick="openS('tRouteOpt')"><div class="tico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️</div><div class="tname">Rota Planlayıcı</div><div class="tdesc">En hızlı teslimat sırası</div></div>
     </div>
   </div>
 </div>
 
 <!-- TOOL: CALC -->
 <div class="isc" id="tCalc">
-  <div class="ihd"><div class="bbtn" onclick="closeS('tCalc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Hızlı Kazanç</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('tCalc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Hızlı Kazanç</div></div>
   <div class="ibody">
     <div class="card">
       <label class="fl">Çalışma Süresi (saat)</label><input class="fi" type="number" id="cH" placeholder="0" step="0.5" oninput="calcE()">
@@ -906,10 +912,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- TOOL: COMPASS -->
 <div class="isc" id="tComp">
-  <div class="ihd"><div class="bbtn" onclick="closeS('tComp');stopCmp()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> Pusula</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('tComp');stopCmp()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> Pusula</div></div>
   <div class="ibody">
     <div class="cpwrap">
-      <div class="compass"><div class="cdir">K</div><div class="cneedle" id="cNeedle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div></div>
+      <div class="compass"><div class="cdir">K</div><div class="cneedle" id="cNeedle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div></div>
       <div class="cdeg" id="cDeg">0°</div>
     </div>
     <p style="text-align:center;color:var(--tx2);font-size:0.84rem">Gerçek kuzey yönü</p>
@@ -918,7 +924,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- TOOL: FUEL -->
 <div class="isc" id="tFuel">
-  <div class="ihd"><div class="bbtn" onclick="closeS('tFuel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg> KM / Yakıt</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('tFuel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg> KM / Yakıt</div></div>
   <div class="ibody">
     <div class="card">
       <label class="fl">KM (Dolum Arası)</label><input class="fi" type="number" id="fK" placeholder="0" oninput="calcF()">
@@ -931,14 +937,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- TOOL: LEDGER -->
 <div class="isc" id="tLedger">
-  <div class="ihd"><div class="bbtn" onclick="closeS('tLedger')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Gelir / Gider Defteri</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('tLedger')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Gelir / Gider Defteri</div></div>
   <div class="ibody">
     <div class="lsumm">
       <div class="lcard linc"><div class="lval" id="lInc">₺0</div><div class="llbl">Toplam Gelir</div></div>
       <div class="lcard lexp"><div class="lval" id="lExp">₺0</div><div class="llbl">Toplam Gider</div></div>
     </div>
     <button class="addrbtn" onclick="openM('mLedger')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Yeni Kayıt Ekle
     </button>
     <div id="lList"></div>
@@ -947,7 +953,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- TOOL: MAINT -->
 <div class="isc" id="tMaint">
-  <div class="ihd"><div class="bbtn" onclick="closeS('tMaint')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Araç Bakım Takibi</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('tMaint')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Araç Bakım Takibi</div></div>
   <div class="ibody">
     <div class="card" style="margin-bottom:14px"><label class="fl">Güncel Araç KM</label><input class="fi" type="number" id="curKm" placeholder="KM giriniz" oninput="renderMaint()" style="margin-bottom:0"></div>
     <div id="mList"></div>
@@ -956,17 +962,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 
 <!-- TOOL: ROUTE OPTIMIZER -->
 <div class="isc" id="tRouteOpt">
-  <div class="ihd"><div class="bbtn" onclick="closeS('tRouteOpt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Rota Planlayıcı</div></div>
+  <div class="ihd"><div class="bbtn" onclick="closeS('tRouteOpt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Rota Planlayıcı</div></div>
   <div class="ibody">
     <div class="card">
       <div class="fsec">Teslimat Noktaları</div>
       <div id="rpAddrList"><div class="rp-addr-row" style="color:var(--tx3);font-size:0.82rem;padding:8px 0">Teslimat adresi ekleyin</div></div>
       <button class="addrbtn" style="margin-top:8px" onclick="addRpAddr()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Adres Ekle
       </button>
     </div>
-    <button class="savebtn" id="rpRunBtn" onclick="runRouteOpt()" style="margin-top:8px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ En İyi Rotayı Hesapla</button>
+    <button class="savebtn" id="rpRunBtn" onclick="runRouteOpt()" style="margin-top:8px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ En İyi Rotayı Hesapla</button>
     <div id="rpResult" style="display:none">
       <div class="fsec" style="margin-top:16px;margin-bottom:8px">Önerilen Sıra</div>
       <div id="rpOrderList" class="rp-order-list"></div>
@@ -999,32 +1005,32 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <div class="onot" id="ordNotif">
   <div class="ocard">
     <div class="ochead">
-      <div class="ohtit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg> Yeni Sipariş Geldi!</div>
+      <div class="ohtit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg> Yeni Sipariş Geldi!</div>
       <div class="octimer" id="ordTimerNum">30</div>
     </div>
     <div class="octimerbar"><div class="octimerbarfill" id="ordTimerBar" style="width:100%"></div></div>
     <div class="ocbody">
       <div class="odetrow">
-        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>️</div>
+        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>️</div>
         <div class="odetinf"><div class="odlbl">Restoran</div><div class="odval" id="onRest">—</div></div>
       </div>
       <div class="odetrow">
-        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
         <div class="odetinf"><div class="odlbl">Teslimat Adresi</div><div class="odval" id="onAddr">—</div></div>
       </div>
       <div class="odetrow">
-        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="odetinf"><div class="odlbl">Müşteri</div><div class="odval" id="onCust">—</div></div>
       </div>
       <div class="odetrow" id="onItemsRow" style="display:none">
-        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>️</div>
+        <div class="odetico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>️</div>
         <div class="odetinf"><div class="odlbl">Sipariş</div><div class="odval" id="onItems">—</div></div>
       </div>
       <div class="oamt" id="onAmt">₺0</div>
     </div>
     <div class="obtns">
-      <button class="obrej" onclick="rejectOrder()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Reddet</button>
-      <button class="obacc" onclick="acceptOrder()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kabul Et</button>
+      <button class="obrej" onclick="rejectOrder()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Reddet</button>
+      <button class="obacc" onclick="acceptOrder()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kabul Et</button>
     </div>
   </div>
 </div>
@@ -1032,7 +1038,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <!-- ORDERS SCREEN -->
 <div class="isc" id="ordersScreen">
   <div class="ihd">
-    <div class="bbtn" onclick="closeS('ordersScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="bbtn" onclick="closeS('ordersScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div>
     <div class="ititle">Siparişlerim</div>
   </div>
   <div class="ibody">

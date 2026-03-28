@@ -41,6 +41,22 @@
     .auth-drop-item{display:block;padding:.72rem 1rem;font-size:.8rem;font-weight:600;color:#fff;text-decoration:none;transition:background .15s}
     .auth-drop-item:hover{background:rgba(0,200,215,.12);color:var(--teal)}
 
+    /* ── PREMIUM TEMA TOGGLE ── */
+    .theme-toggle-pill{position:relative;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:.3rem .55rem;cursor:pointer;transition:background .25s,box-shadow .25s;outline:none;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+    .theme-toggle-pill:hover{background:rgba(255,255,255,.14);box-shadow:0 4px 20px rgba(0,0,0,.28)}
+    .ttp-track{position:relative;width:30px;height:16px;background:rgba(255,255,255,.12);border-radius:999px;border:1px solid rgba(255,255,255,.15);transition:background .3s}
+    .ttp-thumb{position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ef4444);transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+    .ttp-sun{color:rgba(255,255,255,.65);display:flex;align-items:center;transition:color .25s}
+    .ttp-moon{color:rgba(255,255,255,.65);display:flex;align-items:center;transition:color .25s}
+    html[data-theme="dark"] .ttp-thumb{transform:translateX(0);background:linear-gradient(135deg,#f59e0b,#ef4444)}
+    html[data-theme="dark"] .ttp-sun{color:#f59e0b}
+    html[data-theme="dark"] .ttp-moon{color:rgba(255,255,255,.3)}
+    html[data-theme="light"] .theme-toggle-pill{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.12)}
+    html[data-theme="light"] .ttp-track{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.12)}
+    html[data-theme="light"] .ttp-thumb{transform:translateX(14px);background:linear-gradient(135deg,#6366f1,#8b5cf6)}
+    html[data-theme="light"] .ttp-sun{color:rgba(0,0,0,.3)}
+    html[data-theme="light"] .ttp-moon{color:#6366f1}
+
     /* ── HERO ── */
     .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden}
     .hero-inner{display:grid;grid-template-columns:55fr 45fr;gap:4rem;align-items:center;max-width:1200px;width:100%}
@@ -254,6 +270,11 @@
     <span class="nav-brand"><span class="acil">Acil</span><span class="kurye">Kurye</span><span class="ai">AI</span></span>
   </a>
   <a href="/" class="nav-back">← Ana Sayfa</a>
+  <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
+    <span class="ttp-track"><span class="ttp-thumb"></span></span>
+    <span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+    <span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+  </button>
   <div class="auth-drop" id="auth-drop">
     <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></span> Giriş / Kayıt ▾</button>
     <div class="auth-drop-menu">
@@ -271,7 +292,7 @@
     <!-- Sol: Metin -->
     <div class="hero-left">
       <div class="hero-badge"><span class="bdot"></span>7/24 Aktif · Türkiye Geneli</div>
-      <h1>Acil Kurye<br/><span class="hi">Saniyeler İçinde</span><br/>Kapınızda.</h1>
+      <h1>Acil Kurye<br/><span class="hi">Dakikalar İçinde</span><br/>Kapınızda.</h1>
       <p class="hero-sub">Yapay zeka destekli kurye atama sistemi. Talep oluşturun, en yakın kurye otomatik atansın, panelden canlı takip edin.</p>
       <div class="hero-btns">
         <a href="/acilkuryeai-talepeden-login" class="btn-hero-primary"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></span> Hemen Talep Oluştur</a>
@@ -516,7 +537,7 @@
 <div class="form-section" id="talep-formu">
   <span class="section-badge">Talep Oluştur</span>
   <h2 class="section-title">Hemen acil kurye talep edin.</h2>
-  <p class="section-sub">Adresleri girin, mesafe ve tahmini ücreti otomatik hesaplayalım. Kaydolun ve talebinizi saniyeler içinde gönderin.</p>
+  <p class="section-sub">Adresleri girin, mesafe ve tahmini ücreti otomatik hesaplayalım. Kaydolun ve talebinizi dakikalar içinde gönderin.</p>
   <div class="form-map-grid">
 
     <!-- FORM -->
@@ -643,7 +664,6 @@
   <a href="/">← Ana Sayfa</a> &nbsp;·&nbsp;
   <a href="/acilkuryeai-talepeden-login">Talep Eden Girişi</a> &nbsp;·&nbsp;
   <a href="/acilkuryeai-kurye-login">Kurye Girişi</a> &nbsp;·&nbsp;
-  <a href="tel:+905072171995"><span style="display:inline-flex;align-items:center;gap:.25rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.54 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> 0 507 217 19 95</span></a> &nbsp;·&nbsp;
   <a href="/kvkk">Gizlilik Politikası</a>
   <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
 </div>

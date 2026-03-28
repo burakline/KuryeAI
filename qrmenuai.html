@@ -110,7 +110,7 @@ html[data-theme="light"] .ttp-moon{color:#6366f1}
 /* ── FİYAT ── */
 .price-wrap{max-width:480px;margin:2.5rem auto 0;background:var(--card);border:.5px solid rgba(0,200,215,.25);border-radius:24px;padding:36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .price-badge{display:inline-block;background:rgba(0,200,215,.12);border:.5px solid rgba(0,200,215,.3);color:var(--teal);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem 1rem;border-radius:999px;margin-bottom:1.4rem}
-.price-amount{font-size:3rem;font-weight:900;color:var(--teal);line-height:1;letter-spacing:-.04em}
+.price-amount{font-size:clamp(2rem,6vw,3rem);font-weight:900;color:var(--teal);line-height:1;letter-spacing:-.04em}
 .price-period{font-size:.88rem;color:var(--gray-lt);margin-top:.3rem}
 .price-note{font-size:.78rem;color:var(--gray-lt);margin-top:.5rem;margin-bottom:1.5rem}
 .price-features{text-align:left;margin-bottom:1.8rem;display:flex;flex-direction:column;gap:.7rem}
@@ -139,6 +139,24 @@ footer a{color:var(--teal);text-decoration:none}
   .section-qr{padding:3.5rem 1.4rem}
   .qr-mockup{gap:16px}
   .price-wrap{padding:28px 20px}
+}
+@media(max-width:480px){
+  .qr-card-mock{width:160px;padding:18px}
+  .qr-code-img{width:90px;height:90px}
+  .phone-mock{width:150px}
+  .price-wrap{padding:22px 16px;max-width:100%}
+  .price-amount{font-size:2.2rem}
+  .steps-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .url-demo{font-size:.76rem;padding:14px 16px}
+}
+@media(max-width:380px){
+  nav{padding:.7rem 1rem}
+  .hero-qr{padding:3.5rem 1rem 2.5rem}
+  .section-qr{padding:2.8rem 1rem}
+  .qr-mockup{flex-direction:column;align-items:center}
+  .qr-card-mock{width:100%;max-width:280px}
+  .phone-mock{width:100%;max-width:260px;border-radius:16px}
 }
 </style>
 </head>

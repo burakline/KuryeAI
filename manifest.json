@@ -1,24 +1,41 @@
 {
-  "name": "KuryeAI",
+  "name": "KuryeAI — Akıllı Kurye Platformu",
   "short_name": "KuryeAI",
-  "description": "Akıllı Kurye ve Teslimat Yönetim Platformu",
+  "description": "Türkiye'nin yapay zeka destekli kurye ve restoran yönetim platformu.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
+  "background_color": "#0c0c0c",
   "theme_color": "#00c8d7",
   "icons": [
     {
       "src": "/1000417933.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/1000417933.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Acil Kurye",
+      "short_name": "Acil",
+      "url": "/acilkuryeai",
+      "icons": [{ "src": "/1000417933.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "RestoranAI",
+      "short_name": "Restoran",
+      "url": "/restoranai",
+      "icons": [{ "src": "/1000417933.png", "sizes": "96x96" }]
     }
   ],
   "categories": ["business", "productivity"],
-  "lang": "tr"
+  "lang": "tr",
+  "dir": "ltr"
 }

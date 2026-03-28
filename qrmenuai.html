@@ -159,6 +159,9 @@ footer a{color:var(--teal);text-decoration:none}
   .phone-mock{width:100%;max-width:260px;border-radius:16px}
 }
 </style>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/1000414615.png"/>
+  <meta name="theme-color" content="#00c8d7"/>
 </head>
 <body>
 
@@ -391,5 +394,6 @@ footer a{color:var(--teal);text-decoration:none}
 </footer>
 
 <script src="/theme.js"></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 </body>
 </html>

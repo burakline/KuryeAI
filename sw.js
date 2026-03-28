@@ -1,9 +1,17 @@
-const CACHE_NAME = 'kuryeai-v1';
+const CACHE_NAME = 'kuryeai-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/restoranai',
+  '/acilkuryeai',
+  '/kuryeai',
+  '/izincikuryeai',
+  '/qrmenuai',
   '/manifest.json',
-  '/1000417933.png'
+  '/theme.css',
+  '/theme.js',
+  '/1000417933.png',
+  '/1000414615.png'
 ];
 
 self.addEventListener('install', event => {

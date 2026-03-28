@@ -90,10 +90,98 @@
       min-height: 100svh;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      text-align: center;
-      padding: 7rem 2rem 5rem;
+      padding: 5rem 2rem;
       position: relative; overflow: hidden;
     }
+    /* ── HERO SPLIT LAYOUT ── */
+    .hero-inner { display:grid; grid-template-columns:55fr 45fr; gap:4rem; align-items:center; max-width:1200px; width:100%; }
+    .hero-left { display:flex; flex-direction:column; align-items:flex-start; text-align:left; }
+    .hero-left .hero-eyebrow { justify-content:flex-start; }
+    .hero-right { position:relative; display:flex; align-items:center; justify-content:flex-end; padding-right:1rem; }
+    /* ── MacBook Pro Frame ── */
+    .macbook-wrap { position:relative; flex-shrink:0; display:flex; flex-direction:column; align-items:center; filter:drop-shadow(0 40px 80px rgba(0,0,0,.75)); }
+    .macbook-lid {
+      width:500px; height:318px;
+      background:linear-gradient(160deg,#747478 0%,#3d3d3f 12%,#5a5a5e 35%,#3c3c3e 58%,#545456 78%,#404042 100%);
+      border-radius:14px 14px 0 0; padding:10px 10px 8px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.2),0 0 0 2px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.2);
+      position:relative;
+    }
+    .macbook-screen { width:100%; height:100%; background:#f5f6f8; border-radius:6px; overflow:hidden; position:relative; }
+    .macbook-notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:110px; height:22px; background:#1a1a1c; border-radius:0 0 14px 14px; z-index:20; pointer-events:none; }
+    .macbook-notch::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:7px; height:7px; border-radius:50%; background:#2a2a2c; box-shadow:0 0 0 1px rgba(255,255,255,.06); }
+    .macbook-base { width:528px; height:26px; background:linear-gradient(180deg,#5a5a5e 0%,#3c3c3e 35%,#2e2e30 100%); border-radius:0 0 10px 10px; box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 0 2px rgba(0,0,0,.55),0 8px 32px rgba(0,0,0,.5); position:relative; }
+    .macbook-base::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:130px; height:1.5px; background:rgba(255,255,255,.1); border-radius:1px; }
+    /* ── RestoranAI Desktop Panel (MacBook) ── */
+    .mbp { width:960px; height:570px; zoom:.5; display:flex; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; color:#0f1117; background:#f5f6f8; overflow:hidden; }
+    .mbp-sidebar { width:54px; flex-shrink:0; background:#fff; border-right:1px solid #e8eaed; display:flex; flex-direction:column; align-items:center; padding:14px 0; gap:4px; }
+    .mbp-sb-logo { width:34px; height:34px; background:linear-gradient(135deg,#00c8d7,#009aaa); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,200,215,.3); flex-shrink:0; }
+    .mbp-sb-item { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#9ca3af; transition:all .15s; }
+    .mbp-sb-item.active { background:rgba(0,200,215,.1); color:#00c8d7; }
+    .mbp-sb-item svg { width:19px; height:19px; }
+    .mbp-main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
+    .mbp-topbar { height:52px; background:#fff; border-bottom:1px solid #e8eaed; display:flex; align-items:center; justify-content:space-between; padding:0 22px; flex-shrink:0; }
+    .mbp-topbar-l { display:flex; align-items:center; gap:12px; }
+    .mbp-brandname { font-size:16px; font-weight:800; letter-spacing:-.5px; color:#0f1117; }
+    .mbp-brandname em { font-style:normal; color:#00c8d7; }
+    .mbp-live { display:flex; align-items:center; gap:4px; background:rgba(0,196,140,.08); border:1px solid rgba(0,196,140,.2); color:#00c48c; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; }
+    .mbp-live-dot { width:6px; height:6px; border-radius:50%; background:#00c48c; animation:pls 2s infinite; flex-shrink:0; }
+    .mbp-topbar-r { display:flex; align-items:center; gap:10px; }
+    .mbp-notif { width:34px; height:34px; background:#f5f6f8; border:1px solid #e8eaed; border-radius:9px; display:flex; align-items:center; justify-content:center; }
+    .mbp-avatar { width:34px; height:34px; background:linear-gradient(135deg,#00c8d7,#009aaa); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; }
+    .mbp-content { flex:1; padding:18px; overflow:hidden; display:flex; flex-direction:column; gap:14px; }
+    .mbp-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; flex-shrink:0; }
+    .mbp-stat-card { background:#fff; border:1px solid #e8eaed; border-radius:12px; padding:16px 18px; }
+    .mbp-sc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .mbp-sc-label { font-size:11px; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+    .mbp-sc-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+    .mbp-sc-n { font-size:28px; font-weight:800; letter-spacing:-.5px; line-height:1; }
+    .mbp-sc-sub { font-size:11px; color:#9ca3af; margin-top:4px; }
+    .mbp-orders-card { background:#fff; border:1px solid #e8eaed; border-radius:12px; overflow:hidden; flex:1; display:flex; flex-direction:column; }
+    .mbp-oc-hdr { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #f0f1f3; flex-shrink:0; }
+    .mbp-oc-title { font-size:14px; font-weight:700; color:#0f1117; }
+    .mbp-oc-badge { font-size:11px; font-weight:700; background:rgba(0,200,215,.08); color:#009aaa; border:1px solid rgba(0,200,215,.2); padding:3px 10px; border-radius:999px; }
+    .mbp-order-row { display:flex; align-items:center; gap:14px; padding:11px 18px; border-bottom:1px solid #f8f9fa; flex-shrink:0; }
+    .mbp-or-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .mbp-or-num { font-size:12px; font-weight:700; color:#c4c9d4; width:38px; flex-shrink:0; }
+    .mbp-or-body { flex:1; min-width:0; }
+    .mbp-or-name { font-size:13px; font-weight:700; color:#0f1117; }
+    .mbp-or-sub { font-size:11px; color:#9ca3af; margin-top:2px; }
+    .mbp-or-status { font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap; flex-shrink:0; }
+    .mbp-or-amt { font-size:13px; font-weight:700; color:#00c48c; width:54px; text-align:right; flex-shrink:0; }
+    /* Floating notification cards */
+    .float-notif { position:absolute; background:rgba(8,8,20,.92); border:.5px solid rgba(255,255,255,.1); border-radius:10px; padding:9px 13px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); z-index:10; box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.04); white-space:nowrap; }
+    .float-notif-1 { top:-20px; right:-85px; animation:floatA 4s ease-in-out infinite; }
+    .float-notif-2 { bottom:100px; right:-90px; animation:floatA 4s ease-in-out infinite 1.5s; }
+    .float-notif-3 { bottom:30px; left:-75px; animation:floatA 4s ease-in-out infinite 2.5s; }
+    @keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    .fn-row { display:flex; align-items:center; gap:5px; }
+    .fn-badge { width:13px; height:13px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .fn-badge.green { background:rgba(0,196,140,.2); }
+    .fn-badge.teal  { background:rgba(0,200,215,.2); }
+    .fn-badge.purple{ background:rgba(124,58,237,.2); }
+    .fn-label { font-size:.48rem; font-weight:600; color:rgba(255,255,255,.55); }
+    .fn-value { font-size:.72rem; font-weight:700; margin-top:2px; }
+    .fn-value.green  { color:#00c48c; }
+    .fn-value.teal   { color:var(--teal); }
+    .fn-value.white  { color:#fff; }
+    .fn-sub { font-size:.4rem; color:rgba(255,255,255,.3); margin-top:1px; }
+    @media (max-width:1100px) {
+      .hero { min-height:auto; padding:7rem 2rem 4rem; }
+      .hero-inner { grid-template-columns:1fr; gap:2.5rem; }
+      .hero-left { align-items:center; text-align:center; }
+      .hero-left .hero-eyebrow { justify-content:center; }
+      .hero-left .hero-h1 { text-align:center; }
+      .hero-left .hero-sub { text-align:center; margin-left:auto; margin-right:auto; }
+      .hero-left .hero-btns { justify-content:center; }
+      .hero-left .platforms { justify-content:center; }
+      .hero-right { display:flex; justify-content:center; }
+      .macbook-wrap { zoom:.7; }
+      .float-notif { display:none !important; }
+      .scroll-ind { display:none !important; }
+    }
+    @media (max-width:640px) { .macbook-wrap { zoom:.52; } }
+    @media (max-width:430px) { .macbook-wrap { zoom:.42; } }
 
     .hero-grid {
       position: absolute; inset: 0; pointer-events: none;
@@ -143,8 +231,8 @@
     }
 
     .hero-h1 {
-      font-size: clamp(2.8rem, 7vw, 6rem);
-      font-weight: 700; line-height: 1.06; letter-spacing: -.04em; max-width: 820px;
+      font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+      font-weight: 700; line-height: 1.06; letter-spacing: -.04em; max-width: 600px;
       opacity: 0; animation: up .8s cubic-bezier(.16,1,.3,1) forwards .35s;
     }
     .hero-h1 .teal { color: var(--teal); }
@@ -622,40 +710,191 @@
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-
-  <p class="hero-eyebrow">
-    <span class="pulse-dot"></span>
-    RestoranAI — Akıllı İşletme
-  </p>
-
-  <div class="hero-text-logo">
-    <span class="logo-restoran">Restoran</span><span class="logo-ai">AI</span>
+  <div class="hero-inner">
+    <!-- LEFT COLUMN -->
+    <div class="hero-left">
+      <p class="hero-eyebrow">
+        <span class="pulse-dot"></span>
+        RestoranAI — Akıllı İşletme
+      </p>
+      <div class="hero-text-logo">
+        <span class="logo-restoran">Restoran</span><span class="logo-ai">AI</span>
+      </div>
+      <h1 class="hero-h1">
+        Tüm siparişleriniz<br/>
+        <span class="teal">tek ekranda,</span><br/>
+        <span class="silver">tam kontrol.</span>
+      </h1>
+      <p class="hero-sub">
+        Yemeksepeti, Trendyol Yemek, Getir, Migros ve WhatsApp siparişlerinizi tek panelde yönetin. AI destekli analizlerle işletmenizi büyütün.
+      </p>
+      <div class="hero-btns">
+        <a href="/restoranai-login?tab=kayit" class="btn-lg btn-teal">Hemen Kayıt Ol &nbsp;→</a>
+        <a href="#ozellikler" class="btn-lg btn-outline">Özellikleri Gör</a>
+      </div>
+      <div class="platforms">
+        <span>Entegrasyonlar:</span>
+        <span class="platform-badge">Yemeksepeti</span>
+        <span class="platform-badge">Trendyol Yemek</span>
+        <span class="platform-badge">Getir</span>
+        <span class="platform-badge">Migros Yemek</span>
+        <span class="platform-badge">WhatsApp</span>
+      </div>
+    </div>
+    <!-- RIGHT COLUMN: MacBook Pro Mockup -->
+    <div class="hero-right">
+      <div class="macbook-wrap">
+        <!-- Floating notification cards -->
+        <div class="float-notif float-notif-1">
+          <div class="fn-row">
+            <div class="fn-badge green"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#00c48c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="fn-label">Yeni Sipariş</div>
+          </div>
+          <div class="fn-value green">+₺245</div>
+          <div class="fn-sub">Babil Restaurant · hemen şimdi</div>
+        </div>
+        <div class="float-notif float-notif-2">
+          <div class="fn-row">
+            <div class="fn-badge teal"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#00c8d7" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="fn-label">Kurye Atandı</div>
+          </div>
+          <div class="fn-value teal">Serkan M.</div>
+          <div class="fn-sub">ETA: 14 dakika</div>
+        </div>
+        <div class="float-notif float-notif-3">
+          <div class="fn-row">
+            <div class="fn-badge purple"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="fn-label">AI Analiz</div>
+          </div>
+          <div class="fn-value white">+%23 ciro</div>
+          <div class="fn-sub">Bu hafta · geçen haftaya göre</div>
+        </div>
+        <!-- MacBook Pro lid -->
+        <div class="macbook-lid">
+          <div class="macbook-screen">
+            <div class="macbook-notch"></div>
+            <!-- RestoranAI Desktop Panel -->
+            <div class="mbp">
+              <!-- Sidebar -->
+              <div class="mbp-sidebar">
+                <div class="mbp-sb-logo">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="mbp-sb-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <div class="mbp-sb-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                </div>
+                <div class="mbp-sb-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="mbp-sb-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+                </div>
+              </div>
+              <!-- Main content -->
+              <div class="mbp-main">
+                <!-- Topbar -->
+                <div class="mbp-topbar">
+                  <div class="mbp-topbar-l">
+                    <span class="mbp-brandname">Restoran<em>AI</em></span>
+                    <div class="mbp-live"><div class="mbp-live-dot"></div>CANLI</div>
+                  </div>
+                  <div class="mbp-topbar-r">
+                    <div class="mbp-notif">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    </div>
+                    <div class="mbp-avatar">R</div>
+                  </div>
+                </div>
+                <!-- Content -->
+                <div class="mbp-content">
+                  <!-- Stats -->
+                  <div class="mbp-stats">
+                    <div class="mbp-stat-card">
+                      <div class="mbp-sc-top">
+                        <span class="mbp-sc-label">Aktif Sipariş</span>
+                        <div class="mbp-sc-icon" style="background:rgba(0,200,215,.1)">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00c8d7" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                        </div>
+                      </div>
+                      <div class="mbp-sc-n" style="color:#00c8d7">24</div>
+                      <div class="mbp-sc-sub">↑ 3 son 1 saatte</div>
+                    </div>
+                    <div class="mbp-stat-card">
+                      <div class="mbp-sc-top">
+                        <span class="mbp-sc-label">Bugün Ciro</span>
+                        <div class="mbp-sc-icon" style="background:rgba(0,196,140,.1)">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00c48c" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        </div>
+                      </div>
+                      <div class="mbp-sc-n" style="color:#00c48c">₺4.820</div>
+                      <div class="mbp-sc-sub">↑ %18 dünkü güne göre</div>
+                    </div>
+                    <div class="mbp-stat-card">
+                      <div class="mbp-sc-top">
+                        <span class="mbp-sc-label">Bekleyen</span>
+                        <div class="mbp-sc-icon" style="background:rgba(245,158,11,.1)">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                      <div class="mbp-sc-n" style="color:#f59e0b">12</div>
+                      <div class="mbp-sc-sub">Kurye ataması bekleniyor</div>
+                    </div>
+                  </div>
+                  <!-- Orders table -->
+                  <div class="mbp-orders-card">
+                    <div class="mbp-oc-hdr">
+                      <span class="mbp-oc-title">Son Siparişler</span>
+                      <span class="mbp-oc-badge">24 aktif</span>
+                    </div>
+                    <div class="mbp-order-row">
+                      <div class="mbp-or-dot" style="background:#00c48c"></div>
+                      <div class="mbp-or-num">#284</div>
+                      <div class="mbp-or-body"><div class="mbp-or-name">Babil Restaurant</div><div class="mbp-or-sub">Getir</div></div>
+                      <span class="mbp-or-status" style="background:rgba(0,196,140,.1);color:#00c48c">Teslimde</span>
+                      <div class="mbp-or-amt">₺245</div>
+                    </div>
+                    <div class="mbp-order-row">
+                      <div class="mbp-or-dot" style="background:#f59e0b"></div>
+                      <div class="mbp-or-num">#285</div>
+                      <div class="mbp-or-body"><div class="mbp-or-name">Güneş Pide</div><div class="mbp-or-sub">Yemeksepeti</div></div>
+                      <span class="mbp-or-status" style="background:rgba(245,158,11,.1);color:#f59e0b">Hazırlanıyor</span>
+                      <div class="mbp-or-amt">₺128</div>
+                    </div>
+                    <div class="mbp-order-row">
+                      <div class="mbp-or-dot" style="background:#00c8d7"></div>
+                      <div class="mbp-or-num">#286</div>
+                      <div class="mbp-or-body"><div class="mbp-or-name">Lezzet Dünyası</div><div class="mbp-or-sub">Trendyol</div></div>
+                      <span class="mbp-or-status" style="background:rgba(0,200,215,.1);color:#009aaa">Kurye Atandı</span>
+                      <div class="mbp-or-amt">₺189</div>
+                    </div>
+                    <div class="mbp-order-row">
+                      <div class="mbp-or-dot" style="background:#f59e0b"></div>
+                      <div class="mbp-or-num">#287</div>
+                      <div class="mbp-or-body"><div class="mbp-or-name">Ankara Kebap</div><div class="mbp-or-sub">WhatsApp</div></div>
+                      <span class="mbp-or-status" style="background:rgba(245,158,11,.1);color:#f59e0b">Hazırlanıyor</span>
+                      <div class="mbp-or-amt">₺96</div>
+                    </div>
+                    <div class="mbp-order-row">
+                      <div class="mbp-or-dot" style="background:#3b82f6"></div>
+                      <div class="mbp-or-num">#283</div>
+                      <div class="mbp-or-body"><div class="mbp-or-name">Sarıyer Balık</div><div class="mbp-or-sub">Migros</div></div>
+                      <span class="mbp-or-status" style="background:rgba(59,130,246,.1);color:#3b82f6">Teslim Edildi</span>
+                      <div class="mbp-or-amt">₺312</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- MacBook base / keyboard -->
+        <div class="macbook-base"></div>
+      </div>
+    </div>
   </div>
-
-  <h1 class="hero-h1">
-    Tüm siparişleriniz<br/>
-    <span class="teal">tek ekranda,</span><br/>
-    <span class="silver">tam kontrol.</span>
-  </h1>
-
-  <p class="hero-sub">
-    Yemeksepeti, Trendyol Yemek, Getir, Migros ve WhatsApp siparişlerinizi tek panelde yönetin. AI destekli analizlerle işletmenizi büyütün.
-  </p>
-
-  <div class="hero-btns">
-    <a href="/restoranai-login?tab=kayit" class="btn-lg btn-teal">Hemen Kayıt Ol &nbsp;→</a>
-    <a href="#ozellikler" class="btn-lg btn-outline">Özellikleri Gör</a>
-  </div>
-
-  <div class="platforms">
-    <span>Entegrasyonlar:</span>
-    <span class="platform-badge">Yemeksepeti</span>
-    <span class="platform-badge">Trendyol Yemek</span>
-    <span class="platform-badge">Getir</span>
-    <span class="platform-badge">Migros Yemek</span>
-    <span class="platform-badge">WhatsApp</span>
-  </div>
-
   <div class="scroll-ind">
     <div class="scroll-line"></div>
     <span>Kaydır</span>

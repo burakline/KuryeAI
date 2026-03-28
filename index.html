@@ -259,6 +259,10 @@
     .prod-header { text-align:center; margin-bottom:4rem; }
     .prod-header .body-lg { margin:1.2rem auto 0; }
     .prod-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); border-radius:20px; overflow:hidden; }
+    .prod-card-new { background:var(--card); border:none; }
+    .prod-card-new::before { background:linear-gradient(90deg,var(--teal),#6366f1); }
+    .prod-card-new .prod-num { color:var(--teal); }
+    .prod-card-qr-badge { display:inline-flex; align-items:center; gap:.35rem; background:rgba(0,200,215,.1); border:.5px solid rgba(0,200,215,.25); color:var(--teal); font-size:.62rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:.2rem .6rem; border-radius:999px; margin-bottom:.6rem; }
     .prod-card { background:var(--card); padding:2.8rem; text-decoration:none; color:var(--white); position:relative; overflow:hidden; transition:background .3s; display:flex; flex-direction:column; }
     .prod-card:hover { background:#161616; }
     .prod-card::after { content:''; position:absolute; top:-80px; left:-80px; width:240px; height:240px; background:radial-gradient(circle,rgba(0,200,215,.13) 0%,transparent 70%); opacity:0; transition:opacity .4s; pointer-events:none; }
@@ -432,6 +436,7 @@
     <li><a href="#urunler">Ürünler</a></li>
     <li><a href="/acilkuryeai">Acil Kurye</a></li>
     <li><a href="#izinci">İzinci Kurye</a></li>
+    <li><a href="/qrmenuai" style="color:var(--teal)"><span style="color:var(--teal)">QR</span>Menu<span style="color:var(--teal)">AI</span></a></li>
     <li><a href="#nasil-calisir">Nasıl Çalışır</a></li>
     <li><a href="#sss">SSS</a></li>
   </ul>
@@ -580,7 +585,7 @@
   <div class="inner">
     <div class="prod-header reveal">
       <p class="lbl">Ürünlerimiz</p>
-      <h2 class="h2">Dört güçlü ürün,<br/><span class="muted">1 ekosistem.</span></h2>
+      <h2 class="h2">Beş güçlü ürün,<br/><span class="muted">1 ekosistem.</span></h2>
       <p class="body-lg">Restoran, kurye ve işletmeler için ihtiyacınız olan her şey tek çatı altında.</p>
     </div>
     <div class="prod-grid reveal">
@@ -631,6 +636,46 @@
           <div class="pf"><span class="pf-dot"></span>7/24 kesintisiz hizmet</div>
         </div>
         <span class="prod-cta">Detaylı Bilgi <span>→</span></span>
+      </a>
+      <!-- 05 QRMenuAI — tam genişlik kart -->
+      <a href="/qrmenuai" class="prod-card prod-card-new" style="grid-column:1/-1;flex-direction:row;align-items:center;gap:2.5rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <div class="prod-card-qr-badge">✨ Yeni Ürün</div>
+          <p class="prod-num" style="color:var(--teal)">05 — QRMenuAI</p>
+          <div class="prod-text-logo" style="font-size:1.8rem"><span style="color:var(--teal)">QR</span><span style="color:#fff">Menu</span><span style="color:var(--teal)">AI</span></div>
+          <p class="prod-slogan">Dijital Menü & QR Sipariş</p>
+          <p class="prod-desc">Restoranınızın dijital menüsü tek QR kod ile müşterinin ekranında. RestoranAI ile tam entegre, anında güncelleme, sıfır baskı maliyeti.</p>
+          <div class="prod-features">
+            <div class="pf"><span class="pf-dot"></span>kuryeai.com/restoranadınQRmenuAI özel link</div>
+            <div class="pf"><span class="pf-dot"></span>RestoranAI menüsüyle otomatik senkron</div>
+            <div class="pf"><span class="pf-dot"></span>Yıllık 4.995₺ — Aylık ≈416₺</div>
+          </div>
+          <span class="prod-cta">Detaylı Bilgi <span>→</span></span>
+        </div>
+        <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:rgba(0,200,215,.05);border-radius:16px;border:.5px solid rgba(0,200,215,.15)">
+          <!-- Dekoratif QR -->
+          <svg width="90" height="90" viewBox="0 0 100 100" fill="none">
+            <rect x="5" y="5" width="38" height="38" rx="4" fill="rgba(0,200,215,.12)"/>
+            <rect x="10" y="10" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="2.5"/>
+            <rect x="16" y="16" width="16" height="16" rx="1" fill="#00c8d7"/>
+            <rect x="57" y="5" width="38" height="38" rx="4" fill="rgba(0,200,215,.12)"/>
+            <rect x="62" y="10" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="2.5"/>
+            <rect x="68" y="16" width="16" height="16" rx="1" fill="#00c8d7"/>
+            <rect x="5" y="57" width="38" height="38" rx="4" fill="rgba(0,200,215,.12)"/>
+            <rect x="10" y="62" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="2.5"/>
+            <rect x="16" y="68" width="16" height="16" rx="1" fill="#00c8d7"/>
+            <rect x="57" y="57" width="8" height="8" rx="1" fill="#00c8d7"/>
+            <rect x="69" y="57" width="8" height="8" rx="1" fill="#00c8d7"/>
+            <rect x="81" y="57" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/>
+            <rect x="57" y="69" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/>
+            <rect x="69" y="69" width="8" height="8" rx="1" fill="#00c8d7"/>
+            <rect x="81" y="69" width="8" height="8" rx="1" fill="#00c8d7"/>
+            <rect x="57" y="81" width="8" height="8" rx="1" fill="#00c8d7"/>
+            <rect x="69" y="81" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/>
+            <rect x="81" y="81" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/>
+          </svg>
+          <div style="font-size:.62rem;color:var(--gray-lt);text-align:center;max-width:90px;line-height:1.4">kuryeai.com/restoranadıQRmenuAI</div>
+        </div>
       </a>
     </div>
   </div>

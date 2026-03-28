@@ -672,6 +672,7 @@ tbody tr:hover{background:var(--bg)}
 .ob-step.active{background:var(--teal);opacity:.5}
 .ob-step-body{min-height:100px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -1079,11 +1080,26 @@ tbody tr:hover{background:var(--bg)}
 
       <!-- ═══════════════ REPORTS ═══════════════ -->
       <div class="view" id="view-reports">
+        <!-- Dönem seçici + export toolbar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div class="tabs" style="margin-bottom:0">
+            <button class="tab active" data-repperiod="all"     onclick="setRepPeriod(this,'all')">Tümü</button>
+            <button class="tab"        data-repperiod="daily"   onclick="setRepPeriod(this,'daily')">Bugün</button>
+            <button class="tab"        data-repperiod="weekly"  onclick="setRepPeriod(this,'weekly')">Bu Hafta</button>
+            <button class="tab"        data-repperiod="monthly" onclick="setRepPeriod(this,'monthly')">Bu Ay</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="exportSiparisPDF()" title="Sipariş özet raporunu PDF olarak görüntüle">⬇ Sipariş PDF</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportSiparisExcel()" title="Sipariş özet raporunu Excel olarak indir">⬇ Sipariş Excel</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportKuryePDF()" title="Kurye performans raporunu PDF olarak görüntüle">⬇ Kurye PDF</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportKuryeExcel()" title="Kurye performans raporunu Excel olarak indir">⬇ Kurye Excel</button>
+          </div>
+        </div>
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon green">💰</div><span class="stat-change up">+8%</span></div><div class="stat-value" id="rep-rev">₺0</div><div class="stat-label">Bugün Ciro</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">📦</div><span class="stat-change up">+5%</span></div><div class="stat-value" id="rep-orders">0</div><div class="stat-label">Toplam Sipariş</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue">🧾</div><span class="stat-change neutral">sabit</span></div><div class="stat-value" id="rep-avg">₺0</div><div class="stat-label">Ort. Sepet</div></div>
-          <div class="stat-card"><div class="stat-top"><div class="stat-icon yellow">✅</div><span class="stat-change up">+2%</span></div><div class="stat-value" id="rep-rate">0%</div><div class="stat-label">Teslim Oranı</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon green">💰</div></div><div class="stat-value" id="rep-rev">₺0</div><div class="stat-label" id="rep-rev-lbl">Ciro</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon teal">📦</div></div><div class="stat-value" id="rep-orders">0</div><div class="stat-label">Toplam Sipariş</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon blue">🧾</div></div><div class="stat-value" id="rep-avg">₺0</div><div class="stat-label">Ort. Sepet</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-icon yellow">✅</div></div><div class="stat-value" id="rep-rate">0%</div><div class="stat-label">Teslim Oranı</div></div>
         </div>
         <div style="display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px">
           <div class="card">
@@ -1683,14 +1699,18 @@ tbody tr:hover{background:var(--bg)}
       <!-- ═══════════════ FİNANSAL ANALİZ ═══════════════ -->
       <div class="view" id="view-financials">
         <!-- Period selector -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div class="tabs" style="margin-bottom:0">
             <button class="tab active" data-period="daily" onclick="setFinPeriod(this,'daily')">Günlük</button>
             <button class="tab" data-period="weekly" onclick="setFinPeriod(this,'weekly')">Haftalık</button>
             <button class="tab" data-period="monthly" onclick="setFinPeriod(this,'monthly')">Aylık</button>
             <button class="tab" data-period="yearly" onclick="setFinPeriod(this,'yearly')">Yıllık</button>
           </div>
-          <div style="font-size:12px;color:var(--text3)" id="fin-period-label">Bugün</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div style="font-size:12px;color:var(--text3)" id="fin-period-label">Bugün</div>
+            <button class="btn btn-ghost btn-sm" onclick="exportFinPDF()" title="Finansal raporu PDF olarak görüntüle">⬇ PDF</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportFinExcel()" title="Finansal raporu Excel olarak indir">⬇ Excel</button>
+          </div>
         </div>
 
         <!-- Top stat cards -->
@@ -3455,13 +3475,30 @@ function renderTrackingCouriers(){
 }
 
 // ── REPORTS ────────────────────────────────────────────────────────────────
+let currentRepPeriod='all';
+const REP_PERIOD_LABELS={all:'Tüm Zamanlar',daily:'Bugün',weekly:'Bu Hafta',monthly:'Bu Ay'};
+
+function _filteredOrders(period){
+  const now=Date.now();
+  const cuts={daily:now-86400000,weekly:now-7*86400000,monthly:now-30*86400000};
+  return period==='all'?[...orders]:orders.filter(o=>(o.createdAt||0)>=cuts[period]);
+}
+function setRepPeriod(btn,period){
+  currentRepPeriod=period;
+  document.querySelectorAll('[data-repperiod]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const lbl=document.getElementById('rep-rev-lbl');
+  if(lbl)lbl.textContent=REP_PERIOD_LABELS[period]||'Ciro';
+  renderReports();renderPerfRanking();
+}
 function renderReports(){
-  const rev=orders.reduce((s,o)=>s+(o.total||0),0);
-  const del=orders.filter(o=>o.status==="delivered").length;
-  const avg=Math.round(rev/(orders.length||1));
-  const rate=orders.length?Math.round((del/orders.length)*100):0;
-  document.getElementById("rep-rev").textContent=`₺${rev}`;
-  document.getElementById("rep-orders").textContent=orders.length;
+  const filtered=_filteredOrders(currentRepPeriod);
+  const rev=filtered.reduce((s,o)=>s+(o.total||0),0);
+  const del=filtered.filter(o=>o.status==="delivered").length;
+  const avg=Math.round(rev/(filtered.length||1));
+  const rate=filtered.length?Math.round((del/filtered.length)*100):0;
+  document.getElementById("rep-rev").textContent=`₺${rev.toLocaleString('tr-TR')}`;
+  document.getElementById("rep-orders").textContent=filtered.length;
   document.getElementById("rep-avg").textContent=`₺${avg}`;
   document.getElementById("rep-rate").textContent=`${rate}%`;
 
@@ -3475,11 +3512,11 @@ function renderReports(){
       <div class="h-lbl">${h}</div>
     </div>`).join("");
 
-  // Status
+  // Status (dönem filtreli)
   const statusColors={pending:"#f59e0b",preparing:"#3b82f6",on_the_way:"#8b5cf6",delivered:"#00c48c",cancelled:"#ef4444"};
   document.getElementById("status-chart").innerHTML=Object.entries(STATUS).map(([k,v])=>{
-    const cnt=orders.filter(o=>o.status===k).length;
-    const pct=Math.round((cnt/(orders.length||1))*100);
+    const cnt=filtered.filter(o=>o.status===k).length;
+    const pct=Math.round((cnt/(filtered.length||1))*100);
     return`<div class="bar-chart-row">
       <div class="bar-label">${v.label}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${statusColors[k]}"></div></div>
@@ -4100,6 +4137,290 @@ function renderEarnings() {
   }).join("")}
   </tbody></table>`;
 }
+
+// ── PDF / EXCEL EXPORT ────────────────────────────────────────────────────────
+function _repMeta(period){
+  const restName=RESTAURANT_NAME||settings.rest_name||'Restoran';
+  const periodLabel=REP_PERIOD_LABELS[period]||'Tüm Zamanlar';
+  const dateStr=new Date().toLocaleDateString('tr-TR');
+  return {restName,periodLabel,dateStr};
+}
+function _ordStatusLabel(s){return STATUS[s]?.label||s||'—';}
+function _fmt(n){return (n||0).toLocaleString('tr-TR');}
+function _ordItems(o){return (Array.isArray(o.items)?o.items.join(', '):(o.items||'—'));}
+
+// ── Sipariş PDF (browser print) ──────────────────────────────────────────────
+function exportSiparisPDF(){
+  const period=currentRepPeriod;
+  const {restName,periodLabel,dateStr}=_repMeta(period);
+  const filt=_filteredOrders(period);
+  const totalRev=filt.reduce((s,o)=>s+(o.total||0),0);
+  const delCnt=filt.filter(o=>o.status==='delivered').length;
+  const canCnt=filt.filter(o=>o.status==='cancelled'||o.status==='rejected').length;
+  const avg=filt.length?Math.round(totalRev/filt.length):0;
+  const rate=filt.length?Math.round((delCnt/filt.length)*100):0;
+  const rows=filt.map((o,i)=>`<tr>
+    <td>${i+1}</td>
+    <td>${esc(o.customer||o.deliveryName||'—')}</td>
+    <td style="white-space:nowrap">${o.createdAt?new Date(o.createdAt).toLocaleString('tr-TR'):'—'}</td>
+    <td style="max-width:200px;word-break:break-word">${esc(_ordItems(o))}</td>
+    <td style="text-align:right;font-weight:600">₺${_fmt(o.total)}</td>
+    <td><span style="padding:2px 8px;border-radius:999px;font-size:11px;background:${o.status==='delivered'?'#d1fae5':o.status==='cancelled'||o.status==='rejected'?'#fee2e2':'#fef3c7'};color:${o.status==='delivered'?'#059669':o.status==='cancelled'||o.status==='rejected'?'#dc2626':'#d97706'}">${_ordStatusLabel(o.status)}</span></td>
+    <td>${esc(o.source||'—')}</td>
+  </tr>`).join('');
+  const html=`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
+  <title>Sipariş Raporu — ${restName}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;font-size:12px;color:#111;padding:24px}
+    .header{border-bottom:3px solid #009688;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end}
+    .logo{font-size:22px;font-weight:900;color:#009688}
+    .sub{font-size:11px;color:#666;margin-top:2px}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center}
+    .box .val{font-size:20px;font-weight:800;color:#009688}
+    .box .lbl{font-size:10px;color:#666;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+    table{width:100%;border-collapse:collapse;margin-top:6px}
+    th{background:#009688;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700}
+    td{padding:7px 10px;border-bottom:1px solid #f0f0f0;font-size:11px;vertical-align:top}
+    tr:nth-child(even) td{background:#f9fafb}
+    .footer{margin-top:20px;font-size:10px;color:#999;text-align:center}
+    @media print{body{padding:10px}@page{margin:1.5cm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="logo">KuryeAI — Sipariş Raporu</div><div class="sub">${restName} &nbsp;|&nbsp; ${periodLabel} &nbsp;|&nbsp; Oluşturulma: ${dateStr}</div></div>
+    <div style="text-align:right;font-size:11px;color:#666">${filt.length} sipariş</div>
+  </div>
+  <div class="summary">
+    <div class="box"><div class="val">${filt.length}</div><div class="lbl">Toplam Sipariş</div></div>
+    <div class="box"><div class="val">${delCnt}</div><div class="lbl">Tamamlanan</div></div>
+    <div class="box"><div class="val">${canCnt}</div><div class="lbl">İptal</div></div>
+    <div class="box"><div class="val" style="color:#059669">₺${_fmt(totalRev)}</div><div class="lbl">Toplam Ciro</div></div>
+    <div class="box"><div class="val">₺${_fmt(avg)}</div><div class="lbl">Ort. Sepet</div></div>
+    <div class="box"><div class="val">${rate}%</div><div class="lbl">Teslimat Oranı</div></div>
+  </div>
+  <table><thead><tr><th>#</th><th>Müşteri</th><th>Tarih / Saat</th><th>Ürünler</th><th style="text-align:right">Tutar</th><th>Durum</th><th>Kaynak</th></tr></thead>
+  <tbody>${rows||'<tr><td colspan="7" style="text-align:center;color:#999;padding:20px">Kayıt bulunamadı</td></tr>'}</tbody></table>
+  <div class="footer">KuryeAI &nbsp;•&nbsp; ${dateStr} tarihinde oluşturuldu</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}
+  else showToast('Popup engelleyici aktif — lütfen izin ver','err');
+}
+
+// ── Sipariş Excel ────────────────────────────────────────────────────────────
+function exportSiparisExcel(){
+  if(!window.XLSX){showToast('Excel kütüphanesi yüklenemedi','err');return;}
+  const period=currentRepPeriod;
+  const {restName,periodLabel,dateStr}=_repMeta(period);
+  const filt=_filteredOrders(period);
+  const totalRev=filt.reduce((s,o)=>s+(o.total||0),0);
+  const delCnt=filt.filter(o=>o.status==='delivered').length;
+  // Özet sheet
+  const summaryData=[
+    ['KuryeAI — Sipariş Raporu'],
+    ['Restoran',restName],['Dönem',periodLabel],['Tarih',dateStr],[],
+    ['Toplam Sipariş',filt.length],
+    ['Tamamlanan',delCnt],
+    ['İptal',filt.filter(o=>o.status==='cancelled'||o.status==='rejected').length],
+    ['Toplam Ciro (₺)',totalRev],
+    ['Ortalama Sepet (₺)',filt.length?Math.round(totalRev/filt.length):0],
+    ['Teslimat Oranı (%)',filt.length?Math.round((delCnt/filt.length)*100):0],
+  ];
+  // Detay sheet
+  const detailHeader=['#','Müşteri','Tarih','Saat','Ürünler','Tutar (₺)','Durum','Kaynak','Not'];
+  const detailRows=filt.map((o,i)=>{
+    const dt=o.createdAt?new Date(o.createdAt):null;
+    return[i+1,o.customer||o.deliveryName||'',
+      dt?dt.toLocaleDateString('tr-TR'):'',
+      dt?dt.toLocaleTimeString('tr-TR'):'',
+      _ordItems(o),o.total||0,_ordStatusLabel(o.status),o.source||'',o.note||''];
+  });
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summaryData),'Özet');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([detailHeader,...detailRows]),'Siparişler');
+  XLSX.writeFile(wb,`siparis-raporu-${period}-${Date.now()}.xlsx`);
+  showToast('Excel indirildi','ok');
+}
+
+// ── Kurye PDF ────────────────────────────────────────────────────────────────
+function exportKuryePDF(){
+  const period=currentRepPeriod;
+  const {restName,periodLabel,dateStr}=_repMeta(period);
+  const totalDel=couriers.reduce((s,c)=>s+(c.deliveries||0),0);
+  const totalEarn=couriers.reduce((s,c)=>s+(c.earnings||0),0);
+  const rows=couriers.map((c,i)=>{
+    const unpaid=(c.earnings||0)-(c.paidEarnings||0);
+    return`<tr>
+      <td>${i+1}</td><td style="font-weight:600">${esc(c.name)}</td>
+      <td>${{moto:'🛵 Moto',bike:'🚲 Bisiklet',car:'🚗 Araç'}[c.vehicle]||'—'}</td>
+      <td>${esc(c.zone||'—')}</td>
+      <td style="text-align:center">${c.deliveries||0}</td>
+      <td style="text-align:center">${c.km||0} km</td>
+      <td style="text-align:right;font-weight:600;color:#059669">₺${_fmt(c.earnings)}</td>
+      <td style="text-align:right;color:#d97706">₺${_fmt(unpaid)}</td>
+      <td style="text-align:center">${c.rating||'—'} ⭐</td>
+    </tr>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
+  <title>Kurye Raporu — ${restName}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;font-size:12px;color:#111;padding:24px}
+    .header{border-bottom:3px solid #009688;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end}
+    .logo{font-size:22px;font-weight:900;color:#009688}
+    .sub{font-size:11px;color:#666;margin-top:2px}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center}
+    .box .val{font-size:20px;font-weight:800;color:#009688}
+    .box .lbl{font-size:10px;color:#666;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+    table{width:100%;border-collapse:collapse}
+    th{background:#009688;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700}
+    td{padding:7px 10px;border-bottom:1px solid #f0f0f0;font-size:11px}
+    tr:nth-child(even) td{background:#f9fafb}
+    .footer{margin-top:20px;font-size:10px;color:#999;text-align:center}
+    @media print{body{padding:10px}@page{margin:1.5cm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="logo">KuryeAI — Kurye Performans Raporu</div><div class="sub">${restName} &nbsp;|&nbsp; ${periodLabel} &nbsp;|&nbsp; ${dateStr}</div></div>
+    <div style="text-align:right;font-size:11px;color:#666">${couriers.length} kurye</div>
+  </div>
+  <div class="summary">
+    <div class="box"><div class="val">${couriers.length}</div><div class="lbl">Toplam Kurye</div></div>
+    <div class="box"><div class="val">${totalDel}</div><div class="lbl">Toplam Teslimat</div></div>
+    <div class="box"><div class="val" style="color:#059669">₺${_fmt(totalEarn)}</div><div class="lbl">Toplam Hakediş</div></div>
+  </div>
+  <table><thead><tr><th>#</th><th>Kurye</th><th>Araç</th><th>Zone</th><th style="text-align:center">Teslimat</th><th style="text-align:center">KM</th><th style="text-align:right">Hakediş</th><th style="text-align:right">Ödenmemiş</th><th style="text-align:center">Puan</th></tr></thead>
+  <tbody>${rows||'<tr><td colspan="9" style="text-align:center;color:#999;padding:20px">Kurye bulunamadı</td></tr>'}</tbody></table>
+  <div class="footer">KuryeAI &nbsp;•&nbsp; ${dateStr} tarihinde oluşturuldu</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}
+  else showToast('Popup engelleyici aktif — lütfen izin ver','err');
+}
+
+// ── Kurye Excel ──────────────────────────────────────────────────────────────
+function exportKuryeExcel(){
+  if(!window.XLSX){showToast('Excel kütüphanesi yüklenemedi','err');return;}
+  const period=currentRepPeriod;
+  const {restName,periodLabel,dateStr}=_repMeta(period);
+  const summaryData=[
+    ['KuryeAI — Kurye Performans Raporu'],
+    ['Restoran',restName],['Dönem',periodLabel],['Tarih',dateStr],[],
+    ['Toplam Kurye',couriers.length],
+    ['Toplam Teslimat',couriers.reduce((s,c)=>s+(c.deliveries||0),0)],
+    ['Toplam Hakediş (₺)',couriers.reduce((s,c)=>s+(c.earnings||0),0)],
+    ['Ödenmemiş (₺)',couriers.reduce((s,c)=>s+(c.earnings||0)-(c.paidEarnings||0),0)],
+  ];
+  const detailHeader=['#','Ad Soyad','Araç','Zone','Teslimat','KM','Toplam Hakediş (₺)','Ödenen (₺)','Kalan (₺)','Puan'];
+  const detailRows=couriers.map((c,i)=>[
+    i+1,c.name||'',{moto:'Moto',bike:'Bisiklet',car:'Araç'}[c.vehicle]||'',
+    c.zone||'',c.deliveries||0,c.km||0,
+    c.earnings||0,c.paidEarnings||0,
+    (c.earnings||0)-(c.paidEarnings||0),c.rating||''
+  ]);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summaryData),'Özet');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([detailHeader,...detailRows]),'Kuryeler');
+  XLSX.writeFile(wb,`kurye-raporu-${Date.now()}.xlsx`);
+  showToast('Excel indirildi','ok');
+}
+
+// ── Finansal PDF ─────────────────────────────────────────────────────────────
+function exportFinPDF(){
+  const period=currentFinPeriod||'daily';
+  const {restName,dateStr}=_repMeta(period);
+  const periodLabel={daily:'Bugün',weekly:'Bu Hafta',monthly:'Bu Ay',yearly:'Bu Yıl'}[period]||period;
+  const now=Date.now();
+  const cuts={daily:now-86400000,weekly:now-7*86400000,monthly:now-30*86400000,yearly:now-365*86400000};
+  const since=cuts[period]||cuts.daily;
+  const filt=orders.filter(o=>(o.createdAt||0)>=since);
+  const totalRev=filt.reduce((s,o)=>s+(o.total||0),0);
+  const delivRev=filt.filter(o=>!o.tableOrder).reduce((s,o)=>s+(o.total||0),0);
+  const tableRev=filt.filter(o=>o.tableOrder).reduce((s,o)=>s+(o.total||0),0);
+  const courierCost=couriers.reduce((s,c)=>s+(c.earnings||0),0)/30;
+  const pCost=Math.round(period==='daily'?courierCost:period==='weekly'?courierCost*7:period==='monthly'?courierCost*30:courierCost*365);
+  const net=delivRev-pCost;
+  const topP={};filt.forEach(o=>{(Array.isArray(o.items)?o.items:[o.items||'']).forEach(it=>{const n=String(it).replace(/ x\d+$/,'');topP[n]=(topP[n]||0)+1;});});
+  const topList=Object.entries(topP).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const html=`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
+  <title>Finansal Rapor — ${restName}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;font-size:12px;color:#111;padding:24px}
+    .header{border-bottom:3px solid #009688;padding-bottom:12px;margin-bottom:16px}
+    .logo{font-size:22px;font-weight:900;color:#009688}
+    .sub{font-size:11px;color:#666;margin-top:2px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    .box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px}
+    .box .lbl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .box .val{font-size:22px;font-weight:800;color:#009688}
+    h3{font-size:13px;font-weight:700;margin:16px 0 8px;border-bottom:1px solid #e2e8f0;padding-bottom:6px}
+    table{width:100%;border-collapse:collapse}
+    th{background:#009688;color:#fff;padding:7px 10px;text-align:left;font-size:11px}
+    td{padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:11px}
+    .footer{margin-top:20px;font-size:10px;color:#999;text-align:center}
+    @media print{body{padding:10px}@page{margin:1.5cm}}
+  </style></head><body>
+  <div class="header">
+    <div class="logo">KuryeAI — Finansal Rapor</div>
+    <div class="sub">${restName} &nbsp;|&nbsp; ${periodLabel} &nbsp;|&nbsp; ${dateStr}</div>
+  </div>
+  <div class="grid">
+    <div class="box"><div class="lbl">Toplam Ciro</div><div class="val" style="color:#059669">₺${_fmt(totalRev)}</div></div>
+    <div class="box"><div class="lbl">Paket Cirosu</div><div class="val">₺${_fmt(delivRev)}</div></div>
+    <div class="box"><div class="lbl">Kurye Gideri</div><div class="val" style="color:#ef4444">₺${_fmt(pCost)}</div></div>
+    <div class="box"><div class="lbl">Net Kâr (Paket)</div><div class="val" style="color:${net>=0?'#059669':'#ef4444'}">₺${_fmt(net)}</div></div>
+  </div>
+  <h3>En Çok Satılan Ürünler</h3>
+  <table><thead><tr><th>Ürün</th><th>Sipariş Sayısı</th></tr></thead><tbody>
+  ${topList.length?topList.map(([n,c])=>`<tr><td>${esc(n)}</td><td>${c}</td></tr>`).join(''):'<tr><td colspan="2" style="text-align:center;color:#999">Veri yok</td></tr>'}
+  </tbody></table>
+  <div class="footer">KuryeAI &nbsp;•&nbsp; ${dateStr} tarihinde oluşturuldu</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}
+  else showToast('Popup engelleyici aktif','err');
+}
+
+// ── Finansal Excel ───────────────────────────────────────────────────────────
+function exportFinExcel(){
+  if(!window.XLSX){showToast('Excel kütüphanesi yüklenemedi','err');return;}
+  const period=currentFinPeriod||'daily';
+  const {restName,dateStr}=_repMeta(period);
+  const periodLabel={daily:'Bugün',weekly:'Bu Hafta',monthly:'Bu Ay',yearly:'Bu Yıl'}[period]||period;
+  const now=Date.now();
+  const cuts={daily:now-86400000,weekly:now-7*86400000,monthly:now-30*86400000,yearly:now-365*86400000};
+  const filt=orders.filter(o=>(o.createdAt||0)>=(cuts[period]||cuts.daily));
+  const totalRev=filt.reduce((s,o)=>s+(o.total||0),0);
+  const delivRev=filt.filter(o=>!o.tableOrder).reduce((s,o)=>s+(o.total||0),0);
+  const tableRev=filt.filter(o=>o.tableOrder).reduce((s,o)=>s+(o.total||0),0);
+  const courierCostDay=couriers.reduce((s,c)=>s+(c.earnings||0),0)/30;
+  const pCost=Math.round(period==='daily'?courierCostDay:period==='weekly'?courierCostDay*7:period==='monthly'?courierCostDay*30:courierCostDay*365);
+  const summaryData=[
+    ['KuryeAI — Finansal Rapor'],
+    ['Restoran',restName],['Dönem',periodLabel],['Tarih',dateStr],[],
+    ['Toplam Ciro (₺)',totalRev],
+    ['Paket Cirosu (₺)',delivRev],
+    ['Masa Cirosu (₺)',tableRev],
+    ['Kurye Gideri (₺)',pCost],
+    ['Net Kâr — Paket (₺)',delivRev-pCost],
+    [],['Sipariş Sayısı',filt.length],
+    ['Tamamlanan',filt.filter(o=>o.status==='delivered').length],
+    ['İptal',filt.filter(o=>o.status==='cancelled'||o.status==='rejected').length],
+  ];
+  const topP={};filt.forEach(o=>{(Array.isArray(o.items)?o.items:[o.items||'']).forEach(it=>{const n=String(it).replace(/ x\d+$/,'');topP[n]=(topP[n]||0)+1;});});
+  const topData=[['Ürün','Sipariş Sayısı'],...Object.entries(topP).sort((a,b)=>b[1]-a[1]).slice(0,10)];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summaryData),'Finansal Özet');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(topData),'Popüler Ürünler');
+  XLSX.writeFile(wb,`finansal-rapor-${period}-${Date.now()}.xlsx`);
+  showToast('Excel indirildi','ok');
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 window.openMarkPaid=(id,name,amount)=>{
   _markPaidCourierId={id,name,amount};

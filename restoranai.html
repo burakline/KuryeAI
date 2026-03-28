@@ -85,6 +85,39 @@
     }
     .btn-pill:hover { background: var(--teal-lt); transform: scale(1.04); }
 
+    /* ── PREMIUM TEMA TOGGLE ── */
+    .theme-toggle-pill {
+      position:relative; display:inline-flex; align-items:center; gap:5px;
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.13);
+      border-radius:999px; padding:.3rem .55rem; cursor:pointer;
+      transition:background .25s,box-shadow .25s; outline:none;
+      box-shadow:0 2px 12px rgba(0,0,0,.18);
+    }
+    .theme-toggle-pill:hover { background:rgba(255,255,255,.14); box-shadow:0 4px 20px rgba(0,0,0,.28); }
+    .ttp-track {
+      position:relative; width:30px; height:16px;
+      background:rgba(255,255,255,.12); border-radius:999px;
+      border:1px solid rgba(255,255,255,.15);
+      transition:background .3s;
+    }
+    .ttp-thumb {
+      position:absolute; top:2px; left:2px;
+      width:10px; height:10px; border-radius:50%;
+      background:linear-gradient(135deg,#f59e0b,#ef4444);
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+      box-shadow:0 1px 4px rgba(0,0,0,.35);
+    }
+    .ttp-sun { color:rgba(255,255,255,.65); display:flex; align-items:center; transition:color .25s,opacity .25s; }
+    .ttp-moon{ color:rgba(255,255,255,.65); display:flex; align-items:center; transition:color .25s,opacity .25s; }
+    html[data-theme="dark"] .ttp-thumb { transform:translateX(0); background:linear-gradient(135deg,#f59e0b,#ef4444); }
+    html[data-theme="dark"] .ttp-sun   { color:#f59e0b; }
+    html[data-theme="dark"] .ttp-moon  { color:rgba(255,255,255,.3); }
+    html[data-theme="light"] .theme-toggle-pill { background:rgba(0,0,0,.06); border-color:rgba(0,0,0,.12); box-shadow:0 2px 12px rgba(0,0,0,.08); }
+    html[data-theme="light"] .ttp-track { background:rgba(0,0,0,.08); border-color:rgba(0,0,0,.12); }
+    html[data-theme="light"] .ttp-thumb { transform:translateX(14px); background:linear-gradient(135deg,#6366f1,#8b5cf6); }
+    html[data-theme="light"] .ttp-sun   { color:rgba(0,0,0,.3); }
+    html[data-theme="light"] .ttp-moon  { color:#6366f1; }
+
     /* ── HERO ── */
     .hero {
       min-height: 100svh;
@@ -699,9 +732,14 @@
     <li><a href="#sss">SSS</a></li>
     <li><a href="#basvuru">Başvur</a></li>
   </ul>
-  <div style="display:flex;align-items:center;gap:1rem">
+  <div style="display:flex;align-items:center;gap:.8rem">
     <a href="/" class="nav-back">← Ana Sayfa</a>
     <a href="/restoranai-login" style="font-size:.78rem;color:var(--gray-lt);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--gray-lt)'">Giriş Yap</a>
+    <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
+      <span class="ttp-track"><span class="ttp-thumb"></span></span>
+      <span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+      <span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+    </button>
     <a href="/restoranai-login?tab=kayit" class="btn-pill">Kayıt Ol</a>
   </div>
 </nav>
@@ -978,7 +1016,7 @@
       <div class="stat-l">Günlük İşlenen Sipariş</div>
     </div>
     <div class="stat-box">
-      <div class="stat-n">150<em>+</em></div>
+      <div class="stat-n" id="stat-restoran-count">2<em>+</em></div>
       <div class="stat-l">Aktif Restoran</div>
     </div>
     <div class="stat-box">
@@ -1592,5 +1630,23 @@
 
 </script>
 <script src="/theme.js"></script>
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getFirestore, collection, query, where, getCountFromServer } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  const FC = {
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  };
+  try {
+    const app = getApps().find(a=>a.name==='restoran-stat') || initializeApp(FC,'restoran-stat');
+    const db = getFirestore(app);
+    const q = query(collection(db,'users'), where('role','==','restoran'), where('status','==','active'));
+    const snap = await getCountFromServer(q);
+    const count = snap.data().count;
+    const el = document.getElementById('stat-restoran-count');
+    if (el && count >= 0) el.innerHTML = count + '<em>+</em>';
+  } catch(e) { /* hata olursa mevcut değer kalır */ }
+</script>
 </body>
 </html>

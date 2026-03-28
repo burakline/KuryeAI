@@ -2223,7 +2223,7 @@ window.toggleDarkMode = function(){
 // İkon senkronizasyonu
 document.addEventListener('DOMContentLoaded', function(){
   if(document.body.classList.contains('dark')){
-    ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>️'; });
+    ['dm-btn','dm-btn-mob'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>️'; });
   }
 });
 
@@ -2437,7 +2437,7 @@ const setFbStatus=s=>{
   const m={loading:["Bağlanıyor","fb-load"],connected:["Firebase ●","fb-ok"],error:["Bağlantı Hatası","fb-err"]};
   if(el){el.innerHTML=`<span class="pill-dot ${s==="connected"?"pulse":""}"></span>${m[s][0]}`;el.className=`status-pill ${m[s][1]}`;}
   if(mob){mob.className=`status-pill ${m[s][1]}`;mob.style.cssText="font-size:10px;padding:3px 8px";}
-  if(mobtxt)mobtxt.textContent=s==="connected"?"●":s==="error"?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>":"…";
+  if(mobtxt)mobtxt.innerHTML=s==="connected"?"●":s==="error"?'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>':"…";
 };
 
 // ── Navigation ─────────────────────────────────────────────────────────────
@@ -2551,7 +2551,7 @@ onAuthStateChanged(auth, async user=>{
         const logoPlaceholder=document.getElementById('restoran-logo-placeholder');
         logoImg.src=data.logoURL; logoImg.style.display='block';
         logoPlaceholder.style.display='none';
-        document.getElementById('logo-status').textContent='Logo yüklü <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+        document.getElementById('logo-status').innerHTML='Logo yüklü <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
       }
     } else {
       // No Firestore doc — use UID as restaurant ID (admin/legacy)
@@ -2662,7 +2662,7 @@ function renderObStep() {
     <button onclick="OB_STEPS[${obStep-1}].fn()" style="width:100%;margin-top:1.1rem;padding:.6rem;background:var(--teal-bg);border:1px solid var(--teal);border-radius:10px;color:var(--teal);font-weight:700;cursor:pointer;font-size:.85rem">${s.action} →</button>
   `;
   const nextBtn = document.getElementById('ob-next');
-  nextBtn.textContent = obStep < OB_STEPS.length ? 'Sonraki →' : 'Başla <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>';
+  nextBtn.innerHTML = obStep < OB_STEPS.length ? 'Sonraki →' : 'Başla <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>';
 }
 
 window.obNext = () => {
@@ -2732,7 +2732,7 @@ function renderPaymentSection() {
 window.copyIBAN = () => {
   navigator.clipboard.writeText('TR710015700000000154833053').then(() => {
     const btn = document.getElementById('copy-iban-btn');
-    if (btn) { btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kopyalandı'; setTimeout(() => { btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Kopyala'; }, 2200); }
+    if (btn) { btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Kopyalandı'; setTimeout(() => { btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Kopyala'; }, 2200); }
   }).catch(() => showToast('Kopyalama desteklenmiyor', 'error'));
 };
 
@@ -2742,7 +2742,7 @@ window.onDekontSelect = (e) => {
   if (f.size > 5 * 1024 * 1024) { showToast('Dekont max 5MB olmalı', 'error'); return; }
   selectedDekontFile = f;
   const lbl = document.getElementById('dekont-label');
-  if (lbl) lbl.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + f.name;
+  if (lbl) lbl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + f.name;
 };
 
 window.submitPaymentNotification = async () => {
@@ -2764,13 +2764,13 @@ window.submitPaymentNotification = async () => {
       paymentDate:      Date.now(),
     });
     showToast('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödeme bildirimi gönderildi! Admin onayı bekleniyor.', 'success');
-    if (btn) { btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bildirim Gönderildi'; }
+    if (btn) { btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bildirim Gönderildi'; }
     const row = document.getElementById('payment-status-row');
     if (row) row.style.display = 'block';
     selectedDekontFile = null;
   } catch (e) {
     showToast('Hata: ' + e.message, 'error');
-    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödeme Bildirdim'; }
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ödeme Bildirdim'; }
   }
 };
 
@@ -2791,7 +2791,7 @@ window.uploadRestoranLogo=async(e)=>{
     RESTAURANT_LOGO_URL = url;
     // Haritadaki kendi pinimizi yenile
     if(_restPinMarker && mapInstance){ mapInstance.removeLayer(_restPinMarker); _restPinMarker=null; _addRestPinToMap(); }
-    document.getElementById('logo-status').textContent='Logo kaydedildi <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+    document.getElementById('logo-status').innerHTML='Logo kaydedildi <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
   }catch(err){
     document.getElementById('logo-status').textContent='Hata: '+err.message;
   }
@@ -3751,12 +3751,12 @@ function applySettings(){
   // assign mode
   document.querySelectorAll("#assign-mode-grid .radio-card").forEach(el=>{
     el.classList.toggle("selected",el.dataset.mode===settings.assign_mode);
-    el.querySelector(".rc-check").textContent=el.dataset.mode===settings.assign_mode?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>":"";
+    el.querySelector('.rc-check').innerHTML=el.dataset.mode===settings.assign_mode?'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
   });
   // pricing mode
   document.querySelectorAll("#pricing-mode-grid .radio-card").forEach(el=>{
     el.classList.toggle("selected",el.dataset.mode===settings.pricing_mode);
-    el.querySelector(".rc-check").textContent=el.dataset.mode===settings.pricing_mode?"<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>":"";
+    el.querySelector('.rc-check').innerHTML=el.dataset.mode===settings.pricing_mode?'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
   });
   document.getElementById("custom-pricing").style.display=settings.pricing_mode==="custom"?"block":"none";
   // toggles
@@ -3790,7 +3790,7 @@ window.selectMode=(el,type)=>{
   document.querySelectorAll(`#${grid} .radio-card`).forEach(c=>{
     c.classList.remove("selected");c.querySelector(".rc-check").textContent="";
   });
-  el.classList.add("selected");el.querySelector(".rc-check").textContent="<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>";
+  el.classList.add('selected');el.querySelector('.rc-check').innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   settings[key]=el.dataset.mode;
   if(type==="pricing")document.getElementById("custom-pricing").style.display=el.dataset.mode==="custom"?"block":"none";
 };
@@ -3832,7 +3832,7 @@ function renderQRMenuCard(){
   const active=document.getElementById('qrmenu-active');
   if(!badge||!inactive||!active) return;
   if(isActive){
-    badge.textContent='Aktif <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';badge.style.background='rgba(0,200,215,.12)';badge.style.color='var(--teal)';
+    badge.innerHTML='Aktif <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';badge.style.background='rgba(0,200,215,.12)';badge.style.color='var(--teal)';
     inactive.style.display='none';active.style.display='block';
     const url=_qrUrl();
     const urlEl=document.getElementById('qrmenu-url');

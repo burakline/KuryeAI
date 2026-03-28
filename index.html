@@ -395,6 +395,8 @@
     .social-links { display:flex; gap:.6rem; flex-wrap:wrap; }
     .social-btn { width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,.06); border:.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.9rem; text-decoration:none; transition:background .2s,transform .15s; }
     .social-btn:hover { background:rgba(0,200,215,.15); transform:scale(1.1); }
+    .social-btn-dark { background:#111 !important; border-color:#333 !important; }
+    .social-btn-dark:hover { background:#222 !important; }
     .footer-col-title { font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gray-lt); margin-bottom:1rem; }
     .footer-col-links { list-style:none; display:flex; flex-direction:column; gap:.6rem; }
     .footer-col-links a { font-size:.8rem; color:var(--gray); text-decoration:none; transition:color .2s; }
@@ -1007,7 +1009,7 @@
         <div style="font-size:.72rem;color:var(--gray-lt)">@kuryeai</div>
       </a>
       <a href="https://tiktok.com/@kurye.ai" target="_blank" rel="noopener" style="background:var(--card);border:.5px solid var(--border);border-radius:14px;padding:1.8rem;text-align:center;text-decoration:none;color:var(--white);transition:background .2s;display:block" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="display:flex;align-items:center;justify-content:center;height:40px;margin-bottom:.6rem"><img src="social-tiktok.svg" alt="TikTok" style="height:36px;width:36px"></div>
+        <div style="display:flex;align-items:center;justify-content:center;height:40px;margin-bottom:.6rem"><span style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#000;border-radius:8px"><img src="social-tiktok.svg" alt="TikTok" style="height:24px;width:24px"></span></div>
         <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem">TikTok</div>
         <div style="font-size:.72rem;color:var(--gray-lt)">@kurye.ai</div>
       </a>
@@ -1022,7 +1024,7 @@
         <div style="font-size:.72rem;color:var(--gray-lt)">@kuryeai</div>
       </a>
       <a href="https://twitter.com/kuryeai" target="_blank" rel="noopener" style="background:var(--card);border:.5px solid var(--border);border-radius:14px;padding:1.8rem;text-align:center;text-decoration:none;color:var(--white);transition:background .2s;display:block" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="display:flex;align-items:center;justify-content:center;height:40px;margin-bottom:.6rem"><img src="social-twitter.svg" alt="X" style="height:36px;width:36px"></div>
+        <div style="display:flex;align-items:center;justify-content:center;height:40px;margin-bottom:.6rem"><span style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#000;border-radius:8px"><img src="social-twitter.svg" alt="X" style="height:24px;width:24px"></span></div>
         <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem">X (Twitter)</div>
         <div style="font-size:.72rem;color:var(--gray-lt)">@kuryeai</div>
       </a>
@@ -1045,12 +1047,12 @@
       </a>
       <p class="footer-desc">Türkiye'nin yapay zeka destekli kurye ve restoran yönetim platformu. AI Teknoloji ve Lojistik Ltd. Şti.</p>
       <div class="social-links">
-        <a href="https://instagram.com/kuryeai" target="_blank" rel="noopener" class="social-btn" title="Instagram">📸</a>
-        <a href="https://tiktok.com/@kurye.ai" target="_blank" rel="noopener" class="social-btn" title="TikTok">🎵</a>
-        <a href="https://twitter.com/kuryeai" target="_blank" rel="noopener" class="social-btn" title="X (Twitter)">𝕏</a>
-        <a href="https://facebook.com/kuryeai" target="_blank" rel="noopener" class="social-btn" title="Facebook">📘</a>
-        <a href="https://linkedin.com/company/kuryeai" target="_blank" rel="noopener" class="social-btn" title="LinkedIn">💼</a>
-        <a href="https://youtube.com/@kuryeai" target="_blank" rel="noopener" class="social-btn" title="YouTube">▶️</a>
+        <a href="https://instagram.com/kuryeai" target="_blank" rel="noopener" class="social-btn" title="Instagram"><img src="social-instagram.svg" style="width:18px;height:18px"></a>
+        <a href="https://tiktok.com/@kurye.ai" target="_blank" rel="noopener" class="social-btn social-btn-dark" title="TikTok"><img src="social-tiktok.svg" style="width:18px;height:18px"></a>
+        <a href="https://twitter.com/kuryeai" target="_blank" rel="noopener" class="social-btn social-btn-dark" title="X (Twitter)"><img src="social-twitter.svg" style="width:18px;height:18px"></a>
+        <a href="https://facebook.com/kuryeai" target="_blank" rel="noopener" class="social-btn" title="Facebook"><img src="social-facebook.svg" style="width:18px;height:18px"></a>
+        <a href="https://linkedin.com/company/kuryeai" target="_blank" rel="noopener" class="social-btn" title="LinkedIn"><img src="social-linkedin.svg" style="width:18px;height:18px"></a>
+        <a href="https://youtube.com/@kuryeai" target="_blank" rel="noopener" class="social-btn" title="YouTube"><img src="social-youtube.svg" style="width:18px;height:18px"></a>
       </div>
     </div>
     <div>

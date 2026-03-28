@@ -2692,9 +2692,54 @@ setTimeout(hideLoader, 2500);
 let _fbInited=false;
 const _fbListeners=[]; // cleanup için tüm rtdbListen off() fonksiyonları
 function _stopAllFbListeners(){_fbListeners.forEach(off=>{try{off();}catch{}});_fbListeners.length=0;}
+
+// ── Sipariş bildirim takibi ──────────────────────────────────────────────────
+let _pwaOrderLoadTs=0;
+const _pwaSeenOrders=new Set();
+const _pwaOrderStatuses={};
+
+function _requestNotifPermission(){
+  if(!('Notification' in window)||Notification.permission!=='default')return;
+  Notification.requestPermission();
+}
+
+function _showOrderNotif(title,body,url){
+  if(!('Notification' in window))return;
+  const show=()=>{
+    navigator.serviceWorker?.ready.then(reg=>{
+      reg.showNotification(title,{body,icon:'/1000417933.png',badge:'/1000417933.png',tag:title,data:url||'/'});
+    }).catch(()=>{try{new Notification(title,{body});}catch{}});
+  };
+  if(Notification.permission==='granted')show();
+  else if(Notification.permission!=='denied')Notification.requestPermission().then(p=>{if(p==='granted')show();});
+}
+
+function _checkOrderNotifs(newOrders){
+  if(!_pwaOrderLoadTs){_pwaOrderLoadTs=Date.now();newOrders.forEach(o=>_pwaSeenOrders.add(o.id));newOrders.forEach(o=>_pwaOrderStatuses[o.id]=o.status);return;}
+  newOrders.forEach(o=>{
+    if(!_pwaSeenOrders.has(o.id)){
+      _pwaSeenOrders.add(o.id);
+      _pwaOrderStatuses[o.id]=o.status;
+      _showOrderNotif('🆕 Yeni Sipariş',`${o.customer||'Müşteri'} — ₺${o.total||0}`);
+    } else {
+      const prev=_pwaOrderStatuses[o.id];
+      if(prev && prev!==o.status){
+        _pwaOrderStatuses[o.id]=o.status;
+        const statusLabel={preparing:'Hazırlanıyor',on_the_way:'Yolda',delivered:'Teslim Edildi',cancelled:'İptal Edildi'};
+        const lbl=statusLabel[o.status];
+        if(lbl){
+          const icons={preparing:'👨‍🍳',on_the_way:'🛵',delivered:'✅',cancelled:'❌'};
+          _showOrderNotif(`${icons[o.status]||''} Sipariş Güncellendi`,`#${o.id.slice(-6).toUpperCase()} — ${lbl}`);
+        }
+      }
+    }
+  });
+}
+
 async function initFirebase(){
   if(_fbInited){_stopAllFbListeners();} // eski dinleyicileri temizle
   _fbInited=true;
+  _requestNotifPermission();
   const _err=err=>{
     setFbStatus("error");
   };
@@ -2702,7 +2747,9 @@ async function initFirebase(){
   // SSE real-time listeners
   _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/orders`,snap=>{
     setFbStatus("connected");
-    orders=objToArr(snap.val()); renderAll(); if(mapInstance)_syncActiveOrdersOnMap();
+    const newOrds=objToArr(snap.val());
+    _checkOrderNotifs(newOrds);
+    orders=newOrds; renderAll(); if(mapInstance)_syncActiveOrdersOnMap();
   },_err));
   _fbListeners.push(rtdbListen(`/restaurants/${RESTAURANT_ID}/menu`,snap=>{
     menu=objToArr(snap.val()); renderMenu();

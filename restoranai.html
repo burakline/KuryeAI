@@ -95,39 +95,6 @@
     }
     .btn-pill:hover { background: var(--teal-lt); transform: scale(1.04); }
 
-    /* ── PREMIUM TEMA TOGGLE ── */
-    .theme-toggle-pill {
-      position:relative; display:inline-flex; align-items:center; gap:5px;
-      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.13);
-      border-radius:999px; padding:.3rem .55rem; cursor:pointer;
-      transition:background .25s,box-shadow .25s; outline:none;
-      box-shadow:0 2px 12px rgba(0,0,0,.18);
-    }
-    .theme-toggle-pill:hover { background:rgba(255,255,255,.14); box-shadow:0 4px 20px rgba(0,0,0,.28); }
-    .ttp-track {
-      position:relative; width:30px; height:16px;
-      background:rgba(255,255,255,.12); border-radius:999px;
-      border:1px solid rgba(255,255,255,.15);
-      transition:background .3s;
-    }
-    .ttp-thumb {
-      position:absolute; top:2px; left:2px;
-      width:10px; height:10px; border-radius:50%;
-      background:linear-gradient(135deg,#f59e0b,#ef4444);
-      transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-      box-shadow:0 1px 4px rgba(0,0,0,.35);
-    }
-    .ttp-sun { color:rgba(255,255,255,.65); display:flex; align-items:center; transition:color .25s,opacity .25s; }
-    .ttp-moon{ color:rgba(255,255,255,.65); display:flex; align-items:center; transition:color .25s,opacity .25s; }
-    html[data-theme="dark"] .ttp-thumb { transform:translateX(0); background:linear-gradient(135deg,#f59e0b,#ef4444); }
-    html[data-theme="dark"] .ttp-sun   { color:#f59e0b; }
-    html[data-theme="dark"] .ttp-moon  { color:rgba(255,255,255,.3); }
-    html[data-theme="light"] .theme-toggle-pill { background:rgba(0,0,0,.06); border-color:rgba(0,0,0,.12); box-shadow:0 2px 12px rgba(0,0,0,.08); }
-    html[data-theme="light"] .ttp-track { background:rgba(0,0,0,.08); border-color:rgba(0,0,0,.12); }
-    html[data-theme="light"] .ttp-thumb { transform:translateX(14px); background:linear-gradient(135deg,#6366f1,#8b5cf6); }
-    html[data-theme="light"] .ttp-sun   { color:rgba(0,0,0,.3); }
-    html[data-theme="light"] .ttp-moon  { color:#6366f1; }
-
     /* ── HERO ── */
     .hero {
       min-height: 100svh;
@@ -966,11 +933,11 @@
         <h3 class="bc-title">Tüm Platformlar Tek Entegrasyon</h3>
         <p class="bc-desc">5 farklı sipariş kanalını tek panelde toplayın. Platform platform geçiş yok, sipariş kaçırma yok.</p>
         <div class="platform-grid">
-          <div class="pg-item"><span class="pg-icon"><img src="platform-yemeksepeti.png" alt="Yemeksepeti"></span>Yemeksepeti</div>
-          <div class="pg-item"><span class="pg-icon"><img src="platform-trendyol.png" alt="Trendyol"></span>Trendyol</div>
-          <div class="pg-item"><span class="pg-icon"><img src="platform-getir.png" alt="Getir"></span>Getir</div>
-          <div class="pg-item"><span class="pg-icon"><img src="platform-migros.png" alt="Migros"></span>Migros</div>
-          <div class="pg-item"><span class="pg-icon"><img src="platform-whatsapp.png" alt="WhatsApp"></span>WhatsApp</div>
+          <div class="pg-item"><span class="pg-icon"><img loading="lazy" src="platform-yemeksepeti.png" alt="Yemeksepeti"></span>Yemeksepeti</div>
+          <div class="pg-item"><span class="pg-icon"><img loading="lazy" src="platform-trendyol.png" alt="Trendyol"></span>Trendyol</div>
+          <div class="pg-item"><span class="pg-icon"><img loading="lazy" src="platform-getir.png" alt="Getir"></span>Getir</div>
+          <div class="pg-item"><span class="pg-icon"><img loading="lazy" src="platform-migros.png" alt="Migros"></span>Migros</div>
+          <div class="pg-item"><span class="pg-icon"><img loading="lazy" src="platform-whatsapp.png" alt="WhatsApp"></span>WhatsApp</div>
           <div class="pg-item"><span class="pg-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>Masa Siparişi</div>
         </div>
       </div>
@@ -1131,7 +1098,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon"><img src="platform-yemeksepeti.png" alt="Yemeksepeti"></span>
+            <span class="mo-icon"><img loading="lazy" src="platform-yemeksepeti.png" alt="Yemeksepeti"></span>
             <div>
               <div class="mo-name">Yemeksepeti #4821</div>
               <div class="mo-sub">Adana Kebap × 2 · Ayran × 2</div>
@@ -1142,7 +1109,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon"><img src="platform-trendyol.png" alt="Trendyol"></span>
+            <span class="mo-icon"><img loading="lazy" src="platform-trendyol.png" alt="Trendyol"></span>
             <div>
               <div class="mo-name">Trendyol #2934</div>
               <div class="mo-sub">Tavuk Döner · Patates</div>
@@ -1153,7 +1120,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon"><img src="platform-whatsapp.png" alt="WhatsApp"></span>
+            <span class="mo-icon"><img loading="lazy" src="platform-whatsapp.png" alt="WhatsApp"></span>
             <div>
               <div class="mo-name">WhatsApp Sipariş</div>
               <div class="mo-sub">Lahmacun × 4 · Çay × 4</div>
@@ -1164,7 +1131,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon"><img src="platform-getir.png" alt="Getir"></span>
+            <span class="mo-icon"><img loading="lazy" src="platform-getir.png" alt="Getir"></span>
             <div>
               <div class="mo-name">Getir #1102</div>
               <div class="mo-sub">Izgara Köfte · Pilav · Salata</div>

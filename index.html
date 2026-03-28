@@ -173,10 +173,10 @@
       background:rgba(255,255,255,.09);
       transform:translateY(-1px);
     }
-    .nav-login.restoran { border-color:rgba(251,191,36,.22); color:#fbbf24; }
-    .nav-login.restoran:hover { border-color:rgba(251,191,36,.5); background:rgba(251,191,36,.08); color:#fbbf24; }
-    .nav-login.kurye { border-color:rgba(45,212,191,.22); color:var(--teal); }
-    .nav-login.kurye:hover { border-color:rgba(45,212,191,.5); background:rgba(45,212,191,.08); color:var(--teal); }
+    .nav-login.restoran { border-color:rgba(45,212,191,.25); color:var(--teal); }
+    .nav-login.restoran:hover { border-color:rgba(45,212,191,.55); background:rgba(45,212,191,.09); color:var(--teal); }
+    .nav-login.kurye { border-color:rgba(45,212,191,.25); color:var(--teal); }
+    .nav-login.kurye:hover { border-color:rgba(45,212,191,.55); background:rgba(45,212,191,.09); color:var(--teal); }
     .btn-pill { display:inline-block; background:var(--red); color:#fff; font-size:.78rem; font-weight:700; padding:.44rem 1.2rem; border-radius:999px; text-decoration:none; transition:background .2s,transform .15s; }
     .btn-pill:hover { background:#e0352a; transform:scale(1.04); }
 
@@ -219,10 +219,10 @@
     html[data-theme="light"] .nav-links a:hover { color:#000; }
     html[data-theme="light"] .nav-login { color:#555; border-color:rgba(0,0,0,.14); background:rgba(0,0,0,.03); }
     html[data-theme="light"] .nav-login:hover { color:#111; border-color:rgba(0,0,0,.28); background:rgba(0,0,0,.06); }
-    html[data-theme="light"] .nav-login.restoran { color:#b45309; border-color:rgba(180,83,9,.25); }
-    html[data-theme="light"] .nav-login.restoran:hover { background:rgba(180,83,9,.06); border-color:rgba(180,83,9,.45); }
-    html[data-theme="light"] .nav-login.kurye { color:#0d9488; border-color:rgba(13,148,136,.25); }
-    html[data-theme="light"] .nav-login.kurye:hover { background:rgba(13,148,136,.06); border-color:rgba(13,148,136,.45); }
+    html[data-theme="light"] .nav-login.restoran { color:#0d9488; border-color:rgba(13,148,136,.28); }
+    html[data-theme="light"] .nav-login.restoran:hover { background:rgba(13,148,136,.07); border-color:rgba(13,148,136,.5); }
+    html[data-theme="light"] .nav-login.kurye { color:#0d9488; border-color:rgba(13,148,136,.28); }
+    html[data-theme="light"] .nav-login.kurye:hover { background:rgba(13,148,136,.07); border-color:rgba(13,148,136,.5); }
 
     /* ── HERO ── */
     .hero { min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:5rem 2rem; position:relative; overflow:hidden; }
@@ -587,8 +587,8 @@
     <li><a href="#sss">SSS</a></li>
   </ul>
   <div class="nav-right">
-<a href="/restoranai-login" class="nav-login restoran">🍽 Restoran Girişi</a>
-    <a href="/kuryeai-login" class="nav-login kurye">🛵 Kurye Girişi</a>
+<a href="/restoranai-login" class="nav-login restoran"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Restoran Girişi</a>
+    <a href="/kuryeai-login" class="nav-login kurye"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Kurye Girişi</a>
     <!-- Premium tema toggle -->
     <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
       <span class="ttp-track">

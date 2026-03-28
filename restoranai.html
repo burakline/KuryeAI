@@ -247,7 +247,8 @@
       transition: background .2s, color .2s;
     }
     .pg-item:hover { background: rgba(0,200,215,.08); color: var(--teal); }
-    .pg-item .pg-icon { font-size: 1.1rem; display: block; margin-bottom: .3rem; }
+    .pg-item .pg-icon { display: block; margin-bottom: .3rem; line-height: 0; }
+    .pg-item .pg-icon img { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
 
     /* AI highlight */
     .ai-highlight {
@@ -296,7 +297,8 @@
     }
     .mock-order:hover { background: rgba(0,200,215,.06); }
     .mo-left { display: flex; align-items: center; gap: .7rem; }
-    .mo-icon { font-size: 1rem; }
+    .mo-icon { line-height: 0; }
+    .mo-icon img { width: 24px; height: 24px; border-radius: 6px; object-fit: cover; }
     .mo-name { font-size: .8rem; font-weight: 700; color: var(--white); }
     .mo-sub { font-size: .68rem; color: var(--gray-lt); }
     .mo-badge {
@@ -662,22 +664,22 @@
 
       <!-- Platform entegrasyon - wide -->
       <div class="bento-card wide">
-        <div class="bc-icon">🔗</div>
+        <div class="bc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
         <h3 class="bc-title">Tüm Platformlar Tek Entegrasyon</h3>
         <p class="bc-desc">5 farklı sipariş kanalını tek panelde toplayın. Platform platform geçiş yok, sipariş kaçırma yok.</p>
         <div class="platform-grid">
-          <div class="pg-item"><span class="pg-icon">🍽️</span>Yemeksepeti</div>
-          <div class="pg-item"><span class="pg-icon">🟠</span>Trendyol</div>
-          <div class="pg-item"><span class="pg-icon">🔵</span>Getir</div>
-          <div class="pg-item"><span class="pg-icon">🟢</span>Migros</div>
-          <div class="pg-item"><span class="pg-icon">💬</span>WhatsApp</div>
-          <div class="pg-item"><span class="pg-icon">🍴</span>Masa Siparişi</div>
+          <div class="pg-item"><span class="pg-icon"><img src="platform-yemeksepeti.png" alt="Yemeksepeti"></span>Yemeksepeti</div>
+          <div class="pg-item"><span class="pg-icon"><img src="platform-trendyol.png" alt="Trendyol"></span>Trendyol</div>
+          <div class="pg-item"><span class="pg-icon"><img src="platform-getir.png" alt="Getir"></span>Getir</div>
+          <div class="pg-item"><span class="pg-icon"><img src="platform-migros.png" alt="Migros"></span>Migros</div>
+          <div class="pg-item"><span class="pg-icon"><img src="platform-whatsapp.png" alt="WhatsApp"></span>WhatsApp</div>
+          <div class="pg-item"><span class="pg-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>Masa Siparişi</div>
         </div>
       </div>
 
       <!-- AI analiz -->
       <div class="bento-card">
-        <div class="bc-icon">🤖</div>
+        <div class="bc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/></svg></div>
         <h3 class="bc-title">AI Destekli Analizler</h3>
         <p class="bc-desc">Yapay zeka en çok satılan ürünleri, yoğun saatleri ve müşteri eğilimlerini analiz eder. Size özel öneriler sunar.</p>
         <div class="ai-highlight">
@@ -688,28 +690,28 @@
 
       <!-- Masa yönetimi -->
       <div class="bento-card">
-        <div class="bc-icon">🪑</div>
+        <div class="bc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V12h18v10"/><path d="M3 12V8a9 9 0 0 1 18 0v4"/><line x1="12" y1="22" x2="12" y2="12"/></svg></div>
         <h3 class="bc-title">Masa & Salon Yönetimi</h3>
         <p class="bc-desc">Masaları dijital ortamda yönetin. Hangi masa dolu, hangi masa boş, hangi masanın siparişi hazır — hepsi anlık.</p>
       </div>
 
       <!-- Ciro takip -->
       <div class="bento-card">
-        <div class="bc-icon">📊</div>
+        <div class="bc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
         <h3 class="bc-title">Ciro & Raporlama</h3>
         <p class="bc-desc">Günlük, haftalık, aylık ciro raporları. Gelir/gider takibi. Platform bazında karşılaştırmalar. Tek tıkla PDF export.</p>
       </div>
 
       <!-- Paket takip -->
       <div class="bento-card">
-        <div class="bc-icon">📦</div>
+        <div class="bc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
         <h3 class="bc-title">Paket Sipariş Takibi</h3>
         <p class="bc-desc">Her siparişin durumu anlık olarak takip edilir. Hazırlandı, kurye aldı, yolda, teslim edildi adımları otomatik güncellenir.</p>
       </div>
 
       <!-- Müşteri memnuniyet -->
       <div class="bento-card">
-        <div class="bc-icon">⭐</div>
+        <div class="bc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <h3 class="bc-title">Müşteri Memnuniyeti</h3>
         <p class="bc-desc">Teslimat sonrası otomatik değerlendirme bildirimi. Yorum takibi ve müşteri memnuniyet skoru.</p>
       </div>
@@ -734,7 +736,7 @@
       <div class="stat-l">Ortalama Teslimat Süresi</div>
     </div>
     <div class="stat-box">
-      <div class="stat-n">4.8<em>⭐</em></div>
+      <div class="stat-n">4.8<em><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></em></div>
       <div class="stat-l">Müşteri Memnuniyeti</div>
     </div>
   </div>
@@ -750,28 +752,28 @@
         <p class="body-lg">5 farklı uygulamaya bakmak, sipariş kaçırmak, raporları elle toplamak — bunların hepsi geçmişte kaldı.</p>
         <div class="why-points">
           <div class="wp">
-            <div class="wp-icon">🚫</div>
+            <div class="wp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
             <div>
               <p class="wp-title">Platform Geçişi Yok</p>
               <p class="wp-desc">Yemeksepeti, Trendyol, Getir, Migros — hepsi tek ekranda. Sekmeler arası geçiş tarihe karışıyor.</p>
             </div>
           </div>
           <div class="wp">
-            <div class="wp-icon">🤖</div>
+            <div class="wp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/></svg></div>
             <div>
               <p class="wp-title">AI Sizi Analiz Ediyor</p>
               <p class="wp-desc">En çok satan ürünler, karlılık analizi, yoğun saatler. Yapay zeka size özel öneriler sunuyor.</p>
             </div>
           </div>
           <div class="wp">
-            <div class="wp-icon">⚡</div>
+            <div class="wp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
             <div>
               <p class="wp-title">24 Saatte Kurulum</p>
               <p class="wp-desc">Başvurun, entegrasyonunuz kurulsun, kullanmaya başlayın. Teknik bilgi gerekmez.</p>
             </div>
           </div>
           <div class="wp">
-            <div class="wp-icon">📊</div>
+            <div class="wp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
             <div>
               <p class="wp-title">Gerçek Zamanlı Raporlar</p>
               <p class="wp-desc">Anlık ciro, sipariş sayısı ve platform bazında karşılaştırma. Tek tıkla PDF export.</p>
@@ -781,7 +783,7 @@
       </div>
 
       <div class="why-img-block reveal">
-        <div class="why-img-bg">🍽️</div>
+        <div class="why-img-bg"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>️</div>
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,159,10,.06) 0%,rgba(0,200,215,.08) 100%)"></div>
         <!-- mock panel screenshot -->
         <div style="position:absolute;top:1.5rem;left:1.5rem;right:1.5rem;background:rgba(0,0,0,.7);border-radius:12px;padding:1.2rem;border:.5px solid rgba(255,255,255,.1)">
@@ -831,7 +833,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon">🍽️</span>
+            <span class="mo-icon"><img src="platform-yemeksepeti.png" alt="Yemeksepeti"></span>
             <div>
               <div class="mo-name">Yemeksepeti #4821</div>
               <div class="mo-sub">Adana Kebap × 2 · Ayran × 2</div>
@@ -842,7 +844,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon">🟠</span>
+            <span class="mo-icon"><img src="platform-trendyol.png" alt="Trendyol"></span>
             <div>
               <div class="mo-name">Trendyol #2934</div>
               <div class="mo-sub">Tavuk Döner · Patates</div>
@@ -853,7 +855,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon">💬</span>
+            <span class="mo-icon"><img src="platform-whatsapp.png" alt="WhatsApp"></span>
             <div>
               <div class="mo-name">WhatsApp Sipariş</div>
               <div class="mo-sub">Lahmacun × 4 · Çay × 4</div>
@@ -864,7 +866,7 @@
 
         <div class="mock-order">
           <div class="mo-left">
-            <span class="mo-icon">🔵</span>
+            <span class="mo-icon"><img src="platform-getir.png" alt="Getir"></span>
             <div>
               <div class="mo-name">Getir #1102</div>
               <div class="mo-sub">Izgara Köfte · Pilav · Salata</div>
@@ -928,21 +930,21 @@
         <p class="body-lg">Platform kuryelerine bağımlı kalmayın. KuryeAI ile kendi kurye operasyonunuzu kurun veya bizim kurye havuzumuzu kullanın.</p>
         <div class="kurye-points">
           <div class="kp">
-            <div class="kp-icon">🛵</div>
+            <div class="kp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></div>
             <div>
               <p class="kp-title">Esnaf Kurye Modeli</p>
               <p class="kp-desc">Paket başı 170₺ + km başı 12₺. Sipariş bazlı çalışma. Minimum taahhüt yok.</p>
             </div>
           </div>
           <div class="kp">
-            <div class="kp-icon">📋</div>
+            <div class="kp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>
             <div>
               <p class="kp-title">SGK'lı Kurye Modeli</p>
               <p class="kp-desc">Saatlik 250₺ + km başı 12₺. Tam zamanlı, sigortalı kurye. Yüksek hacimli işletmeler için ideal.</p>
             </div>
           </div>
           <div class="kp">
-            <div class="kp-icon">📍</div>
+            <div class="kp-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div>
               <p class="kp-title">Canlı Kurye Takibi</p>
               <p class="kp-desc">RestoranAI panelinden kuryelerinizin anlık konumunu görün. Müşterileriniz de siparişini takip edebilir.</p>
@@ -987,7 +989,7 @@
           </div>
           <div style="display:flex;justify-content:space-between;font-size:.8rem">
             <span style="color:var(--gray-lt)">Müşteri memnuniyeti</span>
-            <span style="font-weight:700;color:var(--teal)">4.8 ⭐</span>
+            <span style="font-weight:700;color:var(--teal)">4.8 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
           </div>
         </div>
       </div>
@@ -1015,43 +1017,43 @@
         <tbody>
           <tr>
             <td>Sipariş yönetimi</td>
-            <td class="col-old"><span class="comp-x">✗</span> 5 ayrı uygulama açık</td>
-            <td class="col-new"><span class="comp-check">✓</span> Tek ekran, tek bildirim</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> 5 ayrı uygulama açık</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Tek ekran, tek bildirim</td>
           </tr>
           <tr>
             <td>Sipariş kaçırma</td>
-            <td class="col-old"><span class="comp-x">✗</span> Sık sık yaşanıyor</td>
-            <td class="col-new"><span class="comp-check">✓</span> Sıfır kayıp, anlık uyarı</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Sık sık yaşanıyor</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Sıfır kayıp, anlık uyarı</td>
           </tr>
           <tr>
             <td>Ciro raporu</td>
-            <td class="col-old"><span class="comp-x">✗</span> Elle hesaplama, saatler</td>
-            <td class="col-new"><span class="comp-check">✓</span> Otomatik, günlük/haftalık</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Elle hesaplama, saatler</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Otomatik, günlük/haftalık</td>
           </tr>
           <tr>
             <td>AI analiz</td>
-            <td class="col-old"><span class="comp-x">✗</span> Yok</td>
-            <td class="col-new"><span class="comp-check">✓</span> Satış tahmini ve öneriler</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Yok</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Satış tahmini ve öneriler</td>
           </tr>
           <tr>
             <td>Kurye takibi</td>
-            <td class="col-old"><span class="comp-x">✗</span> Telefon ile manuel</td>
-            <td class="col-new"><span class="comp-check">✓</span> Canlı harita + otomatik atama</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Telefon ile manuel</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Canlı harita + otomatik atama</td>
           </tr>
           <tr>
             <td>Müşteri yorumları</td>
-            <td class="col-old"><span class="comp-x">✗</span> Platform bazında dağınık</td>
-            <td class="col-new"><span class="comp-check">✓</span> Merkezi yorum yönetimi</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Platform bazında dağınık</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Merkezi yorum yönetimi</td>
           </tr>
           <tr>
             <td>Kurulum</td>
-            <td class="col-old"><span class="comp-x">✗</span> Haftalarca sürebilir</td>
-            <td class="col-new"><span class="comp-check">✓</span> 24 saatte aktif</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Haftalarca sürebilir</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> 24 saatte aktif</td>
           </tr>
           <tr>
             <td>7/24 destek</td>
-            <td class="col-old"><span class="comp-x">✗</span> Yok</td>
-            <td class="col-new"><span class="comp-check">✓</span> 7/24 teknik destek</td>
+            <td class="col-old"><span class="comp-x"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Yok</td>
+            <td class="col-new"><span class="comp-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> 7/24 teknik destek</td>
           </tr>
         </tbody>
       </table>
@@ -1074,11 +1076,11 @@
         <div class="price-amount">₺10.000 <span>/ yıl</span></div>
         <p class="price-period">aylık ₺833 — veya taksitli</p>
         <div class="price-features">
-          <div class="pf-item"><span class="pfi">✓</span>Tüm platform entegrasyonları</div>
-          <div class="pf-item"><span class="pfi">✓</span>Masa + paket sipariş yönetimi</div>
-          <div class="pf-item"><span class="pfi">✓</span>Günlük ciro raporları</div>
-          <div class="pf-item"><span class="pfi">✓</span>7/24 teknik destek</div>
-          <div class="pf-item"><span class="pfi">✓</span>İlk ay ücretsiz deneme</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tüm platform entegrasyonları</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Masa + paket sipariş yönetimi</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Günlük ciro raporları</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>7/24 teknik destek</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>İlk ay ücretsiz deneme</div>
         </div>
         <a href="/restoranai-login?tab=kayit" class="price-btn price-btn-outline">Ücretsiz Dene →</a>
       </div>
@@ -1089,12 +1091,12 @@
         <div class="price-amount">₺18.000 <span>/ yıl</span></div>
         <p class="price-period">aylık ₺1.500 — veya taksitli</p>
         <div class="price-features">
-          <div class="pf-item"><span class="pfi">✓</span>Başlangıç paketi + tüm özellikler</div>
-          <div class="pf-item"><span class="pfi">✓</span>AI destekli satış analizi ve tahmin</div>
-          <div class="pf-item"><span class="pfi">✓</span>Çoklu şube yönetimi</div>
-          <div class="pf-item"><span class="pfi">✓</span>KuryeAI tam entegrasyonu</div>
-          <div class="pf-item"><span class="pfi">✓</span>Öncelikli destek hattı</div>
-          <div class="pf-item"><span class="pfi">✓</span>PDF raporlar + özel analizler</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Başlangıç paketi + tüm özellikler</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI destekli satış analizi ve tahmin</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Çoklu şube yönetimi</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>KuryeAI tam entegrasyonu</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Öncelikli destek hattı</div>
+          <div class="pf-item"><span class="pfi"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>PDF raporlar + özel analizler</div>
         </div>
         <a href="/restoranai-login?tab=kayit" class="price-btn price-btn-fill">Hemen Başla →</a>
       </div>
@@ -1150,7 +1152,7 @@
     </div>
     <div class="testi-grid reveal">
       <div class="testi-card">
-        <div class="testi-stars">★★★★★</div>
+        <div class="testi-stars"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="testi-text">"RestoranAI ile tüm platformlarımızı tek yerden yönetiyoruz. Sipariş kaçırmak tarihe karıştı. Ciro raporları çok detaylı, her gün sabah kahvemi içerken bakıyorum."</p>
         <div class="testi-author">
           <div class="testi-avatar">AK</div>
@@ -1161,7 +1163,7 @@
         </div>
       </div>
       <div class="testi-card">
-        <div class="testi-stars">★★★★★</div>
+        <div class="testi-stars"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="testi-text">"Yemeksepeti + Trendyol + Getir üçünü ayrı ayrı takip etmek çok yorucuydu. Şimdi tek ekran, tek bildirim. Siparişler artık hiç kaçmıyor. Kurulum da gerçekten 24 saatte tamamlandı."</p>
         <div class="testi-author">
           <div class="testi-avatar">FY</div>
@@ -1172,7 +1174,7 @@
         </div>
       </div>
       <div class="testi-card">
-        <div class="testi-stars">★★★★★</div>
+        <div class="testi-stars"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="testi-text">"AI analiz özelliği inanılmaz. 'Cumartesi 18-21 arası %55 daha fazla sipariş geliyor' diyor, ben de o saate personel takviyesi yapıyorum. Gerçekten işe yarıyor."</p>
         <div class="testi-author">
           <div class="testi-avatar">MÖ</div>
@@ -1196,19 +1198,19 @@
         <p class="body-lg">10.000₺/yıl ile tüm özelliklere sınırsız erişim. İlk ay ücretsiz deneme.</p>
 
         <div class="info-points">
-          <div class="ip"><span class="ip-check">✓</span>Kurulum ücreti yok</div>
-          <div class="ip"><span class="ip-check">✓</span>24 saat içinde aktif</div>
-          <div class="ip"><span class="ip-check">✓</span>Tüm platform entegrasyonları dahil</div>
-          <div class="ip"><span class="ip-check">✓</span>7/24 teknik destek</div>
-          <div class="ip"><span class="ip-check">✓</span>KuryeAI entegrasyonu dahil</div>
-          <div class="ip"><span class="ip-check">✓</span>İptal garantisi</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Kurulum ücreti yok</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>24 saat içinde aktif</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tüm platform entegrasyonları dahil</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>7/24 teknik destek</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>KuryeAI entegrasyonu dahil</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>İptal garantisi</div>
         </div>
 
         <div style="margin-top:2.5rem;padding:1.5rem;background:rgba(0,200,215,.06);border:.5px solid rgba(0,200,215,.15);border-radius:12px">
           <p style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem">İletişim</p>
           <p style="font-size:.88rem;color:var(--gray-lt);line-height:1.7">
-            ✉ <a href="mailto:info@kuryeai.com" style="color:inherit">info@kuryeai.com</a><br/>
-            🌐 www.kuryeai.com
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> <a href="mailto:info@kuryeai.com" style="color:inherit">info@kuryeai.com</a><br/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> www.kuryeai.com
           </p>
         </div>
       </div>
@@ -1281,7 +1283,7 @@
         </div>
 
         <div class="form-success" id="form-success">
-          <div class="success-icon">✅</div>
+          <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
           <p class="success-title">Başvurunuz Alındı!</p>
           <p class="success-desc">En geç 24 saat içinde sizi arayacağız.<br/><a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> adresinden de ulaşabilirsiniz.</p>
         </div>

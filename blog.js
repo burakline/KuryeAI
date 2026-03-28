@@ -54,6 +54,7 @@ function renderAuthUI() {
 /* ── MODAL ──────────────────────────────────────────────────── */
 window.openAuthModal = function(tab = 'login') {
   document.getElementById('auth-modal').style.display = 'flex';
+  // Varsayılan olarak giriş tabını göster — mevcut hesap sahipleri direkt girebilir
   switchTab(tab);
 };
 window.closeAuthModal = function() {
@@ -65,6 +66,13 @@ window.switchTab = function(tab) {
   document.getElementById('tab-register').style.display = tab === 'register' ? 'block' : 'none';
   document.getElementById('auth-tab-login').classList.toggle('active', tab === 'login');
   document.getElementById('auth-tab-reg').classList.toggle('active', tab === 'register');
+  // Giriş tabında: KuryeAI hesabı zaten varsa direkt kullanabilirsin notu
+  const hint = document.getElementById('auth-hint');
+  if (hint) {
+    hint.textContent = tab === 'login'
+      ? 'KuryeAI hesabın varsa aynı e-posta ve şifreyle giriş yapabilirsin.'
+      : 'Hesabın yoksa buradan oluştur. Tüm KuryeAI hizmetlerinde geçerli.';
+  }
   clearAuthMsg();
 };
 

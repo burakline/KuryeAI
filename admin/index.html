@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KuryeAI Admin — İletişim Mesajları</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="icon" type="image/png" href="/1000414615.png"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--cyan:#00c8d7;--bg:#000;--card:#0d0d0d;--border:rgba(255,255,255,.08);--text:#c8c8c8}
+    body{background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif;min-height:100svh}
+    /* LOGIN */
+    .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100svh;padding:1.5rem}
+    .login-box{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:380px}
+    .login-logo{font-size:1.1rem;font-weight:800;margin-bottom:2rem;text-align:center}
+    .login-logo em{font-style:normal;color:var(--cyan)}
+    .login-box input{width:100%;background:rgba(255,255,255,.05);border:.5px solid var(--border);border-radius:8px;color:#fff;padding:.7rem 1rem;font-size:.9rem;margin-bottom:.9rem;outline:none;transition:border .2s;font-family:inherit}
+    .login-box input:focus{border-color:rgba(0,200,215,.35)}
+    .login-btn{width:100%;background:var(--cyan);color:#000;font-weight:700;font-size:.92rem;padding:.75rem;border:none;border-radius:8px;cursor:pointer;transition:background .2s}
+    .login-btn:hover{background:#33d6e3}
+    .login-btn:disabled{opacity:.5;cursor:not-allowed}
+    #login-err{font-size:.8rem;color:#ef4444;min-height:1.2rem;margin-bottom:.6rem}
+    /* PANEL */
+    #panel{display:none}
+    .top-bar{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.5rem;background:rgba(0,0,0,.95);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:10}
+    .top-brand{font-size:.95rem;font-weight:800}
+    .top-brand em{font-style:normal;color:var(--cyan)}
+    .top-right{display:flex;align-items:center;gap:1rem}
+    .admin-user{font-size:.75rem;color:#888}
+    .logout-btn{font-size:.75rem;background:transparent;border:.5px solid rgba(255,255,255,.15);color:#aaa;padding:.3rem .75rem;border-radius:6px;cursor:pointer}
+    .logout-btn:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+    .main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+    .page-title{font-size:1.2rem;font-weight:800}
+    .stats{display:flex;gap:.8rem;flex-wrap:wrap}
+    .stat{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:.6rem 1rem;text-align:center}
+    .stat-n{font-size:1.4rem;font-weight:800;color:var(--cyan)}
+    .stat-l{font-size:.65rem;color:#666;text-transform:uppercase;letter-spacing:.06em}
+    .filters{display:flex;gap:.6rem;margin-bottom:1.2rem;flex-wrap:wrap}
+    .filter-btn{font-size:.75rem;font-weight:700;padding:.35rem .9rem;border-radius:999px;border:.5px solid var(--border);background:transparent;color:#aaa;cursor:pointer;transition:all .2s}
+    .filter-btn.active,.filter-btn:hover{background:rgba(0,200,215,.1);border-color:rgba(0,200,215,.3);color:var(--cyan)}
+    .msg-list{display:flex;flex-direction:column;gap:.7rem}
+    .msg-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;transition:border-color .2s}
+    .msg-card:hover{border-color:rgba(0,200,215,.2)}
+    .msg-card.status-new{border-left:3px solid var(--cyan)}
+    .msg-card.status-read{border-left:3px solid #444}
+    .msg-card.status-done{border-left:3px solid #22c55e}
+    .msg-head{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:.7rem}
+    .msg-name{font-size:.9rem;font-weight:700}
+    .msg-konu{font-size:.72rem;font-weight:700;padding:.18rem .6rem;border-radius:999px;background:rgba(0,200,215,.1);color:var(--cyan)}
+    .msg-date{font-size:.7rem;color:#555;margin-left:auto;white-space:nowrap}
+    .msg-contact{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem}
+    .msg-contact a{font-size:.78rem;color:#aaa;text-decoration:none}
+    .msg-contact a:hover{color:#fff}
+    .msg-text{font-size:.85rem;color:var(--text);line-height:1.65;background:rgba(255,255,255,.03);border-radius:8px;padding:.7rem .9rem}
+    .msg-actions{display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}
+    .act-btn{font-size:.72rem;font-weight:700;padding:.28rem .75rem;border-radius:6px;border:none;cursor:pointer;transition:all .2s}
+    .act-new{background:rgba(0,200,215,.1);color:var(--cyan)}
+    .act-read{background:rgba(255,255,255,.06);color:#aaa}
+    .act-done{background:rgba(34,197,94,.1);color:#22c55e}
+    .act-wa{background:rgba(37,211,102,.1);color:#25d366}
+    .act-del{background:rgba(239,68,68,.1);color:#ef4444}
+    .empty{text-align:center;padding:3rem;color:#444;font-size:.88rem}
+    #loading{text-align:center;padding:3rem;color:#555;font-size:.85rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(0,200,215,.3);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.5rem}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN EKRANI -->
+<div class="login-wrap" id="login-screen">
+  <div class="login-box">
+    <p class="login-logo">Kurye<em>AI</em> Admin</p>
+    <div id="login-err"></div>
+    <input id="a-email" type="email" placeholder="Admin e-posta" autocomplete="username"/>
+    <input id="a-pass" type="password" placeholder="Şifre" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+    <button class="login-btn" id="a-btn" onclick="doAdminLogin()">Giriş Yap</button>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div id="panel">
+  <div class="top-bar">
+    <span class="top-brand">Kurye<em>AI</em> <span style="color:#555;font-weight:400">/ Admin</span></span>
+    <div class="top-right">
+      <span class="admin-user" id="admin-email-label"></span>
+      <button class="logout-btn" onclick="doLogout()">Çıkış</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-header">
+      <span class="page-title">İletişim Mesajları</span>
+      <div class="stats">
+        <div class="stat"><div class="stat-n" id="stat-total">—</div><div class="stat-l">Toplam</div></div>
+        <div class="stat"><div class="stat-n" id="stat-new" style="color:#00c8d7">—</div><div class="stat-l">Yeni</div></div>
+        <div class="stat"><div class="stat-n" id="stat-done" style="color:#22c55e">—</div><div class="stat-l">Tamamlandı</div></div>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Tümü</button>
+      <button class="filter-btn" data-filter="new" onclick="setFilter('new',this)">Yeni</button>
+      <button class="filter-btn" data-filter="read" onclick="setFilter('read',this)">Okundu</button>
+      <button class="filter-btn" data-filter="done" onclick="setFilter('done',this)">Tamamlandı</button>
+    </div>
+    <div id="loading"><span class="spin"></span> Mesajlar yükleniyor…</div>
+    <div class="msg-list" id="msg-list"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc }
+  from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+
+const FB_CONFIG = {
+  apiKey: 'AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y',
+  authDomain: 'kuryeai-99bf9.firebaseapp.com',
+  projectId: 'kuryeai-99bf9',
+  storageBucket: 'kuryeai-99bf9.firebasestorage.app',
+  messagingSenderId: '1012295004135',
+  appId: '1:1012295004135:web:0cceac0476175e19395742'
+};
+
+const app  = getApps().find(a => a.name === 'admin') || initializeApp(FB_CONFIG, 'admin');
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let allMessages = [];
+let currentFilter = 'all';
+
+// ── AUTH ────────────────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    document.getElementById('admin-email-label').textContent = user.email;
+    loadMessages();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('panel').style.display = 'none';
+  }
+});
+
+window.doAdminLogin = async function() {
+  const email = document.getElementById('a-email').value.trim();
+  const pass  = document.getElementById('a-pass').value;
+  const btn   = document.getElementById('a-btn');
+  const err   = document.getElementById('login-err');
+  if (!email || !pass) { err.textContent = 'E-posta ve şifre gerekli.'; return; }
+  btn.disabled = true; btn.textContent = 'Giriş yapılıyor…';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    err.textContent = e.code === 'auth/invalid-credential' ? 'E-posta veya şifre hatalı.' : e.message;
+    btn.disabled = false; btn.textContent = 'Giriş Yap';
+  }
+};
+
+window.doLogout = async function() {
+  await signOut(auth);
+};
+
+// ── MESSAGES ────────────────────────────────────────────────────
+function loadMessages() {
+  const q = query(collection(db, 'contact_messages'), orderBy('createdAt', 'desc'));
+  onSnapshot(q, snap => {
+    allMessages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    renderMessages();
+  });
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = allMessages.length;
+  document.getElementById('stat-new').textContent   = allMessages.filter(m => m.status === 'new').length;
+  document.getElementById('stat-done').textContent  = allMessages.filter(m => m.status === 'done').length;
+}
+
+function renderMessages() {
+  const list = document.getElementById('msg-list');
+  document.getElementById('loading').style.display = 'none';
+  const filtered = currentFilter === 'all' ? allMessages : allMessages.filter(m => m.status === currentFilter);
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">Bu filtrede mesaj yok.</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(m => {
+    const date = m.createdAt?.toDate?.()?.toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) || '—';
+    const waText = encodeURIComponent(`Merhaba ${m.ad}, KuryeAI ekibinden yazıyorum.`);
+    const waHref = m.tel ? `https://wa.me/90${m.tel.replace(/\D/g,'')}?text=${waText}` : '';
+    return `<div class="msg-card status-${m.status||'new'}" id="card-${m.id}">
+      <div class="msg-head">
+        <span class="msg-name">${esc(m.ad||'—')}</span>
+        <span class="msg-konu">${esc(m.konu||'Diğer')}</span>
+        <span class="msg-date">${date}</span>
+      </div>
+      <div class="msg-contact">
+        ${m.tel ? `<a href="tel:${m.tel}">📞 ${esc(m.tel)}</a>` : ''}
+        ${m.email ? `<a href="mailto:${m.email}">✉️ ${esc(m.email)}</a>` : ''}
+      </div>
+      <div class="msg-text">${esc(m.mesaj||'')}</div>
+      <div class="msg-actions">
+        <button class="act-btn act-new"  onclick="setStatus('${m.id}','new')">Yeni</button>
+        <button class="act-btn act-read" onclick="setStatus('${m.id}','read')">Okundu</button>
+        <button class="act-btn act-done" onclick="setStatus('${m.id}','done')">Tamamlandı ✓</button>
+        ${waHref ? `<button class="act-btn act-wa" onclick="window.open('${waHref}','_blank')">💬 WhatsApp</button>` : ''}
+        <button class="act-btn act-del" onclick="deleteMsg('${m.id}')">Sil</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.setFilter = function(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderMessages();
+};
+
+window.setStatus = async function(id, status) {
+  await updateDoc(doc(db, 'contact_messages', id), { status });
+};
+
+window.deleteMsg = async function(id) {
+  if (!confirm('Bu mesajı silmek istediğinizden emin misiniz?')) return;
+  await deleteDoc(doc(db, 'contact_messages', id));
+};
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

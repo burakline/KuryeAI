@@ -289,14 +289,14 @@
     .fn-value.teal   { color:var(--teal); }
     .fn-value.white  { color:#fff; }
     .fn-sub { font-size:.4rem; color:rgba(255,255,255,.3); margin-top:1px; }
-    @media (max-width:960px) {
+    @media (max-width:1100px) {
       .hero-inner { grid-template-columns:1fr; gap:3rem; }
       .hero-left { align-items:center; text-align:center; }
       .hero-left .hero-eyebrow { justify-content:center; }
       .hero-left .hero-h1 { text-align:center; }
       .hero-left .hero-sub { text-align:center; margin-left:auto; margin-right:auto; }
       .hero-left .hero-btns { justify-content:center; }
-      .hero-right { display:none; }
+      .hero-right { display:none !important; }
     }
 
     /* ── TICKER ── */
@@ -473,7 +473,7 @@
     .pc-btn-ol:hover { background:rgba(255,255,255,.07); transform:scale(1.02); }
 
     /* ── CTA ── */
-    .cta-section { background:var(--black); border-top:.5px solid var(--border); text-align:center; padding:8rem 2rem; }
+    .cta-section { background:var(--black); border-top:.5px solid var(--border); text-align:center; padding:8rem 2rem; position:relative; }
     .cta-section .h2 { max-width:580px; margin:0 auto; }
     .cta-section .body-lg { margin:1.2rem auto 0; text-align:center; max-width:380px; }
     .cta-btns { display:flex; gap:.9rem; margin-top:2.8rem; flex-wrap:wrap; justify-content:center; }
@@ -530,6 +530,69 @@
       .hero-h1 { font-size:2.4rem; }
       .hero-logo-wrap img { height:82px; width:82px; }
     }
+
+    /* ── TRUST STRIP ── */
+    .trust-strip { background:var(--dark); border-bottom:.5px solid var(--border); padding:1.1rem 2rem; }
+    .trust-inner { max-width:1060px; margin:0 auto; display:flex; align-items:center; gap:2rem; justify-content:center; flex-wrap:wrap; }
+    .trust-lbl { font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--gray); white-space:nowrap; flex-shrink:0; }
+    .trust-sep { width:.5px; height:14px; background:var(--border); flex-shrink:0; }
+    .trust-pills { display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; justify-content:center; }
+    .trust-pill { display:inline-flex; align-items:center; gap:.32rem; font-size:.66rem; font-weight:600; color:rgba(255,255,255,.45); background:rgba(255,255,255,.04); border:.5px solid rgba(255,255,255,.07); border-radius:6px; padding:.28rem .6rem; transition:all .2s; }
+    .trust-pill:hover { color:var(--white); border-color:rgba(255,255,255,.15); }
+
+    /* ── STATS ICONS ── */
+    .stat-icon-wrap { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; flex-shrink:0; }
+    .sic-teal   { background:rgba(0,200,215,.1);  border:.5px solid rgba(0,200,215,.25);  color:var(--teal); }
+    .sic-green  { background:rgba(0,196,140,.1);  border:.5px solid rgba(0,196,140,.25);  color:#00c48c; }
+    .sic-red    { background:rgba(239,68,68,.1);   border:.5px solid rgba(239,68,68,.25);  color:var(--red); }
+    .sic-purple { background:rgba(124,58,237,.1);  border:.5px solid rgba(124,58,237,.25); color:#7c3aed; }
+
+    /* ── FEATURE BENTO ── */
+    .feat-bento { background:var(--dark); border-top:.5px solid var(--border); }
+    .bento-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border-radius:20px; overflow:hidden; margin-top:3rem; }
+    .bento-card { background:var(--card); padding:2rem; position:relative; overflow:hidden; transition:background .3s; }
+    .bento-card:hover { background:#141414; }
+    .bento-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--teal); transform:scaleX(0); transform-origin:left; transition:transform .4s cubic-bezier(.16,1,.3,1); }
+    .bento-card:hover::before { transform:scaleX(1); }
+    .bento-card.wide { grid-column:span 2; }
+    .bento-tag { font-size:.56rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); margin-bottom:.7rem; display:flex; align-items:center; gap:.4rem; }
+    .bento-tag::before { content:''; width:4px; height:4px; border-radius:50%; background:currentColor; flex-shrink:0; }
+    .bento-title { font-size:1.08rem; font-weight:700; letter-spacing:-.03em; line-height:1.3; margin-bottom:.5rem; }
+    .bento-desc { font-size:.82rem; color:var(--gray-lt); line-height:1.65; }
+    /* Platform badges */
+    .pbadges { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:1.2rem; align-items:center; }
+    .pb { display:inline-flex; align-items:center; font-size:.63rem; font-weight:700; padding:.26rem .55rem; border-radius:5px; }
+    .pb-ys { background:rgba(250,55,78,.08);  border:.5px solid rgba(250,55,78,.2);  color:#fa373e; }
+    .pb-tr { background:rgba(249,127,10,.08); border:.5px solid rgba(249,127,10,.2); color:#f97f0a; }
+    .pb-gt { background:rgba(83,186,80,.08);  border:.5px solid rgba(83,186,80,.2);  color:#53ba50; }
+    .pb-mg { background:rgba(231,76,60,.08);  border:.5px solid rgba(231,76,60,.2);  color:#e74c3c; }
+    .pb-wa { background:rgba(37,211,102,.08); border:.5px solid rgba(37,211,102,.2); color:#25d366; }
+    .pb-dest { background:rgba(0,200,215,.1); border:.5px solid rgba(0,200,215,.25); color:var(--teal); font-weight:800; }
+    .pb-arrow { color:var(--teal); font-size:.8rem; font-weight:700; padding:0 2px; }
+    /* Route visual */
+    .route-vis { display:flex; align-items:center; gap:.6rem; margin-top:1.2rem; }
+    .rv-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .rv-line { flex:1; height:1px; background:linear-gradient(90deg,rgba(0,200,215,.6),rgba(0,196,140,.6)); position:relative; }
+    .rv-line::after { content:''; position:absolute; right:-4px; top:-3.5px; width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 8px rgba(0,196,140,.7); }
+    .rv-label { font-size:.58rem; color:var(--gray-lt); }
+    /* Mini bar chart */
+    .mini-chart { display:flex; align-items:flex-end; gap:3px; height:36px; margin-top:1.2rem; }
+    .mc-bar { flex:1; border-radius:2px 2px 0 0; background:rgba(0,200,215,.12); }
+    .mc-bar.hi  { background:var(--teal); }
+    .mc-bar.hi2 { background:var(--green); }
+    /* Live tracker */
+    .live-track { display:flex; align-items:center; gap:.5rem; margin-top:1.1rem; padding:.5rem .75rem; background:rgba(0,200,215,.05); border:.5px solid rgba(0,200,215,.12); border-radius:8px; }
+    .lt-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); animation:pls 2s infinite; flex-shrink:0; }
+    .lt-txt { font-size:.6rem; color:var(--gray-lt); }
+    @media (max-width:768px) {
+      .bento-grid { grid-template-columns:1fr; }
+      .bento-card.wide { grid-column:span 1; }
+      .trust-sep { display:none; }
+    }
+
+    /* ── CTA GRADIENT ── */
+    .cta-section { background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,200,215,.06) 0%,rgba(99,102,241,.03) 50%,var(--black) 100%); border-top:.5px solid var(--border); text-align:center; padding:8rem 2rem; }
+    .cta-section::before { content:''; position:absolute; inset:0; pointer-events:none; }
   </style>
 </head>
 <body>
@@ -697,6 +760,40 @@
   </div>
   <div class="scroll-ind"><div class="scroll-line"></div><span>Kaydır</span></div>
 </section>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="trust-inner">
+    <span class="trust-lbl">Entegre Çalışır</span>
+    <div class="trust-sep"></div>
+    <div class="trust-pills">
+      <span class="trust-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Yemeksepeti
+      </span>
+      <span class="trust-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Trendyol Yemek
+      </span>
+      <span class="trust-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Getir
+      </span>
+      <span class="trust-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+        Migros Yemek
+      </span>
+      <span class="trust-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        WhatsApp
+      </span>
+      <span class="trust-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Masa Siparişi
+      </span>
+    </div>
+  </div>
+</div>
 
 <!-- TICKER -->
 <div class="ticker" aria-hidden="true">
@@ -889,13 +986,112 @@
   </div>
 </section>
 
+<!-- FEATURE BENTO -->
+<section class="section feat-bento" id="ozellikler">
+  <div class="inner">
+    <div class="reveal" style="margin-bottom:0">
+      <p class="lbl">Platform Özellikleri</p>
+      <h2 class="h2">Her şey <span class="muted">tek çatı altında.</span></h2>
+      <p class="body-lg">Siparişten teslimat raporuna kadar tüm operasyon, tek akıllı platformda.</p>
+    </div>
+    <div class="bento-grid reveal">
+      <!-- Card 1: Wide — Platform integrations -->
+      <div class="bento-card wide">
+        <p class="bento-tag">Tam Entegrasyon</p>
+        <h3 class="bento-title">Tüm sipariş kanalları tek panelde</h3>
+        <p class="bento-desc">Yemeksepeti, Trendyol Yemek, Getir, Migros Yemek ve WhatsApp siparişleri — tek ekranda, gerçek zamanlı.</p>
+        <div class="pbadges">
+          <span class="pb pb-ys">Yemeksepeti</span>
+          <span class="pb-arrow">+</span>
+          <span class="pb pb-tr">Trendyol</span>
+          <span class="pb-arrow">+</span>
+          <span class="pb pb-gt">Getir</span>
+          <span class="pb-arrow">+</span>
+          <span class="pb pb-mg">Migros</span>
+          <span class="pb-arrow">+</span>
+          <span class="pb pb-wa">WhatsApp</span>
+          <span class="pb-arrow" style="margin-left:.4rem">→</span>
+          <span class="pb pb-dest">RestoranAI</span>
+        </div>
+      </div>
+      <!-- Card 2: AI routing -->
+      <div class="bento-card">
+        <p class="bento-tag">AI Teknoloji</p>
+        <h3 class="bento-title">Otomatik kurye atama</h3>
+        <p class="bento-desc">Yapay zeka en yakın ve müsait kuryeyi ortalama 12 saniyede otomatik atar.</p>
+        <div class="route-vis">
+          <div class="rv-dot" style="background:var(--teal);box-shadow:0 0 6px var(--teal)"></div>
+          <div class="rv-line"></div>
+          <div class="rv-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+        </div>
+        <div style="font-size:.62rem;color:var(--gray-lt);margin-top:.6rem;display:flex;align-items:center;gap:.3rem">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
+          Ort. 12 sn • Kurye atama süresi
+        </div>
+      </div>
+      <!-- Card 3: Live tracking -->
+      <div class="bento-card">
+        <p class="bento-tag">Canlı Takip</p>
+        <h3 class="bento-title">Gerçek zamanlı konum</h3>
+        <p class="bento-desc">Her kurye konumu ve tahmini teslim süresi canlı izleyin.</p>
+        <div class="live-track">
+          <div class="lt-dot"></div>
+          <span class="lt-txt">Serkan M. · 14 dk · Kızılay</span>
+        </div>
+        <div class="live-track" style="margin-top:.4rem">
+          <div class="lt-dot" style="background:#00c48c;animation:pls 2s infinite .5s"></div>
+          <span class="lt-txt">Ali K. · 8 dk · Çankaya</span>
+        </div>
+      </div>
+      <!-- Card 4: Reports -->
+      <div class="bento-card">
+        <p class="bento-tag">AI Analiz</p>
+        <h3 class="bento-title">Akıllı raporlar</h3>
+        <p class="bento-desc">Günlük, haftalık, aylık ciro ve sipariş analizleri. AI önerileri ile büyüyün.</p>
+        <div class="mini-chart">
+          <div class="mc-bar" style="height:40%"></div>
+          <div class="mc-bar" style="height:55%"></div>
+          <div class="mc-bar" style="height:48%"></div>
+          <div class="mc-bar" style="height:72%"></div>
+          <div class="mc-bar" style="height:60%"></div>
+          <div class="mc-bar hi" style="height:88%"></div>
+          <div class="mc-bar hi2" style="height:95%"></div>
+        </div>
+        <div style="font-size:.62rem;color:#00c48c;margin-top:.5rem;font-weight:700">+%34 bu ay ↑</div>
+      </div>
+      <!-- Card 5: QR Menu -->
+      <div class="bento-card">
+        <p class="bento-tag">QRMenuAI</p>
+        <h3 class="bento-title">Masadan QR ile sipariş</h3>
+        <p class="bento-desc">Garson yok, bekleme yok. Müşteri kendi siparişini veriyor, mutfağa anında gidiyor.</p>
+        <div style="display:flex;align-items:center;gap:.8rem;margin-top:1.1rem">
+          <svg width="36" height="36" viewBox="0 0 100 100"><rect x="10" y="10" width="30" height="30" rx="2" fill="none" stroke="#00c8d7" stroke-width="6"/><rect x="18" y="18" width="14" height="14" fill="#00c8d7"/><rect x="60" y="10" width="30" height="30" rx="2" fill="none" stroke="#00c8d7" stroke-width="6"/><rect x="68" y="18" width="14" height="14" fill="#00c8d7"/><rect x="10" y="60" width="30" height="30" rx="2" fill="none" stroke="#00c8d7" stroke-width="6"/><rect x="18" y="68" width="14" height="14" fill="#00c8d7"/><rect x="60" y="60" width="8" height="8" rx="1" fill="#00c8d7"/><rect x="72" y="60" width="8" height="8" rx="1" fill="#00c8d7"/><rect x="84" y="60" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/><rect x="60" y="72" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/><rect x="72" y="72" width="8" height="8" rx="1" fill="#00c8d7"/><rect x="84" y="72" width="8" height="8" rx="1" fill="#00c8d7"/></svg>
+          <div style="font-size:.68rem;color:var(--gray-lt);line-height:1.5">Tara → Sipariş ver<br/><span style="color:var(--teal)">Mutfakta anında görün</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- STATS -->
 <div class="stats">
   <div class="stats-grid reveal">
-    <div class="stat-item"><div class="stat-n">7<em>/24</em></div><div class="stat-l">Kesintisiz Hizmet</div></div>
-    <div class="stat-item"><div class="stat-n"><em>%</em>100</div><div class="stat-l">Canlı Takip</div></div>
-    <div class="stat-item"><div class="stat-n">3<em>x</em></div><div class="stat-l">Daha Hızlı</div></div>
-    <div class="stat-item"><div class="stat-n">AI</div><div class="stat-l">Destekli Analiz</div></div>
+    <div class="stat-item">
+      <div class="stat-icon-wrap sic-teal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+      <div class="stat-n">7<em>/24</em></div><div class="stat-l">Kesintisiz Hizmet</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon-wrap sic-green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+      <div class="stat-n"><em>%</em>100</div><div class="stat-l">Canlı Takip</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon-wrap sic-red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <div class="stat-n">3<em>x</em></div><div class="stat-l">Daha Hızlı</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon-wrap sic-purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/></svg></div>
+      <div class="stat-n">AI</div><div class="stat-l">Destekli Analiz</div>
+    </div>
   </div>
 </div>
 

@@ -313,6 +313,19 @@
     .ref-name { font-size:.82rem; font-weight:700; }
     .ref-role { font-size:.7rem; color:var(--gray-lt); }
 
+    /* ── PLATFORM GRID ── */
+    .platform-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--border); border-radius:16px; overflow:hidden; max-width:860px; margin:0 auto; }
+    .platform-item { background:var(--card); padding:1.5rem 1rem; text-align:center; transition:background .2s; }
+    .platform-item:hover { background:#161616; }
+    .platform-icon { display:flex; align-items:center; justify-content:center; height:48px; margin-bottom:.6rem; }
+    .platform-icon img { height:40px; width:40px; object-fit:contain; border-radius:8px; }
+    .platform-name { font-size:.72rem; font-weight:700; color:var(--gray-lt); }
+    @media (max-width:600px) {
+      .platform-grid { grid-template-columns:repeat(3,1fr); }
+      .platform-grid .platform-item:nth-child(4) { border-radius:0 0 0 16px; }
+      .platform-grid .platform-item:nth-child(5) { border-radius:0; }
+    }
+
     /* ── MARKA REFERANSLAR ── */
     .marka-ref { background:var(--dark); border-top:.5px solid var(--border); }
     .marka-grid { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; margin-top:3rem; }
@@ -955,26 +968,26 @@
       <p class="lbl">Entegrasyonlar & Platformlar</p>
       <h2 class="h2">Çalıştığımız <span class="muted">platformlar.</span></h2>
     </div>
-    <div class="reveal" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-radius:16px;overflow:hidden;max-width:860px;margin:0 auto">
-      <div style="background:var(--card);padding:1.5rem;text-align:center;transition:background .2s" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;height:48px"><img src="platform-yemeksepeti.png" alt="Yemeksepeti" style="height:40px;width:40px;object-fit:contain;border-radius:8px"></div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--gray-lt)">Yemeksepeti</div>
+    <div class="reveal platform-grid">
+      <div class="platform-item">
+        <div class="platform-icon"><img src="platform-trendyol.png" alt="Trendyol Yemek"></div>
+        <div class="platform-name">Trendyol Yemek</div>
       </div>
-      <div style="background:var(--card);padding:1.5rem;text-align:center;transition:background .2s" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;height:48px"><img src="platform-trendyol.png" alt="Trendyol Yemek" style="height:40px;width:40px;object-fit:contain;border-radius:8px"></div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--gray-lt)">Trendyol Yemek</div>
+      <div class="platform-item">
+        <div class="platform-icon"><img src="platform-yemeksepeti.png" alt="Yemeksepeti"></div>
+        <div class="platform-name">Yemeksepeti</div>
       </div>
-      <div style="background:var(--card);padding:1.5rem;text-align:center;transition:background .2s" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;height:48px"><img src="platform-getir.png" alt="Getir Yemek" style="height:40px;width:40px;object-fit:contain;border-radius:8px"></div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--gray-lt)">Getir Yemek</div>
+      <div class="platform-item">
+        <div class="platform-icon"><img src="platform-getir.png" alt="Getir Yemek"></div>
+        <div class="platform-name">Getir Yemek</div>
       </div>
-      <div style="background:var(--card);padding:1.5rem;text-align:center;transition:background .2s" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;height:48px"><img src="platform-migros.png" alt="Migros Yemek" style="height:40px;width:40px;object-fit:contain;border-radius:8px"></div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--gray-lt)">Migros Yemek</div>
+      <div class="platform-item">
+        <div class="platform-icon"><img src="platform-migros.png" alt="Migros Yemek"></div>
+        <div class="platform-name">Migros Yemek</div>
       </div>
-      <div style="background:var(--card);padding:1.5rem;text-align:center;transition:background .2s" onmouseover="this.style.background='#161616'" onmouseout="this.style.background='var(--card)'">
-        <div style="margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;height:48px"><img src="platform-whatsapp.png" alt="WhatsApp" style="height:40px;width:40px;object-fit:contain;border-radius:8px"></div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--gray-lt)">WhatsApp</div>
+      <div class="platform-item">
+        <div class="platform-icon"><img src="platform-whatsapp.png" alt="WhatsApp"></div>
+        <div class="platform-name">WhatsApp</div>
       </div>
     </div>
   </div>

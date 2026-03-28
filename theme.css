@@ -157,6 +157,24 @@ html[data-theme="light"] .acil-price-row:not(:last-child) {
   border-bottom-color: rgba(0,0,0,0.06);
 }
 
+/* ── TRUST STRIP ── */
+html[data-theme="light"] .trust-strip {
+  background: #eaedf2;
+  border-color: rgba(0,0,0,0.06);
+}
+html[data-theme="light"] .trust-lbl { color: #888; }
+html[data-theme="light"] .trust-sep { background: rgba(0,0,0,0.15); }
+html[data-theme="light"] .trust-pill {
+  color: #444;
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.12);
+}
+html[data-theme="light"] .trust-pill:hover {
+  color: #0d0d0d;
+  border-color: rgba(0,0,0,0.25);
+  background: rgba(0,0,0,0.08);
+}
+
 /* ── TICKER ── */
 html[data-theme="light"] .ticker {
   background: #eaedf2;

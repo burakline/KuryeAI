@@ -243,7 +243,7 @@
 
   <!-- GİRİŞ -->
   <div class="tab-pane active" id="pane-giris">
-    <p class="form-title">Hoş Geldiniz 👋</p>
+    <p class="form-title">Hoş Geldiniz <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></p>
     <p class="form-sub">E-posta, telefon veya işletme ID ile giriş yapın.</p>
 
     <div class="err-msg" id="err-msg"></div>
@@ -282,7 +282,7 @@
 
   <!-- KAYIT -->
   <div class="tab-pane" id="pane-kayit">
-    <p class="form-title">Restoran Kaydı 🍔</p>
+    <p class="form-title">Restoran Kaydı <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><line x1="3" x2="21" y1="6" y2="6"/><path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.4 3.5a8.1 8.1 0 0 0 15.8 1"/><line x1="3" x2="21" y1="18" y2="18"/></svg></p>
     <p class="form-sub">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
 
     <div class="err-msg" id="kayit-err"></div>
@@ -437,7 +437,7 @@
       });
       await sendEmailVerification(cred.user);
       await signOut(auth);
-      ok.textContent = `✅ Kayıt başarılı! İşletme ID'niz: ${restoranId}. E-posta doğrulama linki gönderildi. Doğrulama sonrası admin onayı beklemeniz gerekiyor.`;
+      ok.textContent = `Kayıt başarılı! İşletme ID'niz: ${restoranId}. E-posta doğrulama linki gönderildi. Doğrulama sonrası admin onayı beklemeniz gerekiyor.`;
       ok.classList.add('show');
       ['k-name','k-owner','k-phone','k-email','k-pw','k-pw2'].forEach(id => document.getElementById(id).value='');
       setTimeout(() => window.switchTab('giris'), 6000);
@@ -626,7 +626,7 @@ window.pwaInstall=async()=>{
 <!-- PWA install bar -->
 <div id="pwa-install-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#00c8d7,#009aaa);color:#000;padding:12px 20px;align-items:center;justify-content:space-between;gap:12px;z-index:999;padding-bottom:max(12px,env(safe-area-inset-bottom))">
   <div style="display:flex;align-items:center;gap:10px">
-    <span style="font-size:20px">📱</span>
+    <span style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
     <div>
       <div style="font-size:13px;font-weight:700">Ana Ekrana Ekle</div>
       <div style="font-size:11px;opacity:.8">RestoranAI'yi uygulama olarak kullan</div>
@@ -634,7 +634,7 @@ window.pwaInstall=async()=>{
   </div>
   <div style="display:flex;gap:8px">
     <button onclick="pwaInstall()" style="background:#000;color:#00c8d7;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">Ekle</button>
-    <button onclick="document.getElementById('pwa-install-bar').style.display='none'" style="background:rgba(0,0,0,.15);color:#000;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">✕</button>
+    <button onclick="document.getElementById('pwa-install-bar').style.display='none'" style="background:rgba(0,0,0,.15);color:#000;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 </div>
 </body>

@@ -101,7 +101,7 @@
     .price-unit{font-size:.78rem;color:var(--gray-lt);margin-bottom:1.2rem}
     .price-items{list-style:none;display:flex;flex-direction:column;gap:.55rem}
     .price-item{font-size:.82rem;color:var(--gray-lt);display:flex;align-items:center;gap:.5rem}
-    .price-item::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+    .price-item .price-check{color:var(--green);flex-shrink:0;display:inline-flex;align-items:center}
 
     /* ── KARŞILAŞTIRMA ── */
     .compare-table{width:100%;border-collapse:collapse;margin-top:2rem;font-size:.85rem}
@@ -153,10 +153,10 @@
   </a>
   <a href="/" class="nav-back">← Ana Sayfa</a>
   <div class="auth-drop" id="auth-drop">
-    <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')">🔐 Giriş / Kayıt ▾</button>
+    <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></span> Giriş / Kayıt ▾</button>
     <div class="auth-drop-menu">
-      <a href="/acilkuryeai-talepeden-login" class="auth-drop-item">📦 Talep Eden Girişi</a>
-      <a href="/acilkuryeai-kurye-login" class="auth-drop-item">🛵 Kurye Girişi</a>
+      <a href="/acilkuryeai-talepeden-login" class="auth-drop-item"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></span> Talep Eden Girişi</a>
+      <a href="/acilkuryeai-kurye-login" class="auth-drop-item"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></span> Kurye Girişi</a>
     </div>
   </div>
 </nav>
@@ -169,8 +169,8 @@
   <h1>Acil Kurye<br/><span class="hi">Saniyeler İçinde</span><br/>Kapınızda.</h1>
   <p class="hero-sub">Yapay zeka destekli kurye atama sistemi. Talep oluşturun, en yakın kurye otomatik atansın, panelden canlı takip edin.</p>
   <div class="hero-btns">
-    <a href="/acilkuryeai-talepeden-login" class="btn-hero-primary">📦 Hemen Talep Oluştur</a>
-    <a href="/acilkuryeai-kurye-login" class="btn-hero-secondary">🛵 Kurye Olarak Katıl</a>
+    <a href="/acilkuryeai-talepeden-login" class="btn-hero-primary"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></span> Hemen Talep Oluştur</a>
+    <a href="/acilkuryeai-kurye-login" class="btn-hero-secondary"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></span> Kurye Olarak Katıl</a>
   </div>
   <div class="hero-stats">
     <div class="hero-stat"><div class="hero-stat-n">15–30</div><div class="hero-stat-l">Dakikada Kurye</div></div>
@@ -187,17 +187,17 @@
   <span class="section-badge">Hizmet Türleri</span>
   <h2 class="section-title">Her türlü acil teslimat<br/>için hazırız.</h2>
   <div class="cat-grid">
-    <div class="cat-card"><div class="cat-icon">🏥</div><div class="cat-name">Tıbbi Kurye</div></div>
-    <div class="cat-card"><div class="cat-icon">💊</div><div class="cat-name">Eczane Kuryesi</div></div>
-    <div class="cat-card"><div class="cat-icon">🧪</div><div class="cat-name">İlaç Kuryesi</div></div>
-    <div class="cat-card"><div class="cat-icon">📄</div><div class="cat-name">Evrak Kuryesi</div></div>
-    <div class="cat-card"><div class="cat-icon">👑</div><div class="cat-name">VIP Kurye</div></div>
-    <div class="cat-card"><div class="cat-icon">⚡</div><div class="cat-name">Express Kurye</div></div>
-    <div class="cat-card"><div class="cat-icon">📱</div><div class="cat-name">SIM Kart</div></div>
-    <div class="cat-card"><div class="cat-icon">💳</div><div class="cat-name">Kredi Kartı</div></div>
-    <div class="cat-card"><div class="cat-icon">📰</div><div class="cat-name">Gazete / Dergi</div></div>
-    <div class="cat-card"><div class="cat-icon">🔧</div><div class="cat-name">Yedek Parça</div></div>
-    <div class="cat-card"><div class="cat-icon">📦</div><div class="cat-name">Diğer</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18"/></svg></div><div class="cat-name">Tıbbi Kurye</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div><div class="cat-name">Eczane Kuryesi</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l3 9-7 9H9L2 12z"/><path d="M6 9h12"/></svg></div><div class="cat-name">İlaç Kuryesi</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div><div class="cat-name">Evrak Kuryesi</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg></div><div class="cat-name">VIP Kurye</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="cat-name">Express Kurye</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></div><div class="cat-name">SIM Kart</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></div><div class="cat-name">Kredi Kartı</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></div><div class="cat-name">Gazete / Dergi</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="cat-name">Yedek Parça</div></div>
+    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div><div class="cat-name">Diğer</div></div>
   </div>
 </div>
 
@@ -211,19 +211,19 @@
   <div class="steps-grid">
     <div class="step-card">
       <div class="step-num">01</div>
-      <div class="step-icon">📝</div>
+      <div class="step-icon" style="display:flex;margin-bottom:.7rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
       <div class="step-title">Talep Oluşturun</div>
       <div class="step-desc">Giriş yapın, alınacak ve teslim edilecek adresi girin. Kurye türünü seçin. Sistem ücret tahminini otomatik hesaplar.</div>
     </div>
     <div class="step-card">
       <div class="step-num">02</div>
-      <div class="step-icon">🤖</div>
+      <div class="step-icon" style="display:flex;margin-bottom:.7rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>
       <div class="step-title">Kurye Otomatik Atanır</div>
       <div class="step-desc">Yapay zeka sistemi müsait ve en yakın kurye ile eşleştirir. 15–30 dakika içinde kurye kabul bildirimi alırsınız.</div>
     </div>
     <div class="step-card">
       <div class="step-num">03</div>
-      <div class="step-icon">📍</div>
+      <div class="step-icon" style="display:flex;margin-bottom:.7rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
       <div class="step-title">Canlı Takip Edin</div>
       <div class="step-desc">Panelden kuryenin konumunu anlık izleyin. Teslimatta bildirim alın. Teslimat onaylandıktan sonra ödeme yapın.</div>
     </div>
@@ -239,27 +239,27 @@
   <p class="section-sub">Geleneksel kurye siparişinin dijital ve akıllı versiyonu.</p>
   <div class="features-grid">
     <div class="feat-card">
-      <div class="feat-icon">🗺️</div>
+      <div class="feat-icon" style="display:flex"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg></div>
       <div><div class="feat-title">Canlı Konum Takibi</div><div class="feat-desc">Kuryenin gerçek zamanlı konumunu harita üzerinde görün. Nerede olduğunu her an bilin.</div></div>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">💰</div>
+      <div class="feat-icon" style="display:flex"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div>
       <div><div class="feat-title">Şeffaf Fiyatlandırma</div><div class="feat-desc">Talep öncesinde mesafe ve süreye göre tahmini ücret gösterilir. Sürpriz fatura yok.</div></div>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🤖</div>
+      <div class="feat-icon" style="display:flex"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>
       <div><div class="feat-title">Yapay Zeka Atama</div><div class="feat-desc">Sistem müsait, yakın ve uygun kuryeyi otomatik bulur. Manuel koordinasyon gerekmez.</div></div>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">📊</div>
+      <div class="feat-icon" style="display:flex"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
       <div><div class="feat-title">Sipariş Geçmişi</div><div class="feat-desc">Tüm taleplerinizi panelden görüntüleyin. Durum takibi, geçmiş siparişler, fiyat detayları.</div></div>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">⚡</div>
+      <div class="feat-icon" style="display:flex"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
       <div><div class="feat-title">Anlık Bildirimler</div><div class="feat-desc">Kurye kabul ettiğinde, yola çıktığında ve teslim ettiğinde anlık durum güncellemesi alın.</div></div>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🔒</div>
+      <div class="feat-icon" style="display:flex"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>
       <div><div class="feat-title">Güvenli & Kayıtlı</div><div class="feat-desc">Tüm kuryeler kimlik doğrulamalı. Her teslimat kayıt altında. E-posta doğrulamalı hesap sistemi.</div></div>
     </div>
   </div>
@@ -278,11 +278,11 @@
       <div class="price-amount">350₺</div>
       <div class="price-unit">/ Saat (minimum 1 saat)</div>
       <ul class="price-items">
-        <li class="price-item">+12₺ / km mesafe ücreti</li>
-        <li class="price-item">Teslimat sırasında ödeme</li>
-        <li class="price-item">Nakit veya havale</li>
-        <li class="price-item">Tüm kurye türleri dahil</li>
-        <li class="price-item">Canlı harita takibi</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>+12₺ / km mesafe ücreti</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Teslimat sırasında ödeme</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Nakit veya havale</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tüm kurye türleri dahil</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Canlı harita takibi</li>
       </ul>
     </div>
     <div class="price-card">
@@ -290,11 +290,11 @@
       <div class="price-amount">–</div>
       <div class="price-unit">Özel fiyatlandırma</div>
       <ul class="price-items">
-        <li class="price-item">Aylık hacim indirimi</li>
-        <li class="price-item">Öncelikli kurye atama</li>
-        <li class="price-item">Fatura + muhasebe entegrasyonu</li>
-        <li class="price-item">Dedicated müşteri desteği</li>
-        <li class="price-item">API erişimi (yakında)</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Aylık hacim indirimi</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Öncelikli kurye atama</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Fatura + muhasebe entegrasyonu</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Dedicated müşteri desteği</li>
+        <li class="price-item"><span class="price-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>API erişimi (yakında)</li>
       </ul>
     </div>
   </div>
@@ -315,12 +315,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td>Canlı konum takibi</td><td class="c-yes">✓ Var</td><td class="c-no">✗ Yok</td></tr>
-      <tr><td>Otomatik fiyat hesabı</td><td class="c-yes">✓ Var</td><td class="c-no">✗ Yok</td></tr>
-      <tr><td>Sipariş geçmişi</td><td class="c-yes">✓ Var</td><td class="c-no">✗ Yok</td></tr>
-      <tr><td>7/24 kurye havuzu</td><td class="c-yes">✓ Var</td><td class="c-no">~ Belirsiz</td></tr>
-      <tr><td>Durum bildirimleri</td><td class="c-yes">✓ Anlık</td><td class="c-no">✗ Manuel</td></tr>
-      <tr><td>Şeffaf ücret</td><td class="c-yes">✓ Önceden</td><td class="c-no">~ Sonradan</td></tr>
+      <tr><td>Canlı konum takibi</td><td class="c-yes"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Var</span></td><td class="c-no"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Yok</span></td></tr>
+      <tr><td>Otomatik fiyat hesabı</td><td class="c-yes"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Var</span></td><td class="c-no"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Yok</span></td></tr>
+      <tr><td>Sipariş geçmişi</td><td class="c-yes"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Var</span></td><td class="c-no"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Yok</span></td></tr>
+      <tr><td>7/24 kurye havuzu</td><td class="c-yes"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Var</span></td><td class="c-no">~ Belirsiz</td></tr>
+      <tr><td>Durum bildirimleri</td><td class="c-yes"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Anlık</span></td><td class="c-no"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Manuel</span></td></tr>
+      <tr><td>Şeffaf ücret</td><td class="c-yes"><span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Önceden</span></td><td class="c-no">~ Sonradan</td></tr>
     </tbody>
   </table>
 </div>
@@ -333,8 +333,8 @@
     <h2 class="cta-title">Hemen başlayın.<br/>İlk talebiniz dakikalar içinde.</h2>
     <p class="cta-sub">Kayıt ücretsiz. Sadece kullandığınız kadar ödeyin.</p>
     <div class="cta-btns">
-      <a href="/acilkuryeai-talepeden-login" class="btn-cta-red">📦 Talep Eden Girişi / Kayıt</a>
-      <a href="/acilkuryeai-kurye-login" class="btn-cta-teal">🛵 Kurye Olarak Katıl</a>
+      <a href="/acilkuryeai-talepeden-login" class="btn-cta-red"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></span> Talep Eden Girişi / Kayıt</a>
+      <a href="/acilkuryeai-kurye-login" class="btn-cta-teal"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></span> Kurye Olarak Katıl</a>
     </div>
   </div>
 </div>
@@ -344,7 +344,7 @@
   <a href="/">← Ana Sayfa</a> &nbsp;·&nbsp;
   <a href="/acilkuryeai-talepeden-login">Talep Eden Girişi</a> &nbsp;·&nbsp;
   <a href="/acilkuryeai-kurye-login">Kurye Girişi</a> &nbsp;·&nbsp;
-  <a href="tel:+905072171995">📞 0 507 217 19 95</a> &nbsp;·&nbsp;
+  <a href="tel:+905072171995"><span style="display:inline-flex;align-items:center;gap:.25rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.54 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> 0 507 217 19 95</span></a> &nbsp;·&nbsp;
   <a href="/kvkk">Gizlilik Politikası</a>
   <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
 </div>

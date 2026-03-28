@@ -91,7 +91,7 @@ html[data-theme="light"] nav{background:rgba(255,255,255,.85)}
 .price-note{font-size:.78rem;color:var(--gray-lt);margin-top:.5rem;margin-bottom:1.5rem}
 .price-features{text-align:left;margin-bottom:1.8rem;display:flex;flex-direction:column;gap:.7rem}
 .pf-item{display:flex;align-items:center;gap:.7rem;font-size:.84rem;color:var(--gray-lt)}
-.pf-item::before{content:'✓';color:var(--teal);font-weight:800;flex-shrink:0}
+.pf-item .pf-check{color:var(--teal);flex-shrink:0;display:inline-flex;align-items:center}
 .price-cta{display:block;background:var(--teal);color:#000;font-size:.92rem;font-weight:800;padding:.9rem 2rem;border-radius:999px;text-decoration:none;transition:background .2s,transform .15s,box-shadow .2s}
 .price-cta:hover{background:var(--teal-lt);transform:scale(1.03);box-shadow:0 0 28px rgba(0,200,215,.3)}
 
@@ -145,7 +145,7 @@ footer a{color:var(--teal);text-decoration:none}
   </p>
 
   <div class="hero-btns-qr">
-    <a href="/restoranai-login" class="btn-lg-teal">🚀 Hemen Başla — 4.995₺/yıl</a>
+    <a href="/restoranai-login" class="btn-lg-teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> Hemen Başla — 4.995₺/yıl</a>
     <a href="#nasil-calisir" class="btn-lg-ghost">Nasıl Çalışır? →</a>
   </div>
 
@@ -180,7 +180,7 @@ footer a{color:var(--teal);text-decoration:none}
     </div>
 
     <div class="phone-mock">
-      <div class="phone-top">🍽️ NEFİS BİSTRO — MENÜ</div>
+      <div class="phone-top"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg> NEFİS BİSTRO — MENÜ</div>
       <div class="phone-item">
         <div>
           <div class="phone-item-name">Izgara Köfte</div>
@@ -269,32 +269,32 @@ footer a{color:var(--teal);text-decoration:none}
     <h2 class="sec-h2">Her şey dahil</h2>
     <div class="feat-grid">
       <div class="feat-card">
-        <span class="feat-icon">📱</span>
+        <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
         <div class="feat-title">Uygulama Gerektirmez</div>
         <div class="feat-desc">Müşteri kamerasıyla okutunca tarayıcıda açılır. iOS ve Android'de sorunsuz.</div>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">⚡</span>
+        <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
         <div class="feat-title">Anlık Güncelleme</div>
         <div class="feat-desc">RestoranAI panelinden fiyat veya ürün değiştir, QR menüye saniyeler içinde yansır.</div>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">🎨</span>
+        <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
         <div class="feat-title">Markanıza Uygun Tasarım</div>
         <div class="feat-desc">Restoran adı, logo ve renkleriyle kişiselleştirilmiş menü sayfası.</div>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">📊</span>
+        <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></span>
         <div class="feat-title">Görüntülenme Analitiği</div>
         <div class="feat-desc">Kaç kişi menüyü açtı, en çok hangi ürüne bakıldı. RestoranAI panelinde görüntüle.</div>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">🔗</span>
+        <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
         <div class="feat-title">RestoranAI ile Tam Entegre</div>
         <div class="feat-desc">Menüyü ayrıca yönetmek yok. RestoranAI'daki menü zaten QR menüdür.</div>
       </div>
       <div class="feat-card">
-        <span class="feat-icon">♾️</span>
+        <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.5-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.5 6-4z"/><path d="M12 12c2 2.5 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.5-6 4z"/></svg></span>
         <div class="feat-title">Sınırsız Kategori & Ürün</div>
         <div class="feat-desc">Menünüzde istediğiniz kadar kategori ve ürün. Fotoğraf, açıklama, fiyat hepsi desteklenir.</div>
       </div>
@@ -314,13 +314,13 @@ footer a{color:var(--teal);text-decoration:none}
       <div class="price-period">/ yıl (KDV dahil)</div>
       <div class="price-note">≈ Aylık 416₺ — Tek bir menü baskısından ucuz</div>
       <div class="price-features">
-        <div class="pf-item">Sınırsız ürün ve kategori</div>
-        <div class="pf-item">Markanıza özel URL (kuryeai.com/restoranadıQRmenuAI)</div>
-        <div class="pf-item">Anlık menü güncelleme</div>
-        <div class="pf-item">Görüntülenme analitiği</div>
-        <div class="pf-item">QR kod tasarım desteği</div>
-        <div class="pf-item">RestoranAI entegrasyonu (sıfır ekstra iş)</div>
-        <div class="pf-item">1 yıl tam destek</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Sınırsız ürün ve kategori</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Markanıza özel URL (kuryeai.com/restoranadıQRmenuAI)</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Anlık menü güncelleme</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Görüntülenme analitiği</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>QR kod tasarım desteği</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>RestoranAI entegrasyonu (sıfır ekstra iş)</div>
+        <div class="pf-item"><span class="pf-check"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>1 yıl tam destek</div>
       </div>
       <a href="/restoranai-login" class="price-cta">Hemen Aktive Et →</a>
       <div style="font-size:.75rem;color:var(--gray-lt);margin-top:1rem">RestoranAI aboneliği gereklidir. <a href="/restoranai" style="color:var(--teal)">RestoranAI hakkında bilgi al →</a></div>

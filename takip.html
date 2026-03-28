@@ -59,7 +59,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <body>
 
 <div class="top-bar">
-  <div class="logo">🛵</div>
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div>
   <div>
     <h1 id="rest-name">Kurye Takip</h1>
     <p id="order-id-label">Sipariş yükleniyor...</p>
@@ -72,7 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div id="error-state" class="error-state" style="display:none">
-  <div class="icon">❌</div>
+  <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
   <h3>Sipariş bulunamadı</h3>
   <p style="margin-top:8px;font-size:13px">Bağlantı geçersiz veya sipariş sona ermiş olabilir.</p>
 </div>
@@ -83,22 +83,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="status-bar">
     <div class="status-steps">
       <div class="step" id="step-pending">
-        <div class="step-dot">📋</div>
+        <div class="step-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
         <div class="step-label">Alındı</div>
       </div>
       <div class="step-line" id="line-1"></div>
       <div class="step" id="step-preparing">
-        <div class="step-dot">👨‍🍳</div>
+        <div class="step-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 20 6-6-20A20 20 0 0 0 2 16"/><path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4"/></svg></div>
         <div class="step-label">Hazırlanıyor</div>
       </div>
       <div class="step-line" id="line-2"></div>
       <div class="step" id="step-on_the_way">
-        <div class="step-dot">🛵</div>
+        <div class="step-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div>
         <div class="step-label">Yolda</div>
       </div>
       <div class="step-line" id="line-3"></div>
       <div class="step" id="step-delivered">
-        <div class="step-dot">✅</div>
+        <div class="step-dot"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <div class="step-label">Teslim</div>
       </div>
     </div>
@@ -112,7 +112,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="sub" id="eta-sub">Kurye konumu bekleniyor</div>
     </div>
     <div>
-      <div class="courier-avatar" id="courier-avatar">🛵</div>
+      <div class="courier-avatar" id="courier-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></div>
       <div style="margin-top:6px">
         <div class="eta-right">
           <div class="courier-name" id="courier-name-label">—</div>
@@ -127,21 +127,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- Teslim edildi banner -->
   <div class="delivered-banner" id="delivered-banner">
-    <div class="icon">🎉</div>
+    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 1.27 2.89A2.1 2.1 0 0 0 14.14 6h0c.9 0 1.62.7 1.62 1.57v0"/><path d="M5 11c1.33 0 4-.6 4-2V6.5C9 5.12 10.12 4 11.5 4h0c1.38 0 2.5 1.12 2.5 2.5v1"/></svg></div>
     <h2>Siparişiniz Teslim Edildi!</h2>
     <p>Afiyet olsun. Tekrar görüşmek üzere!</p>
   </div>
 
   <!-- İptal banner -->
   <div class="cancelled-banner" id="cancelled-banner">
-    <div class="icon">❌</div>
+    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
     <h3>Sipariş İptal Edildi</h3>
     <p style="margin-top:6px;font-size:13px">Daha fazla bilgi için restoranı arayabilirsiniz.</p>
   </div>
 
   <!-- Sipariş detay -->
   <div class="order-card" id="order-items-card">
-    <h3>🛍️ Sipariş Detayı</h3>
+    <h3><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Sipariş Detayı</h3>
     <div id="order-items-list"></div>
     <div class="order-total">
       <span>Toplam</span>
@@ -151,7 +151,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- Teslimat adresi -->
   <div class="addr-card">
-    <div class="addr-icon">📍</div>
+    <div class="addr-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
     <div class="addr-body">
       <div class="label">TESLİMAT ADRESİ</div>
       <div class="addr" id="delivery-addr">—</div>
@@ -209,7 +209,7 @@ function initMap(lat=41.015137, lng=28.979530){
 function makeCourierMarkerEl(name){
   const el=document.createElement('div');
   el.style.cssText=`width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;cursor:pointer`;
-  el.textContent='🛵';
+  el.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>';
   el.title=name||'Kurye';
   return el;
 }
@@ -217,7 +217,7 @@ function makeCourierMarkerEl(name){
 function makeDestMarkerEl(){
   const el=document.createElement('div');
   el.style.cssText=`width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px`;
-  el.textContent='📍';
+  el.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
   return el;
 }
 
@@ -361,8 +361,13 @@ async function start(){
         if(!cs.exists()) return;
         const c=cs.val();
         document.getElementById('courier-name-label').textContent=c.name||'Kurye';
-        const vIcons={moto:'🛵',bike:'🚲',car:'🚗',foot:'🚶'};
-        document.getElementById('courier-vehicle-label').textContent=vIcons[c.vehicle]||'🛵';
+        const vIcons={
+          moto:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg>',
+          bike:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>',
+          car:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h10l4 4v6a2 2 0 0 1-2 2z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>',
+          foot:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/><path d="m13.5 8-4 .5-1 5 2 1.5"/><path d="m9.5 8.5-1.5 5 1.5 5"/><path d="M14 14.5 16 19"/></svg>'
+        };
+        document.getElementById('courier-vehicle-label').innerHTML=vIcons[c.vehicle]||vIcons.moto;
         const av=document.getElementById('courier-avatar');
         if(c.photoURL){ av.innerHTML=`<img src="${c.photoURL}" alt="kurye"/>`; }
         else { av.textContent=(c.name||'K')[0].toUpperCase(); }

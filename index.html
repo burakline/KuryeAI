@@ -157,9 +157,26 @@
     .nav-links { display:flex; gap:2rem; list-style:none; }
     .nav-links a { font-size:.82rem; color:var(--gray-lt); text-decoration:none; transition:color .2s; }
     .nav-links a:hover { color:var(--white); }
-    .nav-right { display:flex; align-items:center; gap:.8rem; }
-    .nav-login { font-size:.78rem; color:var(--gray-lt); text-decoration:none; transition:color .2s; }
-    .nav-login:hover { color:var(--white); }
+    .nav-right { display:flex; align-items:center; gap:.6rem; }
+    .nav-login {
+      font-size:.74rem; font-weight:600; letter-spacing:.01em;
+      color:var(--gray-lt); text-decoration:none;
+      padding:.38rem .9rem; border-radius:8px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      backdrop-filter:blur(8px);
+      transition:all .2s;
+    }
+    .nav-login:hover {
+      color:var(--white);
+      border-color:rgba(255,255,255,.28);
+      background:rgba(255,255,255,.09);
+      transform:translateY(-1px);
+    }
+    .nav-login.restoran { border-color:rgba(251,191,36,.22); color:#fbbf24; }
+    .nav-login.restoran:hover { border-color:rgba(251,191,36,.5); background:rgba(251,191,36,.08); color:#fbbf24; }
+    .nav-login.kurye { border-color:rgba(45,212,191,.22); color:var(--teal); }
+    .nav-login.kurye:hover { border-color:rgba(45,212,191,.5); background:rgba(45,212,191,.08); color:var(--teal); }
     .btn-pill { display:inline-block; background:var(--red); color:#fff; font-size:.78rem; font-weight:700; padding:.44rem 1.2rem; border-radius:999px; text-decoration:none; transition:background .2s,transform .15s; }
     .btn-pill:hover { background:#e0352a; transform:scale(1.04); }
 
@@ -200,8 +217,12 @@
     html[data-theme="light"] .ttp-moon  { color:#6366f1; }
     html[data-theme="light"] .nav-links a { color:var(--gray-dk,#555); }
     html[data-theme="light"] .nav-links a:hover { color:#000; }
-    html[data-theme="light"] .nav-login { color:var(--gray-dk,#555); }
-    html[data-theme="light"] .nav-login:hover { color:#000; }
+    html[data-theme="light"] .nav-login { color:#555; border-color:rgba(0,0,0,.14); background:rgba(0,0,0,.03); }
+    html[data-theme="light"] .nav-login:hover { color:#111; border-color:rgba(0,0,0,.28); background:rgba(0,0,0,.06); }
+    html[data-theme="light"] .nav-login.restoran { color:#b45309; border-color:rgba(180,83,9,.25); }
+    html[data-theme="light"] .nav-login.restoran:hover { background:rgba(180,83,9,.06); border-color:rgba(180,83,9,.45); }
+    html[data-theme="light"] .nav-login.kurye { color:#0d9488; border-color:rgba(13,148,136,.25); }
+    html[data-theme="light"] .nav-login.kurye:hover { background:rgba(13,148,136,.06); border-color:rgba(13,148,136,.45); }
 
     /* ── HERO ── */
     .hero { min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:5rem 2rem; position:relative; overflow:hidden; }
@@ -566,8 +587,8 @@
     <li><a href="#sss">SSS</a></li>
   </ul>
   <div class="nav-right">
-<a href="/restoranai-login" class="nav-login">Restoran Girişi</a>
-    <a href="/kuryeai-login" class="nav-login">Kurye Girişi</a>
+<a href="/restoranai-login" class="nav-login restoran">🍽 Restoran Girişi</a>
+    <a href="/kuryeai-login" class="nav-login kurye">🛵 Kurye Girişi</a>
     <!-- Premium tema toggle -->
     <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
       <span class="ttp-track">
@@ -704,10 +725,7 @@
       <a href="https://wa.me/905072171995?text=Merhaba!%20Acil%20kurye%20ihtiyacım%20var.%20%0A%0AGönderici%20Adı:%20%0AGönderim%20Adresi:%20%0ATeslimat%20Adresi:%20%0AGönderi%20Türü:%20%0ATeslim%20Zamanı:%20" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25d366;color:#fff;font-size:.92rem;font-weight:700;padding:.9rem;border-radius:999px;text-decoration:none;transition:background .2s;margin-bottom:1rem">
         <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>WhatsApp ile Acil Talep
       </a>
-      <a href="tel:+905072171995" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:rgba(239,68,68,.1);color:var(--red);font-size:.88rem;font-weight:700;padding:.8rem;border-radius:999px;text-decoration:none;border:.5px solid rgba(239,68,68,.2);">
-        <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0 507 217 19 95
-      </a>
-      <p style="font-size:.72rem;color:var(--gray);text-align:center;margin-top:1rem">Mesai saatleri dışında da 7/24 hizmetinizdeyiz.</p>
+<p style="font-size:.72rem;color:var(--gray);text-align:center;margin-top:1rem">Mesai saatleri dışında da 7/24 hizmetinizdeyiz.</p>
     </div>
   </div>
 </section>

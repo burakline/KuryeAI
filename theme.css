@@ -26,7 +26,31 @@ html[data-theme="light"] {
   --green:   #1a9640;
   --green2:  #1a9640;
   --yellow:  #c88e00;
+  /* Blog post sayfaları için ek değişkenler */
+  --bg:      #f5f7fa;
+  --text:    #444444;
+  --cyan:    #0099aa;
 }
+
+/* ── BLOG POST SAYFALARI (guvenli-suruc, motosiklet-ekipmanlari) ── */
+html[data-theme="light"] .article h1,
+html[data-theme="light"] .article h2,
+html[data-theme="light"] .article h3,
+html[data-theme="light"] .article h4 { color: #0d0d0d !important; }
+html[data-theme="light"] .article strong { color: #0d0d0d !important; }
+html[data-theme="light"] .article li { color: #444 !important; }
+html[data-theme="light"] .step-card { background: #fff; border-color: rgba(0,0,0,.08); }
+html[data-theme="light"] .step-card h4 { color: #0d0d0d !important; }
+html[data-theme="light"] .step-card p { color: #666 !important; }
+html[data-theme="light"] .ekipman-card { background: #fff; border-color: rgba(0,0,0,.08); }
+html[data-theme="light"] .ekipman-card h4 { color: #0d0d0d !important; }
+html[data-theme="light"] .ekipman-card p { color: #666 !important; }
+html[data-theme="light"] .tip-box { background: rgba(0,150,170,.06); border-color: rgba(0,150,170,.2); }
+html[data-theme="light"] .warning-box { background: rgba(192,40,28,.05); border-color: rgba(192,40,28,.18); }
+html[data-theme="light"] #comment-input { background: #f5f7fa; border-color: rgba(0,0,0,.12); color: #0d0d0d; }
+html[data-theme="light"] #comment-input::placeholder { color: #aaa; }
+html[data-theme="light"] .share-btn { border-color: rgba(0,0,0,.15); color: #555; }
+html[data-theme="light"] .share-btn:hover { border-color: rgba(0,0,0,.3); color: #0d0d0d; }
 
 /* ── BODY ── */
 html[data-theme="light"] body {

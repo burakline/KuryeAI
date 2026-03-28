@@ -233,6 +233,7 @@ service cloud.firestore {
     match /blog_likes/{likeId} {
       allow read: if isSignedIn() && (
         isAdmin() ||
+        resource == null ||
         request.auth.uid == resource.data.uid
       );
       allow create: if isSignedIn()

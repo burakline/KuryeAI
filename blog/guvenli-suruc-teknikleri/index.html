@@ -2,6 +2,8 @@
 <html lang="tr" data-post-slug="guvenli-suruc-teknikleri">
 <head>
   <meta charset="UTF-8"/>
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('kuryeai-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+  <link rel="stylesheet" href="/theme.css"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Motosiklet Güvenli Sürüş Teknikleri 2026 | KuryeAI Blog</title>
   <meta name="description" content="Motosiklet güvenli sürüş teknikleri: fren, viraj, şerit değiştirme, kör nokta, hava koşulları ve kurye için özel güvenlik ipuçları."/>
@@ -46,7 +48,7 @@
     body{background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif;line-height:1.7}
     a{color:var(--cyan);text-decoration:none}
     a:hover{text-decoration:underline}
-    nav{display:flex;align-items:center;gap:.8rem;padding:1rem 1.5rem;border-bottom:.5px solid var(--border);font-size:.85rem;color:#666}
+    nav{display:flex;align-items:center;gap:.8rem;padding:1rem 1.5rem;border-bottom:.5px solid var(--border);font-size:.85rem;color:#666;justify-content:space-between;}
     nav a{color:#aaa}nav a:hover{color:#fff}
     .hero-img{width:100%;max-height:420px;object-fit:cover;display:block}
     .article{max-width:780px;margin:0 auto;padding:2rem 1.5rem 4rem}
@@ -106,6 +108,7 @@
   <a href="/blog">Blog</a>
   <span style="color:#333">/</span>
   <span style="color:#666">Güvenli Sürüş Teknikleri</span>
+  <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir" style="margin-left:auto"><span class="ttp-track"><span class="ttp-thumb"></span></span><span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span></button>
 </nav>
 
 <img
@@ -276,7 +279,7 @@
 
   <h2>Sonuç</h2>
   <p>Güvenli sürüş bir kez öğrenilip unutulan bir beceri değil, her gün uygulanan bir disiplindir. Fren tekniklerinden kör nokta yönetimine, hava koşullarından kurye baskısıyla başa çıkmaya kadar her konu bir sonraki kazayı önleyecek bilgiyi içermektedir.</p>
-  <p>KuryeAI platformunda kurye olarak çalışmak istiyorsanız, <a href="/acilkuryeai">Acil Kurye</a> sayfasını ziyaret edebilirsiniz.</p>
+  <p>KuryeAI platformunda kurye olarak çalışmak istiyorsanız, <a href="/kuryeai">Acil Kurye</a> sayfasını ziyaret edebilirsiniz.</p>
 
   <div class="interact-bar">
     <button id="like-btn" onclick="toggleLike()">❤️ <span id="like-count">0</span> Beğeni</button>
@@ -317,5 +320,6 @@
 </div>
 
 <script type="module" src="/blog.js"></script>
+<script src="/theme.js"></script>
 </body>
 </html>

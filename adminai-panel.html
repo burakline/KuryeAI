@@ -445,6 +445,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="nav-item" id="nav-bolgeler" onclick="switchTab('bolgeler')">
         <span class="nav-ico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️</span>Bölgeler
       </div>
+      <div class="nav-section">İletişim & Blog</div>
+      <div class="nav-item" id="nav-iletisim" onclick="switchTab('iletisim')">
+        <span class="nav-ico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>İletişim Mesajları
+        <span class="nav-badge teal" id="badge-iletisim" style="display:none">0</span>
+      </div>
+      <div class="nav-item" id="nav-yorumlar" onclick="switchTab('yorumlar')">
+        <span class="nav-ico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Blog Yorumları
+        <span class="nav-badge" id="badge-yorumlar" style="display:none">0</span>
+      </div>
     </nav>
 
     <div class="sb-footer">
@@ -936,6 +945,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </div>
       </div>
 
+      <!-- ════════════ İLETİŞİM MESAJLARI ════════════ -->
+      <div class="pane" id="pane-iletisim">
+        <p class="page-lbl">İletişim & Blog</p>
+        <p class="page-title">İletişim Mesajları</p>
+        <div class="ftabs">
+          <button class="ftab active" onclick="fIletisim('hepsi',this)">Hepsi</button>
+          <button class="ftab" onclick="fIletisim('new',this)">Yeni</button>
+          <button class="ftab" onclick="fIletisim('read',this)">Okundu</button>
+          <button class="ftab" onclick="fIletisim('done',this)">Tamamlandı</button>
+        </div>
+        <div id="iletisim-list"><div class="empty"><div class="empty-ico">✉️</div><p>Yükleniyor...</p></div></div>
+      </div>
+
+      <!-- ════════════ BLOG YORUMLARI ════════════ -->
+      <div class="pane" id="pane-yorumlar">
+        <p class="page-lbl">İletişim & Blog</p>
+        <p class="page-title">Blog Yorumları</p>
+        <div id="yorumlar-list"><div class="empty"><div class="empty-ico">💬</div><p>Yükleniyor...</p></div></div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /app -->
@@ -1130,7 +1159,7 @@ window.openSidebar=()=>{ document.getElementById('sidebar').classList.add('open'
 window.closeSidebar=()=>{ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('show'); };
 
 // ── SAYFA GEÇİŞİ ──
-const PAGE_TITLES={dash:'Anasayfa',basvurular:'Başvurular',restoranlar:'Restoranlar',kuryeler:'Kuryeler',siparisler:'Siparişler',istatistik:'İstatistikler',bildirimler:'Bildirimler',bolgeler:'Bölgeler'};
+const PAGE_TITLES={dash:'Anasayfa',basvurular:'Başvurular',restoranlar:'Restoranlar',kuryeler:'Kuryeler',siparisler:'Siparişler',istatistik:'İstatistikler',bildirimler:'Bildirimler',bolgeler:'Bölgeler',iletisim:'İletişim Mesajları',yorumlar:'Blog Yorumları'};
 window.switchTab=(tab)=>{
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
@@ -1144,6 +1173,8 @@ window.switchTab=(tab)=>{
   if(tab==='istatistik') renderIstatistik();
   if(tab==='bildirimler') updateNotifTargetList();
   if(tab==='bolgeler') loadZoneList();
+  if(tab==='iletisim') initIletisim();
+  if(tab==='yorumlar') initYorumlar();
 };
 
 // ── WAKE LOCK ──
@@ -2362,6 +2393,125 @@ window.createUser=async()=>{
     closeModal();showToast('✓ Hesap oluşturuldu: '+email,'ok');
   }catch(e){showToast(e.code==='auth/email-already-in-use'?'Bu e-posta zaten kayıtlı':'Hata: '+e.message,'err');}
   btn.classList.remove('loading');btn.disabled=false;
+};
+
+// ══════════════════════════════════════════════════════
+// ── İLETİŞİM MESAJLARI ──────────────────────────────
+// ══════════════════════════════════════════════════════
+let _iletisimLoaded=false, _allMesajlar=[], _fMesaj='hepsi';
+const POST_LABELS={'2026-trafik-cezalari':'2026 Trafik Cezaları','p1-belgesi':'P1 Belgesi','tasima-cantasi-ruhsat':'Taşıma Çantası Ruhsat','motokurye-src-belgesi':'Motokurye SRC','psikoteknik-belgesi':'Psikoteknik Belgesi','guvenli-suruc-teknikleri':'Güvenli Sürüş','motosiklet-ekipmanlari':'Motosiklet Ekipmanları'};
+
+function initIletisim(){
+  if(_iletisimLoaded) return;
+  _iletisimLoaded=true;
+  const q=query(collection(db,'contact_messages'),orderBy('createdAt','desc'));
+  onSnapshot(q,snap=>{
+    _allMesajlar=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderMesajlar();
+    const yeni=_allMesajlar.filter(m=>m.status==='new'||!m.status).length;
+    const badge=document.getElementById('badge-iletisim');
+    if(badge){badge.style.display=yeni>0?'':'none';badge.textContent=yeni;}
+  });
+}
+
+window.fIletisim=(f,btn)=>{
+  _fMesaj=f;
+  document.querySelectorAll('#pane-iletisim .ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMesajlar();
+};
+
+function renderMesajlar(){
+  const el=document.getElementById('iletisim-list');
+  if(!el) return;
+  const list=_fMesaj==='hepsi'?_allMesajlar:_allMesajlar.filter(m=>(m.status||'new')===_fMesaj);
+  if(!list.length){el.innerHTML='<div class="empty"><p>Mesaj yok.</p></div>';return;}
+  const statusColor={new:'var(--teal)',read:'var(--text3)',done:'#22c55e'};
+  el.innerHTML=list.map(m=>{
+    const date=m.createdAt?.toDate?.()?.toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})||'—';
+    const st=m.status||'new';
+    const waText=encodeURIComponent(`Merhaba ${m.ad||''}, KuryeAI ekibinden yazıyorum.`);
+    const waHref=m.tel?`https://wa.me/90${(m.tel||'').replace(/\D/g,'')}?text=${waText}`:'';
+    return `<div class="card" style="margin-bottom:10px;border-left:3px solid ${statusColor[st]||'var(--teal)'}">
+      <div class="card-body" style="padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <span style="font-size:.85rem;font-weight:700">${esc(m.ad||'—')}</span>
+          <span style="font-size:.68rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:var(--teal-bg);color:var(--teal-dk)">${esc(m.konu||'Diğer')}</span>
+          <span style="font-size:.7rem;color:var(--text3);margin-left:auto">${date}</span>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+          ${m.tel?`<a href="tel:${m.tel}" style="font-size:.78rem;color:var(--text3);text-decoration:none">📞 ${esc(m.tel)}</a>`:''}
+          ${m.email?`<a href="mailto:${m.email}" style="font-size:.78rem;color:var(--text3);text-decoration:none">✉️ ${esc(m.email)}</a>`:''}
+        </div>
+        <div style="font-size:.84rem;color:var(--text2);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.6">${esc(m.mesaj||'')}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="ftab${st==='new'?' active':''}" style="font-size:.7rem;padding:.22rem .7rem" onclick="setMesajStatus('${m.id}','new')">Yeni</button>
+          <button class="ftab${st==='read'?' active':''}" style="font-size:.7rem;padding:.22rem .7rem" onclick="setMesajStatus('${m.id}','read')">Okundu</button>
+          <button class="ftab${st==='done'?' active':''}" style="font-size:.7rem;padding:.22rem .7rem" onclick="setMesajStatus('${m.id}','done')">Tamamlandı ✓</button>
+          ${waHref?`<button class="ftab" style="font-size:.7rem;padding:.22rem .7rem;color:#25d366" onclick="window.open('${waHref}','_blank')">💬 WA</button>`:''}
+          <button class="ftab" style="font-size:.7rem;padding:.22rem .7rem;color:var(--red)" onclick="delMesaj('${m.id}')">Sil</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.setMesajStatus=async(id,status)=>{
+  await updateDoc(doc(db,'contact_messages',id),{status});
+};
+window.delMesaj=async(id)=>{
+  if(!confirm('Bu mesajı silmek istediğinizden emin misiniz?')) return;
+  await deleteDoc(doc(db,'contact_messages',id));
+};
+
+// ══════════════════════════════════════════════════════
+// ── BLOG YORUMLARI ───────────────────────────────────
+// ══════════════════════════════════════════════════════
+let _yorumlarLoaded=false, _allYorumlar=[];
+
+function initYorumlar(){
+  if(_yorumlarLoaded) return;
+  _yorumlarLoaded=true;
+  const q=query(collection(db,'blog_comments'),orderBy('createdAt','desc'));
+  onSnapshot(q,snap=>{
+    _allYorumlar=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderYorumlar();
+    const badge=document.getElementById('badge-yorumlar');
+    if(badge){badge.style.display=_allYorumlar.length>0?'':'none';badge.textContent=_allYorumlar.length;}
+  });
+}
+
+function renderYorumlar(){
+  const el=document.getElementById('yorumlar-list');
+  if(!el) return;
+  if(!_allYorumlar.length){el.innerHTML='<div class="empty"><p>Henüz yorum yok.</p></div>';return;}
+  el.innerHTML=_allYorumlar.map(c=>{
+    const date=c.createdAt?.toDate?.()?.toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})||'—';
+    const postLabel=POST_LABELS[c.postSlug]||c.postSlug||'—';
+    const initial=(c.userName||'?')[0].toUpperCase();
+    return `<div class="card" style="margin-bottom:10px">
+      <div class="card-body" style="padding:12px 14px;display:flex;gap:12px;align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--teal-bg);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--teal-dk);flex-shrink:0">${initial}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span style="font-size:.82rem;font-weight:700">${esc(c.userName||'Anonim')}</span>
+            <span style="font-size:.68rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:var(--teal-bg);color:var(--teal-dk)">${esc(postLabel)}</span>
+            <span style="font-size:.7rem;color:var(--text3);margin-left:auto">${date}</span>
+          </div>
+          <div style="font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:8px">${esc(c.text||'')}</div>
+          <div style="display:flex;gap:6px">
+            <button class="ftab" style="font-size:.7rem;padding:.22rem .7rem;color:var(--red)" onclick="delYorum('${c.id}')">Sil</button>
+            <a href="/blog/${esc(c.postSlug||'')}" target="_blank" style="font-size:.7rem;color:var(--text3);text-decoration:none;padding:.22rem .7rem">↗ Yazıya git</a>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.delYorum=async(id)=>{
+  if(!confirm('Bu yorumu silmek istediğinizden emin misiniz?')) return;
+  await deleteDoc(doc(db,'blog_comments',id));
 };
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}</script>

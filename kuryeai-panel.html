@@ -121,7 +121,7 @@ onAuthStateChanged(auth, async (user) => {
   --tx:#1A1D23;--tx2:#7A8494;--tx3:#B0BAC8;
   --green:#00c48c;--green-bg:rgba(0,196,140,0.08);
   --red:#ef4444;--red-bg:rgba(239,68,68,0.08);
-  --orange:#FF9800;--orange-bg:#FFF3E0;
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.08);
   --shadow:0 2px 12px rgba(0,0,0,0.07);--shadow-md:0 4px 20px rgba(0,0,0,0.10);
   --radius-lg:18px;--radius-md:12px;--fh:'Inter',system-ui,-apple-system,sans-serif;
   --font-size-xs:.72rem;--font-size-sm:.8125rem;--font-size-md:.9375rem;--font-size-lg:1.0625rem;
@@ -130,8 +130,19 @@ onAuthStateChanged(auth, async (user) => {
   --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
   --icon-sm:16px;--icon-md:20px;--icon-lg:24px;
 }
+/* ── DARK MODE ── */
+body.dark{
+  --bg:#0f1117;--card:#1a1f2e;--inp:#161b24;--border:rgba(255,255,255,.08);
+  --tx:#f0f2f5;--tx2:#a0a8b8;--tx3:#5a6276;
+  --shadow:0 2px 12px rgba(0,0,0,.4);--shadow-md:0 4px 20px rgba(0,0,0,.5);
+}
+body.dark .topbar{background:rgba(26,31,46,0.97);border-color:rgba(255,255,255,.08)}
+body.dark .speed-badge{background:rgba(26,31,46,0.97)}
+body.dark .traffic-legend{background:rgba(26,31,46,0.96)}
+body.dark .cbtn{background:rgba(26,31,46,0.96)}
+body.dark .map-recenter{background:rgba(26,31,46,0.95)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--f);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fh);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 
 .screen{position:fixed;inset:0;display:none;flex-direction:column;}
 .screen.active{display:flex;}
@@ -583,6 +594,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
       <div class="spill" id="spill" style="display:none"><span class="bd"></span>Vardiya Aktif</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="toggleDarkMode()" id="dm-btn" title="Karanlık mod" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);transition:border-color .2s"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
       <div class="sdots">
         <div class="sdot" id="gpsDot" style="background:var(--tx3)" title="GPS"></div>
         <div class="sdot" id="shDot" style="background:var(--tx3)" title="Vardiya"></div>
@@ -2203,6 +2215,14 @@ window._initKuryeApp = async function() {
     }catch(e){}
   }
 };
+
+window.toggleDarkMode = function(){
+  const d = document.body.classList.toggle('dark');
+  try{localStorage.setItem('kuryeai-dm', d?'1':'0');}catch(e){}
+};
+(function(){
+  try{if(localStorage.getItem('kuryeai-dm')==='1')document.body.classList.add('dark');}catch(e){}
+})();
 
 window.addEventListener('load',()=>{
   // Auth callback bekleniyor — ekran login göster

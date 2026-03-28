@@ -5,6 +5,9 @@
   <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('kuryeai-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
   <link rel="stylesheet" href="/theme.css"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet"/>
   <title>KuryeAI — Kurye Ol | Akıllı Teslimat</title>
   <meta name="description" content="KuryeAI ile kurye olun. Havuz kurye veya SGK'lı sabit kurye modeli. Paket başı kazanç, esnek çalışma saatleri, ücretsiz yemek."/>
   <meta name="keywords" content="kurye iş ilanı, havuz kurye, sabit kurye, moto kurye, kurye başvuru, esnek çalışma"/>
@@ -23,13 +26,20 @@
       --white:   #ffffff;
       --teal:    #00c8d7;
       --teal-lt: #33d6e3;
+      --red:#ef4444; --red-bg:rgba(239,68,68,.08);
+      --green:#00c48c; --green-bg:rgba(0,196,140,.08);
+      --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+      --font-size-xs:.72rem;--font-size-sm:.8125rem;--font-size-md:.9375rem;
+      --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;
+      --icon-sm:16px;--icon-md:20px;--icon-lg:24px;
     }
 
     html { scroll-behavior: smooth; }
     body {
       background: var(--black); color: var(--white);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Inter',system-ui,-apple-system,sans-serif;
       -webkit-font-smoothing: antialiased; overflow-x: hidden;
+      -moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;
     }
 
     /* ── NAV ── */
@@ -305,15 +315,15 @@
     }
     .ger-item.no .ger-icon-wrap {
       width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-      background: rgba(255,95,87,.1); border: .5px solid rgba(255,95,87,.2);
+      background: rgba(239,68,68,.1); border: .5px solid rgba(239,68,68,.2);
       display: flex; align-items: center; justify-content: center;
-      font-size: .65rem; color: #ff5f57;
+      font-size: .65rem; color: #ef4444;
     }
     .ger-text { color: rgba(255,255,255,.75); line-height: 1.5; }
 
     .ger-section-title { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 1rem; }
     .ger-section-title.yes { color: var(--teal); }
-    .ger-section-title.no { color: #ff5f57; }
+    .ger-section-title.no { color: #ef4444; }
 
     /* ── BAŞVURU FORM ── */
     .basvuru { background: var(--dark); border-top: .5px solid var(--border); }
@@ -342,7 +352,7 @@
     .form-input, .form-select, .form-textarea {
       width: 100%; background: rgba(255,255,255,.05); border: .5px solid rgba(255,255,255,.12);
       border-radius: 8px; padding: .75rem 1rem; color: var(--white);
-      font-family: Arial, Helvetica, sans-serif; font-size: .88rem;
+      font-family: 'Inter',system-ui,-apple-system,sans-serif; font-size: .88rem;
       transition: border-color .2s, background .2s; outline: none; appearance: none;
     }
     .form-input::placeholder, .form-textarea::placeholder { color: var(--gray); }
@@ -358,7 +368,7 @@
       padding: .65rem; border-radius: 8px; border: .5px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.05); color: var(--gray-lt);
       font-size: .8rem; font-weight: 700; cursor: pointer; text-align: center;
-      transition: all .2s; font-family: Arial, Helvetica, sans-serif;
+      transition: all .2s; font-family: 'Inter',system-ui,-apple-system,sans-serif;
     }
     .model-btn:hover { border-color: var(--teal); color: var(--teal); }
     .model-btn.active { background: rgba(0,200,215,.1); border-color: var(--teal); color: var(--teal); }
@@ -368,7 +378,7 @@
       background: var(--teal); color: var(--black);
       font-size: .92rem; font-weight: 700; padding: .9rem;
       border-radius: 999px; border: none; cursor: pointer;
-      font-family: Arial, Helvetica, sans-serif; transition: background .2s, transform .15s;
+      font-family: 'Inter',system-ui,-apple-system,sans-serif; transition: background .2s, transform .15s;
     }
     .form-submit:hover { background: var(--teal-lt); transform: scale(1.02); }
     .form-note { font-size: .72rem; color: var(--gray); text-align: center; margin-top: 1rem; line-height: 1.5; }
@@ -488,7 +498,7 @@
       <!-- Esnaf Kurye -->
       <div class="model-card">
         <span class="mc-badge">Esnaf Kurye Modeli</span>
-        <div class="mc-icon">🛵</div>
+        <div class="mc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11v12h-3"/><polyline points="9 17 12 17"/><path d="M14 17h1a2 2 0 0 0 2-2v-1h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
         <h3 class="mc-title">Paket Başı Çalışma</h3>
         <p class="mc-desc">Kendi motosikletinizle, istediğiniz saatlerde çalışın. Ne kadar paket taşırsanız o kadar kazanırsınız. Esnek ve bağımsız.</p>
 
@@ -522,7 +532,7 @@
       <!-- SGK'lı Kurye -->
       <div class="model-card">
         <span class="mc-badge">SGK'lı Kurye Modeli</span>
-        <div class="mc-icon">📋</div>
+        <div class="mc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
         <h3 class="mc-title">Saatlik Güvenceli Çalışma</h3>
         <p class="mc-desc">SGK primli, sigortalı çalışma. Düzenli gelir, sosyal güvence. Tam zamanlı kurye olmak isteyenler için ideal model.</p>
 
@@ -566,32 +576,32 @@
     </div>
     <div class="av-grid reveal">
       <div class="av-card">
-        <div class="av-icon">💰</div>
+        <div class="av-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
         <h4 class="av-title">Adil Kazanç</h4>
         <p class="av-desc">Şeffaf ücretlendirme. Paket başı ve KM ücreti net olarak belirlenir, sürpriz kesinti olmaz. Haftalık ödeme garantisi.</p>
       </div>
       <div class="av-card">
-        <div class="av-icon">🤖</div>
+        <div class="av-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="20" height="12" rx="2"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/><path d="M9.5 19a2.5 2.5 0 0 0 5 0"/></svg></div>
         <h4 class="av-title">AI Destekli Dağıtım</h4>
         <p class="av-desc">Siparişler adil şekilde dağıtılır. En yakın kurye otomatik atanır. Verimli rota önerileri ile daha az yakıt, daha fazla paket.</p>
       </div>
       <div class="av-card">
-        <div class="av-icon">🍽️</div>
+        <div class="av-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>
         <h4 class="av-title">Ücretsiz Yemek</h4>
         <p class="av-desc">Her 12 saatlik vardiyada 1 öğün yemek karşılanır. Çalıştığınız restoranın menüsünden ücretsiz yararlanırsınız.</p>
       </div>
       <div class="av-card">
-        <div class="av-icon">📍</div>
+        <div class="av-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
         <h4 class="av-title">Canlı Rota</h4>
         <p class="av-desc">Akıllı navigasyon ile en kısa rota otomatik hesaplanır. Trafik, mesafe ve zaman optimizasyonu tek uygulamada.</p>
       </div>
       <div class="av-card">
-        <div class="av-icon">📊</div>
+        <div class="av-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <h4 class="av-title">Kazanç Takibi</h4>
         <p class="av-desc">Günlük, haftalık kazancınızı anlık takip edin. Kaç paket taşıdığınızı, kaç km yaptığınızı ve toplam kazancınızı görün.</p>
       </div>
       <div class="av-card">
-        <div class="av-icon">🛡️</div>
+        <div class="av-icon"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h4 class="av-title">Güvenli Çalışma</h4>
         <p class="av-desc">SGK modeli ile sigorta güvencesi. Kaza ve sağlık desteği. Sizi değer veren bir ekiple çalışmanın farkını yaşayın.</p>
       </div>
@@ -625,23 +635,23 @@
 
         <div class="earn-rows">
           <div class="er-row">
-            <div class="er-left"><span class="er-icon">📦</span>Yemeksepeti #4821</div>
+            <div class="er-left"><span class="er-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>Yemeksepeti #4821</div>
             <span class="er-val" style="color:var(--teal)">+140 ₺</span>
           </div>
           <div class="er-row">
-            <div class="er-left"><span class="er-icon">📍</span>KM ücreti (3.2 km)</div>
+            <div class="er-left"><span class="er-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>KM ücreti (3.2 km)</div>
             <span class="er-val" style="color:var(--teal)">+25.6 ₺</span>
           </div>
           <div class="er-row">
-            <div class="er-left"><span class="er-icon">📦</span>Trendyol #2934</div>
+            <div class="er-left"><span class="er-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>Trendyol #2934</div>
             <span class="er-val" style="color:var(--teal)">+140 ₺</span>
           </div>
           <div class="er-row">
-            <div class="er-left"><span class="er-icon">📍</span>KM ücreti (4.1 km)</div>
+            <div class="er-left"><span class="er-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>KM ücreti (4.1 km)</div>
             <span class="er-val" style="color:var(--teal)">+32.8 ₺</span>
           </div>
           <div class="er-row">
-            <div class="er-left"><span class="er-icon">🍽️</span>Yemek (öğle)</div>
+            <div class="er-left"><span class="er-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></span>Yemek (öğle)</div>
             <span class="er-val" style="color:#28c840">Ücretsiz</span>
           </div>
         </div>
@@ -700,51 +710,51 @@
     </div>
     <div class="ger-grid reveal">
       <div>
-        <p class="ger-section-title yes">✓ Gerekli Olanlar</p>
+        <p class="ger-section-title yes"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polyline points="20 6 9 17 4 12"/></svg>Gerekli Olanlar</p>
         <div class="ger-list">
           <div class="ger-item yes">
-            <div class="ger-icon-wrap">✓</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="ger-text">Motosiklet (kendi aracınız veya kiralık)</span>
           </div>
           <div class="ger-item yes">
-            <div class="ger-icon-wrap">✓</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="ger-text">Ehliyet (motosiklet ehliyeti)</span>
           </div>
           <div class="ger-item yes">
-            <div class="ger-icon-wrap">✓</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="ger-text">Android veya iOS akıllı telefon</span>
           </div>
           <div class="ger-item yes">
-            <div class="ger-icon-wrap">✓</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="ger-text">18 yaş ve üzeri olmak</span>
           </div>
           <div class="ger-item yes">
-            <div class="ger-icon-wrap">✓</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="ger-text">Çalışma iznine sahip olmak</span>
           </div>
         </div>
       </div>
       <div>
-        <p class="ger-section-title no">✕ Gerekli Olmayanlar</p>
+        <p class="ger-section-title no"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Gerekli Olmayanlar</p>
         <div class="ger-list">
           <div class="ger-item no">
-            <div class="ger-icon-wrap">✕</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
             <span class="ger-text">Deneyim zorunluluğu yok</span>
           </div>
           <div class="ger-item no">
-            <div class="ger-icon-wrap">✕</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
             <span class="ger-text">Başvuru ücreti yok</span>
           </div>
           <div class="ger-item no">
-            <div class="ger-icon-wrap">✕</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
             <span class="ger-text">Minimum çalışma saati yok (esnaf modeli)</span>
           </div>
           <div class="ger-item no">
-            <div class="ger-icon-wrap">✕</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
             <span class="ger-text">Üniversite veya diploma şartı yok</span>
           </div>
           <div class="ger-item no">
-            <div class="ger-icon-wrap">✕</div>
+            <div class="ger-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
             <span class="ger-text">Uzun sözleşme zorunluluğu yok</span>
           </div>
         </div>
@@ -763,20 +773,20 @@
         <p class="body-lg">Formu doldurun, 24 saat içinde sizi arayalım. Sorularınız için <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="50393e363f103b2522293531397e333f3d">[email&#160;protected]</a> adresine yazabilirsiniz.</p>
 
         <div class="info-points">
-          <div class="ip"><span class="ip-check">✓</span>Paket başı 140₺ + 8₺/km</div>
-          <div class="ip"><span class="ip-check">✓</span>Saatlik 220₺ + 8₺/km (SGK modeli)</div>
-          <div class="ip"><span class="ip-check">✓</span>12 saatte 1 öğün yemek ücretsiz</div>
-          <div class="ip"><span class="ip-check">✓</span>Haftalık ödeme garantisi</div>
-          <div class="ip"><span class="ip-check">✓</span>AI destekli adil sipariş dağıtımı</div>
-          <div class="ip"><span class="ip-check">✓</span>Canlı kazanç takibi</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Paket başı 140₺ + 8₺/km</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Saatlik 220₺ + 8₺/km (SGK modeli)</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>12 saatte 1 öğün yemek ücretsiz</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Haftalık ödeme garantisi</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI destekli adil sipariş dağıtımı</div>
+          <div class="ip"><span class="ip-check"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Canlı kazanç takibi</div>
         </div>
 
         <div style="margin-top:2.5rem;padding:1.5rem;background:rgba(0,200,215,.06);border:.5px solid rgba(0,200,215,.15);border-radius:12px">
           <p style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem">İletişim</p>
           <p style="font-size:.88rem;color:var(--gray-lt);line-height:1.8">
-            ✉ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="543d3a323b143f21262d31353d7a373b39">[email&#160;protected]</a><br/>
-            ✉ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef8b8a9c9b8a84af849a9d968a8e86c18c8082">[email&#160;protected]</a><br/>
-            🌐 www.kuryeai.com
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="543d3a323b143f21262d31353d7a373b39">[email&#160;protected]</a><br/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef8b8a9c9b8a84af849a9d968a8e86c18c8082">[email&#160;protected]</a><br/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>www.kuryeai.com
           </p>
         </div>
       </div>
@@ -815,8 +825,8 @@
           <div class="form-group">
             <label class="form-label">Çalışma Modeli</label>
             <div class="model-select">
-              <button class="model-btn" onclick="selectModel(this,'esnaf')">🛵 Esnaf Kurye<br/><small style="font-weight:400;font-size:.7rem">Paket başı</small></button>
-              <button class="model-btn" onclick="selectModel(this,'sgk')">📋 SGK'lı Kurye<br/><small style="font-weight:400;font-size:.7rem">Saatlik</small></button>
+              <button class="model-btn" onclick="selectModel(this,'esnaf')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11v12h-3"/><polyline points="9 17 12 17"/><path d="M14 17h1a2 2 0 0 0 2-2v-1h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg> Esnaf Kurye<br/><small style="font-weight:400;font-size:.7rem">Paket başı</small></button>
+              <button class="model-btn" onclick="selectModel(this,'sgk')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> SGK'lı Kurye<br/><small style="font-weight:400;font-size:.7rem">Saatlik</small></button>
             </div>
             <input type="hidden" id="f-model"/>
           </div>
@@ -852,7 +862,7 @@
         </div>
 
         <div class="form-success" id="form-success">
-          <div class="success-icon">🎉</div>
+          <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00c8d7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
           <p class="success-title">Başvurunuz Alındı!</p>
           <p class="success-desc">24 saat içinde sizi arayacağız.<br/>Sorularınız için <a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> adresine yazabilirsiniz.</p>
         </div>
@@ -896,7 +906,7 @@
     required.forEach(id => {
       const el = document.getElementById(id);
       if (!el || !el.value.trim()) {
-        if (el) el.style.borderColor = '#ff5f57';
+        if (el) el.style.borderColor = '#ef4444';
         ok = false;
       } else {
         el.style.borderColor = '';

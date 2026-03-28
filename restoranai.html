@@ -8,6 +8,9 @@
   <title>RestoranAI — Akıllı İşletme | KuryeAI</title>
   <meta name="description" content="RestoranAI ile tüm sipariş platformlarınızı tek panelde yönetin. Yemeksepeti, Trendyol, Getir entegrasyonu, AI analiz, kurye hizmeti."/>
   <meta name="keywords" content="restoran adisyon programı, restoran yönetim sistemi, yemeksepeti entegrasyon, sipariş yönetimi, restoran yazılımı"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet"/>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,6 +27,12 @@
       --teal:    #00c8d7;
       --teal-lt: #33d6e3;
       --orange:  #ff9f0a;
+      --red: #ef4444; --red-bg: rgba(239,68,68,.08);
+      --green: #00c48c; --green-bg: rgba(0,196,140,.08);
+      --font-sans: 'Inter',system-ui,-apple-system,sans-serif;
+      --font-size-xs:.72rem;--font-size-sm:.8125rem;--font-size-md:.9375rem;
+      --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;
+      --icon-sm:16px;--icon-md:20px;--icon-lg:24px;
     }
 
     html { scroll-behavior: smooth; }
@@ -31,8 +40,10 @@
     body {
       background: var(--black);
       color: var(--white);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: var(--font-sans);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
       overflow-x: hidden;
     }
 
@@ -402,7 +413,7 @@
       background: rgba(255,255,255,.05);
       border: .5px solid rgba(255,255,255,.12);
       border-radius: 8px; padding: .75rem 1rem;
-      color: var(--white); font-family: Arial, Helvetica, sans-serif;
+      color: var(--white); font-family: var(--font-sans);
       font-size: .88rem;
       transition: border-color .2s, background .2s;
       outline: none; appearance: none;
@@ -423,7 +434,7 @@
       background: var(--teal); color: var(--black);
       font-size: .92rem; font-weight: 700;
       padding: .9rem; border-radius: 999px;
-      border: none; cursor: pointer; font-family: Arial, Helvetica, sans-serif;
+      border: none; cursor: pointer; font-family: var(--font-sans);
       transition: background .2s, transform .15s;
     }
     .form-submit:hover { background: var(--teal-lt); transform: scale(1.02); }
@@ -489,7 +500,7 @@
       display:flex; align-items:center; justify-content:space-between;
       padding:1.2rem 1.5rem; font-size:.92rem; font-weight:600; color:var(--white);
       text-align:left; gap:1rem; transition:background .2s;
-      font-family:Arial,Helvetica,sans-serif;
+      font-family:var(--font-sans);
     }
     .faq-q:hover { background:rgba(255,255,255,.03); }
     .faq-icon { font-size:1.2rem; color:var(--orange); flex-shrink:0; transition:transform .25s; }

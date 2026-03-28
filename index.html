@@ -179,10 +179,15 @@
     .nav-login.restoran:hover { border-color:rgba(45,212,191,.55); background:rgba(45,212,191,.09); color:var(--teal); }
     .nav-login.kurye { border-color:rgba(45,212,191,.25); color:var(--teal); }
     .nav-login.kurye:hover { border-color:rgba(45,212,191,.55); background:rgba(45,212,191,.09); color:var(--teal); }
-    /* Mobil: sadece ikon göster */
+    /* Mobil: kısa etiket göster */
     @media (max-width:768px) {
-      .nav-login { padding:.38rem .52rem; gap:0; }
+      .nav-login { padding:.34rem .62rem; font-size:.68rem; gap:.25rem; }
       .nav-login .nav-login-label { display:none; }
+      .nav-login .nav-login-short { display:inline; }
+      .nav-login svg { width:11px; height:11px; }
+    }
+    @media (min-width:769px) {
+      .nav-login .nav-login-short { display:none; }
     }
     .btn-pill { display:inline-block; background:var(--red); color:#fff; font-size:.78rem; font-weight:700; padding:.44rem 1.2rem; border-radius:999px; text-decoration:none; transition:background .2s,transform .15s; }
     .btn-pill:hover { background:#e0352a; transform:scale(1.04); }
@@ -594,8 +599,8 @@
     <li><a href="#sss">SSS</a></li>
   </ul>
   <div class="nav-right">
-<a href="/restoranai-login" class="nav-login restoran" title="Restoran Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label">Restoran Girişi</span></a>
-    <a href="/kuryeai-login" class="nav-login kurye" title="Kurye Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label">Kurye Girişi</span></a>
+<a href="/restoranai-login" class="nav-login restoran" title="Restoran Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label">Restoran Girişi</span><span class="nav-login-short">Restoran</span></a>
+    <a href="/kuryeai-login" class="nav-login kurye" title="Kurye Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label">Kurye Girişi</span><span class="nav-login-short">Kurye</span></a>
     <!-- Premium tema toggle -->
     <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
       <span class="ttp-track">

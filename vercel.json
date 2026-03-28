@@ -49,7 +49,6 @@
     { "source": "/blog/guvenli-suruc-teknikleri/",           "destination": "/blog/guvenli-suruc-teknikleri/index.html" },
     { "source": "/blog/motosiklet-ekipmanlari",              "destination": "/blog/motosiklet-ekipmanlari/index.html" },
     { "source": "/blog/motosiklet-ekipmanlari/",             "destination": "/blog/motosiklet-ekipmanlari/index.html" },
-    { "source": "/admin",                                    "destination": "/admin/index.html" },
     { "source": "/hizmet-bolgeleri",                         "destination": "/hizmet-bolgeleri/index.html" },
     { "source": "/hizmet-bolgeleri/cankaya",                 "destination": "/hizmet-bolgeleri/cankaya/index.html" },
     { "source": "/hizmet-bolgeleri/kecioren",                "destination": "/hizmet-bolgeleri/kecioren/index.html" },

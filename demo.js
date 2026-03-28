@@ -6,10 +6,10 @@
  * Public API: window.DEMO = { addIntent, showPopup, closePopup, buy }
  */
 
-import { getApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getDatabase, ref, set, update, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-import { getFirestore, collection, query, where, getDocs, Timestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
+import { getDatabase, ref, set, update, onValue } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js';
+import { getFirestore, collection, query, where, getDocs, Timestamp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
 
 // ─── Firebase bağlantısı (restoran-panel.html zaten init etti) ───────────────
 let _app, _auth, _rtdb, _fs;

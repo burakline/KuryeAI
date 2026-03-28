@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>İletişim | KuryeAI — Ankara Kurye</title>
   <meta name="description" content="KuryeAI ile iletişime geçin. Ankara kurye hizmeti, RestoranAI ve İzinciKuryeAI için 7/24 destek. WhatsApp: 0507 217 19 95"/>
+  <link rel="canonical" href="https://www.kuryeai.com/iletisim"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://www.kuryeai.com/iletisim"/>
+  <meta property="og:title" content="İletişim | KuryeAI — Ankara Kurye"/>
+  <meta property="og:description" content="KuryeAI ile iletişime geçin. Ankara kurye hizmeti, RestoranAI ve İzinciKuryeAI için 7/24 destek."/>
+  <meta property="og:image" content="https://www.kuryeai.com/1000414615.png"/>
+  <meta name="twitter:card" content="summary_large_image"/>
   <link rel="icon" type="image/png" href="/1000414615.png"/>
     <link rel="preconnect" href="https://www.googletagmanager.com"/>
   <link rel="dns-prefetch" href="https://www.google-analytics.com"/>
@@ -122,7 +129,7 @@
           <div>
             <p class="cc-label">Adres</p>
             <p class="cc-value" style="font-size:.82rem;color:var(--white)">Ayvalı Mah. 197. Sokak No:5/A<br/>Keçiören / Ankara — 06110</p>
-            <p class="cc-sub">Vergi Dairesi: XXXXX V.D. · VKN: 12345676</p>
+            <p class="cc-sub">Vergi bilgileri yakında eklenecektir</p>
           </div>
         </div>
       </div>
@@ -176,8 +183,7 @@
   <br/><br/>© 2026 AI Teknoloji ve Lojistik Ltd. Şti.
 </footer>
 
-<!-- Firebase + EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- Firebase -->
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <script type="module">
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
@@ -194,15 +200,6 @@ const FB_CONFIG = {
 
 const app = getApps().find(a => a.name === 'iletisim') || initializeApp(FB_CONFIG, 'iletisim');
 const db  = getFirestore(app);
-
-// EmailJS yapılandırması — dashboard.emailjs.com'dan alın
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-
-if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-}
 
 window.sendContact = async function() {
   const ad    = document.getElementById('c-ad').value.trim();
@@ -234,19 +231,7 @@ window.sendContact = async function() {
     console.warn('Firestore kayıt hatası:', e);
   }
 
-  // 2. EmailJS bildirimi (yapılandırıldıysa)
-  if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-    try {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        from_name: ad, from_phone: tel,
-        from_email: email || 'Belirtilmedi',
-        subject: konu, message: mesaj,
-        to_email: 'burakline@kuryeai.com'
-      });
-    } catch (e) { console.warn('EmailJS hatası:', e); }
-  }
-
-  // 3. WhatsApp yönlendirme
+  // 2. WhatsApp yönlendirme
   const waMsg = `📬 *İLETİŞİM FORMU — KuryeAI*\n\n👤 *${ad}*\n📞 ${tel}\n✉️ ${email||'Belirtilmedi'}\n\n📌 *Konu:* ${konu}\n\n💬 *Mesaj:*\n${mesaj}\n\n---\n_kuryeai.com/iletisim_`;
   window.open(`https://wa.me/905072171995?text=${encodeURIComponent(waMsg)}`, '_blank');
 

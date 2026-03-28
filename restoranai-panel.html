@@ -619,12 +619,13 @@ tbody tr:hover{background:var(--bg)}
   .main{margin-left:0}
   .mob-topbar{display:flex}
   .topbar{display:none}
-  .content{padding:14px}
+  .content{padding:10px}
   .stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px;margin-bottom:14px}
   .stat-card{padding:14px 12px}
   .stat-value{font-size:22px}
   .stat-top{margin-bottom:8px}
   .menu-grid{grid-template-columns:1fr!important}
+  .menu-card{padding:12px}
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   table{min-width:560px}
   #map{height:240px!important}
@@ -634,14 +635,25 @@ tbody tr:hover{background:var(--bg)}
   .metric-label{font-size:9px!important}
   .radio-grid{grid-template-columns:1fr 1fr!important}
   .form-row{grid-template-columns:1fr!important}
-  .source-btn{padding:10px 6px}
+  .source-btn{padding:10px 6px;font-size:11px}
   .card-header{padding:12px 14px;flex-wrap:wrap;gap:8px}
-  .card-body{padding:14px}
+  .card-body{padding:12px}
   .card-title{font-size:13px}
+  .card{border-radius:12px;margin-bottom:12px}
   .map-overlay{top:8px;right:8px}
   .map-overlay-card{padding:8px 10px}
   .map-overlay-card .value{font-size:14px}
   .map-overlay-card .label{font-size:9px}
+  /* Harita butonları dokunma alanı büyüt */
+  .cbtn-rest,.map-btns-rest .cbtn-rest{width:38px!important;height:38px!important;font-size:16px!important}
+  /* Rapor sekmeler sarılsın */
+  .tab{padding:.4rem .7rem;font-size:11px}
+  /* Export butonlar satır satır */
+  .card-header .btn-group{flex-wrap:wrap;gap:6px}
+  /* Kurye kartları */
+  .courier-card{padding:12px}
+  /* Order row kompakt */
+  .order-row td{padding:8px 6px;font-size:12px}
   /* tüm inline grid'leri tek kolon yap */
   [style*="grid-template-columns:1fr 1fr"]{display:flex!important;flex-direction:column!important;gap:12px!important}
   [style*="grid-template-columns:1fr 380px"]{display:flex!important;flex-direction:column!important;gap:12px!important}
@@ -652,10 +664,23 @@ tbody tr:hover{background:var(--bg)}
   [style*="grid-template-columns:repeat(6,1fr)"]{grid-template-columns:repeat(3,1fr)!important}
   [style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(3,1fr)!important}
 }
+@media(max-width:480px){
+  .content{padding:8px}
+  .stats-grid{gap:8px}
+  .card-header{padding:10px 12px}
+  .card-body{padding:10px 12px}
+  /* Menü siparişi formu daha kompakt */
+  .form-input,.form-select{padding:.5rem .7rem;font-size:13px}
+  .btn{padding:.5rem 1rem;font-size:13px}
+  /* Raporlar export buton metni kısa */
+  .rep-pdf-btn::before{content:'⬇ PDF'}
+  .rep-xls-btn::before{content:'⬇ XLS'}
+}
 @media(max-width:400px){
   .stats-grid{grid-template-columns:1fr!important}
   .radio-grid{grid-template-columns:1fr!important}
   .metrics-grid{grid-template-columns:repeat(2,1fr)!important}
+  .source-grid{grid-template-columns:1fr 1fr!important}
 }
 
 /* ── DEMO BANNER ── */

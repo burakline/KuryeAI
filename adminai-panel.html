@@ -288,8 +288,39 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   .main{margin-left:0}
   .topbar{display:none}
   .mob-topbar{display:flex}
-  .content{padding:14px 16px}
+  .content{padding:12px}
   .sgrid{grid-template-columns:repeat(2,1fr)!important;gap:10px}
+  .card{border-radius:12px}
+  .card-header{padding:12px 14px;flex-wrap:wrap;gap:8px}
+  .card-body{padding:12px 14px}
+  /* Harita yüksekliği */
+  #map{height:260px!important}
+  /* Tablo scroll */
+  .table-wrap,.bolge-section table{overflow-x:auto;-webkit-overflow-scrolling:touch;display:block}
+  table{min-width:540px}
+  /* Liste item'ları */
+  .litem{padding:10px 12px}
+  .litem-name{font-size:.88rem}
+  .litem-sub{font-size:.72rem}
+  /* Başvuru grid */
+  .sgrid-4{grid-template-columns:repeat(2,1fr)!important}
+  /* Bölge butonları */
+  .bolge-add-row{flex-direction:column}
+  .bolge-add-row .fsel{width:100%}
+  /* Admin map buttons bigger tap targets */
+  .admin-cbtn{width:38px;height:38px;font-size:16px}
+  /* Zone coverage overlay küçült */
+  #zone-coverage{font-size:11px!important;padding:8px 10px!important}
+  /* Pane padding */
+  .pane{padding:0}
+}
+@media(max-width:480px){
+  .sgrid{grid-template-columns:1fr!important}
+  .sgrid-4{grid-template-columns:1fr!important}
+  .content{padding:10px 8px}
+  .litem-top{flex-wrap:wrap;gap:6px}
+  /* Stats başlık küçük */
+  .card-title{font-size:12px}
 }
 
 /* ── BÖLGE KART ── */

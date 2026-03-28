@@ -1192,7 +1192,8 @@ async function loadAll(){
 
 async function loadBasvurular(){
   try{
-    const q=query(collection(db,'basvurular'),orderBy('createdAt','desc'));
+    // limit(200): büyük koleksiyonlarda tam tarama önle
+    const q=query(collection(db,'basvurular'),orderBy('createdAt','desc'),limit(200));
     const snap=await getDocs(q);
     allBasvurular=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderBasvurular(); updateBadge();
@@ -1201,7 +1202,8 @@ async function loadBasvurular(){
 
 async function loadUsers(){
   try{
-    const snap=await getDocs(collection(db,'users'));
+    // limit(300): tüm users koleksiyonunu taramak yerine sayfalı çek
+    const snap=await getDocs(query(collection(db,'users'),limit(300)));
     allUsers=snap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role!=='admin');
     renderRestoranlar(); renderKuryeler(); updateBadge();
   }catch(e){console.error('loadUsers',e);}

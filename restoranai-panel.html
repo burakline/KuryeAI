@@ -2253,7 +2253,7 @@ import { initializeApp }   from "https://www.gstatic.com/firebasejs/12.11.0/fire
 // Firebase RTDB SDK yerine REST/SSE kullanıyoruz (SDK WebSocket açmıyor)
 import { getAuth, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, getDocs, query, where, onSnapshot, orderBy, serverTimestamp }
+import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, getDocs, query, where, onSnapshot, orderBy, serverTimestamp, limit }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL }
   from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
@@ -2929,7 +2929,8 @@ function initChatListeners(){
   if(_chatUnsubOps){_chatUnsubOps();_chatUnsubOps=null;}
   _chatMsgsOps=[];
   const opsRoom=`restoran_${RESTAURANT_ID}_ops`;
-  const q1=query(collection(fs,'chats',opsRoom,'messages'),orderBy('timestamp'));
+  // limit(60): chat geçmişinde tüm mesajları çekmek yerine son 60 mesaj
+  const q1=query(collection(fs,'chats',opsRoom,'messages'),orderBy('timestamp'),limit(60));
   _chatUnsubOps=onSnapshot(q1,s=>{
     _chatMsgsOps=s.docs.map(d=>({id:d.id,...d.data()}));
     if(window.currentPage==='chat')renderRestChat();
@@ -4910,7 +4911,7 @@ window.lookupCourierByEmail=async()=>{
   res.style.display="block";
   res.innerHTML=`<div style="font-size:13px;color:var(--text3)">🔍 Aranıyor…</div>`;
   try{
-    const q=query(collection(fs,"users"),where("email","==",email),where("role","==","kurye"),where("status","==","active"));
+    const q=query(collection(fs,"users"),where("email","==",email),where("role","==","kurye"),where("status","==","active"),limit(1));
     const snap=await getDocs(q);
     if(snap.empty){
       res.innerHTML=`<div style="padding:10px;background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:13px;color:var(--red)">❌ Onaylı kurye bulunamadı. Kurye KuryeAI'ye kayıtlı ve admin tarafından onaylanmış olmalı.</div>`;

@@ -1879,17 +1879,47 @@ tbody tr:hover{background:var(--bg)}
 
       <!-- ═══════════════ MUTFAK EKRANI ═══════════════ -->
       <div class="view" id="view-kitchen">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div>
             <div style="font-size:22px;font-weight:800">👨‍🍳 Mutfak Ekranı</div>
             <div style="font-size:12px;color:var(--text3);margin-top:2px">Hazırlanması gereken siparişler</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <div class="status-pill live"><span class="pill-dot pulse"></span>Canlı Güncelleniyor</div>
+            <!-- Sütun seçici -->
+            <select id="kitchen-cols" onchange="setKitchenCols(this.value)" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer">
+              <option value="2">2 Sütun</option>
+              <option value="3" selected>3 Sütun</option>
+              <option value="4">4 Sütun</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="toggleKitchenFullscreen()" id="kitchen-fs-btn" title="Tam Ekran">⛶ Tablet Modu</button>
             <button class="btn btn-ghost btn-sm" onclick="renderKitchen()">↻ Yenile</button>
           </div>
         </div>
+        <!-- Otomatik yenileme sayacı -->
+        <div id="kitchen-timer-bar" style="height:3px;background:var(--border);border-radius:999px;margin-bottom:14px;overflow:hidden"><div id="kitchen-timer-fill" style="height:100%;background:var(--teal);border-radius:999px;width:100%;transition:width 1s linear"></div></div>
         <div id="kitchen-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px"></div>
+      </div>
+
+      <!-- Mutfak Tam Ekran Overlay -->
+      <div id="kitchen-fs-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:var(--dark);overflow-y:auto;padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:24px;font-weight:900">👨‍🍳 Mutfak Ekranı</div>
+            <div class="status-pill live"><span class="pill-dot pulse"></span>Canlı</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="kitchen-fs-clock" style="font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal)"></div>
+            <select id="kitchen-fs-cols" onchange="setKitchenCols(this.value)" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;font-size:13px;color:#fff;cursor:pointer">
+              <option value="2">2 Sütun</option>
+              <option value="3" selected>3 Sütun</option>
+              <option value="4">4 Sütun</option>
+              <option value="5">5 Sütun</option>
+            </select>
+            <button onclick="toggleKitchenFullscreen()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-size:13px;font-weight:600">✕ Kapat</button>
+          </div>
+        </div>
+        <div id="kitchen-fs-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px"></div>
       </div>
 
       <!-- ═══════════════ KURYE HAKEDİŞLERİ ═══════════════ -->
@@ -2420,7 +2450,8 @@ window.goPage=page=>{
   if(page==="dashboard")setTimeout(initMapDash,100);
   if(page==="reports"){renderReports();renderPerfRanking();}
   if(page==="financials")renderFinancials(currentFinPeriod||"daily");
-  if(page==="kitchen")renderKitchen();
+  if(page==="kitchen"){ renderKitchen(); _startKitchenTimer(); }
+  else { clearInterval(_kitchenTimerInterval); _kitchenTimerInterval=null; }
   if(page==="earnings")renderEarnings();
   if(page==="staff")renderStaff();
   if(page==="platforms")loadPlatformLinks();
@@ -4290,30 +4321,92 @@ function renderFinancials(period="daily") {
 }
 
 // ── MUTFAK EKRANI ─────────────────────────────────────────────────────────
+let _kitchenCols=3, _kitchenFsOpen=false, _kitchenTimerInterval=null, _kitchenTimerSec=30;
+
+function setKitchenCols(n){
+  _kitchenCols=parseInt(n)||3;
+  document.getElementById('kitchen-grid').style.gridTemplateColumns=`repeat(${_kitchenCols},1fr)`;
+  const fsGrid=document.getElementById('kitchen-fs-grid');
+  if(fsGrid) fsGrid.style.gridTemplateColumns=`repeat(${_kitchenCols},1fr)`;
+  document.querySelectorAll('#kitchen-cols,#kitchen-fs-cols').forEach(s=>s.value=String(_kitchenCols));
+}
+
+function toggleKitchenFullscreen(){
+  _kitchenFsOpen=!_kitchenFsOpen;
+  const ov=document.getElementById('kitchen-fs-overlay');
+  if(!ov)return;
+  ov.style.display=_kitchenFsOpen?'block':'none';
+  document.body.style.overflow=_kitchenFsOpen?'hidden':'';
+  if(_kitchenFsOpen){ renderKitchen(); _startKitchenClock(); }
+  else { _stopKitchenClock(); }
+}
+
+function _startKitchenClock(){
+  _stopKitchenClock();
+  const tick=()=>{
+    const el=document.getElementById('kitchen-fs-clock');
+    if(el) el.textContent=new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  };
+  tick();
+  window._kitchenClockInt=setInterval(tick,1000);
+}
+function _stopKitchenClock(){ clearInterval(window._kitchenClockInt); }
+
+function _startKitchenTimer(){
+  clearInterval(_kitchenTimerInterval);
+  let rem=_kitchenTimerSec;
+  const fill=document.getElementById('kitchen-timer-fill');
+  if(fill) fill.style.width='100%';
+  _kitchenTimerInterval=setInterval(()=>{
+    rem--;
+    if(fill) fill.style.width=`${(rem/_kitchenTimerSec)*100}%`;
+    if(rem<=0){ rem=_kitchenTimerSec; renderKitchen(); if(fill){fill.style.transition='none';fill.style.width='100%';requestAnimationFrame(()=>{fill.style.transition='width 1s linear';});} }
+  },1000);
+}
+
+function _kitchenCardHtml(o, bigMode=false){
+  const st = STATUS[o.status]||STATUS.pending;
+  const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
+  const urgent = elapsed > 20;
+  const items = Array.isArray(o.items)?o.items:(o.items?[o.items]:[]);
+  const bg=bigMode?'#1a1a1a':'var(--white)';
+  const textCol=bigMode?'#fff':'var(--text)';
+  const subCol=bigMode?'rgba(255,255,255,.55)':'var(--text3)';
+  const itemBg=bigMode?'rgba(255,255,255,.06)':'var(--bg)';
+  const fs=bigMode?'17px':'13px';
+  return `<div style="background:${bg};border:${urgent?'2px solid #ef4444':'1px solid '+(bigMode?'rgba(255,255,255,.1)':'var(--border)')};border-radius:${bigMode?'20px':'16px'};padding:${bigMode?'22px':'20px'};position:relative;display:flex;flex-direction:column;gap:0">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:${bigMode?'10px':'6px'}">
+      <div style="font-size:${bigMode?'13px':'12px'};font-family:var(--fm);color:${subCol}">#${o.id.slice(-5).toUpperCase()}</div>
+      <div style="background:${urgent?'#ef4444':'rgba(0,200,215,.15)'};color:${urgent?'#fff':'var(--teal)'};font-size:${bigMode?'13px':'10px'};font-weight:800;padding:${bigMode?'4px 10px':'3px 8px'};border-radius:999px">${urgent?'⚠':''} ${elapsed}dk</div>
+    </div>
+    <div style="font-size:${bigMode?'22px':'16px'};font-weight:800;color:${textCol};margin-bottom:4px">${esc(o.customer)}</div>
+    <div style="font-size:${bigMode?'13px':'12px'};color:${subCol};margin-bottom:${bigMode?'14px':'12px'}">📍 ${esc(o.address)}</div>
+    <div style="background:${itemBg};border-radius:${bigMode?'12px':'10px'};padding:${bigMode?'14px':'10px'};margin-bottom:${bigMode?'16px':'14px'};flex:1">
+      ${items.map(i=>`<div style="font-size:${fs};color:${textCol};padding:2px 0;line-height:1.6;border-bottom:1px solid ${bigMode?'rgba(255,255,255,.06)':'var(--border)'};last-child:border:none">• ${esc(String(i))}</div>`).join('')}
+    </div>
+    <button onclick="advanceOrder('${esc(o.id)}','${esc(st.next||'')}');renderKitchen()" ${!st.next?'disabled':''} style="padding:${bigMode?'13px':'10px'};background:${st.next?'var(--teal)':'var(--border)'};border:none;border-radius:${bigMode?'12px':'10px'};color:${st.next?'#000':'var(--text3)'};font-weight:800;cursor:${st.next?'pointer':'default'};font-size:${bigMode?'15px':'13px'};width:100%">
+      ${st.next?esc(STATUS[st.next].label)+' →':'Beklemede'}
+    </button>
+  </div>`;
+}
+
 function renderKitchen() {
-  const active = orders.filter(o=>o.status==="pending"||o.status==="preparing");
+  const active = orders.filter(o=>o.status==="pending"||o.status==="preparing").sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   const el = document.getElementById("kitchen-grid");
-  if(!el) return;
-  if(!active.length){
-    el.innerHTML=`<div style="grid-column:span 3;text-align:center;padding:40px;color:var(--text3)"><div style="font-size:48px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700">Hazırlanacak sipariş yok</div></div>`;
-    return;
+  const fsEl = document.getElementById("kitchen-fs-grid");
+
+  const emptyHtml=(cols)=>`<div style="grid-column:span ${cols};text-align:center;padding:60px 20px;color:var(--text3)"><div style="font-size:52px;margin-bottom:14px">✅</div><div style="font-size:18px;font-weight:700">Hazırlanacak sipariş yok</div><div style="font-size:13px;margin-top:6px;opacity:.7">Yeni sipariş gelince burada görünür</div></div>`;
+
+  if(el){
+    el.style.gridTemplateColumns=`repeat(${_kitchenCols},1fr)`;
+    el.innerHTML = active.length ? active.map(o=>_kitchenCardHtml(o,false)).join('') : emptyHtml(_kitchenCols);
   }
-  el.innerHTML = active.map(o=>{
-    const st = STATUS[o.status]||STATUS.pending;
-    const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
-    const urgent = elapsed > 20;
-    const items = Array.isArray(o.items)?o.items.join("<br>"):o.items;
-    return `<div style="background:var(--white);border:${urgent?"2px solid var(--red)":"1px solid var(--border)"};border-radius:16px;padding:20px;position:relative">
-      ${urgent?`<div style="position:absolute;top:12px;right:12px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px">⚠ ${elapsed}dk</div>`:`<div style="position:absolute;top:12px;right:12px;font-size:11px;color:var(--text3)">${elapsed}dk</div>`}
-      <div style="font-size:12px;font-family:var(--fm);color:var(--text3);margin-bottom:6px">#${o.id.slice(-5).toUpperCase()}</div>
-      <div style="font-size:16px;font-weight:800;margin-bottom:4px">${o.customer}</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">📍 ${o.address}</div>
-      <div style="background:var(--bg);border-radius:10px;padding:10px;margin-bottom:14px;font-size:13px;line-height:1.7">${items}</div>
-      <div style="display:flex;gap:8px">
-        ${st.next?`<button onclick="advanceOrder('${esc(o.id)}','${esc(st.next)}')" style="flex:1;padding:10px;background:var(--teal);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:13px">${esc(STATUS[st.next].label)} →</button>`:""}
-      </div>
-    </div>`;
-  }).join("");
+  if(fsEl && _kitchenFsOpen){
+    fsEl.style.gridTemplateColumns=`repeat(${_kitchenCols},1fr)`;
+    fsEl.innerHTML = active.length ? active.map(o=>_kitchenCardHtml(o,true)).join('') : emptyHtml(_kitchenCols);
+  }
+  // Başlat timer (sayfa açıldığında)
+  if(!_kitchenTimerInterval && currentPage==='kitchen') _startKitchenTimer();
 }
 
 // ── KURYE HAKEDİŞLERİ ────────────────────────────────────────────────────

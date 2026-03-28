@@ -1065,11 +1065,11 @@ const G={
   hist:[],
   ledger:[],
   maint:[
-    {n:'Motor Yağı',i:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>️',e:5000,l:0},
-    {n:'Lastik Kontrolü',i:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>',e:10000,l:0},
-    {n:'Fren Kontrolü',i:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',e:8000,l:0},
-    {n:'Zincir Yağı',i:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>️',e:2000,l:0},
-    {n:'Hava Filtresi',i:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>',e:15000,l:0},
+    {n:'Motor Yağı',i:'🛢️',e:5000,l:0},
+    {n:'Lastik Kontrolü',i:'🔄',e:10000,l:0},
+    {n:'Fren Kontrolü',i:'🛑',e:8000,l:0},
+    {n:'Zincir Yağı',i:'🔗️',e:2000,l:0},
+    {n:'Hava Filtresi',i:'💨',e:15000,l:0},
   ],
   ph:{s:null,e:null},lt:'income',cI:null,
   activeOrder:null,
@@ -1127,10 +1127,10 @@ function toggleSatellite(){
   if(G.satelliteMode){
     G.baseLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}).addTo(G.map);
     G.labelsLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:0.85}).addTo(G.map);
-    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>️ Uydu görüntüsü');
+    showToast('🌐️ Uydu görüntüsü');
   }else{
     G.baseLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(G.map);
-    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ Sokak haritası');
+    showToast('🗺️ Sokak haritası');
   }
 }
 function toggleMapFullscreen(){
@@ -1182,7 +1182,7 @@ function _loadTrafficLayer(key){
       {maxZoom:19,opacity:0.75,attribution:'© TomTom Traffic'}
     ).addTo(G.map);
     if(leg)leg.style.display='flex';
-    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><circle cx="12" cy="12" r="10"/></svg> Trafik katmanı açık');
+    showToast('🟢 Trafik katmanı açık');
   } else {
     // Ücretsiz fallback: HERE Traffic (key gerekmez, hafif)
     G.trafficLayer=L.tileLayer(
@@ -1191,7 +1191,7 @@ function _loadTrafficLayer(key){
        errorTileUrl:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
     );
     // HERE key gerektiriyor — fallback olarak bilgilendirici toast
-    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️ Trafik için TomTom API key gerekli');
+    showToast('⚠️ Trafik için TomTom API key gerekli');
     G.trafficOn=false;
     const btn=document.getElementById('trafficBtn');
     if(btn)btn.classList.remove('active');
@@ -1224,7 +1224,7 @@ function toggleIncidents(){
   if(_incOn){
     _fetchIncidents();
     _incFetchI=setInterval(_fetchIncidents,60000);
-    showToast('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️ Trafik olayları açık');
+    showToast('⚠️ Trafik olayları açık');
   }else{
     clearInterval(_incFetchI);_incFetchI=null;
     _incMarkers.forEach(m=>{if(G.map)G.map.removeLayer(m);});
@@ -1263,8 +1263,8 @@ async function _fetchIncidents(){
 }
 
 function _incidentEmoji(cat){
-  const map={0:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️',1:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',2:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>',3:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M17.66 4.93l-1.41 1.41M19.07 19.07l-1.41-1.41M12 20v2M6.34 17.66l-1.41 1.41M2 12H0"/><circle cx="12" cy="12" r="4"/></svg>️',4:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',5:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',6:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️',7:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><circle cx="12" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="17" r="2"/></svg>',8:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',9:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg>',10:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H3"/><path d="M18 8H6"/><path d="M19 12H9"/><path d="M16 16h-6"/><path d="M11 20H9"/></svg>️',11:'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><line x1="9" y1="7" x2="9" y2="13"/><line x1="6" y1="10" x2="12" y2="10"/></svg>'};
-  return map[cat]||'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️';
+  const map={0:'⚠️',1:'⚠',2:'🚗',3:'☀️',4:'⚠',5:'⚠',6:'⚠️',7:'📱',8:'🛑',9:'🏪',10:'📋️',11:'🚗'};
+  return map[cat]||'⚠️';
 }
 function _incidentLabel(cat){
   const map={0:'Olay',1:'Yol Çalışması',2:'Trafik Sıkışıklığı',3:'Hava Durumu',4:'Tehlike',5:'Kapalı Yol',6:'Uyarı',7:'Trafik Işığı',8:'Durdurma',9:'Yakıt',10:'Afet',11:'Acil Durum'};
@@ -1342,7 +1342,7 @@ function _renderRpAddrList(){
     return;
   }
   el.innerHTML=_rpAddrs.map((a,i)=>
-    `<div class="rp-addr-row"><span class="rp-num">${i+1}</span><input class="fi" style="flex:1;margin:0" type="text" placeholder="Adres ${i+1}" value="${esc(a)}" oninput="_rpAddrs[${i}]=this.value"><button onclick="removeRpAddr(${i})" style="background:none;border:none;color:var(--tx3);cursor:pointer;padding:4px;font-size:1rem"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`
+    `<div class="rp-addr-row"><span class="rp-num">${i+1}</span><input class="fi" style="flex:1;margin:0" type="text" placeholder="Adres ${i+1}" value="${esc(a)}" oninput="_rpAddrs[${i}]=this.value"><button onclick="removeRpAddr(${i})" style="background:none;border:none;color:var(--tx3);cursor:pointer;padding:4px;font-size:1rem">✕</button></div>`
   ).join('');
 }
 async function runRouteOpt(){
@@ -1378,7 +1378,7 @@ async function runRouteOpt(){
       `<div class="rp-order-item"><span class="rp-order-idx">${i+1}</span><span>${esc(c.addr)}</span></div>`
     ).join('');
     const min=Math.round(tSec/60);
-    document.getElementById('rpSummary').innerHTML=`<div class="rp-result-row">⏱️ Tahmini süre: <b>${min} dk</b></div><div class="rp-result-row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/><line x1="8" y1="6" x2="8" y2="10"/><line x1="12" y1="6" x2="12" y2="14"/><line x1="16" y1="6" x2="16" y2="10"/></svg> Toplam mesafe: <b>${distKm} km</b></div>`;
+    document.getElementById('rpSummary').innerHTML=`<div class="rp-result-row">⏱️ Tahmini süre: <b>${min} dk</b></div><div class="rp-result-row">📊 Toplam mesafe: <b>${distKm} km</b></div>`;
     if(G.delivRouteLine){G.map.removeLayer(G.delivRouteLine);G.delivRouteLine=null;}
     const pts=route.legs.flatMap(leg=>leg.points.map(p=>[p.latitude,p.longitude]));
     if(pts.length&&G.map){
@@ -1386,7 +1386,7 @@ async function runRouteOpt(){
       G.map.fitBounds(G.delivRouteLine.getBounds(),{padding:[40,40]});
     }
   }catch(e){showToast('Rota hatası: '+e.message,'error');}
-  finally{if(btn){btn.disabled=false;btn.textContent='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>️ En İyi Rotayı Hesapla';}}
+  finally{if(btn){btn.disabled=false;btn.textContent='🗺️ En İyi Rotayı Hesapla';}}
 }
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -1509,7 +1509,7 @@ function fmtD(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h>0
 
 // SHIFT
 function handleSh(){G.shift.on?openM('mEnd'):openM('mStart');}
-function handlePh(e,t){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{G.ph[t]=ev.target.result;document.getElementById(t==='s'?'sPPrev':'ePPrev').src=ev.target.result;document.getElementById(t==='s'?'sPPrev':'ePPrev').style.display='block';document.getElementById(t==='s'?'sPBtn':'ePBtn').classList.add('ok');document.getElementById(t==='s'?'sPTxt':'ePTxt').textContent='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Fotoğraf çekildi';chkV(t);};r.readAsDataURL(f);}
+function handlePh(e,t){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{G.ph[t]=ev.target.result;document.getElementById(t==='s'?'sPPrev':'ePPrev').src=ev.target.result;document.getElementById(t==='s'?'sPPrev':'ePPrev').style.display='block';document.getElementById(t==='s'?'sPBtn':'ePBtn').classList.add('ok');document.getElementById(t==='s'?'sPTxt':'ePTxt').textContent='✓ Fotoğraf çekildi';chkV(t);};r.readAsDataURL(f);}
 function chkV(t){if(t==='s'){const km=document.getElementById('sKmIn').value;document.getElementById('sConfBtn').disabled=!(G.ph.s&&km&&+km>0);}else{const km=document.getElementById('eKmIn').value;const ok=!!(G.ph.e&&km&&+km>0);document.getElementById('eConfBtn').disabled=!ok;if(ok)showSum();}}
 document.getElementById('sKmIn').addEventListener('input',()=>chkV('s'));
 document.getElementById('eKmIn').addEventListener('input',()=>chkV('e'));
@@ -1535,8 +1535,8 @@ function confirmStart(){
   const km=+document.getElementById('sKmIn').value;
   G.shift={on:true,t0:Date.now(),sk:km};G.stats={dur:0,km:0,speeds:[],earn:0,routeKm:0};G.trail?.setLatLngs([]);
   document.getElementById('spill').style.display='flex';document.getElementById('shDot').style.background='var(--teal)';
-  document.getElementById('shBtn').className='sbtn end';document.getElementById('shBtn').innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18"/></svg>Vardiyayı Bitir';
-  closeM('mStart');resetPh('s');pushShFB(true);toast('Vardiya başladı! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg>','success');
+  document.getElementById('shBtn').className='sbtn end';document.getElementById('shBtn').innerHTML='⏹Vardiyayı Bitir';
+  closeM('mStart');resetPh('s');pushShFB(true);toast('Vardiya başladı! 🚲','success');
 }
 function confirmEnd(){
   const ek=+document.getElementById('eKmIn').value,km=ek-G.shift.sk,hrs=G.stats.dur/3600,earn=hrs*G.rates.h+km*G.rates.km;
@@ -1545,9 +1545,9 @@ function confirmEnd(){
   if(G.hist.length>30)G.hist.pop();
   const fb0=window._fb;if(fb0&&G.uid){try{fb0.addDoc(fb0.collection(fb0.fs,'users',G.uid,'shifts'),{...shiftRec,createdAt:new Date().toISOString()});}catch(e){}}
   G.shift.on=false;document.getElementById('spill').style.display='none';document.getElementById('shDot').style.background='var(--tx3)';
-  document.getElementById('shBtn').className='sbtn start';document.getElementById('shBtn').innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>Vardiyayı Başlat';
+  document.getElementById('shBtn').className='sbtn start';document.getElementById('shBtn').innerHTML='▶Vardiyayı Başlat';
   closeM('mEnd');resetPh('e');document.getElementById('eSum').style.display='none';
-  pushShFB(false);toast('Vardiya bitti! ₺'+Math.round(earn)+' kazandın <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>','success');renderEarn();
+  pushShFB(false);toast('Vardiya bitti! ₺'+Math.round(earn)+' kazandın 💰','success');renderEarn();
 }
 function resetPh(t){G.ph[t]=null;document.getElementById(t==='s'?'sPPrev':'ePPrev').style.display='none';document.getElementById(t==='s'?'sPBtn':'ePBtn').classList.remove('ok');document.getElementById(t==='s'?'sPTxt':'ePTxt').textContent='Kamera ile Fotoğraf Çek';document.getElementById(t==='s'?'sKmIn':'eKmIn').value='';document.getElementById(t==='s'?'sConfBtn':'eConfBtn').disabled=true;}
 function pushShFB(a){window._rtdbSet&&window._rtdbSet(`/couriers/${G.id}/shift`,{active:a,updatedAt:{".sv":"timestamp"}}).catch(()=>{});}
@@ -1628,7 +1628,7 @@ function initChat(){
   _chatUnsub2=fb.onSnapshot(q2,s=>{G.msgs[2]=s.docs.map(d=>d.data());if(G.room===2)renderChat();});
 }
 function _showBcNotif(title,body){
-  toast(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> ${title||'Bildirim'}: ${body||''}`,'info');
+  toast(`🔊 ${title||'Bildirim'}: ${body||''}`,'info');
   if(!('Notification' in window))return;
   const show=()=>{
     navigator.serviceWorker.ready.then(reg=>{
@@ -1678,7 +1678,7 @@ function _showAssignedRestOnMap(){
   if(G.restMarker)return; // Aktif sipariş pini varsa dokunma
   const r=G.assignedRest;
   if(!r.restoranLat||!r.restoranLng)return;
-  const inner=r.logoURL?`<img src="${r.logoURL}" style="width:34px;height:34px;object-fit:cover;border-radius:50%">`:`<span style="font-size:18px;line-height:1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>️</span>`;
+  const inner=r.logoURL?`<img src="${r.logoURL}" style="width:34px;height:34px;object-fit:cover;border-radius:50%">`:`<span style="font-size:18px;line-height:1">🌐️</span>`;
   const ic=L.divIcon({
     html:`<div style="width:44px;height:55px;position:relative;text-align:center">
       <div style="width:44px;height:44px;border-radius:50%;background:#fff;border:3.5px solid #00c8d7;overflow:hidden;box-shadow:0 3px 12px rgba(0,200,215,.35);display:flex;align-items:center;justify-content:center">${inner}</div>
@@ -1714,7 +1714,7 @@ async function handleAv(e){
     G.avatar=url;
     updAv();
     await fb.updateDoc(fb.doc(fb.fs,'users',G.uid),{photoURL:url});
-    toast('Fotoğraf kaydedildi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>','success');
+    toast('Fotoğraf kaydedildi ✓','success');
   }catch(err){toast('Yükleme hatası: '+err.message,'error');}
 }
 function selV(el,t){document.querySelectorAll('.vc').forEach(c=>c.classList.remove('active'));el.classList.add('active');G.vehicle=t;}
@@ -1743,7 +1743,7 @@ async function saveProf(){
       }).catch(()=>{});
     }catch(e){toast('Kayıt hatası: '+e.message,'error');return;}
   }
-  toast('Profil kaydedildi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>','success');
+  toast('Profil kaydedildi ✓','success');
 }
 
 // EARNINGS
@@ -1780,21 +1780,21 @@ function renderEarn(){
   // Sipariş listesi
   const ordEl=document.getElementById('eOrdHist');
   if(ordEl){
-    if(!filtOrds.length){ ordEl.innerHTML='<div class="hchd"><span class="hcht">Sipariş Geçmişi</span></div><div class="hrow"><div class="hico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div><div class="hinfo"><div class="ht">Bu dönemde tamamlanan sipariş yok</div></div></div>'; }
-    else { ordEl.innerHTML='<div class="hchd"><span class="hcht">Sipariş Geçmişi ('+filtOrds.length+')</span></div>'+filtOrds.slice(0,20).map(o=>`<div class="hrow"><div class="hico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="hinfo"><div class="ht">${esc(o.restaurant||o.restoranName||'Sipariş')}</div><div class="hd"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(o.deliveryAddr||o.address||'—')} · ${o.date||new Date(o.ts).toLocaleDateString('tr-TR')}</div></div><div class="hamt">₺${Number(o.amount||0)}</div></div>`).join(''); }
+    if(!filtOrds.length){ ordEl.innerHTML='<div class="hchd"><span class="hcht">Sipariş Geçmişi</span></div><div class="hrow"><div class="hico">📦</div><div class="hinfo"><div class="ht">Bu dönemde tamamlanan sipariş yok</div></div></div>'; }
+    else { ordEl.innerHTML='<div class="hchd"><span class="hcht">Sipariş Geçmişi ('+filtOrds.length+')</span></div>'+filtOrds.slice(0,20).map(o=>`<div class="hrow"><div class="hico">✓</div><div class="hinfo"><div class="ht">${esc(o.restaurant||o.restoranName||'Sipariş')}</div><div class="hd">📍 ${esc(o.deliveryAddr||o.address||'—')} · ${o.date||new Date(o.ts).toLocaleDateString('tr-TR')}</div></div><div class="hamt">₺${Number(o.amount||0)}</div></div>`).join(''); }
   }
   // Vardiyalar
   const el=document.getElementById('eHist');
-  if(!filtHist.length){el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div><div class="hrow"><div class="hico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></div><div class="hinfo"><div class="ht">Bu dönemde vardiya yok</div><div class="hd">Ana ekrana dönüp vardiya başlat</div></div></div>';return;}
-  el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div>'+filtHist.slice(0,10).map(r=>`<div class="hrow"><div class="hico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg></div><div class="hinfo"><div class="ht">${esc(r.km)} km · ${fmtD(r.dur)}</div><div class="hd">${r.date||''} · ${r.sk||0}→${r.ek||0} km</div></div><div class="hamt">₺${r.earn}</div></div>`).join('');
+  if(!filtHist.length){el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div><div class="hrow"><div class="hico">🚲</div><div class="hinfo"><div class="ht">Bu dönemde vardiya yok</div><div class="hd">Ana ekrana dönüp vardiya başlat</div></div></div>';return;}
+  el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div>'+filtHist.slice(0,10).map(r=>`<div class="hrow"><div class="hico">🚲</div><div class="hinfo"><div class="ht">${esc(r.km)} km · ${fmtD(r.dur)}</div><div class="hd">${r.date||''} · ${r.sk||0}→${r.ek||0} km</div></div><div class="hamt">₺${r.earn}</div></div>`).join('');
 }
 
 // PERF
-function renderPerf(){const rat=4.8;document.getElementById('pRat').textContent=rat;document.getElementById('pStars').innerHTML=[1,2,3,4,5].map(i=>`<span style="font-size:1rem;color:${i<=Math.round(rat)?'#FF9800':'#E0E0E0'}"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`).join('');document.getElementById('pOrd').textContent=(G.hist.length*Math.floor(5+Math.random()*3))||'—';document.getElementById('pAvgT').textContent='~24 dk';document.getElementById('pRnk').textContent='#'+(Math.floor(Math.random()*5)+1);}
+function renderPerf(){const rat=4.8;document.getElementById('pRat').textContent=rat;document.getElementById('pStars').innerHTML=[1,2,3,4,5].map(i=>`<span style="font-size:1rem;color:${i<=Math.round(rat)?'#FF9800':'#E0E0E0'}">★</span>`).join('');document.getElementById('pOrd').textContent=(G.hist.length*Math.floor(5+Math.random()*3))||'—';document.getElementById('pAvgT').textContent='~24 dk';document.getElementById('pRnk').textContent='#'+(Math.floor(Math.random()*5)+1);}
 
 // CHAT
 function swRoom(r){G.room=r;document.getElementById('ct1').className='ctab'+(r===1?' active':'');document.getElementById('ct2').className='ctab'+(r===2?' active':'');renderChat();}
-function renderChat(){const msgs=G.msgs[G.room],c=document.getElementById('cMsgs');if(!G.assignedRest?.restoranId){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Restorana bağlandıktan sonra chat kullanılabilir</div>';return;}if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">Henüz mesaj yok</div>';return;}c.innerHTML=msgs.slice(-50).map(m=>{const me=m.senderId===G.id,init=(m.senderName||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);let con='';if(m.type==='text'||!m.type)con=`<div class="mb2">${esc(m.text||'')}</div>`;else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;con=`<div class="mb2"><a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-weight:600;font-size:0.81rem;text-decoration:none"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(m.text)}</a></div>`;}else if(m.type==='image'){const su=safeUrl(m.url);con=su?`<div class="mb2"><img src="${esc(su)}" style="max-width:180px;border-radius:8px;display:block" alt=""></div>`:'';}else if(m.type==='audio'){const su=safeUrl(m.url);con=su?`<div class="mb2"><audio controls src="${esc(su)}" style="max-width:200px;border-radius:8px"></audio></div>`:'';}if(m.type==='audio'&&!con)con='<div class="mb2" style="color:var(--tx3);font-size:.8rem"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Sesli mesaj</div>';return `<div class="mrow ${me?'me':'them'}">${!me?`<div class="mav">${init}</div>`:''}<div>${!me?`<div class="msdr">${m.senderName||'Kurye'}</div>`:''}${con}<div class="mmeta">${fmtT(m.timestamp)}</div></div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
+function renderChat(){const msgs=G.msgs[G.room],c=document.getElementById('cMsgs');if(!G.assignedRest?.restoranId){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">🏠 Restorana bağlandıktan sonra chat kullanılabilir</div>';return;}if(!msgs.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:0.82rem;padding:28px 0">Henüz mesaj yok</div>';return;}c.innerHTML=msgs.slice(-50).map(m=>{const me=m.senderId===G.id,init=(m.senderName||'?').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);let con='';if(m.type==='text'||!m.type)con=`<div class="mb2">${esc(m.text||'')}</div>`;else if(m.type==='location'){const mUrl=`https://www.google.com/maps?q=${m.lat||0},${m.lng||0}`;con=`<div class="mb2"><a href="${mUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-weight:600;font-size:0.81rem;text-decoration:none">📍 ${esc(m.text)}</a></div>`;}else if(m.type==='image'){const su=safeUrl(m.url);con=su?`<div class="mb2"><img src="${esc(su)}" style="max-width:180px;border-radius:8px;display:block" alt=""></div>`:'';}else if(m.type==='audio'){const su=safeUrl(m.url);con=su?`<div class="mb2"><audio controls src="${esc(su)}" style="max-width:200px;border-radius:8px"></audio></div>`:'';}if(m.type==='audio'&&!con)con='<div class="mb2" style="color:var(--tx3);font-size:.8rem">🎵 Sesli mesaj</div>';return `<div class="mrow ${me?'me':'them'}">${!me?`<div class="mav">${init}</div>`:''}<div>${!me?`<div class="msdr">${m.senderName||'Kurye'}</div>`:''}${con}<div class="mmeta">${fmtT(m.timestamp)}</div></div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
 function fmtT(ts){if(!ts)return'şimdi';const d=ts.seconds?new Date(ts.seconds*1000):new Date(ts);return d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
 function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
 function sendMsg(){const inp=document.getElementById('cInp'),t=inp.value.trim();if(!t)return;inp.value='';pushMsg({type:'text',text:t});}
@@ -1813,12 +1813,12 @@ function listenC(){window.addEventListener('deviceorientationabsolute',hO,true);
 function hO(e){const d=e.alpha||0;document.getElementById('cNeedle').style.transform=`rotate(${-d}deg)`;document.getElementById('cDeg').textContent=Math.round(d)+'°';}
 function simC(){if(G.cI){clearInterval(G.cI);G.cI=null;}let dd=0;G.cI=setInterval(()=>{dd=(dd+1)%360;document.getElementById('cNeedle').style.transform=`rotate(${-dd}deg)`;document.getElementById('cDeg').textContent=dd+'°';},50);}
 function stopCmp(){if(G.cI){clearInterval(G.cI);G.cI=null;}window.removeEventListener('deviceorientationabsolute',hO,true);window.removeEventListener('deviceorientation',hO,true);}
-function renderLedger(){const inc=G.ledger.filter(e=>e.tp==='income').reduce((a,b)=>a+b.amt,0),exp=G.ledger.filter(e=>e.tp==='expense').reduce((a,b)=>a+b.amt,0);document.getElementById('lInc').textContent='₺'+inc.toLocaleString('tr-TR');document.getElementById('lExp').textContent='₺'+exp.toLocaleString('tr-TR');const el=document.getElementById('lList');if(!G.ledger.length){el.innerHTML='<p style="text-align:center;color:var(--tx3);padding:20px;font-size:0.82rem">Henüz kayıt yok</p>';return;}el.innerHTML=G.ledger.slice().reverse().map(e=>`<div class="mitem"><div class="mico">${e.tp==='income'?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>':'<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#ef4444" stroke="none"><circle cx="12" cy="12" r="10"/></svg>'}</div><div class="minfo"><div class="mname">${esc(e.desc)}</div><div class="mkm">${esc(e.date)}</div></div><div><div class="mst ${e.tp==='income'?'mok':'mdue'}">${e.tp==='income'?'+':'-'}₺${e.amt}</div></div></div>`).join('');}
+function renderLedger(){const inc=G.ledger.filter(e=>e.tp==='income').reduce((a,b)=>a+b.amt,0),exp=G.ledger.filter(e=>e.tp==='expense').reduce((a,b)=>a+b.amt,0);document.getElementById('lInc').textContent='₺'+inc.toLocaleString('tr-TR');document.getElementById('lExp').textContent='₺'+exp.toLocaleString('tr-TR');const el=document.getElementById('lList');if(!G.ledger.length){el.innerHTML='<p style="text-align:center;color:var(--tx3);padding:20px;font-size:0.82rem">Henüz kayıt yok</p>';return;}el.innerHTML=G.ledger.slice().reverse().map(e=>`<div class="mitem"><div class="mico">${e.tp==='income'?'🟢':'🔴'}</div><div class="minfo"><div class="mname">${esc(e.desc)}</div><div class="mkm">${esc(e.date)}</div></div><div><div class="mst ${e.tp==='income'?'mok':'mdue'}">${e.tp==='income'?'+':'-'}₺${e.amt}</div></div></div>`).join('');}
 let _lt='income';
 function setLT(t){_lt=t;document.getElementById('ltI').className='ttbtn inc'+(t==='income'?' active':'');document.getElementById('ltE').className='ttbtn exp'+(t==='expense'?' active':'');}
-function saveLedger(){const desc=document.getElementById('lDesc').value.trim(),amt=+document.getElementById('lAmt').value;if(!desc||!amt){toast('Tüm alanları doldur','error');return;}const rec={tp:_lt,desc,amt,date:new Date().toLocaleDateString('tr-TR')};G.ledger.push(rec);const fb=window._fb;if(fb&&G.uid){try{fb.addDoc(fb.collection(fb.fs,'users',G.uid,'ledger'),{...rec,createdAt:new Date().toISOString()});}catch(e){}}closeM('mLedger');renderLedger();document.getElementById('lDesc').value='';document.getElementById('lAmt').value='';toast('Kayıt eklendi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>','success');}
-function renderMaint(){const cur=+document.getElementById('curKm').value||0;document.getElementById('mList').innerHTML=G.maint.map((m,i)=>{const next=m.l+m.e,rem=next-cur;let st,cls;if(!cur){st='KM gir';cls='mwarn';}else if(rem<=0){st='Yapılmalı!';cls='mdue';}else if(rem<500){st=rem+'km kaldı';cls='mwarn';}else{st='İyi durumda';cls='mok';}return `<div class="mitem"><div class="mico">${m.i}</div><div class="minfo"><div class="mname">${m.n}</div><div class="mkm">Her ${m.e.toLocaleString('tr-TR')} km · Son: ${m.l||'—'} km</div></div><div style="text-align:right"><div class="mst ${cls}">${st}</div><div class="mdbtn" onclick="markDone(${i})"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Yapıldı</div></div></div>`;}).join('');}
-function markDone(i){const km=+document.getElementById('curKm').value;if(!km){toast('Önce KM gir','error');return;}G.maint[i].l=km;const fb=window._fb;if(fb&&G.uid){try{const maintData={};['mo','mt','mb','mc','mf'].forEach((k,j)=>{maintData['maint_'+k]=G.maint[j].l;});fb.updateDoc(fb.doc(fb.fs,'users',G.uid),maintData);}catch(e){}}renderMaint();toast(G.maint[i].n+' kaydedildi <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>','success');}
+function saveLedger(){const desc=document.getElementById('lDesc').value.trim(),amt=+document.getElementById('lAmt').value;if(!desc||!amt){toast('Tüm alanları doldur','error');return;}const rec={tp:_lt,desc,amt,date:new Date().toLocaleDateString('tr-TR')};G.ledger.push(rec);const fb=window._fb;if(fb&&G.uid){try{fb.addDoc(fb.collection(fb.fs,'users',G.uid,'ledger'),{...rec,createdAt:new Date().toISOString()});}catch(e){}}closeM('mLedger');renderLedger();document.getElementById('lDesc').value='';document.getElementById('lAmt').value='';toast('Kayıt eklendi ✓','success');}
+function renderMaint(){const cur=+document.getElementById('curKm').value||0;document.getElementById('mList').innerHTML=G.maint.map((m,i)=>{const next=m.l+m.e,rem=next-cur;let st,cls;if(!cur){st='KM gir';cls='mwarn';}else if(rem<=0){st='Yapılmalı!';cls='mdue';}else if(rem<500){st=rem+'km kaldı';cls='mwarn';}else{st='İyi durumda';cls='mok';}return `<div class="mitem"><div class="mico">${m.i}</div><div class="minfo"><div class="mname">${m.n}</div><div class="mkm">Her ${m.e.toLocaleString('tr-TR')} km · Son: ${m.l||'—'} km</div></div><div style="text-align:right"><div class="mst ${cls}">${st}</div><div class="mdbtn" onclick="markDone(${i})">✓ Yapıldı</div></div></div>`;}).join('');}
+function markDone(i){const km=+document.getElementById('curKm').value;if(!km){toast('Önce KM gir','error');return;}G.maint[i].l=km;const fb=window._fb;if(fb&&G.uid){try{const maintData={};['mo','mt','mb','mc','mf'].forEach((k,j)=>{maintData['maint_'+k]=G.maint[j].l;});fb.updateDoc(fb.doc(fb.fs,'users',G.uid),maintData);}catch(e){}}renderMaint();toast(G.maint[i].n+' kaydedildi ✓','success');}
 
 // TOAST
 function toast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);}
@@ -1868,7 +1868,7 @@ function acceptOrder(){
   document.getElementById('ordSBdot').classList.remove('show');
   G.pendingOrderData=null;
   renderActiveOrder();
-  toast('Sipariş kabul edildi! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>','success');
+  toast('Sipariş kabul edildi! 📦','success');
 }
 function rejectOrder(){
   clearInterval(G.ordTimerI);
@@ -1893,8 +1893,8 @@ function advOrderStatus(){
   if(!G.activeOrder)return;
   const st=G.activeOrder.status;
   let nst,msg;
-  if(st==='accepted'){nst='on_the_way';msg='Paket teslim alındı, yola çıkılıyor! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg>';}
-  else if(st==='on_the_way'){nst='delivered';msg='Sipariş teslim edildi! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';}
+  if(st==='accepted'){nst='on_the_way';msg='Paket teslim alındı, yola çıkılıyor! 🚲';}
+  else if(st==='on_the_way'){nst='delivered';msg='Sipariş teslim edildi! ✓';}
   else return;
   G.activeOrder.status=nst;
   if(window._rtdbSet){
@@ -1957,11 +1957,11 @@ function renderActiveOrder(){
     btn.textContent='Restorana Vardım — Teslim Alıyorum';btn.style.display='block';
   }else if(o.status==='on_the_way'){
     stEl.className='aordst ast-pk';stEl.textContent='Yolda';
-    btn.textContent='Müşteriye Teslim Ettim <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';btn.style.display='block';
+    btn.textContent='Müşteriye Teslim Ettim ✓';btn.style.display='block';
     navBtn.style.display='block';
     _showDelivOnMap(o);
   }else if(o.status==='returning'){
-    stEl.className='aordst ast-dl';stEl.textContent='Teslim Edildi <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+    stEl.className='aordst ast-dl';stEl.textContent='Teslim Edildi 🏁';
     retNavBtn.style.display='block';
     doneBtn.style.display='block';
     // Rota çizgisini temizle, teslimat pini haritada kalsın
@@ -1970,7 +1970,7 @@ function renderActiveOrder(){
   // Haritada restoran pinini göster
   if(G.map&&o.restLat&&o.restLng&&!G.restMarker){
     const ic=L.divIcon({
-      html:`<div style="background:#00c8d7;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,200,215,.4)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>`,
+      html:`<div style="background:#00c8d7;border:3px solid #fff;border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,200,215,.4)">🏠</div>`,
       className:'',iconSize:[34,34],iconAnchor:[17,17]
     });
     G.restMarker=L.marker([o.restLat,o.restLng],{icon:ic}).addTo(G.map)
@@ -1998,7 +1998,7 @@ function openNavPicker(lat,lng,addr,mode){
   _navTarget={lat,lng,addr,mode};
   const el=document.getElementById('navPickerOverlay');
   const destEl=document.getElementById('navPickerDest');
-  if(destEl) destEl.textContent=addr?`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${addr}`:(lat&&lng?`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${lat.toFixed(5)}, ${lng.toFixed(5)}`:'');
+  if(destEl) destEl.textContent=addr?`📍 ${addr}`:(lat&&lng?`📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`:'');
   if(el){el.style.display='flex';document.body.style.overflow='hidden';}
 }
 function closeNavPicker(){
@@ -2035,7 +2035,7 @@ function confirmReturn(){
   G._delivLat=null;G._delivLng=null;
   G.activeOrder=null;
   renderActiveOrder();
-  toast('Harika! Yeni sipariş bekleniyor <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-2l-3 5H5l-2 3h3.5"/><path d="M9 11l2-5h4l2 6"/></svg>','success');
+  toast('Harika! Yeni sipariş bekleniyor 🚲','success');
 }
 
 // Teslimat pinini ve kuryeden müşteriye rotayı haritada göster
@@ -2061,11 +2061,11 @@ async function _showDelivOnMap(o){
   if(!dlat||!dlng)return;
   // Teslimat pini
   const dic=L.divIcon({
-    html:`<div style="background:#E53935;border:3px solid #fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.4)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
+    html:`<div style="background:#E53935;border:3px solid #fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.4)">📍</div>`,
     className:'',iconSize:[36,36],iconAnchor:[18,18]
   });
   G.delivMarker=L.marker([dlat,dlng],{icon:dic}).addTo(G.map).bindPopup(
-    `<div style="min-width:160px"><b style="font-size:0.95rem"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${custName}</b>${custPhone?`<br><small><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${custPhone}</small>`:''}<br><small style="color:#555"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${addr||''}</small></div>`
+    `<div style="min-width:160px"><b style="font-size:0.95rem">👤 ${custName}</b>${custPhone?`<br><small>📞 ${custPhone}</small>`:''}<br><small style="color:#555">📍 ${addr||''}</small></div>`
   ).openPopup();
   // Kuryeden müşteriye gerçek rota (TomTom) veya düz çizgi fallback
   const kLat=G.gps.lat,kLng=G.gps.lng;
@@ -2103,9 +2103,9 @@ function renderOrdHistory(){
   const el=document.getElementById('ordList');
   if(!G.ordHistory.length){el.innerHTML='<p style="text-align:center;color:var(--tx3);padding:32px 0;font-size:0.84rem">Henüz tamamlanan sipariş yok</p>';return;}
   el.innerHTML=G.ordHistory.slice(0,30).map(o=>{
-    const ico=o.status==='delivered'?'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    const ico=o.status==='delivered'?'✓':'✕';
     const dur=o.acceptedAt&&o.deliveredAt?Math.round((o.deliveredAt-o.acceptedAt)/60000)+' dk':'—';
-    return`<div class="ohcard"><div class="ohico">${ico}</div><div class="ohinf"><div class="ohtit2">${esc(o.restaurant||'Sipariş')}</div><div class="ohdt"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${esc(o.deliveryAddr||'—')}<br><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${esc(o.deliveryName||'—')} · ${esc(o.date||'—')} · ${esc(dur)}</div></div><div class="ohamt">₺${Number(o.amount||0)}</div></div>`;
+    return`<div class="ohcard"><div class="ohico">${ico}</div><div class="ohinf"><div class="ohtit2">${esc(o.restaurant||'Sipariş')}</div><div class="ohdt">📍 ${esc(o.deliveryAddr||'—')}<br>👤 ${esc(o.deliveryName||'—')} · ${esc(o.date||'—')} · ${esc(dur)}</div></div><div class="ohamt">₺${Number(o.amount||0)}</div></div>`;
   }).join('');
 }
 
@@ -2148,7 +2148,7 @@ window._initKuryeApp = async function() {
   document.getElementById('mainApp').classList.add('active');
   setTimeout(()=>{initMap();initGPS();initFB();initWL();initStats();},300);
   if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
-  toast('Hoş geldin, '+G.name+'! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>','success');
+  toast('Hoş geldin, '+G.name+'! 🤚','success');
 
   // Firestore'dan atanmış restoran bilgisini oku (admin Firestore'a yazar)
   if(cu.assignedRestaurant&&!G.assignedRest){

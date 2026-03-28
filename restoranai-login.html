@@ -470,19 +470,16 @@
   async function doDemoLogin(btn) {
     const DEMO_EMAIL = 'demo@kuryeai.com';
     const DEMO_PW    = '123456';
-    console.log('DEMO LOGIN START');
     showSuccess('Demo yükleniyor, lütfen bekleyin…');
     btn.classList.add('loading'); btn.disabled = true;
 
     try {
       const cred = await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PW);
-      console.log('DEMO LOGIN SUCCESS');
 
       // Firestore doc yoksa seed yaz (ilk girişte)
       const userRef = doc(db, 'users', cred.user.uid);
       const snap    = await getDoc(userRef);
       if (!snap.exists()) {
-        console.log('DEMO SEED CREATED');
         await setDoc(userRef, {
           email:       DEMO_EMAIL,
           name:        'Demo Restoran',
@@ -500,7 +497,7 @@
       window.location.href = '/restoranai-panel';
     } catch (e) {
       btn.classList.remove('loading'); btn.disabled = false;
-      console.error('DEMO LOGIN FAIL', e);
+      console.warn('Demo login failed:', e.code);
       if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
         showError('Demo hesabı henüz oluşturulmamış. Lütfen admin ile iletişime geçin.');
       } else {

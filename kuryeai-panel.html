@@ -814,16 +814,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 <div class="isc" id="earningsScreen">
   <div class="ihd"><div class="bbtn" onclick="closeS('earningsScreen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><polyline points="15 18 9 12 15 6"/></svg></div><div class="ititle">Kazançlarım</div></div>
   <div class="ibody">
+    <!-- Dönem seçici -->
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="ctab active" id="et-all"   onclick="setEarnPeriod('all',this)">Tümü</button>
+      <button class="ctab"        id="et-today"  onclick="setEarnPeriod('today',this)">Bugün</button>
+      <button class="ctab"        id="et-week"   onclick="setEarnPeriod('week',this)">Bu Hafta</button>
+      <button class="ctab"        id="et-month"  onclick="setEarnPeriod('month',this)">Bu Ay</button>
+    </div>
     <div class="earnsum">
-      <div class="etlbl">Bu Ay Toplam Kazanç</div>
+      <div class="etlbl" id="ePerLbl">Toplam Kazanç</div>
       <div class="etval" id="eTotal">₺0</div>
-      <div class="etper" id="ePer">Mart 2025</div>
+      <div class="etper" id="ePer"></div>
     </div>
     <div class="egrid">
       <div class="ecard"><div class="eclbl">Toplam Saat</div><div class="ecval" id="eHrs">0 saat</div></div>
       <div class="ecard"><div class="eclbl">Toplam KM</div><div class="ecval" id="eKm">0 km</div></div>
-      <div class="ecard"><div class="eclbl">Saatlik Ücret</div><div class="ecval t" id="eHR">250 ₺</div></div>
-      <div class="ecard"><div class="eclbl">KM Ücreti</div><div class="ecval t" id="eKR">8 ₺/km</div></div>
+      <div class="ecard"><div class="eclbl">Sipariş Sayısı</div><div class="ecval" id="eOrdCnt">0</div></div>
+      <div class="ecard"><div class="eclbl">Ort. Sipariş</div><div class="ecval t" id="eAvg">₺0</div></div>
+    </div>
+    <!-- Sipariş bazlı kazanç -->
+    <div class="hcard" id="eOrdHist" style="margin-bottom:10px">
+      <div class="hchd"><span class="hcht">Sipariş Geçmişi</span></div>
     </div>
     <div class="hcard" id="eHist">
       <div class="hchd"><span class="hcht">Son Vardiyalar</span></div>
@@ -1736,7 +1747,47 @@ async function saveProf(){
 }
 
 // EARNINGS
-function renderEarn(){const tot=G.hist.reduce((a,b)=>a+b.earn,0);document.getElementById('eTotal').textContent='₺'+tot.toLocaleString('tr-TR');document.getElementById('eHrs').textContent=fmtD(G.hist.reduce((a,b)=>a+b.dur,0));document.getElementById('eKm').textContent=G.hist.reduce((a,b)=>a+b.km,0)+' km';document.getElementById('eHR').textContent=G.rates.h+' ₺';document.getElementById('eKR').textContent=G.rates.km+' ₺/km';const el=document.getElementById('eHist');if(!G.hist.length){el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div><div class="hrow"><div class="hico">🛵</div><div class="hinfo"><div class="ht">Henüz vardiya yok</div><div class="hd">Ana ekrana dönüp vardiya başlat</div></div></div>';return;}el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div>'+G.hist.slice(0,10).map(r=>`<div class="hrow"><div class="hico">🛵</div><div class="hinfo"><div class="ht">${esc(r.km)} km · ${fmtD(r.dur)}</div><div class="hd">${r.date} · ${r.sk}→${r.ek} km</div></div><div class="hamt">₺${r.earn}</div></div>`).join('');}
+let _earnPeriod='all';
+function setEarnPeriod(p,btn){
+  _earnPeriod=p;
+  document.querySelectorAll('#earningsScreen .ctab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderEarn();
+}
+function _earnFilter(list){
+  const now=Date.now();
+  if(_earnPeriod==='today'){ const s=new Date(); s.setHours(0,0,0,0); return list.filter(r=>(r.ts||r.createdAt||0)>=s.getTime()); }
+  if(_earnPeriod==='week'){ return list.filter(r=>(r.ts||r.createdAt||0)>=(now-7*86400000)); }
+  if(_earnPeriod==='month'){ return list.filter(r=>(r.ts||r.createdAt||0)>=(now-30*86400000)); }
+  return list;
+}
+function renderEarn(){
+  const filtHist=_earnFilter(G.hist.map(r=>({...r,ts:r.ts||Date.now()})));
+  const tot=filtHist.reduce((a,b)=>a+b.earn,0);
+  const filtOrds=_earnFilter((G.ordHistory||[]).filter(o=>o.status==='delivered').map(o=>({...o,ts:o.deliveredAt||o.createdAt||Date.now()})));
+  const ordTotal=filtOrds.reduce((s,o)=>s+Number(o.amount||0),0);
+  const grandTotal=tot+ordTotal;
+  const labels={all:'Toplam Kazanç',today:'Bugünkü Kazanç',week:'Bu Hafta',month:'Bu Ay'};
+  const el_lbl=document.getElementById('ePerLbl');
+  if(el_lbl) el_lbl.textContent=labels[_earnPeriod]||'Toplam Kazanç';
+  document.getElementById('eTotal').textContent='₺'+(grandTotal).toLocaleString('tr-TR');
+  document.getElementById('eHrs').textContent=fmtD(filtHist.reduce((a,b)=>a+b.dur,0));
+  document.getElementById('eKm').textContent=filtHist.reduce((a,b)=>a+b.km,0)+' km';
+  const eCnt=document.getElementById('eOrdCnt');
+  const eAvg=document.getElementById('eAvg');
+  if(eCnt) eCnt.textContent=filtOrds.length;
+  if(eAvg) eAvg.textContent='₺'+(filtOrds.length?Math.round(ordTotal/filtOrds.length):0);
+  // Sipariş listesi
+  const ordEl=document.getElementById('eOrdHist');
+  if(ordEl){
+    if(!filtOrds.length){ ordEl.innerHTML='<div class="hchd"><span class="hcht">Sipariş Geçmişi</span></div><div class="hrow"><div class="hico">📦</div><div class="hinfo"><div class="ht">Bu dönemde tamamlanan sipariş yok</div></div></div>'; }
+    else { ordEl.innerHTML='<div class="hchd"><span class="hcht">Sipariş Geçmişi ('+filtOrds.length+')</span></div>'+filtOrds.slice(0,20).map(o=>`<div class="hrow"><div class="hico">✅</div><div class="hinfo"><div class="ht">${esc(o.restaurant||o.restoranName||'Sipariş')}</div><div class="hd">📍 ${esc(o.deliveryAddr||o.address||'—')} · ${o.date||new Date(o.ts).toLocaleDateString('tr-TR')}</div></div><div class="hamt">₺${Number(o.amount||0)}</div></div>`).join(''); }
+  }
+  // Vardiyalar
+  const el=document.getElementById('eHist');
+  if(!filtHist.length){el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div><div class="hrow"><div class="hico">🛵</div><div class="hinfo"><div class="ht">Bu dönemde vardiya yok</div><div class="hd">Ana ekrana dönüp vardiya başlat</div></div></div>';return;}
+  el.innerHTML='<div class="hchd"><span class="hcht">Son Vardiyalar</span></div>'+filtHist.slice(0,10).map(r=>`<div class="hrow"><div class="hico">🛵</div><div class="hinfo"><div class="ht">${esc(r.km)} km · ${fmtD(r.dur)}</div><div class="hd">${r.date||''} · ${r.sk||0}→${r.ek||0} km</div></div><div class="hamt">₺${r.earn}</div></div>`).join('');
+}
 
 // PERF
 function renderPerf(){const rat=4.8;document.getElementById('pRat').textContent=rat;document.getElementById('pStars').innerHTML=[1,2,3,4,5].map(i=>`<span style="font-size:1rem;color:${i<=Math.round(rat)?'#FF9800':'#E0E0E0'}">★</span>`).join('');document.getElementById('pOrd').textContent=(G.hist.length*Math.floor(5+Math.random()*3))||'—';document.getElementById('pAvgT').textContent='~24 dk';document.getElementById('pRnk').textContent='#'+(Math.floor(Math.random()*5)+1);}

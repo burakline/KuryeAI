@@ -957,7 +957,12 @@ tbody tr:hover{background:var(--bg)}
                 <button class="tab" data-ofilter="delivered">Teslim</button>
               </div>
             </div>
-            <div class="card-actions">
+            <div class="card-actions" style="flex-wrap:wrap;gap:8px">
+              <!-- Arama kutusu -->
+              <div style="position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:10px;font-size:12px;color:var(--text3)">🔍</span>
+                <input id="order-search" type="search" placeholder="Müşteri, adres, #no ara..." oninput="renderOrders()" style="padding:6px 10px 6px 28px;border:1px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text);font-size:12px;width:200px;outline:none"/>
+              </div>
               <span style="font-size:12px;color:var(--text3)" id="order-count-label"></span>
             </div>
           </div>
@@ -3041,7 +3046,16 @@ function renderDashCouriers(){
 
 // ── ORDERS ─────────────────────────────────────────────────────────────────
 function renderOrders(){
-  const filtered=orderFilter==="all"?orders:orders.filter(o=>o.status===orderFilter);
+  const q=(document.getElementById('order-search')?.value||'').trim().toLowerCase();
+  let filtered=orderFilter==="all"?[...orders]:orders.filter(o=>o.status===orderFilter);
+  if(q){
+    filtered=filtered.filter(o=>{
+      const idStr=(o.id||'').slice(-6).toLowerCase();
+      const customer=(o.customer||'').toLowerCase();
+      const address=(o.address||'').toLowerCase();
+      return idStr.includes(q)||customer.includes(q)||address.includes(q);
+    });
+  }
   document.getElementById("cnt-pending").textContent   =orders.filter(o=>o.status==="pending").length;
   document.getElementById("cnt-preparing").textContent =orders.filter(o=>o.status==="preparing").length;
   document.getElementById("cnt-onway").textContent     =orders.filter(o=>o.status==="on_the_way").length;

@@ -72,9 +72,12 @@
     /* ── HERO ── */
     .hero {
       min-height: 100svh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; text-align: center;
+      align-items: center; justify-content: center;
       padding: 7rem 2rem 5rem; position: relative; overflow: hidden;
     }
+    .hero-inner { display:grid; grid-template-columns:55fr 45fr; gap:4rem; align-items:center; max-width:1200px; width:100%; }
+    .hero-left { display:flex; flex-direction:column; align-items:flex-start; text-align:left; }
+    .hero-right { position:relative; display:flex; align-items:center; justify-content:flex-end; padding-right:1rem; }
     .hero-grid {
       position: absolute; inset: 0; pointer-events: none;
       background-image: linear-gradient(rgba(0,200,215,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,215,.05) 1px, transparent 1px);
@@ -405,6 +408,63 @@
 
     @keyframes up { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
+    /* ── iPhone 17 Pro Max Frame ── */
+    .phone-wrap { position:relative; width:278px; flex-shrink:0; }
+    .phone-frame { width:278px; height:568px; background:linear-gradient(160deg,#747478 0%,#3d3d3f 12%,#5a5a5e 35%,#3c3c3e 58%,#545456 78%,#404042 100%); border-radius:52px; padding:7px; position:relative; box-shadow:0 50px 120px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.22),0 0 0 2.5px rgba(0,0,0,.65),inset 0 1px 1px rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.28); }
+    .phone-screen { width:100%; height:100%; border-radius:46px; overflow:hidden; position:relative; display:flex; flex-direction:column; background:#f5f6f8; }
+    .phone-di { position:absolute; top:14px; left:50%; transform:translateX(-50%); width:96px; height:30px; background:#000; border-radius:20px; z-index:30; pointer-events:none; }
+    .iphone-btn { position:absolute; z-index:10; background:linear-gradient(90deg,#3c3c3e,#565658,#3e3e40); box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -1px 0 rgba(0,0,0,.3); }
+    .iphone-btn-action { left:-5px; top:82px; width:5px; height:26px; border-radius:4px 0 0 4px; }
+    .iphone-btn-vol-up  { left:-5px; top:128px; width:5px; height:42px; border-radius:4px 0 0 4px; }
+    .iphone-btn-vol-dn  { left:-5px; top:180px; width:5px; height:42px; border-radius:4px 0 0 4px; }
+    .iphone-btn-side    { right:-5px; top:154px; width:5px; height:72px; border-radius:0 4px 4px 0; }
+    /* ── KuryeAI Courier App Panel ── */
+    .ka { height:100%; display:flex; flex-direction:column; font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; color:#0f1117; background:#f5f6f8; }
+    .ka-sb { height:48px; background:#fff; flex-shrink:0; display:flex; align-items:flex-end; justify-content:space-between; padding:0 20px 9px; }
+    .ka-sb-time { font-size:10px; font-weight:700; color:#0f1117; }
+    .ka-sb-icons { display:flex; align-items:center; gap:3px; }
+    .ka-topbar { background:#fff; border-bottom:1px solid #e8eaed; padding:9px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .ka-topbar-l { display:flex; align-items:center; gap:8px; }
+    .ka-logo { width:28px; height:28px; background:linear-gradient(135deg,#00c8d7,#009aaa); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ka-brandname { font-size:12.5px; font-weight:800; letter-spacing:-.4px; color:#0f1117; }
+    .ka-brandname em { font-style:normal; color:#00c8d7; }
+    .ka-status { display:flex; align-items:center; gap:3px; background:rgba(0,196,140,.08); border:1px solid rgba(0,196,140,.2); color:#00c48c; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:999px; }
+    .ka-dot { width:5px; height:5px; border-radius:50%; background:#00c48c; animation:pls 2s infinite; }
+    .ka-earn-strip { background:linear-gradient(135deg,#00c8d7,#009aaa); padding:14px; margin:0; flex-shrink:0; }
+    .ka-earn-lbl { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:rgba(255,255,255,.7); margin-bottom:2px; }
+    .ka-earn-n { font-size:22px; font-weight:800; color:#fff; letter-spacing:-.5px; line-height:1; }
+    .ka-earn-sub { font-size:8px; color:rgba(255,255,255,.65); margin-top:3px; }
+    .ka-earn-row { display:flex; gap:12px; margin-top:10px; }
+    .ka-earn-mini { background:rgba(255,255,255,.15); border-radius:8px; padding:6px 10px; flex:1; }
+    .ka-earn-mini-n { font-size:12px; font-weight:800; color:#fff; }
+    .ka-earn-mini-l { font-size:7px; color:rgba(255,255,255,.65); margin-top:1px; }
+    .ka-sec { padding:10px 14px 4px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af; flex-shrink:0; }
+    .ka-task { display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid #f0f1f3; background:#fff; flex-shrink:0; }
+    .ka-task-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ka-task-body { flex:1; min-width:0; }
+    .ka-task-name { font-size:10.5px; font-weight:700; color:#0f1117; }
+    .ka-task-sub { font-size:8.5px; color:#9ca3af; margin-top:1px; }
+    .ka-task-right { text-align:right; flex-shrink:0; }
+    .ka-task-earn { font-size:11px; font-weight:700; color:#00c48c; }
+    .ka-task-dist { font-size:8px; color:#9ca3af; margin-top:1px; }
+    .ka-bottom-nav { background:#fff; border-top:1px solid #e8eaed; display:grid; grid-template-columns:repeat(4,1fr); padding:7px 0 18px; flex-shrink:0; }
+    .ka-nav-item { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:8px; color:#9ca3af; font-weight:500; }
+    .ka-nav-item.active { color:#00c8d7; }
+    .ka-nav-item svg { width:17px; height:17px; }
+    /* ── MOBILE ── */
+    @media (max-width: 1100px) {
+      .hero { padding: 7rem 2rem 4rem; min-height:auto; }
+      .hero-inner { grid-template-columns:1fr; gap:2.5rem; }
+      .hero-left { align-items:center; text-align:center; }
+      .hero-eyebrow { justify-content:center; }
+      .hero-btns { justify-content:center; }
+      .earning-badges { justify-content:center; }
+      .hero-right { justify-content:center; padding-right:0; }
+      .phone-wrap { zoom:.72; }
+      .scroll-ind { display:none !important; }
+    }
+    @media (max-width:640px) { .phone-wrap { zoom:.58; } }
+    @media (max-width:430px) { .phone-wrap { zoom:.5; } }
     /* ── MOBILE ── */
     @media (max-width: 768px) {
       nav { padding: 0 1.2rem; }
@@ -445,40 +505,152 @@
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-
-  <p class="hero-eyebrow">
-    <span class="pulse-dot"></span>
-    KuryeAI — Akıllı Teslimat
-  </p>
-
-  <div class="hero-logo-wrap">
-    <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+  <div class="hero-inner">
+    <!-- Sol: Metin -->
+    <div class="hero-left">
+      <p class="hero-eyebrow">
+        <span class="pulse-dot"></span>
+        KuryeAI — Akıllı Teslimat
+      </p>
+      <div class="hero-logo-wrap">
+        <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+      </div>
+      <h1 class="hero-h1">
+        Kendi saatini belirle,<br/>
+        <span class="teal">istediğin kadar</span><br/>
+        <span class="silver">kazan.</span>
+      </h1>
+      <p class="hero-sub">
+        KuryeAI bünyesinde kurye olun. Esnek çalışma saatleri, paket başı veya saatlik kazanç, ücretsiz yemek. AI teknolojisiyle desteklenen profesyonel bir ekibin parçası olun.
+      </p>
+      <div class="hero-btns">
+        <a href="#basvuru" class="btn-lg btn-teal">Hemen Başvur &nbsp;→</a>
+        <a href="#modeller" class="btn-lg btn-outline">Modelleri İncele</a>
+      </div>
+      <div class="earning-badges">
+        <span class="eb-label">Kazanç modelleri:</span>
+        <span class="eb">170₺ / Paket</span>
+        <span class="eb">+8₺ / KM</span>
+        <span class="eb">220₺ / Saat</span>
+        <span class="eb">Yemek Dahil</span>
+      </div>
+    </div>
+    <!-- Sağ: iPhone 17 Pro Max -->
+    <div class="hero-right">
+      <div class="phone-wrap">
+        <div class="iphone-btn iphone-btn-action"></div>
+        <div class="iphone-btn iphone-btn-vol-up"></div>
+        <div class="iphone-btn iphone-btn-vol-dn"></div>
+        <div class="iphone-btn iphone-btn-side"></div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-di"></div>
+            <div class="ka">
+              <!-- Status bar -->
+              <div class="ka-sb">
+                <span class="ka-sb-time">09:15</span>
+                <div class="ka-sb-icons">
+                  <svg width="11" height="8" viewBox="0 0 11 8" fill="#0f1117"><rect x="0" y="3" width="2" height="5" rx=".5"/><rect x="3" y="2" width="2" height="6" rx=".5"/><rect x="6" y="1" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="8" rx=".5"/></svg>
+                  <svg width="19" height="9" viewBox="0 0 19 9" fill="none"><rect x=".5" y=".5" width="16" height="8" rx="2" stroke="#0f1117" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="6" rx="1.2" fill="#0f1117"/><path d="M17.5 3v3a1.5 1.5 0 000-3z" fill="#0f1117" fill-opacity=".4"/></svg>
+                </div>
+              </div>
+              <!-- Topbar -->
+              <div class="ka-topbar">
+                <div class="ka-topbar-l">
+                  <div class="ka-logo">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                  </div>
+                  <span class="ka-brandname">Kurye<em>AI</em></span>
+                </div>
+                <div class="ka-status"><div class="ka-dot"></div>AKTİF</div>
+              </div>
+              <!-- Earnings banner -->
+              <div class="ka-earn-strip">
+                <div class="ka-earn-lbl">Bugün Kazancın</div>
+                <div class="ka-earn-n">₺720</div>
+                <div class="ka-earn-sub">04 teslimat · 38.4 km</div>
+                <div class="ka-earn-row">
+                  <div class="ka-earn-mini">
+                    <div class="ka-earn-mini-n">170₺</div>
+                    <div class="ka-earn-mini-l">/ Paket</div>
+                  </div>
+                  <div class="ka-earn-mini">
+                    <div class="ka-earn-mini-n">220₺</div>
+                    <div class="ka-earn-mini-l">/ Saat</div>
+                  </div>
+                  <div class="ka-earn-mini">
+                    <div class="ka-earn-mini-n">+8₺</div>
+                    <div class="ka-earn-mini-l">/ KM</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Tasks -->
+              <div class="ka-sec">Yeni Görevler</div>
+              <div class="ka-task">
+                <div class="ka-task-icon" style="background:rgba(0,196,140,.1)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c48c" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="ka-task-body">
+                  <div class="ka-task-name">Babil Restaurant</div>
+                  <div class="ka-task-sub">Kızılay → Çankaya</div>
+                </div>
+                <div class="ka-task-right">
+                  <div class="ka-task-earn">₺245</div>
+                  <div class="ka-task-dist">4.2 km</div>
+                </div>
+              </div>
+              <div class="ka-task">
+                <div class="ka-task-icon" style="background:rgba(0,200,215,.1)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c8d7" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="ka-task-body">
+                  <div class="ka-task-name">Güneş Pide</div>
+                  <div class="ka-task-sub">Ulus → Keçiören</div>
+                </div>
+                <div class="ka-task-right">
+                  <div class="ka-task-earn">₺128</div>
+                  <div class="ka-task-dist">3.1 km</div>
+                </div>
+              </div>
+              <div class="ka-task">
+                <div class="ka-task-icon" style="background:rgba(245,158,11,.1)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="ka-task-body">
+                  <div class="ka-task-name">Lezzet Dünyası</div>
+                  <div class="ka-task-sub">Etlik → Etimesgut</div>
+                </div>
+                <div class="ka-task-right">
+                  <div class="ka-task-earn">₺189</div>
+                  <div class="ka-task-dist">6.8 km</div>
+                </div>
+              </div>
+              <!-- Bottom nav -->
+              <div class="ka-bottom-nav">
+                <div class="ka-nav-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                  Ana
+                </div>
+                <div class="ka-nav-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Harita
+                </div>
+                <div class="ka-nav-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  Kazanç
+                </div>
+                <div class="ka-nav-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+                  Profil
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <h1 class="hero-h1">
-    Kendi saatini belirle,<br/>
-    <span class="teal">istediğin kadar</span><br/>
-    <span class="silver">kazan.</span>
-  </h1>
-
-  <p class="hero-sub">
-    KuryeAI bünyesinde kurye olun. Esnek çalışma saatleri, paket başı veya saatlik kazanç, ücretsiz yemek. AI teknolojisiyle desteklenen profesyonel bir ekibin parçası olun.
-  </p>
-
-  <div class="hero-btns">
-    <a href="#basvuru" class="btn-lg btn-teal">Hemen Başvur &nbsp;→</a>
-    <a href="#modeller" class="btn-lg btn-outline">Modelleri İncele</a>
-  </div>
-
-  <div class="earning-badges">
-    <span class="eb-label">Kazanç modelleri:</span>
-    <span class="eb">170₺ / Paket</span>
-    <span class="eb">+8₺ / KM</span>
-    <span class="eb">220₺ / Saat</span>
-    <span class="eb">Yemek Dahil</span>
-  </div>
-
-  <div class="scroll-ind">
+  <div class="scroll-ind" style="display:none">
     <div class="scroll-line"></div>
     <span>Kaydır</span>
   </div>

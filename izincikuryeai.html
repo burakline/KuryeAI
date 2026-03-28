@@ -41,7 +41,10 @@
     .auth-drop-item:hover{background:rgba(0,200,215,.12);color:var(--teal)}
 
     /* ── HERO ── */
-    .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden}
+    .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden}
+    .hero-inner{display:grid;grid-template-columns:55fr 45fr;gap:4rem;align-items:center;max-width:1200px;width:100%}
+    .hero-left{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+    .hero-right{position:relative;display:flex;align-items:center;justify-content:flex-end;padding-right:1rem}
     .hero-glow{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(0,200,215,.08) 0%,transparent 65%);pointer-events:none}
     .hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,200,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.04) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
     .hero-badge{display:inline-flex;align-items:center;gap:.45rem;background:rgba(0,200,215,.1);border:.5px solid rgba(0,200,215,.3);border-radius:999px;padding:.32rem .9rem;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem}
@@ -137,6 +140,54 @@
     .page-footer{text-align:center;padding:2rem 1.5rem;border-top:.5px solid var(--border);font-size:.76rem;color:var(--gray)}
     .page-footer a{color:var(--teal);text-decoration:none}
 
+    /* ── iPhone 17 Pro Max Frame ── */
+    .phone-wrap{position:relative;width:278px;flex-shrink:0}
+    .phone-frame{width:278px;height:568px;background:linear-gradient(160deg,#747478 0%,#3d3d3f 12%,#5a5a5e 35%,#3c3c3e 58%,#545456 78%,#404042 100%);border-radius:52px;padding:7px;position:relative;box-shadow:0 50px 120px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.22),0 0 0 2.5px rgba(0,0,0,.65)}
+    .phone-screen{width:100%;height:100%;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#f5f6f8}
+    .phone-di{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:96px;height:30px;background:#000;border-radius:20px;z-index:30;pointer-events:none}
+    .iphone-btn{position:absolute;z-index:10;background:linear-gradient(90deg,#3c3c3e,#565658,#3e3e40)}
+    .iphone-btn-action{left:-5px;top:82px;width:5px;height:26px;border-radius:4px 0 0 4px}
+    .iphone-btn-vol-up{left:-5px;top:128px;width:5px;height:42px;border-radius:4px 0 0 4px}
+    .iphone-btn-vol-dn{left:-5px;top:180px;width:5px;height:42px;border-radius:4px 0 0 4px}
+    .iphone-btn-side{right:-5px;top:154px;width:5px;height:72px;border-radius:0 4px 4px 0}
+    /* ── İzinciKurye App Panel ── */
+    .ik{height:100%;display:flex;flex-direction:column;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#0f1117;background:#f5f6f8}
+    .ik-sb{height:48px;background:#fff;flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 9px}
+    .ik-sb-time{font-size:10px;font-weight:700;color:#0f1117}
+    .ik-sb-r{display:flex;align-items:center;gap:3px}
+    .ik-topbar{background:#fff;border-bottom:1px solid #e8eaed;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .ik-logo{width:28px;height:28px;background:linear-gradient(135deg,#00c8d7,#009aaa);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .ik-brand{font-size:11.5px;font-weight:800;letter-spacing:-.4px;color:#0f1117}
+    .ik-brand em{font-style:normal;color:#00c8d7}
+    .ik-badge{display:flex;align-items:center;gap:3px;background:rgba(0,200,215,.08);border:1px solid rgba(0,200,215,.2);color:#009aaa;font-size:8px;font-weight:700;padding:3px 7px;border-radius:999px}
+    .ik-search{background:#fff;border-bottom:1px solid #e8eaed;padding:8px 14px;flex-shrink:0}
+    .ik-search-box{background:#f5f6f8;border:1px solid #e8eaed;border-radius:10px;padding:8px 12px;font-size:10px;color:#9ca3af;display:flex;align-items:center;gap:7px}
+    .ik-sec{padding:10px 14px 5px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#9ca3af;flex-shrink:0}
+    .ik-card{background:#fff;border-bottom:1px solid #f0f1f3;padding:10px 14px;flex-shrink:0;display:flex;align-items:center;gap:10px}
+    .ik-av{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#00c8d7,#009aaa);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+    .ik-card-body{flex:1;min-width:0}
+    .ik-card-name{font-size:11px;font-weight:700;color:#0f1117}
+    .ik-card-sub{font-size:8.5px;color:#9ca3af;margin-top:1px}
+    .ik-card-right{text-align:right;flex-shrink:0}
+    .ik-card-rate{font-size:11px;font-weight:700;color:#00c48c}
+    .ik-card-dist{font-size:8px;color:#9ca3af;margin-top:1px}
+    .ik-card-status{font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:999px;display:inline-block;margin-top:2px}
+    .ik-bottom-nav{background:#fff;border-top:1px solid #e8eaed;display:grid;grid-template-columns:repeat(4,1fr);padding:7px 0 18px;flex-shrink:0}
+    .ik-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8px;color:#9ca3af;font-weight:500}
+    .ik-nav-item.active{color:#00c8d7}
+    .ik-nav-item svg{width:17px;height:17px}
+    /* ── RESPONSIVE ── */
+    @media(max-width:1100px){
+      .hero{padding:7rem 1.5rem 4rem;min-height:auto}
+      .hero-inner{grid-template-columns:1fr;gap:2.5rem}
+      .hero-left{align-items:center;text-align:center}
+      .hero-badge,.hero-sub,.hero-btns,.hero-stats{margin-left:auto;margin-right:auto}
+      .hero-btns,.hero-stats{justify-content:center}
+      .hero-right{justify-content:center;padding-right:0}
+      .phone-wrap{zoom:.72}
+    }
+    @media(max-width:640px){.phone-wrap{zoom:.58}}
+    @media(max-width:430px){.phone-wrap{zoom:.5}}
     /* ── RESPONSIVE ── */
     @media(max-width:768px){
       .audience-grid{grid-template-columns:1fr}
@@ -173,18 +224,131 @@
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <div class="hero-badge"><span class="bdot"></span>Türkiye'de Bir İlk</div>
-  <h1>İzinci kurye bulmak<br/><span class="hi">artık çok kolay.</span><br/><span class="muted">Dijital. Hızlı. Güvenli.</span></h1>
-  <p class="hero-sub">İzinli kuryeniz mi var? Araç arızası mı? Yoğun gün mü? Türkiye'nin ilk dijital izinci kurye platformuyla dakikalar içinde çözüm bulun.</p>
-  <div class="hero-btns">
-    <a href="/izincikuryeai-isveren-login" class="btn-hero-primary">🏪 İzinci Kurye Arıyorum</a>
-    <a href="/izincikuryeai-izinci-login" class="btn-hero-secondary">🛵 İzinci Kurye Olmak İstiyorum</a>
-  </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-n">250₺</div><div class="hero-stat-l">Saat Başı</div></div>
-    <div class="hero-stat"><div class="hero-stat-n">+8₺</div><div class="hero-stat-l">KM Ücreti</div></div>
-    <div class="hero-stat"><div class="hero-stat-n">%70</div><div class="hero-stat-l">Kurye Hakedişi</div></div>
-    <div class="hero-stat"><div class="hero-stat-n">7/24</div><div class="hero-stat-l">Platform Aktif</div></div>
+  <div class="hero-inner">
+    <!-- Sol: Metin -->
+    <div class="hero-left">
+      <div class="hero-badge"><span class="bdot"></span>Türkiye'de Bir İlk</div>
+      <h1>İzinci kurye bulmak<br/><span class="hi">artık çok kolay.</span><br/><span class="muted">Dijital. Hızlı. Güvenli.</span></h1>
+      <p class="hero-sub">İzinli kuryeniz mi var? Araç arızası mı? Yoğun gün mü? Türkiye'nin ilk dijital izinci kurye platformuyla dakikalar içinde çözüm bulun.</p>
+      <div class="hero-btns">
+        <a href="/izincikuryeai-isveren-login" class="btn-hero-primary">🏪 İzinci Kurye Arıyorum</a>
+        <a href="/izincikuryeai-izinci-login" class="btn-hero-secondary">🛵 İzinci Kurye Olmak İstiyorum</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-n">250₺</div><div class="hero-stat-l">Saat Başı</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">+8₺</div><div class="hero-stat-l">KM Ücreti</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">%70</div><div class="hero-stat-l">Kurye Hakedişi</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">7/24</div><div class="hero-stat-l">Platform Aktif</div></div>
+      </div>
+    </div>
+    <!-- Sağ: iPhone 17 Pro Max -->
+    <div class="hero-right">
+      <div class="phone-wrap">
+        <div class="iphone-btn iphone-btn-action"></div>
+        <div class="iphone-btn iphone-btn-vol-up"></div>
+        <div class="iphone-btn iphone-btn-vol-dn"></div>
+        <div class="iphone-btn iphone-btn-side"></div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-di"></div>
+            <div class="ik">
+              <!-- Status bar -->
+              <div class="ik-sb">
+                <span class="ik-sb-time">10:05</span>
+                <div class="ik-sb-r">
+                  <svg width="11" height="8" viewBox="0 0 11 8" fill="#0f1117"><rect x="0" y="3" width="2" height="5" rx=".5"/><rect x="3" y="2" width="2" height="6" rx=".5"/><rect x="6" y="1" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="8" rx=".5"/></svg>
+                  <svg width="19" height="9" viewBox="0 0 19 9" fill="none"><rect x=".5" y=".5" width="16" height="8" rx="2" stroke="#0f1117" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="13" height="6" rx="1.2" fill="#0f1117"/><path d="M17.5 3v3a1.5 1.5 0 000-3z" fill="#0f1117" fill-opacity=".4"/></svg>
+                </div>
+              </div>
+              <!-- Topbar -->
+              <div class="ik-topbar">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="ik-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></div>
+                  <span class="ik-brand">İzinci<em>AI</em></span>
+                </div>
+                <div class="ik-badge">Türkiye'de İlk</div>
+              </div>
+              <!-- Search -->
+              <div class="ik-search">
+                <div class="ik-search-box">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  İzinci kurye ara...
+                </div>
+              </div>
+              <!-- Couriers -->
+              <div class="ik-sec">Müsait İzinciler (8)</div>
+              <div class="ik-card">
+                <div class="ik-av">MK</div>
+                <div class="ik-card-body">
+                  <div class="ik-card-name">Mehmet K.</div>
+                  <div class="ik-card-sub">Motorlu · 4.8 ★ · 156 görev</div>
+                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c">Müsait</span>
+                </div>
+                <div class="ik-card-right">
+                  <div class="ik-card-rate">250₺/saat</div>
+                  <div class="ik-card-dist">1.2 km uzakta</div>
+                </div>
+              </div>
+              <div class="ik-card">
+                <div class="ik-av" style="background:linear-gradient(135deg,#00c48c,#009060)">AY</div>
+                <div class="ik-card-body">
+                  <div class="ik-card-name">Ahmet Y.</div>
+                  <div class="ik-card-sub">Bisikletli · 4.9 ★ · 243 görev</div>
+                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c">Müsait</span>
+                </div>
+                <div class="ik-card-right">
+                  <div class="ik-card-rate">200₺/saat</div>
+                  <div class="ik-card-dist">2.8 km uzakta</div>
+                </div>
+              </div>
+              <div class="ik-card">
+                <div class="ik-av" style="background:linear-gradient(135deg,#f59e0b,#d97706)">SB</div>
+                <div class="ik-card-body">
+                  <div class="ik-card-name">Serhat B.</div>
+                  <div class="ik-card-sub">Araçlı · 4.7 ★ · 89 görev</div>
+                  <span class="ik-card-status" style="background:rgba(245,158,11,.1);color:#f59e0b">1 saat sonra</span>
+                </div>
+                <div class="ik-card-right">
+                  <div class="ik-card-rate">350₺/saat</div>
+                  <div class="ik-card-dist">4.1 km uzakta</div>
+                </div>
+              </div>
+              <div class="ik-card">
+                <div class="ik-av" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">EK</div>
+                <div class="ik-card-body">
+                  <div class="ik-card-name">Emre K.</div>
+                  <div class="ik-card-sub">Motorlu · 5.0 ★ · 312 görev</div>
+                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c">Müsait</span>
+                </div>
+                <div class="ik-card-right">
+                  <div class="ik-card-rate">280₺/saat</div>
+                  <div class="ik-card-dist">0.8 km uzakta</div>
+                </div>
+              </div>
+              <!-- Bottom nav -->
+              <div class="ik-bottom-nav">
+                <div class="ik-nav-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                  Bul
+                </div>
+                <div class="ik-nav-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Harita
+                </div>
+                <div class="ik-nav-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+                  Görevler
+                </div>
+                <div class="ik-nav-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                  Profil
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 

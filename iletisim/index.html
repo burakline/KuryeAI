@@ -161,27 +161,81 @@
       </div>
       <div class="fg"><label class="fl">Mesajınız</label><textarea class="ftxt" id="c-mesaj" placeholder="Nasıl yardımcı olabiliriz?"></textarea></div>
 
-      <button class="fbtn" onclick="sendContact()">💬 WhatsApp'a Gönder →</button>
-      <div class="success-msg" id="c-success">✅ Mesajınız WhatsApp'a yönlendirildi!</div>
+      <button class="fbtn" id="c-btn" onclick="sendContact()">
+        <span id="c-btn-text">Gönder</span>
+        <span id="c-btn-spin" style="display:none;width:16px;height:16px;border:2px solid #000;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite"></span>
+      </button>
+      <div class="success-msg" id="c-success">✅ Mesajınız iletildi! En kısa sürede size dönüş yapacağız.</div>
+      <div id="c-error" style="display:none;background:rgba(239,68,68,.08);border:.5px solid rgba(239,68,68,.2);border-radius:8px;padding:.8rem 1rem;font-size:.84rem;color:#ef4444;margin-top:1rem;text-align:center"></div>
     </div>
   </div>
 </div>
 
 <footer>
   <a href="/">Ana Sayfa</a><a href="/hakkimizda">Hakkımızda</a><a href="/kvkk">Gizlilik</a><a href="/kullanim-kosullari">Kullanım Koşulları</a>
-  <br/><br/>© 2025 AI Teknoloji ve Lojistik Ltd. Şti.
+  <br/><br/>© 2026 AI Teknoloji ve Lojistik Ltd. Şti.
 </footer>
 
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <script>
-function sendContact() {
-  const ad = document.getElementById('c-ad').value.trim();
-  const tel = document.getElementById('c-tel').value.trim();
-  const konu = document.getElementById('c-konu').value;
+// EmailJS yapılandırması — dashboard.emailjs.com'dan alın
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // EmailJS Public Key
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // EmailJS Service ID
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // EmailJS Template ID
+
+(function(){
+  if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  }
+})();
+
+async function sendContact() {
+  const ad    = document.getElementById('c-ad').value.trim();
+  const tel   = document.getElementById('c-tel').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const konu  = document.getElementById('c-konu').value;
   const mesaj = document.getElementById('c-mesaj').value.trim();
-  if(!ad||!tel||!mesaj){alert('Lütfen Ad, Telefon ve Mesaj alanlarını doldurun.');return;}
-  const msg = `📬 *İLETİŞİM FORMU — KuryeAI*\n\n👤 *${ad}*\n📞 ${tel}\n✉️ ${document.getElementById('c-email').value||'Belirtilmedi'}\n\n📌 *Konu:* ${konu}\n\n💬 *Mesaj:*\n${mesaj}\n\n---\n_kuryeai.com/iletisim_`;
-  window.open(`https://wa.me/905072171995?text=${encodeURIComponent(msg)}`, '_blank');
+
+  if (!ad || !tel || !mesaj) {
+    alert('Lütfen Ad, Telefon ve Mesaj alanlarını doldurun.');
+    return;
+  }
+
+  const btn = document.getElementById('c-btn');
+  document.getElementById('c-btn-text').style.display = 'none';
+  document.getElementById('c-btn-spin').style.display = 'inline-block';
+  btn.disabled = true;
+  document.getElementById('c-error').style.display = 'none';
+
+  // EmailJS gönderimi (yapılandırıldıysa)
+  if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name:    ad,
+        from_phone:   tel,
+        from_email:   email || 'Belirtilmedi',
+        subject:      konu,
+        message:      mesaj,
+        to_email:     'burakline@kuryeai.com'
+      });
+    } catch (e) {
+      console.warn('EmailJS hatası:', e);
+    }
+  }
+
+  // WhatsApp yedek yönlendirme
+  const waMsg = `📬 *İLETİŞİM FORMU — KuryeAI*\n\n👤 *${ad}*\n📞 ${tel}\n✉️ ${email||'Belirtilmedi'}\n\n📌 *Konu:* ${konu}\n\n💬 *Mesaj:*\n${mesaj}\n\n---\n_kuryeai.com/iletisim_`;
+  window.open(`https://wa.me/905072171995?text=${encodeURIComponent(waMsg)}`, '_blank');
+
+  document.getElementById('c-btn-text').style.display = 'inline';
+  document.getElementById('c-btn-spin').style.display = 'none';
+  btn.disabled = false;
   document.getElementById('c-success').classList.add('show');
+
+  // Formu temizle
+  ['c-ad','c-tel','c-email','c-mesaj'].forEach(id => document.getElementById(id).value = '');
 }
 </script>
 </body>

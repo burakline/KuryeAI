@@ -314,16 +314,14 @@
     .ref-role { font-size:.7rem; color:var(--gray-lt); }
 
     /* ── PLATFORM GRID ── */
-    .platform-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--border); border-radius:16px; overflow:hidden; max-width:860px; margin:0 auto; }
+    .platform-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--border); border-radius:16px; overflow:hidden; max-width:960px; margin:0 auto; }
     .platform-item { background:var(--card); padding:1.5rem 1rem; text-align:center; transition:background .2s; }
     .platform-item:hover { background:#161616; }
     .platform-icon { display:flex; align-items:center; justify-content:center; height:48px; margin-bottom:.6rem; }
     .platform-icon img { height:40px; width:40px; object-fit:contain; border-radius:8px; }
     .platform-name { font-size:.72rem; font-weight:700; color:var(--gray-lt); }
-    @media (max-width:600px) {
+    @media (max-width:720px) {
       .platform-grid { grid-template-columns:repeat(3,1fr); }
-      .platform-grid .platform-item:nth-child(4) { border-radius:0 0 0 16px; }
-      .platform-grid .platform-item:nth-child(5) { border-radius:0; }
     }
 
     /* ── MARKA REFERANSLAR ── */
@@ -991,6 +989,10 @@
         <div class="platform-icon"><img src="platform-whatsapp.png" alt="WhatsApp"></div>
         <div class="platform-name">WhatsApp</div>
       </div>
+      <div class="platform-item">
+        <div class="platform-icon"><img src="platform-fuudy.png" alt="Fuudy" style="border-radius:14px"></div>
+        <div class="platform-name">Fuudy</div>
+      </div>
     </div>
   </div>
 </section>
@@ -1062,6 +1064,7 @@
         <li><a href="/kuryeai">KuryeAI</a></li>
         <li><a href="/izinci">İzinciKuryeAI</a></li>
         <li><a href="/acilkuryeai">Acil Kurye</a></li>
+        <li><a href="/qrmenuai">QRMenuAI</a></li>
       </ul>
     </div>
     <div>

@@ -204,9 +204,10 @@
     html[data-theme="light"] .nav-login:hover { color:#000; }
 
     /* ── HERO ── */
-    .hero { min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:7rem 2rem 5rem; position:relative; overflow:hidden; }
+    .hero { min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:5rem 2rem; position:relative; overflow:hidden; }
     .hero-grid { position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(0,200,215,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.05) 1px,transparent 1px); background-size:52px 52px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%); }
-    .hero-glow { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); width:800px; height:800px; background:radial-gradient(circle,rgba(0,200,215,.09) 0%,transparent 65%); pointer-events:none; }
+    .hero-glow { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); width:800px; height:800px; background:radial-gradient(circle,rgba(0,200,215,.08) 0%,transparent 65%); pointer-events:none; }
+    .hero-glow-right { position:absolute; top:50%; right:5%; transform:translateY(-50%); width:400px; height:600px; background:radial-gradient(ellipse,rgba(0,200,215,.06) 0%,rgba(99,102,241,.04) 40%,transparent 70%); pointer-events:none; }
     .hero-eyebrow { font-size:.7rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); display:flex; align-items:center; gap:.5rem; justify-content:center; margin-bottom:2rem; opacity:0; animation:up .8s cubic-bezier(.16,1,.3,1) forwards .1s; }
     .pulse-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); animation:pls 2s infinite; }
     @keyframes pls { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
@@ -232,6 +233,71 @@
     .scroll-ind span { font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:var(--gray); }
     .scroll-line { width:1px; height:40px; background:linear-gradient(var(--teal),transparent); animation:scrollAnim 2s ease-in-out infinite; }
     @keyframes scrollAnim { 0%{transform:scaleY(0);transform-origin:top;opacity:0} 40%{transform:scaleY(1);transform-origin:top;opacity:1} 60%{transform:scaleY(1);transform-origin:bottom;opacity:1} 100%{transform:scaleY(0);transform-origin:bottom;opacity:0} }
+
+    /* ── HERO SPLIT LAYOUT ── */
+    .hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; max-width:1160px; width:100%; }
+    .hero-left { display:flex; flex-direction:column; align-items:flex-start; text-align:left; }
+    .hero-left .hero-eyebrow { justify-content:flex-start; }
+    .hero-right { position:relative; display:flex; align-items:center; justify-content:center; }
+    /* Phone frame */
+    .phone-wrap { position:relative; width:260px; flex-shrink:0; }
+    .phone-frame { width:260px; height:520px; background:linear-gradient(160deg,#181830 0%,#0d0d1a 100%); border-radius:36px; padding:10px; box-shadow:0 50px 120px rgba(0,0,0,.85),0 0 0 .5px rgba(255,255,255,.08),inset 0 1px 0 rgba(255,255,255,.06); position:relative; }
+    .phone-frame::before { content:''; position:absolute; top:13px; left:50%; transform:translateX(-50%); width:58px; height:4px; background:rgba(255,255,255,.14); border-radius:999px; z-index:2; }
+    .phone-screen { background:#07071a; border-radius:27px; height:100%; overflow:hidden; padding-top:24px; display:flex; flex-direction:column; }
+    .psc-bar { padding:8px 12px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; border-bottom:.5px solid rgba(255,255,255,.05); }
+    .psc-brand { font-size:.58rem; font-weight:800; letter-spacing:-.02em; color:#fff; }
+    .psc-brand em { color:var(--teal); font-style:normal; }
+    .psc-live { display:flex; align-items:center; gap:3px; }
+    .psc-live-dot { width:5px; height:5px; border-radius:50%; background:#00c48c; animation:pls 2s infinite; }
+    .psc-live-txt { font-size:.4rem; font-weight:700; color:#00c48c; letter-spacing:.05em; }
+    .psc-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:8px 8px 6px; flex-shrink:0; }
+    .psc-stat { background:rgba(0,200,215,.05); border:.5px solid rgba(0,200,215,.1); border-radius:7px; padding:6px 4px; text-align:center; }
+    .psc-stat-n { font-size:.62rem; font-weight:700; color:var(--teal); line-height:1; }
+    .psc-stat-l { font-size:.37rem; color:rgba(255,255,255,.3); margin-top:1px; text-transform:uppercase; letter-spacing:.06em; }
+    .psc-section { padding:5px 10px 3px; font-size:.38rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.2); flex-shrink:0; }
+    .psc-orders { flex:1; padding:0 7px; display:flex; flex-direction:column; gap:3px; overflow:hidden; }
+    .psc-order { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.03); border:.5px solid rgba(255,255,255,.05); border-radius:7px; padding:6px 8px; flex-shrink:0; }
+    .psc-order-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+    .psc-order-dot.s-green { background:#00c48c; box-shadow:0 0 5px #00c48c; }
+    .psc-order-dot.s-yellow { background:#ffd60a; animation:pls 1.5s infinite; }
+    .psc-order-dot.s-teal { background:var(--teal); }
+    .psc-order-body { flex:1; min-width:0; }
+    .psc-order-name { font-size:.48rem; font-weight:700; color:rgba(255,255,255,.82); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .psc-order-meta { font-size:.4rem; color:rgba(255,255,255,.3); margin-top:1px; }
+    .psc-order-amt { font-size:.5rem; font-weight:700; color:#00c48c; flex-shrink:0; }
+    .psc-map { margin:5px 7px 7px; height:68px; background:linear-gradient(135deg,#0a1520 0%,#0e1f38 100%); border-radius:9px; position:relative; overflow:hidden; flex-shrink:0; }
+    .psc-map-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(0,200,215,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,215,.05) 1px,transparent 1px); background-size:11px 11px; }
+    .psc-map-pin { position:absolute; width:7px; height:7px; border-radius:50%; background:var(--teal); box-shadow:0 0 8px rgba(0,200,215,.9); transform:translate(-50%,-50%); }
+    .psc-map-pin-1 { top:28%; left:38%; }
+    .psc-map-pin-2 { top:56%; left:62%; }
+    .psc-map-pin-3 { top:22%; left:72%; }
+    .psc-map-label { position:absolute; bottom:5px; left:8px; font-size:.38rem; color:rgba(255,255,255,.3); font-weight:600; letter-spacing:.04em; }
+    /* Floating notification cards */
+    .float-notif { position:absolute; background:rgba(8,8,20,.92); border:.5px solid rgba(255,255,255,.1); border-radius:10px; padding:9px 13px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); z-index:10; box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.04); white-space:nowrap; }
+    .float-notif-1 { top:40px; right:-75px; animation:floatA 4s ease-in-out infinite; }
+    .float-notif-2 { bottom:160px; right:-80px; animation:floatA 4s ease-in-out infinite 1.5s; }
+    .float-notif-3 { bottom:50px; left:-65px; animation:floatA 4s ease-in-out infinite 2.5s; }
+    @keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    .fn-row { display:flex; align-items:center; gap:5px; }
+    .fn-badge { width:13px; height:13px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .fn-badge.green { background:rgba(0,196,140,.2); }
+    .fn-badge.teal  { background:rgba(0,200,215,.2); }
+    .fn-badge.purple{ background:rgba(124,58,237,.2); }
+    .fn-label { font-size:.48rem; font-weight:600; color:rgba(255,255,255,.55); }
+    .fn-value { font-size:.72rem; font-weight:700; margin-top:2px; }
+    .fn-value.green  { color:#00c48c; }
+    .fn-value.teal   { color:var(--teal); }
+    .fn-value.white  { color:#fff; }
+    .fn-sub { font-size:.4rem; color:rgba(255,255,255,.3); margin-top:1px; }
+    @media (max-width:960px) {
+      .hero-inner { grid-template-columns:1fr; gap:3rem; }
+      .hero-left { align-items:center; text-align:center; }
+      .hero-left .hero-eyebrow { justify-content:center; }
+      .hero-left .hero-h1 { text-align:center; }
+      .hero-left .hero-sub { text-align:center; margin-left:auto; margin-right:auto; }
+      .hero-left .hero-btns { justify-content:center; }
+      .hero-right { display:none; }
+    }
 
     /* ── TICKER ── */
     .ticker { overflow:hidden; border-top:.5px solid var(--border); border-bottom:.5px solid var(--border); padding:.85rem 0; background:var(--dark); }
@@ -334,13 +400,18 @@
     /* ── REFERANSLAR ── */
     .referanslar { background:var(--black); border-top:.5px solid var(--border); }
     .ref-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border-radius:20px; overflow:hidden; margin-top:3rem; }
-    .ref-card { background:var(--card); padding:2rem; }
-    .ref-stars { color:var(--yellow); font-size:.9rem; margin-bottom:.8rem; letter-spacing:.1em; }
-    .ref-text { font-size:.88rem; color:var(--gray-lt); line-height:1.7; margin-bottom:1.2rem; font-style:italic; }
-    .ref-author { display:flex; align-items:center; gap:.6rem; }
-    .ref-avatar { width:36px; height:36px; border-radius:50%; background:rgba(0,200,215,.15); border:.5px solid rgba(0,200,215,.2); display:flex; align-items:center; justify-content:center; font-size:1rem; }
-    .ref-name { font-size:.82rem; font-weight:700; }
-    .ref-role { font-size:.7rem; color:var(--gray-lt); }
+    .ref-card { background:var(--card); padding:2.2rem; position:relative; overflow:hidden; transition:background .3s; }
+    .ref-card:hover { background:#141414; }
+    .ref-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--teal),transparent); transform:scaleX(0); transform-origin:left; transition:transform .4s cubic-bezier(.16,1,.3,1); }
+    .ref-card:hover::before { transform:scaleX(1); }
+    .ref-quote { color:rgba(0,200,215,.2); font-size:3rem; line-height:.8; font-family:Georgia,serif; margin-bottom:.5rem; }
+    .ref-stars { display:flex; gap:2px; color:var(--yellow); margin-bottom:1rem; }
+    .ref-text { font-size:.88rem; color:var(--gray-lt); line-height:1.75; margin-bottom:1.5rem; font-style:italic; }
+    .ref-author { display:flex; align-items:center; gap:.65rem; }
+    .ref-avatar { width:38px; height:38px; border-radius:50%; background:rgba(0,200,215,.1); border:.5px solid rgba(0,200,215,.25); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ref-name { font-size:.84rem; font-weight:700; }
+    .ref-role { font-size:.7rem; color:var(--gray-lt); margin-top:1px; }
+    .ref-badge { display:inline-flex; align-items:center; gap:3px; font-size:.6rem; font-weight:700; color:var(--teal); background:rgba(0,200,215,.08); border:.5px solid rgba(0,200,215,.2); border-radius:999px; padding:.15rem .5rem; margin-top:.3rem; }
 
     /* ── PLATFORM GRID ── */
     .platform-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--border); border-radius:16px; overflow:hidden; max-width:960px; margin:0 auto; }
@@ -526,21 +597,103 @@
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <p class="hero-eyebrow"><span class="pulse-dot"></span>AI Teknoloji ve Lojistik</p>
-  <div class="hero-logo-wrap">
-    <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
-  </div>
-  <h1 class="hero-h1">
-    Türkiye'nin <span class="teal">akıllı</span><br/>
-    kurye platformu.<br/>
-    <span class="silver">7/24 hızlı teslimat.</span>
-  </h1>
-  <p class="hero-sub">Acil Kurye, İzinci Kurye, Evrak Kuryesi, Yedek Parça Kuryesi, Eczane Kuryesi, Tıbbi Kurye, Restoran Adisyon, Mutfak, Masa ve Paket Sipariş Yönetimi. Türkiye'de ilk ve tek gerçek yapay zeka destekli kurye teslimat yönetim platformu.</p>
-  <div class="hero-btns">
-    <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye İste</a>
-    <a href="#urunler" class="btn-lg btn-teal">Ürünleri Keşfet <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
-    <a href="/restoranai-login?demo=1" class="btn-lg btn-demo"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></span>Demo'yu Dene</a>
-    <a href="/izincikuryeai" class="btn-lg btn-green"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>İzinciKuryeAI</a>
+  <div class="hero-glow-right"></div>
+  <div class="hero-inner">
+    <!-- LEFT COLUMN: Text + CTAs -->
+    <div class="hero-left">
+      <p class="hero-eyebrow"><span class="pulse-dot"></span>AI Teknoloji ve Lojistik</p>
+      <div class="hero-logo-wrap">
+        <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
+      </div>
+      <h1 class="hero-h1">
+        Türkiye'nin <span class="teal">akıllı</span><br/>
+        kurye platformu.<br/>
+        <span class="silver">7/24 hızlı teslimat.</span>
+      </h1>
+      <p class="hero-sub">Acil Kurye, İzinci Kurye, Evrak Kuryesi, Yedek Parça Kuryesi, Eczane Kuryesi, Tıbbi Kurye, Restoran Adisyon, Mutfak, Masa ve Paket Sipariş Yönetimi. Türkiye'de ilk ve tek gerçek yapay zeka destekli kurye teslimat yönetim platformu.</p>
+      <div class="hero-btns">
+        <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye İste</a>
+        <a href="#urunler" class="btn-lg btn-teal">Ürünleri Keşfet <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+        <a href="/restoranai-login?demo=1" class="btn-lg btn-demo"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></span>Demo'yu Dene</a>
+        <a href="/izincikuryeai" class="btn-lg btn-green"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>İzinciKuryeAI</a>
+      </div>
+    </div>
+    <!-- RIGHT COLUMN: CSS Phone Mockup -->
+    <div class="hero-right">
+      <div class="phone-wrap">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="psc-bar">
+              <div class="psc-brand">Restoran<em>AI</em></div>
+              <div class="psc-live"><div class="psc-live-dot"></div><div class="psc-live-txt">CANLI</div></div>
+            </div>
+            <div class="psc-stats">
+              <div class="psc-stat"><div class="psc-stat-n">24</div><div class="psc-stat-l">Aktif Sipariş</div></div>
+              <div class="psc-stat"><div class="psc-stat-n">₺4.820</div><div class="psc-stat-l">Bugün</div></div>
+              <div class="psc-stat"><div class="psc-stat-n">12</div><div class="psc-stat-l">Bekliyor</div></div>
+            </div>
+            <div class="psc-section">Aktif Siparişler</div>
+            <div class="psc-orders">
+              <div class="psc-order">
+                <div class="psc-order-dot s-green"></div>
+                <div class="psc-order-body"><div class="psc-order-name">Tava Makarna #284</div><div class="psc-order-meta">Kızılay · Teslimde</div></div>
+                <div class="psc-order-amt">₺245</div>
+              </div>
+              <div class="psc-order">
+                <div class="psc-order-dot s-yellow"></div>
+                <div class="psc-order-body"><div class="psc-order-name">Boldi Kumru #285</div><div class="psc-order-meta">Çankaya · Hazırlanıyor</div></div>
+                <div class="psc-order-amt">₺128</div>
+              </div>
+              <div class="psc-order">
+                <div class="psc-order-dot s-teal"></div>
+                <div class="psc-order-body"><div class="psc-order-name">Yemeksepeti #286</div><div class="psc-order-meta">Keçiören · Kurye Atandı</div></div>
+                <div class="psc-order-amt">₺189</div>
+              </div>
+              <div class="psc-order">
+                <div class="psc-order-dot s-yellow"></div>
+                <div class="psc-order-body"><div class="psc-order-name">Getir #287</div><div class="psc-order-meta">Etlik · Bekliyor</div></div>
+                <div class="psc-order-amt">₺96</div>
+              </div>
+            </div>
+            <div class="psc-map">
+              <div class="psc-map-grid"></div>
+              <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 260 68" preserveAspectRatio="none">
+                <polyline points="99,19 161,38 187,15" fill="none" stroke="rgba(0,200,215,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+              </svg>
+              <div class="psc-map-pin psc-map-pin-1"></div>
+              <div class="psc-map-pin psc-map-pin-2"></div>
+              <div class="psc-map-pin psc-map-pin-3"></div>
+              <div class="psc-map-label">Ankara Canlı Harita</div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating notification cards -->
+        <div class="float-notif float-notif-1">
+          <div class="fn-row">
+            <div class="fn-badge green"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#00c48c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="fn-label">Yeni Sipariş</div>
+          </div>
+          <div class="fn-value green">+₺245</div>
+          <div class="fn-sub">Tava Makarna · hemen şimdi</div>
+        </div>
+        <div class="float-notif float-notif-2">
+          <div class="fn-row">
+            <div class="fn-badge teal"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#00c8d7" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="fn-label">Kurye Atandı</div>
+          </div>
+          <div class="fn-value teal">Serkan M.</div>
+          <div class="fn-sub">ETA: 14 dakika</div>
+        </div>
+        <div class="float-notif float-notif-3">
+          <div class="fn-row">
+            <div class="fn-badge purple"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="fn-label">AI Analiz</div>
+          </div>
+          <div class="fn-value white">+%23 ciro</div>
+          <div class="fn-sub">Bu hafta · geçen haftaya göre</div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="scroll-ind"><div class="scroll-line"></div><span>Kaydır</span></div>
 </section>
@@ -821,19 +974,61 @@
     </div>
     <div class="ref-grid reveal">
       <div class="ref-card">
-        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-        <p class="ref-text">"RestoranAI ile tüm platformlarımızı tek yerden yönetiyoruz. Sipariş kaçırmak tarihe karıştı. Ciro raporları çok detaylı."</p>
-        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h1v5"/></svg></div><div><div class="ref-name">Ahmet K.</div><div class="ref-role">Restoran Sahibi · Çankaya</div></div></div>
+        <div class="ref-quote">"</div>
+        <div class="ref-stars">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="ref-text">"RestoranAI ile Yemeksepeti, Getir ve Trendyol siparişlerini tek ekrandan yönetiyoruz. Sipariş kaçırmak tarihe karıştı. İlk ayda ciromuz %34 arttı."</p>
+        <div class="ref-author">
+          <div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h1v5"/></svg></div>
+          <div>
+            <div class="ref-name">Ahmet K.</div>
+            <div class="ref-role">Restoran Sahibi · Çankaya, Ankara</div>
+            <div class="ref-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Doğrulanmış Müşteri</div>
+          </div>
+        </div>
       </div>
       <div class="ref-card">
-        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-        <p class="ref-text">"İzinciKuryeAI sayesinde kuryem izine gittiğinde artık WhatsApp gruplarında izinci aramıyorum. Anında bulduk."</p>
-        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></div><div><div class="ref-name">Meral S.</div><div class="ref-role">İşletme Sahibi · Keçiören</div></div></div>
+        <div class="ref-quote">"</div>
+        <div class="ref-stars">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="ref-text">"İzinciKuryeAI hayat kurtardı. Kuryem izne çıkınca WhatsApp gruplarında saat saat izinci aramak yerine 20 dakikada profesyonel kurye bulduk."</p>
+        <div class="ref-author">
+          <div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg></div>
+          <div>
+            <div class="ref-name">Meral S.</div>
+            <div class="ref-role">İşletme Sahibi · Keçiören, Ankara</div>
+            <div class="ref-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Doğrulanmış Müşteri</div>
+          </div>
+        </div>
       </div>
       <div class="ref-card">
-        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-        <p class="ref-text">"KuryeAI ile günlük kazancımı anlık görebiliyorum. Sipariş dağılımı çok adil, sistem harika çalışıyor."</p>
-        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 8.26h5.56l2.42 4.84M10.5 9V7a2 2 0 0 1 2-2h2l2 4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M1 9h2M21 9h-4.5l-1-2H14"/><path d="M7 17h6"/></svg></div><div><div class="ref-name">Serkan M.</div><div class="ref-role">Moto Kurye · Ankara</div></div></div>
+        <div class="ref-quote">"</div>
+        <div class="ref-stars">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffd60a"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="ref-text">"Günlük kazancımı anlık takip edebiliyorum. Sipariş dağılımı adil, ödeme aynı gün geliyor. KuryeAI olmadan çalışmayı hayal edemiyorum artık."</p>
+        <div class="ref-author">
+          <div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 8.26h5.56l2.42 4.84M10.5 9V7a2 2 0 0 1 2-2h2l2 4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M1 9h2M21 9h-4.5l-1-2H14"/><path d="M7 17h6"/></svg></div>
+          <div>
+            <div class="ref-name">Serkan M.</div>
+            <div class="ref-role">Moto Kurye · Ankara</div>
+            <div class="ref-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Aktif Kurye</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

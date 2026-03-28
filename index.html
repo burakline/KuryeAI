@@ -313,6 +313,19 @@
     .ref-name { font-size:.82rem; font-weight:700; }
     .ref-role { font-size:.7rem; color:var(--gray-lt); }
 
+    /* ── MARKA REFERANSLAR ── */
+    .marka-ref { background:var(--dark); border-top:.5px solid var(--border); }
+    .marka-grid { display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; margin-top:3rem; }
+    .marka-card { background:var(--card); border:.5px solid var(--border); border-radius:20px; padding:2rem 2.5rem; display:flex; flex-direction:column; align-items:center; gap:1rem; text-decoration:none; transition:all .25s; min-width:200px; }
+    .marka-card:hover { border-color:rgba(0,200,215,.4); transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,200,215,.08); }
+    .marka-logo-wrap { width:88px; height:88px; border-radius:50%; overflow:hidden; background:var(--black); border:.5px solid var(--border); display:flex; align-items:center; justify-content:center; }
+    .marka-logo-wrap img { width:100%; height:100%; object-fit:cover; }
+    .marka-logo-fallback { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:900; color:var(--teal); }
+    .marka-name { font-size:.95rem; font-weight:700; color:var(--white); text-align:center; }
+    .marka-loc { font-size:.72rem; color:var(--gray-lt); text-align:center; display:flex; align-items:center; gap:.3rem; }
+    .marka-maps-badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.68rem; color:var(--teal); background:rgba(0,200,215,.1); border:.5px solid rgba(0,200,215,.2); border-radius:999px; padding:.25rem .6rem; margin-top:.2rem; transition:all .2s; }
+    .marka-card:hover .marka-maps-badge { background:rgba(0,200,215,.18); }
+
     /* ── SSS ── */
     .sss { background:var(--dark); border-top:.5px solid var(--border); }
     .sss-header { margin-bottom:3rem; }
@@ -703,6 +716,56 @@
       <div class="step"><div class="step-bar"></div><p class="step-num">02</p><h4 class="step-title">Entegre Edin</h4><p class="step-desc">Sipariş platformlarınızı bağlayın. Yemeksepeti, Getir, Trendyol tek panelde.</p></div>
       <div class="step"><div class="step-bar"></div><p class="step-num">03</p><h4 class="step-title">Yönetin</h4><p class="step-desc">Siparişleri tek ekrandan takip edin. AI en uygun kurye'ye otomatik atar.</p></div>
       <div class="step"><div class="step-bar"></div><p class="step-num">04</p><h4 class="step-title">Büyüyün</h4><p class="step-desc">AI destekli raporlar ve analizlerle işletmenizi optimize edin.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- REFERANSLARIMIZ - Markalar -->
+<section class="section marka-ref" id="referanslarimiz">
+  <div class="inner">
+    <div class="reveal" style="text-align:center;margin-bottom:.5rem">
+      <p class="lbl">Referanslarımız</p>
+      <h2 class="h2">Bizi <span class="muted">kullananlar</span></h2>
+      <p class="body-lg" style="margin:.8rem auto 0;max-width:420px">KuryeAI ekosistemiyle büyüyen işletmeler</p>
+    </div>
+    <div class="marka-grid reveal">
+
+      <!-- Tava Makarna -->
+      <a class="marka-card" href="https://maps.app.goo.gl/xGFg79tpMSHTYjag7" target="_blank" rel="noopener">
+        <div class="marka-logo-wrap">
+          <img src="tava-makarna-logo.png" alt="Tava Makarna"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="marka-logo-fallback" style="display:none">TM</div>
+        </div>
+        <div class="marka-name">Tava Makarna</div>
+        <div class="marka-loc">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ankara, Etlik, Aşağı Eğlence
+        </div>
+        <div class="marka-maps-badge">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Google Haritalar'da Gör
+        </div>
+      </a>
+
+      <!-- Boldi -->
+      <a class="marka-card" href="https://maps.app.goo.gl/5wYyjhumeEzKRYYe6" target="_blank" rel="noopener">
+        <div class="marka-logo-wrap">
+          <img src="boldi-logo.png" alt="Boldi Kumru Ayvalık Tantuni"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="marka-logo-fallback" style="display:none">B</div>
+        </div>
+        <div class="marka-name">Boldi Kumru Ayvalık Tantuni</div>
+        <div class="marka-loc">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ankara, Demetevler
+        </div>
+        <div class="marka-maps-badge">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Google Haritalar'da Gör
+        </div>
+      </a>
+
     </div>
   </div>
 </section>

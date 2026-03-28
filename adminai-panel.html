@@ -534,27 +534,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
               <div style="font-size:11px;color:var(--text3)" id="zone-info-detail">—</div>
               <button class="bsm b-reject" style="margin-top:6px;font-size:.65rem" onclick="clearZoneDrawing()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> İptal</button>
             </div>
-          </div>
-          <!-- TomTom harita butonları — card içinde, admMapWrap DIŞINDA (z-index karmaşası önlenir) -->
-          <div class="admin-map-btns">
-            <div class="admin-cbtn" id="admFsBtn" onclick="toggleAdminFullscreen()" title="Tam ekran">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            <!-- Harita butonları — admMapWrap içinde (fullscreen'de görünür kalır) -->
+            <div class="admin-map-btns">
+              <div class="admin-cbtn" id="admFsBtn" onclick="toggleAdminFullscreen()" title="Tam ekran">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              </div>
+              <div class="admin-cbtn" id="admSatBtn" onclick="toggleAdminSatellite()" title="Uydu görüntüsü">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="admin-cbtn" id="admIncidentBtn" onclick="toggleAdminIncidents()" title="Trafik olayları">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="admin-cbtn" id="admTrafficBtn" onclick="toggleAdminTraffic()" title="Trafik yoğunluğu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+              </div>
             </div>
-            <div class="admin-cbtn" id="admSatBtn" onclick="toggleAdminSatellite()" title="Uydu görüntüsü">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <!-- Trafik renk göstergesi -->
+            <div class="admin-tleg" id="admTrafficLegend">
+              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#27ae60"></div>Akıcı</div>
+              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#f39c12"></div>Yavaş</div>
+              <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#e74c3c"></div>Tıkalı</div>
             </div>
-            <div class="admin-cbtn" id="admIncidentBtn" onclick="toggleAdminIncidents()" title="Trafik olayları">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            </div>
-            <div class="admin-cbtn" id="admTrafficBtn" onclick="toggleAdminTraffic()" title="Trafik yoğunluğu">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="3" width="4" height="18" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
-            </div>
-          </div>
-          <!-- Trafik renk göstergesi -->
-          <div class="admin-tleg" id="admTrafficLegend">
-            <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#27ae60"></div>Akıcı</div>
-            <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#f39c12"></div>Yavaş</div>
-            <div class="admin-tleg-row"><div class="admin-tleg-dot" style="background:#e74c3c"></div>Tıkalı</div>
           </div>
         </div>
 
@@ -1802,14 +1802,20 @@ function toggleAdminSatellite(){
 function toggleAdminFullscreen(){
   const el=document.getElementById('admMapWrap');
   if(!document.fullscreenElement){
-    el.requestFullscreen().catch(()=>{
+    el.requestFullscreen().then(()=>{
+      setTimeout(()=>mapObj&&mapObj.invalidateSize(),150);
+    }).catch(()=>{
       el.classList.add('adm-fs');
-      setTimeout(()=>mapObj&&mapObj.invalidateSize(),50);
       document.getElementById('admFsBtn').classList.add('active');
+      setTimeout(()=>mapObj&&mapObj.invalidateSize(),50);
     });
   }else{
-    document.exitFullscreen();
-    el.classList.remove('adm-fs');
+    document.exitFullscreen().then(()=>{
+      el.classList.remove('adm-fs');
+      setTimeout(()=>mapObj&&mapObj.invalidateSize(),150);
+    }).catch(()=>{
+      el.classList.remove('adm-fs');
+    });
   }
 }
 // ── TomTom Traffic (Admin Haritası) ──────────────────────────────────────────

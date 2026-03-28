@@ -3364,14 +3364,20 @@ function toggleRestSatellite(){
 function toggleRestFullscreen(){
   const el=document.getElementById('restMapWrap');
   if(!document.fullscreenElement){
-    el.requestFullscreen().catch(()=>{
+    el.requestFullscreen().then(()=>{
+      setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),150);
+    }).catch(()=>{
       el.classList.add('rest-fs');
-      setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),50);
       document.getElementById('restFsBtn').classList.add('active');
+      setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),50);
     });
   }else{
-    document.exitFullscreen();
-    el.classList.remove('rest-fs');
+    document.exitFullscreen().then(()=>{
+      el.classList.remove('rest-fs');
+      setTimeout(()=>mapInstance&&mapInstance.invalidateSize(),150);
+    }).catch(()=>{
+      el.classList.remove('rest-fs');
+    });
   }
 }
 // ── TomTom Traffic (Restoran Haritası) ───────────────────────────────────────

@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('kuryeai-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
   <link rel="stylesheet" href="/theme.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AcilKuryeAI — 7/24 Acil Kurye Hizmeti | Türkiye</title>
   <meta name="description" content="Türkiye'nin yapay zeka destekli acil kurye platformu. Tıbbi, eczane, evrak, VIP kurye. 15-30 dakikada kurye atanır, panelden anlık takip edin."/>
@@ -72,7 +73,8 @@
 
     /* ── KATEGORİLER ── */
     .cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:2rem}
-    .cat-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.1rem .8rem;text-align:center;transition:all .2s;cursor:default}
+    .cat-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.1rem .8rem;text-align:center;transition:all .2s;cursor:pointer}
+    .cat-card.selected{border-color:rgba(255,95,87,.5);background:rgba(255,95,87,.08)}
     .cat-card:hover{background:var(--card2);border-color:rgba(255,95,87,.25);transform:translateY(-2px)}
     .cat-icon{font-size:1.6rem;margin-bottom:.5rem}
     .cat-name{font-size:.72rem;font-weight:700;color:var(--gray-lt)}
@@ -126,6 +128,50 @@
     .btn-cta-red:hover{background:var(--red-lt);transform:scale(1.03)}
     .btn-cta-teal{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#000;font-size:.95rem;font-weight:700;padding:.85rem 2rem;border-radius:999px;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(0,200,215,.25)}
     .btn-cta-teal:hover{background:var(--teal-lt);transform:scale(1.03)}
+
+    /* ── FORM + HARİTA ── */
+    .form-section{max-width:1100px;margin:0 auto;padding:5rem 1.5rem}
+    .form-map-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;margin-top:2.5rem}
+    .form-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
+    .form-title{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.25rem}
+    .form-sub{font-size:.78rem;color:var(--gray-lt);margin-bottom:1.5rem}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    .fg{display:flex;flex-direction:column;margin-bottom:.9rem}
+    .fl{display:block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:.38rem}
+    .fi{background:var(--card2);border:.5px solid var(--border2);border-radius:8px;padding:.65rem .9rem;font-size:.88rem;color:var(--white);font-family:Arial;outline:none;transition:border-color .2s;width:100%}
+    .fi:focus{border-color:var(--red)}
+    .fi::placeholder{color:var(--gray)}
+    .fsel{background:var(--card2);border:.5px solid var(--border2);border-radius:8px;padding:.65rem .9rem;font-size:.88rem;color:var(--white);font-family:Arial;outline:none;width:100%}
+    .ftxt{background:var(--card2);border:.5px solid var(--border2);border-radius:8px;padding:.65rem .9rem;font-size:.88rem;color:var(--white);font-family:Arial;outline:none;resize:vertical;min-height:80px;width:100%}
+    .hesap-box{background:rgba(255,95,87,.06);border:.5px solid rgba(255,95,87,.2);border-radius:10px;padding:1rem;margin-bottom:.9rem;display:none}
+    .hesap-box.show{display:block}
+    .hesap-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:.8rem}
+    .hesap-row{display:flex;justify-content:space-between;font-size:.82rem;padding:.3rem 0;border-bottom:.5px solid rgba(255,255,255,.05)}
+    .hesap-row:last-of-type{border-bottom:none}
+    .hesap-l{color:var(--gray-lt)}
+    .hesap-v{font-weight:700;color:var(--white)}
+    .hesap-total{color:var(--red);font-size:.95rem}
+    .btn-hesap{width:100%;background:rgba(255,95,87,.1);color:var(--red);border:.5px solid rgba(255,95,87,.25);border-radius:8px;padding:.7rem;font-size:.84rem;font-weight:700;cursor:pointer;font-family:Arial;margin-bottom:.8rem;transition:background .2s}
+    .btn-hesap:hover{background:rgba(255,95,87,.18)}
+    .btn-submit{width:100%;background:var(--red);color:#fff;font-size:.92rem;font-weight:700;padding:.88rem;border-radius:999px;border:none;cursor:pointer;font-family:Arial;transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.3rem}
+    .btn-submit:hover{background:var(--red-lt);transform:scale(1.02)}
+    .btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .btn-submit.loading .spin{display:block}
+    .spin{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .form-note{font-size:.72rem;color:var(--gray);text-align:center;margin-top:.8rem;line-height:1.5}
+    .map-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;overflow:hidden;position:sticky;top:80px}
+    .map-header{padding:1rem 1.2rem;border-bottom:.5px solid var(--border)}
+    .map-title-txt{font-size:.85rem;font-weight:700;margin-bottom:.2rem}
+    .map-sub-txt{font-size:.72rem;color:var(--gray-lt)}
+    #map{height:400px;width:100%}
+    .map-footer{padding:1rem 1.2rem;border-top:.5px solid var(--border)}
+    .map-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+    .map-stat{text-align:center}
+    .map-stat-n{font-size:1.2rem;font-weight:700;color:var(--red)}
+    .map-stat-l{font-size:.65rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:.06em}
+    @media(max-width:900px){.form-map-grid{grid-template-columns:1fr}.map-card{position:static}#map{height:280px}}
 
     /* ── FOOTER ── */
     .page-footer{text-align:center;padding:2rem 1.5rem;border-top:.5px solid var(--border);font-size:.76rem;color:var(--gray)}
@@ -326,17 +372,17 @@
   <span class="section-badge">Hizmet Türleri</span>
   <h2 class="section-title">Her türlü acil teslimat<br/>için hazırız.</h2>
   <div class="cat-grid">
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18"/></svg></div><div class="cat-name">Tıbbi Kurye</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div><div class="cat-name">Eczane Kuryesi</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l3 9-7 9H9L2 12z"/><path d="M6 9h12"/></svg></div><div class="cat-name">İlaç Kuryesi</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div><div class="cat-name">Evrak Kuryesi</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg></div><div class="cat-name">VIP Kurye</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="cat-name">Express Kurye</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></div><div class="cat-name">SIM Kart</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></div><div class="cat-name">Kredi Kartı</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></div><div class="cat-name">Gazete / Dergi</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="cat-name">Yedek Parça</div></div>
-    <div class="cat-card"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div><div class="cat-name">Diğer</div></div>
+    <div class="cat-card" onclick="selectCategory('Tıbbi Kurye')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18"/></svg></div><div class="cat-name">Tıbbi Kurye</div></div>
+    <div class="cat-card" onclick="selectCategory('Eczane Kuryesi')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div><div class="cat-name">Eczane Kuryesi</div></div>
+    <div class="cat-card" onclick="selectCategory('İlaç Kuryesi')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l3 9-7 9H9L2 12z"/><path d="M6 9h12"/></svg></div><div class="cat-name">İlaç Kuryesi</div></div>
+    <div class="cat-card" onclick="selectCategory('Evrak Kuryesi')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div><div class="cat-name">Evrak Kuryesi</div></div>
+    <div class="cat-card" onclick="selectCategory('VIP Kişisel Kurye')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg></div><div class="cat-name">VIP Kurye</div></div>
+    <div class="cat-card" onclick="selectCategory('Express Kurye')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="cat-name">Express Kurye</div></div>
+    <div class="cat-card" onclick="selectCategory('SIM Kart Dağıtım')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></div><div class="cat-name">SIM Kart</div></div>
+    <div class="cat-card" onclick="selectCategory('Kredi Kartı Dağıtım')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></div><div class="cat-name">Kredi Kartı</div></div>
+    <div class="cat-card" onclick="selectCategory('Gazete / Dergi Dağıtım')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></div><div class="cat-name">Gazete / Dergi</div></div>
+    <div class="cat-card" onclick="selectCategory('Yedek Parça Kuryesi')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="cat-name">Yedek Parça</div></div>
+    <div class="cat-card" onclick="selectCategory('Diğer')"><div class="cat-icon" style="display:flex;justify-content:center;margin-bottom:.5rem"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div><div class="cat-name">Diğer</div></div>
   </div>
 </div>
 
@@ -466,6 +512,120 @@
 
 <div class="divider"></div>
 
+<!-- TALEP FORMU + HARİTA -->
+<div class="form-section" id="talep-formu">
+  <span class="section-badge">Talep Oluştur</span>
+  <h2 class="section-title">Hemen acil kurye talep edin.</h2>
+  <p class="section-sub">Adresleri girin, mesafe ve tahmini ücreti otomatik hesaplayalım. Kaydolun ve talebinizi saniyeler içinde gönderin.</p>
+  <div class="form-map-grid">
+
+    <!-- FORM -->
+    <div class="form-card">
+      <p class="form-title">Acil Kurye Talep Formu</p>
+      <p class="form-sub">Tüm alanları doldurun. Talep göndermek için giriş / kayıt gereklidir.</p>
+
+      <div class="frow">
+        <div class="fg"><label class="fl">Ad</label><input class="fi" id="f-ad" placeholder="Adınız"/></div>
+        <div class="fg"><label class="fl">Soyad</label><input class="fi" id="f-soyad" placeholder="Soyadınız"/></div>
+      </div>
+      <div class="fg"><label class="fl">Telefon</label><input class="fi" id="f-tel" type="tel" placeholder="05XX XXX XX XX"/></div>
+      <div class="fg"><label class="fl">E-posta</label><input class="fi" id="f-email" type="email" placeholder="email@ornek.com"/></div>
+
+      <div class="fg">
+        <label class="fl">Gönderi Türü</label>
+        <select class="fsel" id="f-tur">
+          <option value="">Seçiniz</option>
+          <option>Tıbbi Kurye</option>
+          <option>Eczane Kuryesi</option>
+          <option>İlaç Kuryesi</option>
+          <option>Evrak Kuryesi</option>
+          <option>VIP Kişisel Kurye</option>
+          <option>Express Kurye</option>
+          <option>SIM Kart Dağıtım</option>
+          <option>Kredi Kartı Dağıtım</option>
+          <option>Gazete / Dergi Dağıtım</option>
+          <option>Yedek Parça Kuryesi</option>
+          <option>Diğer</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label class="fl">
+          <span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Gönderim Adresi</span>
+        </label>
+        <input class="fi" id="f-adres1" placeholder="Örn: Ankamall AVM, Ankara" oninput="debounceGeocode('adres1')"/>
+      </div>
+
+      <div class="fg">
+        <label class="fl">
+          <span style="display:inline-flex;align-items:center;gap:.3rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Teslimat Adresi</span>
+        </label>
+        <input class="fi" id="f-adres2" placeholder="Örn: Gordion AVM, Çayyolu" oninput="debounceGeocode('adres2')"/>
+      </div>
+
+      <!-- TAHMİNİ ÜCRET HESABI -->
+      <div class="hesap-box" id="hesap-box">
+        <p class="hesap-title">Tahmini Ücret Hesabı</p>
+        <div class="hesap-row"><span class="hesap-l">Mesafe</span><span class="hesap-v" id="h-mesafe">—</span></div>
+        <div class="hesap-row"><span class="hesap-l">Tahmini Süre</span><span class="hesap-v" id="h-sure">—</span></div>
+        <div class="hesap-row"><span class="hesap-l">KM Ücreti</span><span class="hesap-v" id="h-km">—</span></div>
+        <div class="hesap-row"><span class="hesap-l">Min. 1 Saat</span><span class="hesap-v" id="h-saat">350 ₺</span></div>
+        <div class="hesap-row"><span class="hesap-l">Tahmini Toplam</span><span class="hesap-v hesap-total" id="h-toplam">—</span></div>
+        <p style="font-size:.68rem;color:var(--gray-lt);margin-top:.6rem;line-height:1.5">* Tahmini hesaptır. Gerçek ücret kurye ile onaylanır. Min. 1 saat uygulanır.</p>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Ne Zaman Teslim Edilmeli?</label>
+        <input class="fi" id="f-zaman" type="datetime-local"/>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Gönderi Detayı</label>
+        <textarea class="ftxt" id="f-detay" placeholder="Boyut, ağırlık, özel taşıma gereksinimleri vb."></textarea>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Ödeme Yöntemi</label>
+        <select class="fsel" id="f-odeme">
+          <option>Nakit (Teslimat sırasında)</option>
+          <option>Havale / EFT</option>
+        </select>
+      </div>
+
+      <button class="btn-hesap" onclick="hesaplaUcret()">
+        <span style="display:inline-flex;align-items:center;gap:.4rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Mesafe &amp; Ücreti Hesapla</span>
+      </button>
+
+      <button class="btn-submit" id="btn-submit" onclick="submitForm()">
+        <div class="spin"></div>
+        <span class="btxt">Talep Gönder →</span>
+      </button>
+      <p class="form-note">Talep göndermek için giriş / kayıt gereklidir. Kurye atanınca panelden anlık takip edebilirsiniz.</p>
+    </div>
+
+    <!-- HARİTA -->
+    <div class="map-card">
+      <div class="map-header">
+        <p class="map-title-txt">
+          <span style="display:inline-flex;align-items:center;gap:.4rem;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg> Rota Haritası</span>
+        </p>
+        <p class="map-sub-txt">Adreslerinizi girdikçe harita otomatik güncellenir.</p>
+      </div>
+      <div id="map"></div>
+      <div class="map-footer">
+        <div class="map-stats">
+          <div class="map-stat"><div class="map-stat-n" id="ms-mesafe">—</div><div class="map-stat-l">KM</div></div>
+          <div class="map-stat"><div class="map-stat-n" id="ms-sure">—</div><div class="map-stat-l">Dakika</div></div>
+          <div class="map-stat"><div class="map-stat-n" id="ms-ucret">—</div><div class="map-stat-l">₺ Tahmini</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <!-- CTA -->
 <div style="max-width:1100px;margin:0 auto;padding:0 1.5rem 5rem">
   <div class="cta-section">
@@ -494,6 +654,207 @@
     if (d && !d.contains(e.target)) d.classList.remove('open');
   });
 </script>
+
+<!-- Firebase Auth + Auto-submit -->
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const FC = {
+    apiKey:"AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y", authDomain:"kuryeai-99bf9.firebaseapp.com",
+    projectId:"kuryeai-99bf9", storageBucket:"kuryeai-99bf9.firebasestorage.app",
+    messagingSenderId:"1012295004135", appId:"1:1012295004135:web:0cceac0476175e19395742"
+  };
+  const app = getApps().find(a=>a.name==='acil-auth') || initializeApp(FC,'acil-auth');
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  function genId() {
+    const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let id='SAI-';
+    for(let i=0;i<6;i++) id+=c[Math.floor(Math.random()*c.length)]; return id;
+  }
+
+  // Fiyatları Firebase'den yükle
+  try {
+    const psnap = await getDoc(doc(db,'ayarlar','fiyatlar'));
+    if (psnap.exists()) {
+      const d = psnap.data();
+      if (d.acilSaatUcreti) window.SAAT_UCRETI = d.acilSaatUcreti;
+      if (d.acilKmUcreti)   window.KM_UCRETI   = d.acilKmUcreti;
+    }
+  } catch(e) {}
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user && user.emailVerified) {
+      try {
+        const snap = await getDoc(doc(db,'users',user.uid));
+        if (snap.exists() && snap.data().role === 'acil_talep') {
+          const pending = sessionStorage.getItem('pendingAcilForm');
+          if (pending) {
+            sessionStorage.removeItem('pendingAcilForm');
+            const f = JSON.parse(pending);
+            await addDoc(collection(db,'acilTalepler'), {
+              talepId: genId(),
+              userId: user.uid,
+              fromAddr: f.adres1, toAddr: f.adres2,
+              description: f.detay || '',
+              customerName: f.ad + ' ' + f.soyad,
+              customerPhone: f.tel, customerEmail: f.email || '',
+              tur: f.tur, odeme: f.odeme, zaman: f.zaman || '',
+              feeEstimate: (f.ucret && f.ucret !== '—') ? parseInt(f.ucret) : null,
+              distanceKm: (f.mesafe && f.mesafe !== '—') ? parseFloat(f.mesafe) : null,
+              durationMin: (f.sure && f.sure !== '—') ? parseInt(f.sure) : null,
+              status: 'open', createdAt: new Date().toISOString()
+            });
+            window.location.href = '/acilkuryeai-talepeden-panel';
+          }
+        }
+      } catch(e) {}
+    }
+  });
+</script>
+
+<!-- Leaflet.js + Harita & Form Logic -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Fiyat ayarları — Firebase modülünden güncellenir, yoksa default
+var SAAT_UCRETI = 350;
+var KM_UCRETI = 12;
+
+// ── HARİTA BAŞLAT ──
+const map = L.map('map').setView([39.9334, 32.8597], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap', maxZoom: 19
+}).addTo(map);
+
+let marker1 = null, marker2 = null, routeLine = null;
+let coord1 = null, coord2 = null;
+let debounceTimer = null;
+
+// ── KATEGORİ SEÇ ──
+function selectCategory(cat) {
+  const sel = document.getElementById('f-tur');
+  if (!sel) return;
+  sel.value = cat;
+  sel.style.borderColor = 'var(--red)';
+  // kartları güncelle
+  document.querySelectorAll('.cat-card').forEach(c => {
+    c.classList.toggle('selected', c.getAttribute('onclick') === "selectCategory('" + cat + "')");
+  });
+  // forma scroll
+  document.getElementById('talep-formu').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ── DEBOUNCE GEOCODE ──
+function debounceGeocode(field) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => geocodeAddress(field), 800);
+}
+
+// ── ADRES → KOORDİNAT (Nominatim) ──
+async function geocodeAddress(field) {
+  const input = document.getElementById(field === 'adres1' ? 'f-adres1' : 'f-adres2');
+  const query = input.value.trim();
+  if (query.length < 5) return;
+  const searchQuery = query + (query.toLowerCase().includes('türkiye') ? '' : ', Türkiye');
+  try {
+    const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(searchQuery) + '&limit=1&accept-language=tr&countrycodes=tr');
+    const data = await res.json();
+    if (!data.length) return;
+    const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
+    const icon = L.divIcon({
+      html: '<div style="background:' + (field==='adres1' ? '#00c8d7' : '#ff5f57') + ';width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
+      iconSize:[14,14], className:''
+    });
+    if (field === 'adres1') {
+      if (marker1) map.removeLayer(marker1);
+      marker1 = L.marker([lat,lon],{icon}).addTo(map).bindPopup('Gönderim Adresi').openPopup();
+      coord1 = [lat,lon];
+    } else {
+      if (marker2) map.removeLayer(marker2);
+      marker2 = L.marker([lat,lon],{icon}).addTo(map).bindPopup('Teslimat Adresi').openPopup();
+      coord2 = [lat,lon];
+    }
+    if (coord1 && coord2) drawRoute();
+    else map.setView([lat,lon], 14);
+  } catch(e) { console.error('Geocode hata:', e); }
+}
+
+// ── ROTA ÇİZ (OSRM) ──
+async function drawRoute() {
+  if (!coord1 || !coord2) return;
+  try {
+    const url = 'https://router.project-osrm.org/route/v1/driving/' + coord1[1] + ',' + coord1[0] + ';' + coord2[1] + ',' + coord2[0] + '?overview=full&geometries=geojson';
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.routes || !data.routes.length) return;
+    const route = data.routes[0];
+    const mesafeKm = (route.distance / 1000).toFixed(1);
+    const sureDk = Math.round(route.duration / 60);
+    if (routeLine) map.removeLayer(routeLine);
+    routeLine = L.geoJSON(route.geometry, {
+      style: {color:'#ff5f57', weight:4, opacity:.8, dashArray:'8,4'}
+    }).addTo(map);
+    map.fitBounds(L.latLngBounds([coord1, coord2]), {padding:[40,40]});
+    const tahminiUcret = hesaplaToplamUcret(parseFloat(mesafeKm), sureDk);
+    document.getElementById('ms-mesafe').textContent = mesafeKm;
+    document.getElementById('ms-sure').textContent = sureDk;
+    document.getElementById('ms-ucret').textContent = tahminiUcret;
+    gosterHesap(mesafeKm, sureDk, tahminiUcret);
+  } catch(e) { console.error('Rota hata:', e); }
+}
+
+function hesaplaToplamUcret(km, sureDk) {
+  const saatSayisi = sureDk <= 60 ? 1 : Math.ceil(sureDk / 60);
+  return Math.round(saatSayisi * SAAT_UCRETI + km * KM_UCRETI);
+}
+
+function gosterHesap(km, dk, toplam) {
+  const saatSayisi = dk <= 60 ? 1 : Math.ceil(dk / 60);
+  document.getElementById('hesap-box').classList.add('show');
+  document.getElementById('h-mesafe').textContent = km + ' km';
+  document.getElementById('h-sure').textContent = dk + ' dakika';
+  document.getElementById('h-km').textContent = (parseFloat(km) * KM_UCRETI).toFixed(0) + ' ₺ (' + km + ' km × ' + KM_UCRETI + '₺)';
+  document.getElementById('h-saat').textContent = (saatSayisi * SAAT_UCRETI) + ' ₺ (' + saatSayisi + ' saat × ' + SAAT_UCRETI + '₺' + (dk <= 60 ? ' · min. 1 saat' : '') + ')';
+  document.getElementById('h-toplam').textContent = toplam + ' ₺';
+}
+
+// ── MANUEL HESAPLA ──
+function hesaplaUcret() {
+  if (!coord1 || !coord2) { alert('Lütfen önce her iki adresi girin.'); return; }
+  drawRoute();
+}
+
+// ── FORM SUBMIT ──
+function submitForm() {
+  const ad = document.getElementById('f-ad').value.trim();
+  const soyad = document.getElementById('f-soyad').value.trim();
+  const tel = document.getElementById('f-tel').value.trim();
+  const tur = document.getElementById('f-tur').value;
+  const adres1 = document.getElementById('f-adres1').value.trim();
+  const adres2 = document.getElementById('f-adres2').value.trim();
+  const zaman = document.getElementById('f-zaman').value;
+  const detay = document.getElementById('f-detay').value.trim();
+  const odeme = document.getElementById('f-odeme').value;
+  const email = document.getElementById('f-email').value.trim();
+  if (!ad || !soyad || !tel || !tur || !adres1 || !adres2) {
+    alert('Lütfen zorunlu alanları doldurun: Ad, Soyad, Telefon, Gönderi Türü, Adresler.');
+    return;
+  }
+  const btn = document.getElementById('btn-submit');
+  btn.classList.add('loading'); btn.disabled = true;
+  const formData = {
+    ad, soyad, tel, email, tur, adres1, adres2, zaman, detay, odeme,
+    mesafe: document.getElementById('ms-mesafe').textContent,
+    sure: document.getElementById('ms-sure').textContent,
+    ucret: document.getElementById('ms-ucret').textContent
+  };
+  sessionStorage.setItem('pendingAcilForm', JSON.stringify(formData));
+  window.location.href = '/acilkuryeai-talepeden-login?back=/acilkuryeai';
+}
+</script>
+
 <script src="/theme.js"></script>
 </body>
 </html>

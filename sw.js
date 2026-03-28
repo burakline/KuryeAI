@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kuryeai-v3';
+const CACHE_NAME = 'kuryeai-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -7,6 +7,10 @@ const STATIC_ASSETS = [
   '/kuryeai',
   '/izincikuryeai',
   '/qrmenuai',
+  '/fiyatlandirma',
+  '/kvkk',
+  '/iletisim',
+  '/hakkimizda',
   '/manifest.json',
   '/theme.css',
   '/theme.js',

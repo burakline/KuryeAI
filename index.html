@@ -63,16 +63,45 @@
   }
   </script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
+      /* ── Color tokens ── */
       --black:#000; --dark:#0c0c0c; --card:#111; --border:rgba(255,255,255,.07);
       --gray:#555; --gray-lt:#999; --silver:#c8c8c8; --white:#fff;
       --teal:#00c8d7; --teal-dk:#009aaa; --teal-lt:#33d6e3;
       --red:#ff5f57; --green:#30d158; --yellow:#ffd60a; --orange:#ff9f0a;
+      /* ── Typography ── */
+      --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+      --font-size-xs:.72rem;   /* 11.5px */
+      --font-size-sm:.8125rem; /* 13px   */
+      --font-size-md:.9375rem; /* 15px   */
+      --font-size-lg:1.0625rem;/* 17px   */
+      --font-weight-normal:400;
+      --font-weight-medium:500;
+      --font-weight-semibold:600;
+      --font-weight-bold:700;
+      --line-height-tight:1.2;
+      --line-height-normal:1.5;
+      --line-height-relaxed:1.75;
+      /* ── Spacing (4px grid) ── */
+      --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+      --space-5:20px; --space-6:24px; --space-8:32px; --space-10:40px;
+      --space-12:48px; --space-16:64px;
+      /* ── Icon sizes ── */
+      --icon-sm:16px; --icon-md:20px; --icon-lg:24px;
+      /* ── Radius ── */
+      --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-full:999px;
+      /* ── Shadow ── */
+      --shadow-sm:0 1px 2px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.08);
+      --shadow-md:0 4px 16px rgba(0,0,0,.16),0 1px 4px rgba(0,0,0,.08);
+      --shadow-lg:0 12px 40px rgba(0,0,0,.24);
     }
     html { scroll-behavior: smooth; }
-    body { background:var(--black); color:var(--white); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+    body { background:var(--black); color:var(--white); font-family:var(--font-sans); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; overflow-x:hidden; }
 
     /* ── COOKIE BANNER ── */
     .cookie-banner {
@@ -86,9 +115,9 @@
     .cookie-text { font-size:.78rem; color:var(--gray-lt); line-height:1.5; flex:1; }
     .cookie-text a { color:var(--teal); text-decoration:none; }
     .cookie-btns { display:flex; gap:.6rem; flex-shrink:0; }
-    .cookie-accept { background:var(--teal); color:#000; font-size:.75rem; font-weight:700; padding:.4rem 1rem; border-radius:999px; border:none; cursor:pointer; font-family:Arial; transition:background .2s; }
+    .cookie-accept { background:var(--teal); color:#000; font-size:.75rem; font-weight:700; padding:.4rem 1rem; border-radius:999px; border:none; cursor:pointer; font-family:var(--font-sans); transition:background .2s; }
     .cookie-accept:hover { background:var(--teal-lt); }
-    .cookie-reject { background:transparent; color:var(--gray-lt); font-size:.75rem; font-weight:700; padding:.4rem 1rem; border-radius:999px; border:.5px solid var(--border); cursor:pointer; font-family:Arial; transition:all .2s; }
+    .cookie-reject { background:transparent; color:var(--gray-lt); font-size:.75rem; font-weight:700; padding:.4rem 1rem; border-radius:999px; border:.5px solid var(--border); cursor:pointer; font-family:var(--font-sans); transition:all .2s; }
     .cookie-reject:hover { color:var(--white); }
 
     /* ── WHATSAPP BUTTON ── */
@@ -342,7 +371,7 @@
     .sss-header { margin-bottom:3rem; }
     .faq-list { max-width:760px; }
     .faq-item { border-bottom:.5px solid var(--border); }
-    .faq-q { width:100%; display:flex; align-items:center; justify-content:space-between; padding:1.2rem 0; background:none; border:none; color:var(--white); font-family:Arial; font-size:.95rem; font-weight:700; cursor:pointer; text-align:left; gap:1rem; transition:color .2s; }
+    .faq-q { width:100%; display:flex; align-items:center; justify-content:space-between; padding:1.2rem 0; background:none; border:none; color:var(--white); font-family:var(--font-sans); font-size:.95rem; font-weight:700; cursor:pointer; text-align:left; gap:1rem; transition:color .2s; }
     .faq-q:hover { color:var(--teal); }
     .faq-icon { color:var(--teal); font-size:1.2rem; flex-shrink:0; transition:transform .3s; }
     .faq-item.open .faq-icon { transform:rotate(45deg); }
@@ -467,7 +496,7 @@
     <li><a href="#sss">SSS</a></li>
   </ul>
   <div class="nav-right">
-    <a href="tel:+905072171995" class="nav-login" style="display:none" id="nav-tel"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0507 217 19 95</a>
+    <a href="tel:+905072171995" class="nav-login" style="display:none" id="nav-tel"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0507 217 19 95</a>
     <a href="/restoranai-login" class="nav-login">Restoran Girişi</a>
     <a href="/kuryeai-login" class="nav-login">Kurye Girişi</a>
     <!-- Premium tema toggle -->
@@ -476,7 +505,7 @@
         <span class="ttp-thumb"></span>
       </span>
       <span class="ttp-sun" aria-hidden="true">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
           <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
           <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
@@ -508,10 +537,10 @@
   </h1>
   <p class="hero-sub">Acil Kurye, İzinci Kurye, Evrak Kuryesi, Yedek Parça Kuryesi, Eczane Kuryesi, Tıbbi Kurye, Restoran Adisyon, Mutfak, Masa ve Paket Sipariş Yönetimi. Türkiye'de ilk ve tek gerçek yapay zeka destekli kurye teslimat yönetim platformu.</p>
   <div class="hero-btns">
-    <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye İste</a>
-    <a href="#urunler" class="btn-lg btn-teal">Ürünleri Keşfet <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
-    <a href="/restoranai-login?demo=1" class="btn-lg btn-demo"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></span>Demo'yu Dene</a>
-    <a href="/izincikuryeai" class="btn-lg btn-green"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>İzinciKuryeAI</a>
+    <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye İste</a>
+    <a href="#urunler" class="btn-lg btn-teal">Ürünleri Keşfet <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+    <a href="/restoranai-login?demo=1" class="btn-lg btn-demo"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></span>Demo'yu Dene</a>
+    <a href="/izincikuryeai" class="btn-lg btn-green"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>İzinciKuryeAI</a>
   </div>
   <div class="scroll-ind"><div class="scroll-line"></div><span>Kaydır</span></div>
 </section>
@@ -551,7 +580,7 @@
         <div class="acil-price-row"><span class="acil-price-l">KM başı ücret</span><span class="acil-price-v">+ 12 ₺ / km</span></div>
         <div class="acil-price-row"><span class="acil-price-l">Ödeme</span><span class="acil-price-v">Teslimat sırasında</span></div>
       </div>
-      <a href="/acilkuryeai" class="btn-lg btn-red" style="display:inline-flex"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Hemen Başvur <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      <a href="/acilkuryeai" class="btn-lg btn-red" style="display:inline-flex"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Hemen Başvur <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
       <div class="acil-cats">
         <span class="acil-cat">Tıbbi Kurye</span>
         <span class="acil-cat">Eczane Kuryesi</span>
@@ -569,10 +598,10 @@
       <p style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:1rem">Hızlı Bilgi Formu</p>
       <p style="font-size:.88rem;color:var(--gray-lt);margin-bottom:1.5rem;line-height:1.6">Detaylı bilgi için <a href="/acilkuryeai" style="color:var(--red);text-decoration:none;font-weight:700">AcilKuryeAI sayfasına</a> gidin. Ya da direkt WhatsApp'tan yazın:</p>
       <a href="https://wa.me/905072171995?text=Merhaba!%20Acil%20kurye%20ihtiyacım%20var.%20%0A%0AGönderici%20Adı:%20%0AGönderim%20Adresi:%20%0ATeslimat%20Adresi:%20%0AGönderi%20Türü:%20%0ATeslim%20Zamanı:%20" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25d366;color:#fff;font-size:.92rem;font-weight:700;padding:.9rem;border-radius:999px;text-decoration:none;transition:background .2s;margin-bottom:1rem">
-        <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>WhatsApp ile Acil Talep
+        <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>WhatsApp ile Acil Talep
       </a>
       <a href="tel:+905072171995" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:rgba(255,95,87,.1);color:var(--red);font-size:.88rem;font-weight:700;padding:.8rem;border-radius:999px;text-decoration:none;border:.5px solid rgba(255,95,87,.2);">
-        <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0 507 217 19 95
+        <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0 507 217 19 95
       </a>
       <p style="font-size:.72rem;color:var(--gray);text-align:center;margin-top:1rem">Mesai saatleri dışında da 7/24 hizmetinizdeyiz.</p>
     </div>
@@ -589,18 +618,18 @@
     </div>
     <div class="izinci-grid reveal">
       <a href="/izincikuryeai" class="izinci-card">
-        <div class="izinci-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></div>
+        <div class="izinci-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></div>
         <h3 class="izinci-card-title">İzinci Kurye Arıyorum</h3>
         <p class="izinci-card-desc">Kuryeniz izinli mi? Araç arızası mı? Yoğun gün mü? İhtiyacınız olan gün ve saatte deneyimli izinci kurye bulun.</p>
-        <div class="izinci-commission"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>Saatlik 250₺ + 8₺/km · %5 platform komisyonu</div>
-        <span class="izinci-cta">Hemen Talep Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <div class="izinci-commission"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>Saatlik 250₺ + 8₺/km · %5 platform komisyonu</div>
+        <span class="izinci-cta">Hemen Talep Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/izincikuryeai-izinci-login" class="izinci-card">
-        <div class="izinci-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 8.26h5.56l2.42 4.84M10.5 9V7a2 2 0 0 1 2-2h2l2 4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M1 9h2M21 9h-4.5l-1-2H14"/><path d="M7 17h6"/></svg></div>
+        <div class="izinci-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 8.26h5.56l2.42 4.84M10.5 9V7a2 2 0 0 1 2-2h2l2 4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M1 9h2M21 9h-4.5l-1-2H14"/><path d="M7 17h6"/></svg></div>
         <h3 class="izinci-card-title">İzinci Kurye Olmak İstiyorum</h3>
         <p class="izinci-card-desc">Tecrübeli kurye misiniz? İstediğiniz gün ve saatte çalışın. Türkiye genelinde işletmelerle buluşun. Hakediş aynı gün.</p>
-        <div class="izinci-commission"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>Saatlik 237,5₺ + 7,6₺/km net kazanç</div>
-        <span class="izinci-cta">Kurye Profilimi Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <div class="izinci-commission"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>Saatlik 237,5₺ + 7,6₺/km net kazanç</div>
+        <span class="izinci-cta">Kurye Profilimi Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
     </div>
   </div>
@@ -625,7 +654,7 @@
           <div class="pf"><span class="pf-dot"></span>Masa + paket sipariş yönetimi</div>
           <div class="pf"><span class="pf-dot"></span>Ciro & AI analiz raporları</div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/kuryeai" class="prod-card">
         <p class="prod-num">02 — KuryeAI</p>
@@ -637,7 +666,7 @@
           <div class="pf"><span class="pf-dot"></span>Otomatik & adil sipariş dağıtımı</div>
           <div class="pf"><span class="pf-dot"></span>Havuz & sabit kurye modelleri</div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/izincikuryeai" class="prod-card">
         <p class="prod-num">03 — İzinciKuryeAI</p>
@@ -649,7 +678,7 @@
           <div class="pf"><span class="pf-dot"></span>%5 platform komisyonu</div>
           <div class="pf"><span class="pf-dot"></span>Aynı gün hakediş ödemesi</div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/acilkuryeai" class="prod-card">
         <p class="prod-num">04 — AcilKuryeAI</p>
@@ -661,12 +690,12 @@
           <div class="pf"><span class="pf-dot"></span>350₺/saat + 12₺/km</div>
           <div class="pf"><span class="pf-dot"></span>7/24 kesintisiz hizmet</div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <!-- 05 QRMenuAI — tam genişlik kart -->
       <a href="/qrmenuai" class="prod-card prod-card-new" style="grid-column:1/-1;flex-direction:row;align-items:center;gap:2.5rem;flex-wrap:wrap">
         <div style="flex:1;min-width:240px">
-          <div class="prod-card-qr-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg> Yeni Ürün</div>
+          <div class="prod-card-qr-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg> Yeni Ürün</div>
           <p class="prod-num" style="color:var(--teal)">05 — QRMenuAI</p>
           <div class="prod-text-logo" style="font-size:1.8rem"><span style="color:var(--teal)">QR</span><span style="color:#fff">Menu</span><span style="color:var(--teal)">AI</span></div>
           <p class="prod-slogan">Dijital Menü & QR Sipariş</p>
@@ -676,19 +705,19 @@
             <div class="pf"><span class="pf-dot"></span>RestoranAI menüsüyle otomatik senkron</div>
             <div class="pf"><span class="pf-dot"></span>Yıllık 4.995₺ — Aylık ≈416₺</div>
           </div>
-          <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+          <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
         </div>
         <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:rgba(0,200,215,.05);border-radius:16px;border:.5px solid rgba(0,200,215,.15)">
           <!-- Dekoratif QR -->
           <svg width="90" height="90" viewBox="0 0 100 100" fill="none">
             <rect x="5" y="5" width="38" height="38" rx="4" fill="rgba(0,200,215,.12)"/>
-            <rect x="10" y="10" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="2.5"/>
+            <rect x="10" y="10" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="1.5"/>
             <rect x="16" y="16" width="16" height="16" rx="1" fill="#00c8d7"/>
             <rect x="57" y="5" width="38" height="38" rx="4" fill="rgba(0,200,215,.12)"/>
-            <rect x="62" y="10" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="2.5"/>
+            <rect x="62" y="10" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="1.5"/>
             <rect x="68" y="16" width="16" height="16" rx="1" fill="#00c8d7"/>
             <rect x="5" y="57" width="38" height="38" rx="4" fill="rgba(0,200,215,.12)"/>
-            <rect x="10" y="62" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="2.5"/>
+            <rect x="10" y="62" width="28" height="28" rx="2" fill="none" stroke="#00c8d7" stroke-width="1.5"/>
             <rect x="16" y="68" width="16" height="16" rx="1" fill="#00c8d7"/>
             <rect x="57" y="57" width="8" height="8" rx="1" fill="#00c8d7"/>
             <rect x="69" y="57" width="8" height="8" rx="1" fill="#00c8d7"/>
@@ -752,11 +781,11 @@
         </div>
         <div class="marka-name">Tava Makarna</div>
         <div class="marka-loc">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Ankara, Etlik, Aşağı Eğlence
         </div>
         <div class="marka-maps-badge">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Google Haritalar'da Gör
         </div>
       </a>
@@ -770,11 +799,11 @@
         </div>
         <div class="marka-name">Boldi Kumru Ayvalık Tantuni</div>
         <div class="marka-loc">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Ankara, Demetevler
         </div>
         <div class="marka-maps-badge">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Google Haritalar'da Gör
         </div>
       </a>
@@ -792,19 +821,19 @@
     </div>
     <div class="ref-grid reveal">
       <div class="ref-card">
-        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="ref-text">"RestoranAI ile tüm platformlarımızı tek yerden yönetiyoruz. Sipariş kaçırmak tarihe karıştı. Ciro raporları çok detaylı."</p>
-        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h1v5"/></svg></div><div><div class="ref-name">Ahmet K.</div><div class="ref-role">Restoran Sahibi · Çankaya</div></div></div>
+        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h1v5"/></svg></div><div><div class="ref-name">Ahmet K.</div><div class="ref-role">Restoran Sahibi · Çankaya</div></div></div>
       </div>
       <div class="ref-card">
-        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="ref-text">"İzinciKuryeAI sayesinde kuryem izine gittiğinde artık WhatsApp gruplarında izinci aramıyorum. Anında bulduk."</p>
-        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></div><div><div class="ref-name">Meral S.</div><div class="ref-role">İşletme Sahibi · Keçiören</div></div></div>
+        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></div><div><div class="ref-name">Meral S.</div><div class="ref-role">İşletme Sahibi · Keçiören</div></div></div>
       </div>
       <div class="ref-card">
-        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="ref-stars"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="ref-text">"KuryeAI ile günlük kazancımı anlık görebiliyorum. Sipariş dağılımı çok adil, sistem harika çalışıyor."</p>
-        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 8.26h5.56l2.42 4.84M10.5 9V7a2 2 0 0 1 2-2h2l2 4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M1 9h2M21 9h-4.5l-1-2H14"/><path d="M7 17h6"/></svg></div><div><div class="ref-name">Serkan M.</div><div class="ref-role">Moto Kurye · Ankara</div></div></div>
+        <div class="ref-author"><div class="ref-avatar"><svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 8.26h5.56l2.42 4.84M10.5 9V7a2 2 0 0 1 2-2h2l2 4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M1 9h2M21 9h-4.5l-1-2H14"/><path d="M7 17h6"/></svg></div><div><div class="ref-name">Serkan M.</div><div class="ref-role">Moto Kurye · Ankara</div></div></div>
       </div>
     </div>
   </div>
@@ -862,12 +891,12 @@
         <div class="pc-price"><sup>₺</sup>10.000<sub>/yıl</sub></div>
         <p class="pc-note">İşletme başına · KDV dahil</p>
         <ul class="pc-list">
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tüm platform entegrasyonları</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Sınırsız sipariş takibi</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Masa & paket yönetimi</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI destekli analizler</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>KuryeAI entegrasyonu</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>7/24 destek</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tüm platform entegrasyonları</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Sınırsız sipariş takibi</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Masa & paket yönetimi</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI destekli analizler</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>KuryeAI entegrasyonu</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>7/24 destek</li>
         </ul>
         <a href="/restoranai#basvuru" class="pc-btn pc-btn-fill">Hemen Başla</a>
       </div>
@@ -878,12 +907,12 @@
         <div class="pc-price" style="font-size:1.45rem;padding-top:.5rem;line-height:1.4">Kullandığın<br/>kadar öde</div>
         <p class="pc-note">Paket başı veya saatlik</p>
         <ul class="pc-list">
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Acil kurye: 350₺/saat + 12₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Esnaf kurye: 170₺/paket + 12₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>SGK'lı kurye: 250₺/saat + 12₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>İzinci kurye: 250₺/saat + 8₺/km</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Canlı takip dahil</li>
-          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Teslimat sırasında ödeme</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Acil kurye: 350₺/saat + 12₺/km</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Esnaf kurye: 170₺/paket + 12₺/km</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>SGK'lı kurye: 250₺/saat + 12₺/km</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>İzinci kurye: 250₺/saat + 8₺/km</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Canlı takip dahil</li>
+          <li><span class="tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Teslimat sırasında ödeme</li>
         </ul>
         <a href="https://wa.me/905072171995" target="_blank" class="pc-btn pc-btn-ol">Teklif Al</a>
       </div>
@@ -899,12 +928,12 @@
   <div class="cta-btns reveal">
     <a href="/restoranai#basvuru" class="btn-lg btn-teal">Restoran Başvurusu</a>
     <a href="/kuryeai#basvuru" class="btn-lg btn-outline">Kurye Başvurusu</a>
-    <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye</a>
+    <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye</a>
   </div>
   <div class="contact-links reveal">
-    <a href="mailto:info@kuryeai.com"><span style="display:inline-flex;vertical-align:middle;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>info@kuryeai.com</a>
-    <a href="tel:+905072171995"><span style="display:inline-flex;vertical-align:middle;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0 507 217 19 95</a>
-    <a href="https://www.kuryeai.com"><span style="display:inline-flex;vertical-align:middle;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>www.kuryeai.com</a>
+    <a href="mailto:info@kuryeai.com"><span style="display:inline-flex;vertical-align:middle;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>info@kuryeai.com</a>
+    <a href="tel:+905072171995"><span style="display:inline-flex;vertical-align:middle;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.49 12.38a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.38 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>0 507 217 19 95</a>
+    <a href="https://www.kuryeai.com"><span style="display:inline-flex;vertical-align:middle;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>www.kuryeai.com</a>
   </div>
 </section>
 

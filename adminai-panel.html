@@ -2389,26 +2389,50 @@ window.setPlan=async(uid,plan)=>{
 };
 
 window.setRestLocation=async(uid,address)=>{
-  const input=prompt('Restoran adresi girin:\n(Örn: Emrah Mah. Yavrukurt Sokak No 20 Keçiören)',address||'');
-  if(!input||!input.trim())return;
-  try{
-    showToast('📍 Konum aranıyor…','info');
-    const q=encodeURIComponent(input.trim()+', Ankara, Türkiye');
-    const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
-    const d=await r.json();
-    if(!d||!d[0]){showToast('Adres bulunamadı. Daha detaylı yazın.','err');return;}
-    const lat=parseFloat(d[0].lat);
-    const lng=parseFloat(d[0].lon);
-    if(!confirm('Bulunan konum:\n'+d[0].display_name+'\n\nKoordinat: '+lat.toFixed(5)+', '+lng.toFixed(5)+'\n\nOnaylıyor musunuz?'))return;
-    // Firestore güncelle
-    await updateDoc(doc(db,'users',uid),{lat,lng,address:input.trim()});
-    // RTDB settings güncelle (PATCH — sadece bu alanları günceller, diğerlerini silmez)
-    await _rtdbUpdate(`/restaurants/${uid}/settings`,{rest_lat:lat,rest_lng:lng,rest_address:input.trim()});
-    allUsers=allUsers.map(u=>u.id===uid?{...u,lat,lng,address:input.trim()}:u);
-    renderRestoranlar();
-    if(mapObj&&_restoranMarkers[uid]){_restoranMarkers[uid].setLatLng([lat,lng]);}
-    showToast('✓ Restoran konumu güncellendi!','ok');
-  }catch(e){showToast('Hata: '+e.message,'err');}
+  const method=confirm('Konum belirleme yöntemi:\n\n[Tamam] = Haritaya tıklayarak belirle\n[İptal] = Adres yazarak belirle');
+  if(method){
+    // Haritaya tıklayarak konum seç
+    switchTab('dash');
+    setTimeout(()=>{
+      if(!mapObj)initMap();
+      showToast('📍 Haritada restoranın konumuna tıklayın','info');
+      mapObj.once('click',async(e)=>{
+        const lat=e.latlng.lat;
+        const lng=e.latlng.lng;
+        const addr=address||prompt('Restoran adresi (isteğe bağlı):','')||'';
+        try{
+          await updateDoc(doc(db,'users',uid),{lat,lng,address:addr});
+          await _rtdbUpdate(`/restaurants/${uid}/settings`,{rest_lat:lat,rest_lng:lng,rest_address:addr});
+          allUsers=allUsers.map(u=>u.id===uid?{...u,lat,lng,address:addr}:u);
+          if(_restoranMarkers[uid]){_restoranMarkers[uid].setLatLng([lat,lng]);}
+          else{
+            const ic=L.divIcon({html:'<div style="width:28px;height:28px;border-radius:50%;background:var(--teal);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',className:'',iconSize:[28,28],iconAnchor:[14,14]});
+            _restoranMarkers[uid]=L.marker([lat,lng],{icon:ic}).addTo(mapObj);
+          }
+          showToast('✓ Konum kaydedildi: '+lat.toFixed(5)+', '+lng.toFixed(5),'ok');
+        }catch(e2){showToast('Hata: '+e2.message,'err');}
+      });
+    },300);
+  } else {
+    // Adres yazarak geocode
+    const input=prompt('Restoran adresi girin:\n(Örn: Emrah Mah. Yavrukurt Sokak No 20 Keçiören)',address||'');
+    if(!input||!input.trim())return;
+    try{
+      showToast('📍 Konum aranıyor…','info');
+      const q=encodeURIComponent(input.trim()+', Ankara, Türkiye');
+      const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
+      const d=await r.json();
+      if(!d||!d[0]){showToast('Adres bulunamadı.','err');return;}
+      const lat=parseFloat(d[0].lat);
+      const lng=parseFloat(d[0].lon);
+      await updateDoc(doc(db,'users',uid),{lat,lng,address:input.trim()});
+      await _rtdbUpdate(`/restaurants/${uid}/settings`,{rest_lat:lat,rest_lng:lng,rest_address:input.trim()});
+      allUsers=allUsers.map(u=>u.id===uid?{...u,lat,lng,address:input.trim()}:u);
+      renderRestoranlar();
+      if(mapObj&&_restoranMarkers[uid]){_restoranMarkers[uid].setLatLng([lat,lng]);}
+      showToast('✓ Konum güncellendi!','ok');
+    }catch(e2){showToast('Hata: '+e2.message,'err');}
+  }
 };
 
 // ── USER MODAL ──

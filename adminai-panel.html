@@ -454,6 +454,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <span class="nav-ico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Blog Yorumları
         <span class="nav-badge" id="badge-yorumlar" style="display:none">0</span>
       </div>
+      <div class="nav-item" id="nav-drone" onclick="switchTab('drone')">
+        <span class="nav-ico"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h2l3-9h4l3 9h2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="17" r="2"/><path d="M6 12v3"/><path d="M18 12v3"/></svg></span>DroneKuryeAI Erken Erişim
+        <span class="nav-badge teal" id="badge-drone" style="display:none">0</span>
+      </div>
     </nav>
 
     <div class="sb-footer">
@@ -965,6 +969,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div id="yorumlar-list"><div class="empty"><div class="empty-ico">💬</div><p>Yükleniyor...</p></div></div>
       </div>
 
+      <div class="pane" id="pane-drone">
+        <p class="page-lbl">DroneKuryeAI</p>
+        <p class="page-title">Erken Erişim Talepleri</p>
+        <div style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="filter-btn active" onclick="fDrone('hepsi')" data-f="hepsi">Tümü</button>
+          <button class="filter-btn" onclick="fDrone('pending')" data-f="pending">Bekleyen</button>
+          <button class="filter-btn" onclick="fDrone('approved')" data-f="approved">Onaylanan</button>
+          <button class="filter-btn" onclick="fDrone('rejected')" data-f="rejected">Reddedilen</button>
+        </div>
+        <div id="drone-list"><div class="empty"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="opacity:.4;margin-bottom:8px"><path d="M3 12h2l3-9h4l3 9h2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="17" r="2"/></svg><p>Yükleniyor...</p></div></div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /app -->
@@ -1159,7 +1175,7 @@ window.openSidebar=()=>{ document.getElementById('sidebar').classList.add('open'
 window.closeSidebar=()=>{ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('show'); };
 
 // ── SAYFA GEÇİŞİ ──
-const PAGE_TITLES={dash:'Anasayfa',basvurular:'Başvurular',restoranlar:'Restoranlar',kuryeler:'Kuryeler',siparisler:'Siparişler',istatistik:'İstatistikler',bildirimler:'Bildirimler',bolgeler:'Bölgeler',iletisim:'İletişim Mesajları',yorumlar:'Blog Yorumları'};
+const PAGE_TITLES={dash:'Anasayfa',basvurular:'Başvurular',restoranlar:'Restoranlar',kuryeler:'Kuryeler',siparisler:'Siparişler',istatistik:'İstatistikler',bildirimler:'Bildirimler',bolgeler:'Bölgeler',iletisim:'İletişim Mesajları',yorumlar:'Blog Yorumları',drone:'DroneKuryeAI Erken Erişim'};
 window.switchTab=(tab)=>{
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
@@ -1175,6 +1191,7 @@ window.switchTab=(tab)=>{
   if(tab==='bolgeler') loadZoneList();
   if(tab==='iletisim') initIletisim();
   if(tab==='yorumlar') initYorumlar();
+  if(tab==='drone') initDroneEarlyAccess();
 };
 
 // ── WAKE LOCK ──
@@ -2518,6 +2535,71 @@ function renderYorumlar(){
 window.delYorum=async(id)=>{
   if(!confirm('Bu yorumu silmek istediğinizden emin misiniz?')) return;
   await deleteDoc(doc(db,'blog_comments',id));
+};
+
+// ── DRONEKURYEAI ERKEN ERİŞİM ─────────────────────────────────────────
+let _droneLoaded=false;
+let _droneData=[];
+let _droneFilter='hepsi';
+
+function initDroneEarlyAccess(){
+  if(_droneLoaded) return;
+  _droneLoaded=true;
+  const q=query(collection(db,'drone_early_access'),orderBy('createdAt','desc'));
+  onSnapshot(q,snap=>{
+    _droneData=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const pendingCount=_droneData.filter(d=>d.status==='pending').length;
+    const badge=document.getElementById('badge-drone');
+    if(badge){badge.textContent=pendingCount;badge.style.display=pendingCount>0?'inline-flex':'none';}
+    renderDroneList();
+  });
+}
+
+window.fDrone=(f)=>{
+  _droneFilter=f;
+  document.querySelectorAll('#pane-drone .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
+  renderDroneList();
+};
+
+function renderDroneList(){
+  const el=document.getElementById('drone-list');
+  let list=_droneData;
+  if(_droneFilter!=='hepsi') list=list.filter(d=>d.status===_droneFilter);
+  if(!list.length){el.innerHTML='<div class="empty"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="opacity:.4;margin-bottom:8px"><path d="M3 12h2l3-9h4l3 9h2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="17" r="2"/></svg><p>Talep bulunamadı</p></div>';return;}
+  el.innerHTML=list.map(d=>{
+    const date=d.createdAt?new Date(d.createdAt.seconds*1000).toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    const statusLabel=d.status==='approved'?'<span style="color:#30d158;font-weight:700">Onaylandı</span>':d.status==='rejected'?'<span style="color:#ff5f57;font-weight:700">Reddedildi</span>':'<span style="color:#ffd60a;font-weight:700">Bekliyor</span>';
+    return `<div class="card" style="margin-bottom:.8rem;padding:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div style="font-weight:700;font-size:.92rem;margin-bottom:.3rem">${d.ad||'—'}</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-bottom:.15rem">${d.email||'—'} · ${d.tel||'—'}</div>
+          <div style="font-size:.75rem;color:var(--text3)">Hizmet: <strong>${d.hizmet||'—'}</strong> · ${date}</div>
+          ${d.mesaj?`<div style="font-size:.8rem;color:var(--text2);margin-top:.4rem;padding:.5rem;background:var(--bg2);border-radius:8px">${d.mesaj}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;flex-shrink:0">
+          <div style="font-size:.75rem">${statusLabel}</div>
+          ${d.status==='pending'?`
+            <div style="display:flex;gap:.4rem">
+              <button onclick="approveDrone('${d.id}','${encodeURIComponent(d.tel||'')}')" style="background:#30d158;color:#fff;border:none;border-radius:8px;padding:.35rem .7rem;font-size:.72rem;font-weight:700;cursor:pointer">Onayla</button>
+              <button onclick="rejectDrone('${d.id}')" style="background:#ff5f57;color:#fff;border:none;border-radius:8px;padding:.35rem .7rem;font-size:.72rem;font-weight:700;cursor:pointer">Reddet</button>
+            </div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.approveDrone=async(id,encodedTel)=>{
+  await updateDoc(doc(db,'drone_early_access',id),{status:'approved',approvedAt:new Date().toISOString()});
+  const tel=decodeURIComponent(encodedTel).replace(/\s/g,'').replace(/^0/,'+90');
+  const msg=encodeURIComponent('Merhaba! DroneKuryeAI erken erişim başvurunuz onaylandı. Gelişmelerden sizi haberdar edeceğiz. — KuryeAI');
+  window.open('https://wa.me/'+tel.replace('+','')+'?text='+msg,'_blank');
+};
+
+window.rejectDrone=async(id)=>{
+  if(!confirm('Bu başvuruyu reddetmek istediğinizden emin misiniz?')) return;
+  await updateDoc(doc(db,'drone_early_access',id),{status:'rejected'});
 };
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}</script>

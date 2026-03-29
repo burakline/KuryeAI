@@ -260,5 +260,12 @@ service cloud.firestore {
         resource.data.uid == request.auth.uid
       );
     }
+
+    // ─── drone_early_access ──────────────────────────────────────────────
+    // DroneKuryeAI erken erişim başvuruları: herkes oluşturabilir; admin okur/yazar
+    match /drone_early_access/{doc} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

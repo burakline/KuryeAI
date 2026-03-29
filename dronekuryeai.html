@@ -374,7 +374,7 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 
   <div class="hero-btns">
     <a href="#vizyon" class="btn-glow" data-tr="Yakında Başlıyor" data-en="Coming Soon">Yakında Başlıyor</a>
-    <a href="https://wa.me/905072171995?text=DroneKuryeAI%20erken%20erişim%20almak%20istiyorum" class="btn-ghost" data-tr="Erken Erişim Al" data-en="Get Early Access">Erken Erişim Al</a>
+    <a href="#erken-erisim" class="btn-ghost" data-tr="Erken Erişim Al" data-en="Get Early Access">Erken Erişim Al</a>
   </div>
 
   <div class="hero-img reveal">
@@ -645,16 +645,65 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 
 <div class="divider"></div>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-glow"></div>
-  <div class="reveal" style="position:relative">
+<!-- ERKEN ERİŞİM FORMU -->
+<section class="section" id="erken-erisim">
+  <div class="cta-glow" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="reveal" style="text-align:center;position:relative">
     <div class="section-badge" data-tr="Geleceğe Hazır Mısınız?" data-en="Are You Ready for the Future?">Geleceğe Hazır Mısınız?</div>
-    <h2 data-tr="Teslimatın geleceği <span style='color:var(--teal)'>gökyüzünde</span> yazılıyor." data-en="The future of delivery is being written in the <span style='color:var(--teal)'>sky.</span>">Teslimatın geleceği <span style="color:var(--teal)">gökyüzünde</span> yazılıyor.</h2>
-    <p data-tr="DroneKuryeAI erken erişim listesine katılın. Türkiye'nin ilk drone teslimat hizmetinden ilk siz haberdar olun." data-en="Join the DroneKuryeAI early access list. Be the first to know about Turkey's first drone delivery service.">DroneKuryeAI erken erişim listesine katılın. Türkiye'nin ilk drone teslimat hizmetinden ilk siz haberdar olun.</p>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <a href="https://wa.me/905072171995?text=DroneKuryeAI%20erken%20erişim%20almak%20istiyorum" class="btn-glow" data-tr="Erken Erişim Al" data-en="Get Early Access">Erken Erişim Al</a>
-      <a href="/" class="btn-ghost" data-tr="KuryeAI Ana Sayfa" data-en="KuryeAI Homepage">KuryeAI Ana Sayfa</a>
+    <h2 class="section-title" style="max-width:600px;margin:0 auto .6rem" data-tr="Teslimatın geleceği <span style='color:var(--teal)'>gökyüzünde</span> yazılıyor." data-en="The future of delivery is being written in the <span style='color:var(--teal)'>sky.</span>">Teslimatın geleceği <span style="color:var(--teal)">gökyüzünde</span> yazılıyor.</h2>
+    <p class="section-sub" style="max-width:500px;margin:0 auto 2rem" data-tr="DroneKuryeAI erken erişim listesine katılın. Türkiye'nin ilk drone teslimat hizmetinden ilk siz haberdar olun." data-en="Join the DroneKuryeAI early access list. Be the first to know about Turkey's first drone delivery service.">DroneKuryeAI erken erişim listesine katılın. Türkiye'nin ilk drone teslimat hizmetinden ilk siz haberdar olun.</p>
+  </div>
+
+  <div class="reveal" style="max-width:520px;margin:0 auto">
+    <div id="drone-form-card" style="background:var(--card);border:.5px solid var(--border);border-radius:18px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),transparent)"></div>
+
+      <div id="drone-form-content">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem">
+          <div>
+            <label style="font-size:.72rem;font-weight:600;color:var(--gray-lt);display:block;margin-bottom:.3rem" data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
+            <input id="df-ad" type="text" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;font-size:.85rem;color:var(--white);outline:none;transition:border-color .2s" data-tr-ph="Adınız Soyadınız" data-en-ph="Your Full Name"/>
+          </div>
+          <div>
+            <label style="font-size:.72rem;font-weight:600;color:var(--gray-lt);display:block;margin-bottom:.3rem" data-tr="Telefon" data-en="Phone">Telefon</label>
+            <input id="df-tel" type="tel" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;font-size:.85rem;color:var(--white);outline:none;transition:border-color .2s" data-tr-ph="05XX XXX XX XX" data-en-ph="05XX XXX XX XX"/>
+          </div>
+        </div>
+
+        <div style="margin-bottom:.8rem">
+          <label style="font-size:.72rem;font-weight:600;color:var(--gray-lt);display:block;margin-bottom:.3rem" data-tr="E-posta" data-en="Email">E-posta</label>
+          <input id="df-email" type="email" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;font-size:.85rem;color:var(--white);outline:none;transition:border-color .2s" data-tr-ph="ornek@email.com" data-en-ph="example@email.com"/>
+        </div>
+
+        <div style="margin-bottom:.8rem">
+          <label style="font-size:.72rem;font-weight:600;color:var(--gray-lt);display:block;margin-bottom:.3rem" data-tr="İlgilendiğiniz Hizmet" data-en="Service of Interest">İlgilendiğiniz Hizmet</label>
+          <select id="df-hizmet" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;font-size:.85rem;color:var(--white);outline:none;cursor:pointer">
+            <option value="yemek-teslimat" data-tr="Yemek Teslimatı (Restoran)" data-en="Food Delivery (Restaurant)">Yemek Teslimatı (Restoran)</option>
+            <option value="tibbi-teslimat" data-tr="Tıbbi Malzeme Teslimatı" data-en="Medical Supply Delivery">Tıbbi Malzeme Teslimatı</option>
+            <option value="evrak-teslimat" data-tr="Evrak / Doküman Teslimatı" data-en="Document Delivery">Evrak / Doküman Teslimatı</option>
+            <option value="kurumsal" data-tr="Kurumsal Teslimat Çözümü" data-en="Corporate Delivery Solution">Kurumsal Teslimat Çözümü</option>
+            <option value="diger" data-tr="Diğer" data-en="Other">Diğer</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:1.2rem">
+          <label style="font-size:.72rem;font-weight:600;color:var(--gray-lt);display:block;margin-bottom:.3rem" data-tr="Mesajınız (İsteğe bağlı)" data-en="Your Message (Optional)">Mesajınız (İsteğe bağlı)</label>
+          <textarea id="df-mesaj" rows="3" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;font-size:.85rem;color:var(--white);outline:none;resize:vertical;font-family:inherit;transition:border-color .2s" data-tr-ph="DroneKuryeAI hakkında merak ettikleriniz..." data-en-ph="Your questions about DroneKuryeAI..."></textarea>
+        </div>
+
+        <button id="df-btn" onclick="submitDroneForm()" style="width:100%;padding:.75rem;background:linear-gradient(135deg,var(--teal),var(--teal-dk));border:none;border-radius:12px;color:#000;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 0 25px rgba(0,200,215,.25)">
+          <span id="df-btn-text" data-tr="Erken Erişim Başvurusu Gönder" data-en="Submit Early Access Request">Erken Erişim Başvurusu Gönder</span>
+          <span id="df-btn-spin" style="display:none;width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto"></span>
+        </button>
+        <p style="font-size:.7rem;color:var(--gray);text-align:center;margin-top:.6rem" data-tr="Bilgileriniz gizli tutulur. Spam göndermeyiz." data-en="Your information is kept confidential. We don't send spam.">Bilgileriniz gizli tutulur. Spam göndermeyiz.</p>
+      </div>
+
+      <div id="drone-form-success" style="display:none;text-align:center;padding:2rem 0">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem"><circle cx="12" cy="12" r="10"/><polyline points="16 9 10.5 14.5 8 12"/></svg>
+        <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:.5rem" data-tr="Başvurunuz Alındı!" data-en="Application Received!">Başvurunuz Alındı!</h3>
+        <p style="font-size:.88rem;color:var(--gray-lt);line-height:1.6" data-tr="DroneKuryeAI erken erişim listemize eklendiniz. Gelişmelerden sizi haberdar edeceğiz." data-en="You've been added to our DroneKuryeAI early access list. We'll keep you updated on developments.">DroneKuryeAI erken erişim listemize eklendiniz. Gelişmelerden sizi haberdar edeceğiz.</p>
+        <a href="/" class="btn-ghost" style="margin-top:1.5rem;display:inline-flex" data-tr="Ana Sayfaya Dön" data-en="Return to Homepage">Ana Sayfaya Dön</a>
+      </div>
     </div>
   </div>
 </section>
@@ -679,6 +728,60 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script type="module">
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+
+const FB = {
+  apiKey:'AIzaSyDhXZ4RoT6DDJlNZBYArC6Zvy-MZ5fFC9Y',
+  authDomain:'kuryeai-99bf9.firebaseapp.com',
+  projectId:'kuryeai-99bf9',
+  storageBucket:'kuryeai-99bf9.firebasestorage.app',
+  messagingSenderId:'1012295004135',
+  appId:'1:1012295004135:web:0cceac0476175e19395742'
+};
+const app = getApps().find(a => a.name === 'drone') || initializeApp(FB, 'drone');
+const db = getFirestore(app);
+
+window.submitDroneForm = async function() {
+  const ad = document.getElementById('df-ad').value.trim();
+  const tel = document.getElementById('df-tel').value.trim();
+  const email = document.getElementById('df-email').value.trim();
+  const hizmet = document.getElementById('df-hizmet').value;
+  const mesaj = document.getElementById('df-mesaj').value.trim();
+
+  if (!ad || !tel || !email) {
+    const lang = localStorage.getItem('kuryeai-lang') || 'tr';
+    alert(lang === 'tr' ? 'Lütfen Ad, Telefon ve E-posta alanlarını doldurun.' : 'Please fill in Name, Phone and Email fields.');
+    return;
+  }
+
+  const btn = document.getElementById('df-btn');
+  document.getElementById('df-btn-text').style.display = 'none';
+  document.getElementById('df-btn-spin').style.display = 'inline-block';
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+
+  try {
+    await addDoc(collection(db, 'drone_early_access'), {
+      ad, tel, email, hizmet, mesaj,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+      source: 'dronekuryeai-landing'
+    });
+    document.getElementById('drone-form-content').style.display = 'none';
+    document.getElementById('drone-form-success').style.display = 'block';
+  } catch (e) {
+    console.warn('Form gönderim hatası:', e);
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    document.getElementById('df-btn-text').style.display = 'inline';
+    document.getElementById('df-btn-spin').style.display = 'none';
+    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+  }
+};
 </script>
 
 </body>

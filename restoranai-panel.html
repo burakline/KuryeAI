@@ -1284,7 +1284,7 @@ tbody tr:hover{background:var(--bg)}
                 <div class="form-group">
                   <label class="form-label">Adres</label>
                   <input class="form-input" type="text" id="rest-address" placeholder="Tam adres"/>
-                  <button onclick="useMyLocation()" style="margin-top:6px;padding:6px 12px;border:1px solid var(--teal);background:var(--teal-bg);border-radius:8px;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Mevcut Konumumu Kullan</button>
+                  <div style="font-size:11px;color:var(--text3);margin-top:4px"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Harita pin konumu admin tarafından belirlenir.</div>
                 </div>
                 <div class="form-row">
                   <div class="form-group" style="margin-bottom:0">
@@ -3897,20 +3897,6 @@ window.printQR=()=>{
   w.document.close();
 };
 
-window.useMyLocation=()=>{
-  if(!navigator.geolocation){showToast('GPS desteklenmiyor','error');return;}
-  showToast('📍 Konum alınıyor…','info');
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    settings.rest_lat=pos.coords.latitude;
-    settings.rest_lng=pos.coords.longitude;
-    try{
-      await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
-      if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
-      showToast('✓ Konum güncellendi ve kaydedildi!','success');
-    }catch(e){showToast('Konum alındı ama kayıt başarısız: '+e.message,'error');}
-  },()=>showToast('Konum alınamadı. Lütfen GPS izni verin.','error'),{enableHighAccuracy:true,timeout:10000});
-};
-
 window.saveSettings=async()=>{
   try{
     settings.rest_name=document.getElementById("rest-name")?.value||settings.rest_name||'';
@@ -3920,19 +3906,13 @@ window.saveSettings=async()=>{
     settings.rest_hours=`${_g('hours-oh')}:${_g('hours-om')} — ${_g('hours-ch')}:${_g('hours-cm')}`;
     settings.custom_base=parseFloat(document.getElementById("custom-base")?.value)||0;
     settings.custom_km=parseFloat(document.getElementById("custom-km")?.value)||0;
-    // Adres girildiyse geocode ile koordinat güncelle (GPS butonu kullanılmadıysa)
-    if(settings.rest_address&&settings.rest_address.length>5&&!settings.rest_lat){
-      try{
-        const q=encodeURIComponent(settings.rest_address+', Ankara, Türkiye');
-        const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
-        const d=await r.json();
-        if(d&&d[0]){
-          settings.rest_lat=parseFloat(d[0].lat);
-          settings.rest_lng=parseFloat(d[0].lon);
-        }
-      }catch(e){console.warn('Geocode hatası:',e);}
-    }
+    // rest_lat ve rest_lng admin tarafından belirlenir, restoran değiştiremez
+    const savedLat=settings.rest_lat;
+    const savedLng=settings.rest_lng;
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
+    // Admin'in belirlediği koordinatları koru
+    if(savedLat)settings.rest_lat=savedLat;
+    if(savedLng)settings.rest_lng=savedLng;
     // Haritadaki kendi pinimizi yeni isim/konum ile güncelle
     if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
     showToast('✓ Ayarlar kaydedildi');

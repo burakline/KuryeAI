@@ -2281,6 +2281,11 @@ function userCard(u){
     <select onchange="setPlan('${u.id}',this.value)" style="margin-left:auto;font-size:.68rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.15rem .4rem">
       <option value="">Plan değiştir…</option><option value="trial">Deneme</option><option value="basic">Basic — 1.499₺/ay</option><option value="pro">Pro — 9.999₺/yıl</option>
     </select></div>`:'';
+  const locRow=isRest?`<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem;flex-wrap:wrap">
+    <span style="font-size:.68rem;color:var(--text3)">📍 Konum:</span>
+    ${u.lat&&u.lng?`<span style="font-size:.68rem;color:var(--green);font-weight:600">✓ ${(u.lat).toFixed(4)}, ${(u.lng).toFixed(4)}</span>`:'<span style="font-size:.68rem;color:var(--red)">Belirlenmedi</span>'}
+    <button onclick="setRestLocation('${u.id}','${esc(u.address||u.name||'')}')" style="margin-left:auto;font-size:.68rem;background:var(--teal-bg);border:1px solid rgba(0,200,215,.3);border-radius:6px;padding:.15rem .5rem;color:var(--teal);cursor:pointer;font-weight:600">📍 Konum Belirle</button>
+  </div>`:'';
   const payRow=isRest&&u.paymentStatus==='pending'?`<div style="margin-top:.55rem;padding:.6rem .75rem;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:10px">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem">
       <span style="font-size:.73rem;font-weight:700;color:var(--yellow)">💳 Ödeme Bildirimi</span>
@@ -2320,7 +2325,7 @@ function userCard(u){
     <div class="litem-top"><div><div class="litem-name">${esc(u.name||'—')}${demoBadge}${chiefBadge}</div><div class="litem-sub">${esc(u.email||'')}${phoneLink}</div></div>
     <span class="badge b-${u.status}">${statusLbl(u.status)}</span></div>
     <div class="litem-meta">${u.company?`<span style="font-size:.72rem;color:var(--text3)">🏠 ${esc(u.company)}</span>`:''}</div>
-    ${planRow}${payRow}${courierSection}
+    ${planRow}${locRow}${payRow}${courierSection}
     <div class="litem-actions" style="margin-top:.5rem">
       ${u.status==='active'?`<button class="bsm b-suspend" onclick="toggleStatus('${u.id}','suspended')">⏸ Askıya Al</button>`
         :u.status==='pending'?`<button class="bsm b-approve" onclick="approveUser('${u.id}')">✓ Onayla</button><button class="bsm b-reject" onclick="rejectUser('${u.id}')">✕ Reddet</button>`
@@ -2381,6 +2386,31 @@ window.setPlan=async(uid,plan)=>{
   if(!plan)return;const now=Date.now();const days=PLANS[plan]?.days||30;
   const pd={plan,planStartDate:now,planEndDate:now+days*86400000,planActive:true};
   try{await updateDoc(doc(db,'users',uid),pd);allUsers=allUsers.map(u=>u.id===uid?{...u,...pd}:u);renderRestoranlar();showToast(`✓ "${planLbl(plan)}" planı atandı`,'ok');}catch(e){showToast('Hata: '+e.message,'err');}
+};
+
+window.setRestLocation=async(uid,address)=>{
+  const input=prompt('Restoran adresi girin (geocode ile koordinat bulunacak):',address||'');
+  if(!input)return;
+  try{
+    showToast('📍 Konum aranıyor…','info');
+    const q=encodeURIComponent(input+', Ankara, Türkiye');
+    const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
+    const d=await r.json();
+    if(!d||!d[0]){showToast('Adres bulunamadı. Daha detaylı girin.','err');return;}
+    const lat=parseFloat(d[0].lat);
+    const lng=parseFloat(d[0].lon);
+    // Firestore güncelle
+    await updateDoc(doc(db,'users',uid),{lat,lng,address:input});
+    // RTDB settings güncelle
+    await _rtdbUpdate(`/restaurants/${uid}/settings`,{rest_lat:lat,rest_lng:lng,rest_address:input});
+    allUsers=allUsers.map(u=>u.id===uid?{...u,lat,lng,address:input}:u);
+    renderRestoranlar();
+    // Haritadaki pini güncelle
+    if(mapObj&&_restoranMarkers[uid]){
+      _restoranMarkers[uid].setLatLng([lat,lng]);
+    }
+    showToast(`✓ Konum güncellendi: ${lat.toFixed(4)}, ${lng.toFixed(4)}`,'ok');
+  }catch(e){showToast('Hata: '+e.message,'err');}
 };
 
 // ── USER MODAL ──

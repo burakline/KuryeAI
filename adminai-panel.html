@@ -1053,7 +1053,7 @@ const RTDB_URL="https://kuryeai-99bf9-default-rtdb.europe-west1.firebasedatabase
 async function _adminTok(){const u=auth.currentUser;if(!u)throw new Error("Giriş yapılmamış");return u.getIdToken();}
 function _adminSnap(data){return{val:()=>data,exists:()=>data!==null&&data!==undefined};}
 function rtdbListen(path,cb,errCb){
-  let es=null,active=true;
+  let es=null,active=true,refreshTimer=null;
   async function connect(){
     if(!active)return;
     try{
@@ -1062,11 +1062,14 @@ function rtdbListen(path,cb,errCb){
       es=new EventSource(`${RTDB_URL}${path}.json?auth=${tok}`);
       es.addEventListener('put',e=>{let d;try{d=JSON.parse(e.data);}catch{return;}if(!d.path||d.path==='/')cb(_adminSnap(d.data));else _rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
       es.addEventListener('patch',()=>{_rtdbGet(path).then(s=>cb(s)).catch(()=>{});});
-      es.onerror=()=>{if(es){try{es.close();}catch{}}if(active)setTimeout(connect,5000);};
-    }catch(e){if(errCb)errCb(e);if(active)setTimeout(connect,5000);}
+      es.onerror=()=>{if(es){try{es.close();}catch{}}if(active)setTimeout(connect,3000);};
+      // Token 1 saatte expire olur — 45 dk'da yeniden bağlan
+      if(refreshTimer)clearTimeout(refreshTimer);
+      refreshTimer=setTimeout(()=>{if(active)connect();},45*60*1000);
+    }catch(e){if(errCb)errCb(e);if(active)setTimeout(connect,3000);}
   }
   connect();
-  return ()=>{active=false;if(es){try{es.close();}catch{}}};
+  return ()=>{active=false;if(refreshTimer)clearTimeout(refreshTimer);if(es){try{es.close();}catch{}}};
 }
 async function _rtdbGet(path){const tok=await _adminTok();const r=await fetch(`${RTDB_URL}${path}.json?auth=${tok}`);if(!r.ok)throw new Error(r.statusText);return _adminSnap(await r.json());}
 async function _rtdbSet(path,data){const tok=await _adminTok();await fetch(`${RTDB_URL}${path}.json?auth=${tok}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}
@@ -1606,7 +1609,7 @@ function _initAdminFbDot(){
     try{
       const tok=await _adminTok().catch(()=>null);
       if(!tok){if(txt)txt.textContent='Bağlanıyor…';return;}
-      const r=await fetch(`${RTDB_URL}/settings.json?shallow=true&auth=${tok}`,{signal:AbortSignal.timeout(5000)});
+      const r=await fetch(`${RTDB_URL}/settings.json?shallow=true&auth=${tok}`,{signal:AbortSignal.timeout(10000)});
       if(r.ok){if(dot)dot.style.background='#22c55e';if(txt)txt.textContent='Firebase Bağlı';}
       else{if(dot)dot.style.background='#ef4444';if(txt)txt.textContent='Bağlantı Yok';}
     }catch{if(dot)dot.style.background='#ef4444';if(txt)txt.textContent='Bağlantı Yok';}

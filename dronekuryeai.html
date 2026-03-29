@@ -163,13 +163,18 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 
 /* Drone uçuş animasyonu */
 @keyframes droneFly{
-  0%{transform:translateX(120vw) translateY(0)}
-  25%{transform:translateX(60vw) translateY(-20px)}
-  50%{transform:translateX(30vw) translateY(10px)}
-  75%{transform:translateX(-10vw) translateY(-15px)}
-  100%{transform:translateX(-30vw) translateY(0)}
+  0%{transform:translateX(110vw) translateY(0) scale(.9)}
+  25%{transform:translateX(70vw) translateY(-18px) scale(.95)}
+  50%{transform:translateX(40vw) translateY(8px) scale(1)}
+  75%{transform:translateX(10vw) translateY(-12px) scale(.95)}
+  100%{transform:translateX(-30vw) translateY(0) scale(.9)}
 }
-.flying-drone{position:fixed;top:15%;z-index:50;pointer-events:none;font-size:2.5rem;animation:droneFly 18s linear infinite;opacity:.15}
+@keyframes droneHover{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+.flying-drone{position:fixed;top:18%;z-index:999;pointer-events:none;animation:droneFly 16s linear infinite;filter:drop-shadow(0 4px 20px rgba(0,200,215,.4))}
+.flying-drone svg{animation:droneHover 2s ease-in-out infinite}
 
 /* Parlayan çizgiler */
 @keyframes dataFlow{
@@ -182,7 +187,58 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 <body>
 
 <!-- Uçan drone animasyonu -->
-<div class="flying-drone" aria-hidden="true">🛸</div>
+<div class="flying-drone" aria-hidden="true">
+  <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Drone gövde -->
+    <ellipse cx="60" cy="30" rx="18" ry="10" fill="#f0f0f0" stroke="#ddd" stroke-width=".5"/>
+    <!-- Kamera/sensör -->
+    <circle cx="60" cy="36" r="3" fill="#333"/>
+    <circle cx="60" cy="36" r="1.5" fill="#00c8d7"/>
+    <!-- Logo text -->
+    <text x="60" y="29" text-anchor="middle" font-size="5.5" font-weight="700" font-family="Arial,sans-serif">
+      <tspan fill="#00c8d7">Drone</tspan><tspan fill="#333">Kurye</tspan><tspan fill="#00c8d7">AI</tspan>
+    </text>
+    <!-- Sol kol -->
+    <line x1="42" y1="28" x2="18" y2="18" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Sağ kol -->
+    <line x1="78" y1="28" x2="102" y2="18" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Sol arka kol -->
+    <line x1="45" y1="32" x2="22" y2="42" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Sağ arka kol -->
+    <line x1="75" y1="32" x2="98" y2="42" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Sol ön pervane -->
+    <ellipse cx="18" cy="18" rx="14" ry="3" fill="rgba(0,200,215,.25)" stroke="rgba(0,200,215,.4)" stroke-width=".5">
+      <animateTransform attributeName="transform" type="rotate" values="0 18 18;360 18 18" dur=".3s" repeatCount="indefinite"/>
+    </ellipse>
+    <circle cx="18" cy="18" r="2.5" fill="#222"/>
+    <!-- LED sol ön -->
+    <circle cx="18" cy="18" r="1" fill="#30d158"/>
+    <!-- Sağ ön pervane -->
+    <ellipse cx="102" cy="18" rx="14" ry="3" fill="rgba(0,200,215,.25)" stroke="rgba(0,200,215,.4)" stroke-width=".5">
+      <animateTransform attributeName="transform" type="rotate" values="0 102 18;360 102 18" dur=".3s" repeatCount="indefinite"/>
+    </ellipse>
+    <circle cx="102" cy="18" r="2.5" fill="#222"/>
+    <!-- LED sağ ön -->
+    <circle cx="102" cy="18" r="1" fill="#ff5f57"/>
+    <!-- Sol arka pervane -->
+    <ellipse cx="22" cy="42" rx="12" ry="2.5" fill="rgba(0,200,215,.2)" stroke="rgba(0,200,215,.3)" stroke-width=".5">
+      <animateTransform attributeName="transform" type="rotate" values="0 22 42;360 22 42" dur=".25s" repeatCount="indefinite"/>
+    </ellipse>
+    <circle cx="22" cy="42" r="2" fill="#222"/>
+    <circle cx="22" cy="42" r=".8" fill="#30d158"/>
+    <!-- Sağ arka pervane -->
+    <ellipse cx="98" cy="42" rx="12" ry="2.5" fill="rgba(0,200,215,.2)" stroke="rgba(0,200,215,.3)" stroke-width=".5">
+      <animateTransform attributeName="transform" type="rotate" values="0 98 42;360 98 42" dur=".25s" repeatCount="indefinite"/>
+    </ellipse>
+    <circle cx="98" cy="42" r="2" fill="#222"/>
+    <circle cx="98" cy="42" r=".8" fill="#ff5f57"/>
+    <!-- Ayaklar -->
+    <line x1="48" y1="38" x2="44" y2="48" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="72" y1="38" x2="76" y2="48" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="42" y1="48" x2="50" y2="48" stroke="#bbb" stroke-width="2" stroke-linecap="round"/>
+    <line x1="70" y1="48" x2="78" y2="48" stroke="#bbb" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</div>
 
 <!-- Parlayan veri akışı çizgileri -->
 <div class="data-line" style="top:20%;left:0;width:300px;animation-delay:0s" aria-hidden="true"></div>

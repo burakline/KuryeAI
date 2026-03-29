@@ -193,6 +193,25 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
   100%{background-position:-200% 0}
 }
 .data-line{position:absolute;height:1px;width:200px;background:linear-gradient(90deg,transparent,var(--teal),transparent);background-size:200% 100%;animation:dataFlow 3s linear infinite;opacity:.15;pointer-events:none}
+
+/* AI Çip animasyonları */
+@keyframes chipFloat1{0%{transform:translate(0,0) rotate(0deg);opacity:.06}25%{transform:translate(30px,-40px) rotate(8deg);opacity:.1}50%{transform:translate(-20px,-80px) rotate(-5deg);opacity:.07}75%{transform:translate(40px,-40px) rotate(12deg);opacity:.1}100%{transform:translate(0,0) rotate(0deg);opacity:.06}}
+@keyframes chipFloat2{0%{transform:translate(0,0) rotate(0deg);opacity:.05}33%{transform:translate(-40px,30px) rotate(-10deg);opacity:.09}66%{transform:translate(20px,-30px) rotate(6deg);opacity:.06}100%{transform:translate(0,0) rotate(0deg);opacity:.05}}
+@keyframes chipFloat3{0%{transform:translate(0,0) rotate(0deg);opacity:.04}50%{transform:translate(50px,20px) rotate(15deg);opacity:.08}100%{transform:translate(0,0) rotate(0deg);opacity:.04}}
+@keyframes chipPulse{0%,100%{opacity:.06}50%{opacity:.12}}
+.ai-chip{position:fixed;pointer-events:none;z-index:1;color:var(--teal)}
+.ai-chip svg{filter:drop-shadow(0 0 8px rgba(0,200,215,.3))}
+.ai-chip-1{top:12%;left:8%;animation:chipFloat1 20s ease-in-out infinite}
+.ai-chip-2{top:35%;right:5%;animation:chipFloat2 25s ease-in-out infinite}
+.ai-chip-3{top:60%;left:3%;animation:chipFloat3 22s ease-in-out infinite}
+.ai-chip-4{top:80%;right:10%;animation:chipFloat1 28s ease-in-out infinite reverse}
+.ai-chip-5{top:50%;left:50%;animation:chipFloat2 30s ease-in-out infinite}
+
+/* Devre çizgisi animasyonları */
+@keyframes circuitTrace{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
+.circuit-line{position:fixed;pointer-events:none;z-index:1;opacity:.06}
+.circuit-line svg{overflow:visible}
+.circuit-line path{stroke-dasharray:200;animation:circuitTrace 8s linear infinite}
 </style>
 </head>
 <body>
@@ -255,6 +274,69 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 <div class="data-line" style="top:20%;left:0;width:300px;animation-delay:0s" aria-hidden="true"></div>
 <div class="data-line" style="top:45%;right:0;width:250px;animation-delay:1.5s" aria-hidden="true"></div>
 <div class="data-line" style="top:70%;left:10%;width:200px;animation-delay:3s" aria-hidden="true"></div>
+
+<!-- AI Çip animasyonları -->
+<div class="ai-chip ai-chip-1" aria-hidden="true">
+  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width=".8">
+    <rect x="15" y="15" width="30" height="30" rx="4"/>
+    <rect x="22" y="22" width="16" height="16" rx="2" stroke-width=".5"/>
+    <circle cx="30" cy="30" r="4" stroke-width=".5"/>
+    <line x1="15" y1="25" x2="5" y2="25"/><line x1="15" y1="30" x2="5" y2="30"/><line x1="15" y1="35" x2="5" y2="35"/>
+    <line x1="45" y1="25" x2="55" y2="25"/><line x1="45" y1="30" x2="55" y2="30"/><line x1="45" y1="35" x2="55" y2="35"/>
+    <line x1="25" y1="15" x2="25" y2="5"/><line x1="30" y1="15" x2="30" y2="5"/><line x1="35" y1="15" x2="35" y2="5"/>
+    <line x1="25" y1="45" x2="25" y2="55"/><line x1="30" y1="45" x2="30" y2="55"/><line x1="35" y1="45" x2="35" y2="55"/>
+  </svg>
+</div>
+<div class="ai-chip ai-chip-2" aria-hidden="true">
+  <svg width="50" height="50" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width=".8">
+    <rect x="15" y="15" width="30" height="30" rx="4"/>
+    <path d="M22 30h16M30 22v16" stroke-width=".5"/>
+    <line x1="15" y1="23" x2="8" y2="23"/><line x1="15" y1="37" x2="8" y2="37"/>
+    <line x1="45" y1="23" x2="52" y2="23"/><line x1="45" y1="37" x2="52" y2="37"/>
+    <line x1="23" y1="15" x2="23" y2="8"/><line x1="37" y1="15" x2="37" y2="8"/>
+    <line x1="23" y1="45" x2="23" y2="52"/><line x1="37" y1="45" x2="37" y2="52"/>
+  </svg>
+</div>
+<div class="ai-chip ai-chip-3" aria-hidden="true">
+  <svg width="45" height="45" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width=".8">
+    <rect x="15" y="15" width="30" height="30" rx="6"/>
+    <circle cx="30" cy="30" r="8" stroke-width=".5"/>
+    <circle cx="30" cy="30" r="3" fill="currentColor" opacity=".3"/>
+    <line x1="15" y1="30" x2="3" y2="30"/><line x1="45" y1="30" x2="57" y2="30"/>
+    <line x1="30" y1="15" x2="30" y2="3"/><line x1="30" y1="45" x2="30" y2="57"/>
+  </svg>
+</div>
+<div class="ai-chip ai-chip-4" aria-hidden="true">
+  <svg width="40" height="40" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width=".8">
+    <rect x="18" y="18" width="24" height="24" rx="3"/>
+    <rect x="24" y="24" width="12" height="12" rx="2" stroke-width=".5"/>
+    <line x1="18" y1="26" x2="10" y2="26"/><line x1="18" y1="34" x2="10" y2="34"/>
+    <line x1="42" y1="26" x2="50" y2="26"/><line x1="42" y1="34" x2="50" y2="34"/>
+    <line x1="26" y1="18" x2="26" y2="10"/><line x1="34" y1="18" x2="34" y2="10"/>
+    <line x1="26" y1="42" x2="26" y2="50"/><line x1="34" y1="42" x2="34" y2="50"/>
+  </svg>
+</div>
+<div class="ai-chip ai-chip-5" aria-hidden="true">
+  <svg width="35" height="35" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width=".7">
+    <rect x="17" y="17" width="26" height="26" rx="5"/>
+    <path d="M25 25h10v10H25z" stroke-width=".5"/>
+    <line x1="17" y1="30" x2="7" y2="30"/>
+    <line x1="43" y1="30" x2="53" y2="30"/>
+    <line x1="30" y1="17" x2="30" y2="7"/>
+    <line x1="30" y1="43" x2="30" y2="53"/>
+  </svg>
+</div>
+
+<!-- Devre izleri -->
+<div class="circuit-line" style="top:25%;left:2%" aria-hidden="true">
+  <svg width="200" height="40"><path d="M0 20h60l10-10h40l10 10h80" fill="none" stroke="var(--teal)" stroke-width=".5"/></svg>
+</div>
+<div class="circuit-line" style="top:55%;right:2%" aria-hidden="true">
+  <svg width="180" height="40"><path d="M0 10h50l8 15h30l8-15h84" fill="none" stroke="var(--teal)" stroke-width=".5"/></svg>
+</div>
+<div class="circuit-line" style="top:75%;left:5%" aria-hidden="true">
+  <svg width="160" height="30"><path d="M0 15h40l6-10h50l6 10h58" fill="none" stroke="var(--teal)" stroke-width=".5"/></svg>
+</div>
 
 <!-- NAV -->
 <nav>

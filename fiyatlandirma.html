@@ -178,27 +178,28 @@
     <span class="nav-brand">Kurye<em>AI</em></span>
   </a>
   <div class="nav-right">
-    <a href="/" class="nav-back">← Ana Sayfa</a>
+    <a href="/" class="nav-back" data-tr="← Ana Sayfa" data-en="← Home">← Ana Sayfa</a>
+    <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em">EN</button>
     <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
       <span class="ttp-track"><span class="ttp-thumb"></span></span>
       <span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
       <span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
     </button>
-    <a href="/acilkuryeai" class="btn-pill">Acil Kurye</a>
+    <a href="/acilkuryeai" class="btn-pill" data-tr="Acil Kurye" data-en="Express Courier">Acil Kurye</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="eyebrow"><span class="eyebrow-dot"></span>Şeffaf Fiyatlandırma</div>
-  <h1>Sürpriz ücret <span>yok.</span><br/>Her şey açık.</h1>
-  <p class="hero-sub">Kullandığın kadar öde ya da sabit paket al. Tüm ürünlerin güncel fiyatları aşağıda.</p>
+  <div class="eyebrow"><span class="eyebrow-dot"></span><span data-tr="Şeffaf Fiyatlandırma" data-en="Transparent Pricing">Şeffaf Fiyatlandırma</span></div>
+  <h1 data-tr="Sürpriz ücret <span>yok.</span><br/>Her şey açık." data-en="No surprise fees.<br/><span>Everything clear.</span>">Sürpriz ücret <span>yok.</span><br/>Her şey açık.</h1>
+  <p class="hero-sub" data-tr="Kullandığın kadar öde ya da sabit paket al. Tüm ürünlerin güncel fiyatları aşağıda." data-en="Pay as you go or choose a fixed plan. Up-to-date pricing for all products below.">Kullandığın kadar öde ya da sabit paket al. Tüm ürünlerin güncel fiyatları aşağıda.</p>
   <div class="hero-chips">
-    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Gizli ücret yok</div>
-    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>İlk ay ücretsiz (RestoranAI)</div>
-    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>İstediğinde iptal</div>
-    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>7/24 destek dahil</div>
+    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Gizli ücret yok" data-en="No hidden fees">Gizli ücret yok</span></div>
+    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="İlk ay ücretsiz (RestoranAI)" data-en="First month free (RestoranAI)">İlk ay ücretsiz (RestoranAI)</span></div>
+    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="İstediğinde iptal" data-en="Cancel anytime">İstediğinde iptal</span></div>
+    <div class="chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="7/24 destek dahil" data-en="24/7 support included">7/24 destek dahil</span></div>
   </div>
 </section>
 
@@ -208,67 +209,67 @@
 <section class="section" id="restoranai">
   <div class="section-inner">
     <div class="sec-label">RestoranAI</div>
-    <h2 class="sec-h2">Restoran yönetimi, sıfırdan akıllı</h2>
-    <p class="sec-sub">Sipariş yönetimi, kurye takibi ve analitik — tek panelde. 7 gün ücretsiz dene.</p>
+    <h2 class="sec-h2" data-tr="Restoran yönetimi, sıfırdan akıllı" data-en="Restaurant management, smart from scratch">Restoran yönetimi, sıfırdan akıllı</h2>
+    <p class="sec-sub" data-tr="Sipariş yönetimi, kurye takibi ve analitik — tek panelde. 7 gün ücretsiz dene." data-en="Order management, courier tracking, and analytics — all in one panel. Try free for 7 days.">Sipariş yönetimi, kurye takibi ve analitik — tek panelde. 7 gün ücretsiz dene.</p>
     <div class="price-grid" style="margin-top:2.5rem">
 
       <!-- Trial -->
       <div class="price-card">
         <div class="pc-product">RestoranAI</div>
-        <div class="pc-name">Ücretsiz Deneme</div>
-        <div class="pc-desc">Tüm özellikler, 7 gün boyunca sınırsız.</div>
+        <div class="pc-name" data-tr="Ücretsiz Deneme" data-en="Free Trial">Ücretsiz Deneme</div>
+        <div class="pc-desc" data-tr="Tüm özellikler, 7 gün boyunca sınırsız." data-en="All features, unlimited for 7 days.">Tüm özellikler, 7 gün boyunca sınırsız.</div>
         <div class="pc-price">
-          <div class="pc-amount free">Ücretsiz</div>
-          <div class="pc-period">7 gün • Kart gerekmez</div>
+          <div class="pc-amount free" data-tr="Ücretsiz" data-en="Free">Ücretsiz</div>
+          <div class="pc-period" data-tr="7 gün • Kart gerekmez" data-en="7 days • No card required">7 gün • Kart gerekmez</div>
         </div>
         <ul class="pc-features">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sipariş paneli tam erişim</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anlık kurye takibi</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>QR Menü dahil</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>7/24 destek</li>
-          <li class="dim"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>7 günden sonra askıya alınır</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Sipariş paneli tam erişim" data-en="Full access to order panel">Sipariş paneli tam erişim</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Anlık kurye takibi" data-en="Real-time courier tracking">Anlık kurye takibi</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="QR Menü dahil" data-en="QR Menu included">QR Menü dahil</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="7/24 destek" data-en="24/7 support">7/24 destek</span></li>
+          <li class="dim"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span data-tr="7 günden sonra askıya alınır" data-en="Suspended after 7 days">7 günden sonra askıya alınır</span></li>
         </ul>
-        <a href="/restoranai" class="pc-btn pc-btn-ghost">Ücretsiz Başla</a>
+        <a href="/restoranai" class="pc-btn pc-btn-ghost" data-tr="Ücretsiz Başla" data-en="Start Free">Ücretsiz Başla</a>
       </div>
 
       <!-- Basic -->
       <div class="price-card">
         <div class="pc-product">RestoranAI</div>
         <div class="pc-name">Basic</div>
-        <div class="pc-desc">Tek şube restoran ve küçük işletmeler için ideal.</div>
+        <div class="pc-desc" data-tr="Tek şube restoran ve küçük işletmeler için ideal." data-en="Ideal for single-location restaurants and small businesses.">Tek şube restoran ve küçük işletmeler için ideal.</div>
         <div class="pc-price">
           <div class="pc-amount">1.499<span style="font-size:1.1rem;font-weight:600">₺</span></div>
-          <div class="pc-period">aylık • KDV dahil</div>
+          <div class="pc-period" data-tr="aylık • KDV dahil" data-en="monthly • VAT included">aylık • KDV dahil</div>
         </div>
         <ul class="pc-features">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sınırsız sipariş</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>5'e kadar kurye</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>QR Menü dahil</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Temel analitik</li>
-          <li class="dim"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Çoklu şube yok</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Sınırsız sipariş" data-en="Unlimited orders">Sınırsız sipariş</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="5'e kadar kurye" data-en="Up to 5 couriers">5'e kadar kurye</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="QR Menü dahil" data-en="QR Menu included">QR Menü dahil</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Temel analitik" data-en="Basic analytics">Temel analitik</span></li>
+          <li class="dim"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span data-tr="Çoklu şube yok" data-en="No multi-branch">Çoklu şube yok</span></li>
         </ul>
-        <a href="/restoranai" class="pc-btn pc-btn-outline">Başla</a>
+        <a href="/restoranai" class="pc-btn pc-btn-outline" data-tr="Başla" data-en="Get Started">Başla</a>
       </div>
 
       <!-- Pro -->
       <div class="price-card featured">
-        <div class="featured-badge">En Popüler</div>
+        <div class="featured-badge" data-tr="En Popüler" data-en="Most Popular">En Popüler</div>
         <div class="pc-product">RestoranAI</div>
         <div class="pc-name">Pro</div>
-        <div class="pc-desc">Büyüyen restoran zincirleri ve çoklu şube yönetimi.</div>
+        <div class="pc-desc" data-tr="Büyüyen restoran zincirleri ve çoklu şube yönetimi." data-en="For growing restaurant chains and multi-branch management.">Büyüyen restoran zincirleri ve çoklu şube yönetimi.</div>
         <div class="pc-price">
           <div class="pc-amount teal">833<span style="font-size:1.1rem;font-weight:600">₺</span></div>
-          <div class="pc-period">aylık • Yıllık 9.999₺ ödeme • KDV dahil</div>
-          <div class="pc-plus">Aylık ödemede 1.999₺/ay</div>
+          <div class="pc-period" data-tr="aylık • Yıllık 9.999₺ ödeme • KDV dahil" data-en="monthly • Annual payment 9,999₺ • VAT included">aylık • Yıllık 9.999₺ ödeme • KDV dahil</div>
+          <div class="pc-plus" data-tr="Aylık ödemede 1.999₺/ay" data-en="1,999₺/mo on monthly billing">Aylık ödemede 1.999₺/ay</div>
         </div>
         <ul class="pc-features">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sınırsız sipariş & kurye</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Çoklu şube yönetimi</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Gelişmiş analitik & raporlar</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>QRMenuAI dahil</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Öncelikli destek</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Sınırsız sipariş & kurye" data-en="Unlimited orders & couriers">Sınırsız sipariş & kurye</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Çoklu şube yönetimi" data-en="Multi-branch management">Çoklu şube yönetimi</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Gelişmiş analitik & raporlar" data-en="Advanced analytics & reports">Gelişmiş analitik & raporlar</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="QRMenuAI dahil" data-en="QRMenuAI included">QRMenuAI dahil</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Öncelikli destek" data-en="Priority support">Öncelikli destek</span></li>
         </ul>
-        <a href="/restoranai" class="pc-btn pc-btn-teal">Pro'ya Geç</a>
+        <a href="/restoranai" class="pc-btn pc-btn-teal" data-tr="Pro'ya Geç" data-en="Upgrade to Pro">Pro'ya Geç</a>
       </div>
 
     </div>
@@ -281,45 +282,45 @@
 <section class="section" id="qrmenuai">
   <div class="section-inner">
     <div class="sec-label">QRMenuAI</div>
-    <h2 class="sec-h2">Dijital menü, anında güncelle</h2>
-    <p class="sec-sub">QR kod ile müşteriler menüyü telefonunda görür. Fiyat ve ürün değişikliği saniyeler içinde.</p>
+    <h2 class="sec-h2" data-tr="Dijital menü, anında güncelle" data-en="Digital menu, update instantly">Dijital menü, anında güncelle</h2>
+    <p class="sec-sub" data-tr="QR kod ile müşteriler menüyü telefonunda görür. Fiyat ve ürün değişikliği saniyeler içinde." data-en="Customers view the menu on their phone via QR code. Price and product changes in seconds.">QR kod ile müşteriler menüyü telefonunda görür. Fiyat ve ürün değişikliği saniyeler içinde.</p>
     <div class="price-grid" style="margin-top:2.5rem;grid-template-columns:repeat(2,1fr);max-width:700px">
 
       <!-- Standalone -->
       <div class="price-card featured">
-        <div class="featured-badge">Tek Başına</div>
+        <div class="featured-badge" data-tr="Tek Başına" data-en="Standalone">Tek Başına</div>
         <div class="pc-product">QRMenuAI</div>
-        <div class="pc-name">Yıllık Paket</div>
-        <div class="pc-desc">RestoranAI olmadan, sadece dijital menü isteyenler için.</div>
+        <div class="pc-name" data-tr="Yıllık Paket" data-en="Annual Plan">Yıllık Paket</div>
+        <div class="pc-desc" data-tr="RestoranAI olmadan, sadece dijital menü isteyenler için." data-en="For those who only want a digital menu, without RestoranAI.">RestoranAI olmadan, sadece dijital menü isteyenler için.</div>
         <div class="pc-price">
           <div class="pc-amount teal">4.995<span style="font-size:1.1rem;font-weight:600">₺</span></div>
-          <div class="pc-period">yıllık • ~416₺/ay • KDV dahil</div>
+          <div class="pc-period" data-tr="yıllık • ~416₺/ay • KDV dahil" data-en="yearly • ~416₺/mo • VAT included">yıllık • ~416₺/ay • KDV dahil</div>
         </div>
         <ul class="pc-features">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sınırsız ürün & kategori</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Anlık güncelleme</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Özel QR kod tasarımı</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Mobil optimize görünüm</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Sınırsız ürün & kategori" data-en="Unlimited products & categories">Sınırsız ürün & kategori</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Anlık güncelleme" data-en="Instant updates">Anlık güncelleme</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Özel QR kod tasarımı" data-en="Custom QR code design">Özel QR kod tasarımı</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Mobil optimize görünüm" data-en="Mobile-optimized view">Mobil optimize görünüm</span></li>
         </ul>
-        <a href="/qrmenuai" class="pc-btn pc-btn-teal">Başla</a>
+        <a href="/qrmenuai" class="pc-btn pc-btn-teal" data-tr="Başla" data-en="Get Started">Başla</a>
       </div>
 
       <!-- With RestoranAI -->
       <div class="price-card">
         <div class="pc-product">QRMenuAI</div>
-        <div class="pc-name">RestoranAI ile</div>
-        <div class="pc-desc">RestoranAI Pro paketinde QRMenuAI tamamen dahil.</div>
+        <div class="pc-name" data-tr="RestoranAI ile" data-en="With RestoranAI">RestoranAI ile</div>
+        <div class="pc-desc" data-tr="RestoranAI Pro paketinde QRMenuAI tamamen dahil." data-en="QRMenuAI is fully included in the RestoranAI Pro plan.">RestoranAI Pro paketinde QRMenuAI tamamen dahil.</div>
         <div class="pc-price">
-          <div class="pc-amount free">Dahil</div>
-          <div class="pc-period">RestoranAI Pro ile ücretsiz</div>
+          <div class="pc-amount free" data-tr="Dahil" data-en="Included">Dahil</div>
+          <div class="pc-period" data-tr="RestoranAI Pro ile ücretsiz" data-en="Free with RestoranAI Pro">RestoranAI Pro ile ücretsiz</div>
         </div>
         <ul class="pc-features">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Tüm QRMenuAI özellikleri</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sipariş sistemi entegrasyonu</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Tek panel yönetim</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Ek ücret yok</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Tüm QRMenuAI özellikleri" data-en="All QRMenuAI features">Tüm QRMenuAI özellikleri</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Sipariş sistemi entegrasyonu" data-en="Order system integration">Sipariş sistemi entegrasyonu</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Tek panel yönetim" data-en="Single panel management">Tek panel yönetim</span></li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span data-tr="Ek ücret yok" data-en="No extra charge">Ek ücret yok</span></li>
         </ul>
-        <a href="/restoranai" class="pc-btn pc-btn-outline">RestoranAI Pro'ya Bak</a>
+        <a href="/restoranai" class="pc-btn pc-btn-outline" data-tr="RestoranAI Pro'ya Bak" data-en="View RestoranAI Pro">RestoranAI Pro'ya Bak</a>
       </div>
 
     </div>
@@ -331,9 +332,9 @@
 <!-- USAGE-BASED SECTION -->
 <section class="section" id="kurye">
   <div class="section-inner">
-    <div class="sec-label">Kurye Hizmetleri</div>
-    <h2 class="sec-h2">Kullandığın kadar öde</h2>
-    <p class="sec-sub">Abonelik yok. Sabit ücret + km başı ücretlendirme. Yalnızca aktif kullandığın kadar ödersin.</p>
+    <div class="sec-label" data-tr="Kurye Hizmetleri" data-en="Courier Services">Kurye Hizmetleri</div>
+    <h2 class="sec-h2" data-tr="Kullandığın kadar öde" data-en="Pay as you go">Kullandığın kadar öde</h2>
+    <p class="sec-sub" data-tr="Abonelik yok. Sabit ücret + km başı ücretlendirme. Yalnızca aktif kullandığın kadar ödersin." data-en="No subscription. Fixed rate + per-km pricing. You only pay for what you actually use.">Abonelik yok. Sabit ücret + km başı ücretlendirme. Yalnızca aktif kullandığın kadar ödersin.</p>
     <div class="usage-grid">
 
       <!-- AcilKuryeAI -->
@@ -344,26 +345,26 @@
           </div>
           <div>
             <div class="uc-title">AcilKuryeAI</div>
-            <div class="uc-sub">Dakikalar içinde kapıda</div>
+            <div class="uc-sub" data-tr="Dakikalar içinde kapıda" data-en="At your door in minutes">Dakikalar içinde kapıda</div>
           </div>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Saatlik ücret</span>
-          <span class="rate-val teal">350₺ / saat</span>
+          <span class="rate-label" data-tr="Saatlik ücret" data-en="Hourly rate">Saatlik ücret</span>
+          <span class="rate-val teal" data-tr="350₺ / saat" data-en="350₺ / hour">350₺ / saat</span>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Kilometre ücreti</span>
+          <span class="rate-label" data-tr="Kilometre ücreti" data-en="Per-km charge">Kilometre ücreti</span>
           <span class="rate-val teal">12₺ / km</span>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Minimum süre</span>
-          <span class="rate-val">1 saat</span>
+          <span class="rate-label" data-tr="Minimum süre" data-en="Minimum duration">Minimum süre</span>
+          <span class="rate-val" data-tr="1 saat" data-en="1 hour">1 saat</span>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Platform komisyonu</span>
-          <span class="rate-val">%0 — kurye tam alır</span>
+          <span class="rate-label" data-tr="Platform komisyonu" data-en="Platform commission">Platform komisyonu</span>
+          <span class="rate-val" data-tr="%0 — kurye tam alır" data-en="0% — courier keeps 100%">%0 — kurye tam alır</span>
         </div>
-        <div class="uc-note">İlk 3 km dahil, sonrası km başı ücretlendirilir. Gece 22:00–06:00 arası %20 ek ücret uygulanır.</div>
+        <div class="uc-note" data-tr="İlk 3 km dahil, sonrası km başı ücretlendirilir. Gece 22:00–06:00 arası %20 ek ücret uygulanır." data-en="First 3 km included; per-km charges apply after that. A 20% surcharge applies between 22:00–06:00.">İlk 3 km dahil, sonrası km başı ücretlendirilir. Gece 22:00–06:00 arası %20 ek ücret uygulanır.</div>
       </div>
 
       <!-- İzinciKuryeAI -->
@@ -374,26 +375,26 @@
           </div>
           <div>
             <div class="uc-title">İzinciKuryeAI</div>
-            <div class="uc-sub">Uzun süreli kurye kiralama</div>
+            <div class="uc-sub" data-tr="Uzun süreli kurye kiralama" data-en="Long-term courier rental">Uzun süreli kurye kiralama</div>
           </div>
         </div>
         <div class="rate-row">
-          <span class="rate-label">İşveren öder (saatlik)</span>
-          <span class="rate-val teal">250₺ / saat</span>
+          <span class="rate-label" data-tr="İşveren öder (saatlik)" data-en="Employer pays (hourly)">İşveren öder (saatlik)</span>
+          <span class="rate-val teal" data-tr="250₺ / saat" data-en="250₺ / hour">250₺ / saat</span>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Kilometre ücreti</span>
+          <span class="rate-label" data-tr="Kilometre ücreti" data-en="Per-km charge">Kilometre ücreti</span>
           <span class="rate-val teal">8₺ / km</span>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Kurye kazancı</span>
-          <span class="rate-val orange">%70 oranında</span>
+          <span class="rate-label" data-tr="Kurye kazancı" data-en="Courier earnings">Kurye kazancı</span>
+          <span class="rate-val orange" data-tr="%70 oranında" data-en="70% share">%70 oranında</span>
         </div>
         <div class="rate-row">
-          <span class="rate-label">Minimum süre</span>
-          <span class="rate-val">4 saat</span>
+          <span class="rate-label" data-tr="Minimum süre" data-en="Minimum duration">Minimum süre</span>
+          <span class="rate-val" data-tr="4 saat" data-en="4 hours">4 saat</span>
         </div>
-        <div class="uc-note">Kurye gelirinin %70'ini doğrudan alır. Platform %30 komisyon alır. Haftalık ödeme garantisi mevcuttur.</div>
+        <div class="uc-note" data-tr="Kurye gelirinin %70'ini doğrudan alır. Platform %30 komisyon alır. Haftalık ödeme garantisi mevcuttur." data-en="Couriers receive 70% of earnings directly. Platform takes a 30% commission. Weekly payment guaranteed.">Kurye gelirinin %70'ini doğrudan alır. Platform %30 komisyon alır. Haftalık ödeme garantisi mevcuttur.</div>
       </div>
 
     </div>
@@ -405,14 +406,14 @@
 <!-- COMPARE TABLE -->
 <section class="section" id="karsilastir">
   <div class="section-inner">
-    <div class="sec-label">Karşılaştırma</div>
-    <h2 class="sec-h2">Tüm ürünler yan yana</h2>
-    <p class="sec-sub">Hangi ürün sana uygun? Özellikleri karşılaştır.</p>
+    <div class="sec-label" data-tr="Karşılaştırma" data-en="Comparison">Karşılaştırma</div>
+    <h2 class="sec-h2" data-tr="Tüm ürünler yan yana" data-en="All products side by side">Tüm ürünler yan yana</h2>
+    <p class="sec-sub" data-tr="Hangi ürün sana uygun? Özellikleri karşılaştır." data-en="Which product is right for you? Compare features.">Hangi ürün sana uygun? Özellikleri karşılaştır.</p>
     <div class="compare-wrap">
       <table class="compare-table">
         <thead>
           <tr>
-            <th>Özellik</th>
+            <th data-tr="Özellik" data-en="Feature">Özellik</th>
             <th>AcilKurye</th>
             <th>İzinciKurye</th>
             <th class="highlight">RestoranAI</th>
@@ -421,56 +422,56 @@
         </thead>
         <tbody>
           <tr>
-            <td>Fiyatlandırma modeli</td>
-            <td><span class="tag tag-orange">Kullandıkça</span></td>
-            <td><span class="tag tag-orange">Kullandıkça</span></td>
-            <td class="highlight"><span class="tag tag-teal">Abonelik</span></td>
-            <td><span class="tag tag-teal">Yıllık</span></td>
+            <td data-tr="Fiyatlandırma modeli" data-en="Pricing model">Fiyatlandırma modeli</td>
+            <td><span class="tag tag-orange" data-tr="Kullandıkça" data-en="Pay-per-use">Kullandıkça</span></td>
+            <td><span class="tag tag-orange" data-tr="Kullandıkça" data-en="Pay-per-use">Kullandıkça</span></td>
+            <td class="highlight"><span class="tag tag-teal" data-tr="Abonelik" data-en="Subscription">Abonelik</span></td>
+            <td><span class="tag tag-teal" data-tr="Yıllık" data-en="Annual">Yıllık</span></td>
           </tr>
           <tr>
-            <td>Başlangıç ücreti</td>
-            <td>350₺/saat</td>
-            <td>250₺/saat</td>
-            <td class="highlight">Ücretsiz 7 gün</td>
-            <td>4.995₺/yıl</td>
+            <td data-tr="Başlangıç ücreti" data-en="Starting price">Başlangıç ücreti</td>
+            <td data-tr="350₺/saat" data-en="350₺/hour">350₺/saat</td>
+            <td data-tr="250₺/saat" data-en="250₺/hour">250₺/saat</td>
+            <td class="highlight" data-tr="Ücretsiz 7 gün" data-en="Free for 7 days">Ücretsiz 7 gün</td>
+            <td data-tr="4.995₺/yıl" data-en="4,995₺/year">4.995₺/yıl</td>
           </tr>
           <tr>
-            <td>Kurye takibi (gerçek zamanlı)</td>
+            <td data-tr="Kurye takibi (gerçek zamanlı)" data-en="Courier tracking (real-time)">Kurye takibi (gerçek zamanlı)</td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td class="highlight"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="cross">—</span></td>
           </tr>
           <tr>
-            <td>Sipariş yönetimi</td>
+            <td data-tr="Sipariş yönetimi" data-en="Order management">Sipariş yönetimi</td>
             <td><span class="cross">—</span></td>
             <td><span class="cross">—</span></td>
             <td class="highlight"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="cross">—</span></td>
           </tr>
           <tr>
-            <td>Dijital menü (QR)</td>
+            <td data-tr="Dijital menü (QR)" data-en="Digital menu (QR)">Dijital menü (QR)</td>
             <td><span class="cross">—</span></td>
             <td><span class="cross">—</span></td>
-            <td class="highlight"><span class="tag tag-teal">Pro'da dahil</span></td>
+            <td class="highlight"><span class="tag tag-teal" data-tr="Pro'da dahil" data-en="Included in Pro">Pro'da dahil</span></td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
           </tr>
           <tr>
-            <td>Analitik & raporlar</td>
+            <td data-tr="Analitik & raporlar" data-en="Analytics & reports">Analitik & raporlar</td>
             <td><span class="cross">—</span></td>
-            <td>Kazanç raporu</td>
+            <td data-tr="Kazanç raporu" data-en="Earnings report">Kazanç raporu</td>
             <td class="highlight"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="cross">—</span></td>
           </tr>
           <tr>
-            <td>Kurye uygulaması</td>
+            <td data-tr="Kurye uygulaması" data-en="Courier app">Kurye uygulaması</td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td class="highlight"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="cross">—</span></td>
           </tr>
           <tr>
-            <td>7/24 destek</td>
+            <td data-tr="7/24 destek" data-en="24/7 support">7/24 destek</td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
             <td class="highlight"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
@@ -487,56 +488,56 @@
 <!-- FAQ -->
 <section class="section" id="sss">
   <div class="section-inner" style="max-width:720px">
-    <div class="sec-label">SSS</div>
-    <h2 class="sec-h2">Sık sorulan sorular</h2>
+    <div class="sec-label" data-tr="SSS" data-en="FAQ">SSS</div>
+    <h2 class="sec-h2" data-tr="Sık sorulan sorular" data-en="Frequently asked questions">Sık sorulan sorular</h2>
     <div class="faq-list">
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          RestoranAI deneme süresi bitince otomatik ücret kesilir mi?
+          <span data-tr="RestoranAI deneme süresi bitince otomatik ücret kesilir mi?" data-en="Will I be charged automatically when the RestoranAI trial ends?">RestoranAI deneme süresi bitince otomatik ücret kesilir mi?</span>
           <span class="faq-icon">+</span>
         </button>
-        <div class="faq-a">Hayır. 7 günlük deneme süresinde kredi kartı bilgisi gerekmez. Süre bitince hesabınız otomatik olarak askıya alınır; siz ödeme yöntemi eklemeden hiçbir ücret kesilmez.</div>
+        <div class="faq-a" data-tr="Hayır. 7 günlük deneme süresinde kredi kartı bilgisi gerekmez. Süre bitince hesabınız otomatik olarak askıya alınır; siz ödeme yöntemi eklemeden hiçbir ücret kesilmez." data-en="No. No credit card information is required during the 7-day trial. When the trial ends, your account is automatically suspended; no charges are made unless you add a payment method.">Hayır. 7 günlük deneme süresinde kredi kartı bilgisi gerekmez. Süre bitince hesabınız otomatik olarak askıya alınır; siz ödeme yöntemi eklemeden hiçbir ücret kesilmez.</div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          AcilKuryeAI'da minimum sipariş ücreti nedir?
+          <span data-tr="AcilKuryeAI'da minimum sipariş ücreti nedir?" data-en="What is the minimum order fee for AcilKuryeAI?">AcilKuryeAI'da minimum sipariş ücreti nedir?</span>
           <span class="faq-icon">+</span>
         </button>
-        <div class="faq-a">Minimum 1 saatlik ücretlendirme uygulanır (350₺). Teslimat 1 saatten kısa sürse dahi 1 saatlik ücret alınır. Kilometre ücreti ilk 3 km sonrasında başlar.</div>
+        <div class="faq-a" data-tr="Minimum 1 saatlik ücretlendirme uygulanır (350₺). Teslimat 1 saatten kısa sürse dahi 1 saatlik ücret alınır. Kilometre ücreti ilk 3 km sonrasında başlar." data-en="A minimum 1-hour charge applies (350₺). Even if the delivery takes less than 1 hour, the 1-hour rate is charged. Per-km charges start after the first 3 km.">Minimum 1 saatlik ücretlendirme uygulanır (350₺). Teslimat 1 saatten kısa sürse dahi 1 saatlik ücret alınır. Kilometre ücreti ilk 3 km sonrasında başlar.</div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          İzinciKuryeAI'da kurye kazancı nasıl ödeniyor?
+          <span data-tr="İzinciKuryeAI'da kurye kazancı nasıl ödeniyor?" data-en="How are courier earnings paid in İzinciKuryeAI?">İzinciKuryeAI'da kurye kazancı nasıl ödeniyor?</span>
           <span class="faq-icon">+</span>
         </button>
-        <div class="faq-a">Kuryeler toplam kazancın %70'ini haftalık olarak banka hesaplarına alır. Minimum ödeme eşiği yoktur. Ödeme her Pazartesi otomatik gerçekleşir.</div>
+        <div class="faq-a" data-tr="Kuryeler toplam kazancın %70'ini haftalık olarak banka hesaplarına alır. Minimum ödeme eşiği yoktur. Ödeme her Pazartesi otomatik gerçekleşir." data-en="Couriers receive 70% of total earnings weekly to their bank accounts. There is no minimum payout threshold. Payments are processed automatically every Monday.">Kuryeler toplam kazancın %70'ini haftalık olarak banka hesaplarına alır. Minimum ödeme eşiği yoktur. Ödeme her Pazartesi otomatik gerçekleşir.</div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          QRMenuAI'ı RestoranAI olmadan kullanabilir miyim?
+          <span data-tr="QRMenuAI'ı RestoranAI olmadan kullanabilir miyim?" data-en="Can I use QRMenuAI without RestoranAI?">QRMenuAI'ı RestoranAI olmadan kullanabilir miyim?</span>
           <span class="faq-icon">+</span>
         </button>
-        <div class="faq-a">Evet. QRMenuAI 4.995₺/yıl fiyatıyla bağımsız olarak satın alınabilir. Sipariş yönetimi veya kurye takibi özelliği olmadan yalnızca dijital menü olarak kullanılır.</div>
+        <div class="faq-a" data-tr="Evet. QRMenuAI 4.995₺/yıl fiyatıyla bağımsız olarak satın alınabilir. Sipariş yönetimi veya kurye takibi özelliği olmadan yalnızca dijital menü olarak kullanılır." data-en="Yes. QRMenuAI can be purchased independently for 4,995₺/year. It functions solely as a digital menu, without order management or courier tracking features.">Evet. QRMenuAI 4.995₺/yıl fiyatıyla bağımsız olarak satın alınabilir. Sipariş yönetimi veya kurye takibi özelliği olmadan yalnızca dijital menü olarak kullanılır.</div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          Aboneliği istediğim zaman iptal edebilir miyim?
+          <span data-tr="Aboneliği istediğim zaman iptal edebilir miyim?" data-en="Can I cancel my subscription at any time?">Aboneliği istediğim zaman iptal edebilir miyim?</span>
           <span class="faq-icon">+</span>
         </button>
-        <div class="faq-a">Evet. Aylık planlarda istediğin zaman, dönem sonu geçerli olacak şekilde iptal yapabilirsin. Yıllık planlarda kalan ay ücreti iade edilmez; ancak dönem sonunda yenileme gerçekleşmez.</div>
+        <div class="faq-a" data-tr="Evet. Aylık planlarda istediğin zaman, dönem sonu geçerli olacak şekilde iptal yapabilirsin. Yıllık planlarda kalan ay ücreti iade edilmez; ancak dönem sonunda yenileme gerçekleşmez." data-en="Yes. For monthly plans, you can cancel at any time effective at the end of the current period. For annual plans, remaining months are not refunded, but the plan will not renew.">Evet. Aylık planlarda istediğin zaman, dönem sonu geçerli olacak şekilde iptal yapabilirsin. Yıllık planlarda kalan ay ücreti iade edilmez; ancak dönem sonunda yenileme gerçekleşmez.</div>
       </div>
 
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          Faturalama ve KDV hakkında bilgi alabilir miyim?
+          <span data-tr="Faturalama ve KDV hakkında bilgi alabilir miyim?" data-en="Can I get information about billing and VAT?">Faturalama ve KDV hakkında bilgi alabilir miyim?</span>
           <span class="faq-icon">+</span>
         </button>
-        <div class="faq-a">Tüm fiyatlar KDV dahildir. Her ödeme sonrası e-fatura otomatik olarak kayıtlı e-posta adresinize gönderilir. Kurumsal fatura talebi için <a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> ile iletişime geçebilirsiniz.</div>
+        <div class="faq-a" data-tr='Tüm fiyatlar KDV dahildir. Her ödeme sonrası e-fatura otomatik olarak kayıtlı e-posta adresinize gönderilir. Kurumsal fatura talebi için <a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> ile iletişime geçebilirsiniz.' data-en='All prices include VAT. After each payment, an e-invoice is automatically sent to your registered email address. For corporate invoice requests, please contact <a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a>.'>Tüm fiyatlar KDV dahildir. Her ödeme sonrası e-fatura otomatik olarak kayıtlı e-posta adresinize gönderilir. Kurumsal fatura talebi için <a href="mailto:info@kuryeai.com" style="color:var(--teal)">info@kuryeai.com</a> ile iletişime geçebilirsiniz.</div>
       </div>
 
     </div>
@@ -545,29 +546,30 @@
 
 <!-- CTA BAND -->
 <div class="cta-band">
-  <h2>Hemen başla, <span style="color:var(--teal)">riski yok</span></h2>
-  <p>RestoranAI'ı 7 gün ücretsiz dene ya da ilk acil kuryeni hemen talep et.</p>
+  <h2 data-tr='Hemen başla, <span style="color:var(--teal)">riski yok</span>' data-en='Get started now, <span style="color:var(--teal)">risk-free</span>'>Hemen başla, <span style="color:var(--teal)">riski yok</span></h2>
+  <p data-tr="RestoranAI'ı 7 gün ücretsiz dene ya da ilk acil kuryeni hemen talep et." data-en="Try RestoranAI free for 7 days or request your first express courier now.">RestoranAI'ı 7 gün ücretsiz dene ya da ilk acil kuryeni hemen talep et.</p>
   <div class="cta-btns">
     <a href="/restoranai" class="btn-lg btn-teal">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      RestoranAI'ı Dene
+      <span data-tr="RestoranAI'ı Dene" data-en="Try RestoranAI">RestoranAI'ı Dene</span>
     </a>
-    <a href="/acilkuryeai" class="btn-lg btn-dark">Acil Kurye Çağır</a>
-    <a href="https://wa.me/905072171995" class="btn-lg btn-dark">WhatsApp ile Sor</a>
+    <a href="/acilkuryeai" class="btn-lg btn-dark" data-tr="Acil Kurye Çağır" data-en="Request Express Courier">Acil Kurye Çağır</a>
+    <a href="https://wa.me/905072171995" class="btn-lg btn-dark" data-tr="WhatsApp ile Sor" data-en="Ask via WhatsApp">WhatsApp ile Sor</a>
   </div>
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <span>© 2026 KuryeAI — Tüm hakları saklıdır.</span>
+  <span data-tr="© 2026 KuryeAI — Tüm hakları saklıdır." data-en="© 2026 KuryeAI — All rights reserved.">© 2026 KuryeAI — Tüm hakları saklıdır.</span>
   <span>
-    <a href="/">Ana Sayfa</a> ·
+    <a href="/" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a> ·
     <a href="/restoranai">RestoranAI</a> ·
-    <a href="/acilkuryeai">Acil Kurye</a> ·
+    <a href="/acilkuryeai" data-tr="Acil Kurye" data-en="Express Courier">Acil Kurye</a> ·
     <a href="mailto:info@kuryeai.com">info@kuryeai.com</a>
   </span>
 </footer>
 
+<script src="/lang.js"></script>
 <script src="/theme.js"></script>
 <script>
   // Scroll nav shadow

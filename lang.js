@@ -25,10 +25,18 @@
       if (text !== null) {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
           el.placeholder = text;
+        } else if (el.tagName === 'OPTION') {
+          el.textContent = text;
         } else {
           el.innerHTML = text;
         }
       }
+    });
+
+    // Handle placeholder translations (data-tr-ph / data-en-ph)
+    document.querySelectorAll('[data-tr-ph][data-en-ph]').forEach(el => {
+      const ph = el.getAttribute('data-' + lang + '-ph');
+      if (ph !== null) el.placeholder = ph;
     });
 
     // Update toggle buttons

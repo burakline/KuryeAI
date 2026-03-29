@@ -92,15 +92,18 @@
     <img src="/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
     <span class="nav-brand">Kurye<em>AI</em></span>
   </a>
-  <a href="/" class="nav-back">← Ana Sayfa</a>
-  <a href="/iletisim" class="btn-pill">İletişim</a>
+  <div style="display:flex;align-items:center;gap:.7rem">
+    <a href="/" class="nav-back" data-tr="← Ana Sayfa" data-en="← Home">← Ana Sayfa</a>
+    <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em">EN</button>
+  </div>
+  <a href="/iletisim" class="btn-pill" data-tr="İletişim" data-en="Contact">İletişim</a>
 </nav>
 
 <section class="hero">
   <div class="hero-glow"></div>
-  <p class="lbl">Hakkımızda</p>
-  <h1>Ankara'nın <span style="color:var(--teal)">akıllı</span><br/>lojistik şirketi.</h1>
-  <p class="hero-sub">AI Teknoloji ve Lojistik olarak, kurye sektörünü yapay zeka ile dönüştürüyoruz. RestoranAI, KuryeAI ve İzinciKuryeAI ile Ankara'dan Türkiye'ye büyüyoruz.</p>
+  <p class="lbl" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</p>
+  <h1 data-tr="Ankara'nın <span style='color:var(--teal)'>akıllı</span><br/>lojistik şirketi." data-en="Ankara's <span style='color:var(--teal)'>smart</span><br/>logistics company.">Ankara'nın <span style="color:var(--teal)">akıllı</span><br/>lojistik şirketi.</h1>
+  <p class="hero-sub" data-tr="AI Teknoloji ve Lojistik olarak, kurye sektörünü yapay zeka ile dönüştürüyoruz. RestoranAI, KuryeAI ve İzinciKuryeAI ile Ankara'dan Türkiye'ye büyüyoruz." data-en="As AI Teknoloji ve Lojistik, we are transforming the courier industry with artificial intelligence. With RestoranAI, KuryeAI and İzinciKuryeAI, we are growing from Ankara to all of Turkey.">AI Teknoloji ve Lojistik olarak, kurye sektörünü yapay zeka ile dönüştürüyoruz. RestoranAI, KuryeAI ve İzinciKuryeAI ile Ankara'dan Türkiye'ye büyüyoruz.</p>
 </section>
 
 <section class="section">
@@ -108,13 +111,13 @@
     <div class="mv-grid reveal">
       <div class="mv-card">
         <div class="mv-icon">🎯</div>
-        <h3 class="mv-title">Misyonumuz</h3>
-        <p class="mv-text">Kurye sektöründeki verimsizlikleri yapay zeka ile ortadan kaldırmak. Restoranları, kuryeleri ve işletmeleri tek akıllı platformda buluşturmak. Her teslimatı daha hızlı, daha şeffaf ve daha adil yapmak.</p>
+        <h3 class="mv-title" data-tr="Misyonumuz" data-en="Our Mission">Misyonumuz</h3>
+        <p class="mv-text" data-tr="Kurye sektöründeki verimsizlikleri yapay zeka ile ortadan kaldırmak. Restoranları, kuryeleri ve işletmeleri tek akıllı platformda buluşturmak. Her teslimatı daha hızlı, daha şeffaf ve daha adil yapmak." data-en="Eliminating inefficiencies in the courier industry with artificial intelligence. Connecting restaurants, couriers and businesses on a single smart platform. Making every delivery faster, more transparent and fairer.">Kurye sektöründeki verimsizlikleri yapay zeka ile ortadan kaldırmak. Restoranları, kuryeleri ve işletmeleri tek akıllı platformda buluşturmak. Her teslimatı daha hızlı, daha şeffaf ve daha adil yapmak.</p>
       </div>
       <div class="mv-card">
         <div class="mv-icon">🚀</div>
-        <h3 class="mv-title">Vizyonumuz</h3>
-        <p class="mv-text">Türkiye'nin lider kurye teknoloji şirketi olmak. İzinciKuryeAI ile kurye arz-talebini dijitalleştiren Türkiye'nin ilk platformu olarak sektörde devrim yaratmak ve tüm Türkiye'ye yayılmak.</p>
+        <h3 class="mv-title" data-tr="Vizyonumuz" data-en="Our Vision">Vizyonumuz</h3>
+        <p class="mv-text" data-tr="Türkiye'nin lider kurye teknoloji şirketi olmak. İzinciKuryeAI ile kurye arz-talebini dijitalleştiren Türkiye'nin ilk platformu olarak sektörde devrim yaratmak ve tüm Türkiye'ye yayılmak." data-en="To become Turkey's leading courier technology company. To revolutionize the industry as Turkey's first platform digitizing courier supply and demand with İzinciKuryeAI, and to expand across all of Turkey.">Türkiye'nin lider kurye teknoloji şirketi olmak. İzinciKuryeAI ile kurye arz-talebini dijitalleştiren Türkiye'nin ilk platformu olarak sektörde devrim yaratmak ve tüm Türkiye'ye yayılmak.</p>
       </div>
     </div>
   </div>
@@ -124,29 +127,29 @@
   <div class="inner">
     <div class="story-grid">
       <div class="reveal">
-        <p class="lbl">Hikayemiz</p>
-        <h2 class="h2">Sektörün <span class="teal">içinden</span> geldik.</h2>
-        <p>KuryeAI'ın hikayesi, Ankara sokaklarında başladı. Kurucumuz, bizzat moto kurye olarak çalışırken sektörün sorunlarını gözlemledi: Adil olmayan sipariş dağılımı, şeffaf olmayan ücretlendirme, izinli kurye sorunu ve restoranların birden fazla platformu yönetme zorluğu.</p>
-        <p>Bu sorunlara çözüm olarak doğan KuryeAI, bugün RestoranAI, KuryeAI ve İzinciKuryeAI ürünleriyle Ankara'nın lojistik ekosistemini dönüştürüyor.</p>
-        <p>Yapay zeka destekli analizler, gerçek zamanlı takip ve şeffaf ücretlendirme ile sektörde bir ilki hayata geçiriyoruz.</p>
+        <p class="lbl" data-tr="Hikayemiz" data-en="Our Story">Hikayemiz</p>
+        <h2 class="h2" data-tr="Sektörün <span class='teal'>içinden</span> geldik." data-en="We came from <span class='teal'>within</span> the industry.">Sektörün <span class="teal">içinden</span> geldik.</h2>
+        <p data-tr="KuryeAI'ın hikayesi, Ankara sokaklarında başladı. Kurucumuz, bizzat moto kurye olarak çalışırken sektörün sorunlarını gözlemledi: Adil olmayan sipariş dağılımı, şeffaf olmayan ücretlendirme, izinli kurye sorunu ve restoranların birden fazla platformu yönetme zorluğu." data-en="KuryeAI's story began on the streets of Ankara. Our founder observed the industry's problems firsthand while working as a motorcycle courier: unfair order distribution, non-transparent pricing, substitute courier issues and the difficulty of restaurants managing multiple platforms.">KuryeAI'ın hikayesi, Ankara sokaklarında başladı. Kurucumuz, bizzat moto kurye olarak çalışırken sektörün sorunlarını gözlemledi: Adil olmayan sipariş dağılımı, şeffaf olmayan ücretlendirme, izinli kurye sorunu ve restoranların birden fazla platformu yönetme zorluğu.</p>
+        <p data-tr="Bu sorunlara çözüm olarak doğan KuryeAI, bugün RestoranAI, KuryeAI ve İzinciKuryeAI ürünleriyle Ankara'nın lojistik ekosistemini dönüştürüyor." data-en="Born as a solution to these problems, KuryeAI is now transforming Ankara's logistics ecosystem with its RestoranAI, KuryeAI and İzinciKuryeAI products.">Bu sorunlara çözüm olarak doğan KuryeAI, bugün RestoranAI, KuryeAI ve İzinciKuryeAI ürünleriyle Ankara'nın lojistik ekosistemini dönüştürüyor.</p>
+        <p data-tr="Yapay zeka destekli analizler, gerçek zamanlı takip ve şeffaf ücretlendirme ile sektörde bir ilki hayata geçiriyoruz." data-en="We are pioneering in the industry with AI-powered analytics, real-time tracking and transparent pricing.">Yapay zeka destekli analizler, gerçek zamanlı takip ve şeffaf ücretlendirme ile sektörde bir ilki hayata geçiriyoruz.</p>
       </div>
       <div class="story-visual reveal">
         <div class="story-logo">
           <img src="/1000417933.png" alt="AI Teknoloji ve Lojistik" onerror="this.style.display='none'"/>
         </div>
-        <p style="font-size:.8rem;color:var(--gray-lt);font-weight:700;text-transform:uppercase;letter-spacing:.1em">AI Teknoloji ve Lojistik Ltd. Şti.</p>
-        <p style="font-size:.75rem;color:var(--gray);margin-top:.5rem;line-height:1.6">Adres bilgileri yakında güncellenecektir</p>
+        <p style="font-size:.8rem;color:var(--gray-lt);font-weight:700;text-transform:uppercase;letter-spacing:.1em" data-tr="AI Teknoloji ve Lojistik Ltd. Şti." data-en="AI Teknoloji ve Lojistik Ltd. Şti.">AI Teknoloji ve Lojistik Ltd. Şti.</p>
+        <p style="font-size:.75rem;color:var(--gray);margin-top:.5rem;line-height:1.6" data-tr="Adres bilgileri yakında güncellenecektir" data-en="Address details will be updated soon">Adres bilgileri yakında güncellenecektir</p>
         <div class="story-stat">
           <div class="story-stat-n">3</div>
-          <div class="story-stat-l">Ürün Platformu</div>
+          <div class="story-stat-l" data-tr="Ürün Platformu" data-en="Product Platforms">Ürün Platformu</div>
         </div>
         <div class="story-stat">
-          <div class="story-stat-n" style="color:var(--white)">7/24</div>
-          <div class="story-stat-l">Hizmet</div>
+          <div class="story-stat-n" style="color:var(--white)" data-tr="7/24" data-en="24/7">7/24</div>
+          <div class="story-stat-l" data-tr="Hizmet" data-en="Service">Hizmet</div>
         </div>
         <div class="story-stat">
           <div class="story-stat-n">Ankara</div>
-          <div class="story-stat-l">Merkez Şehir</div>
+          <div class="story-stat-l" data-tr="Merkez Şehir" data-en="Headquarters">Merkez Şehir</div>
         </div>
       </div>
     </div>
@@ -156,36 +159,37 @@
 <section class="section">
   <div class="inner">
     <div class="reveal" style="text-align:center;margin-bottom:1rem">
-      <p class="lbl">Değerlerimiz</p>
-      <h2 class="h2">Bizi <span style="color:var(--teal)">biz</span> yapan.</h2>
+      <p class="lbl" data-tr="Değerlerimiz" data-en="Our Values">Değerlerimiz</p>
+      <h2 class="h2" data-tr="Bizi <span style='color:var(--teal)'>biz</span> yapan." data-en="What makes us <span style='color:var(--teal)'>who</span> we are.">Bizi <span style="color:var(--teal)">biz</span> yapan.</h2>
     </div>
     <div class="values-grid reveal">
-      <div class="val-card"><div class="val-icon">🤝</div><h4 class="val-title">Adillik</h4><p class="val-desc">Kuryelerimize adil ücret, işletmelere şeffaf fiyatlandırma. Her zaman her iki tarafın çıkarını koruruz.</p></div>
-      <div class="val-card"><div class="val-icon">⚡</div><h4 class="val-title">Hız</h4><p class="val-desc">7/24 aktif sistem. Acil kurye taleplerinde 15-30 dakika içinde görevlendirme. Gecikme kabul etmeyiz.</p></div>
-      <div class="val-card"><div class="val-icon">🔍</div><h4 class="val-title">Şeffaflık</h4><p class="val-desc">Gizli ücret yok. Komisyon oranlarımız açık. Her hesaplama müşteriye gösterilir.</p></div>
-      <div class="val-card"><div class="val-icon">🤖</div><h4 class="val-title">İnovasyon</h4><p class="val-desc">Yapay zeka ile desteklenen sistemlerimizle sektörde ilkleri hayata geçiriyoruz.</p></div>
-      <div class="val-card"><div class="val-icon">🛡️</div><h4 class="val-title">Güvenilirlik</h4><p class="val-desc">SGK'lı kurye modeli, ödeme garantisi ve 7/24 destek ile güvenilir bir partner olarak yanınızdayız.</p></div>
-      <div class="val-card"><div class="val-icon">🌱</div><h4 class="val-title">Büyüme</h4><p class="val-desc">Ankara'dan başlayarak tüm Türkiye'ye yayılma hedefiyle kurye sektörünü dijitalleştiriyoruz.</p></div>
+      <div class="val-card"><div class="val-icon">🤝</div><h4 class="val-title" data-tr="Adillik" data-en="Fairness">Adillik</h4><p class="val-desc" data-tr="Kuryelerimize adil ücret, işletmelere şeffaf fiyatlandırma. Her zaman her iki tarafın çıkarını koruruz." data-en="Fair pay for our couriers, transparent pricing for businesses. We always protect the interests of both sides.">Kuryelerimize adil ücret, işletmelere şeffaf fiyatlandırma. Her zaman her iki tarafın çıkarını koruruz.</p></div>
+      <div class="val-card"><div class="val-icon">⚡</div><h4 class="val-title" data-tr="Hız" data-en="Speed">Hız</h4><p class="val-desc" data-tr="7/24 aktif sistem. Acil kurye taleplerinde 15-30 dakika içinde görevlendirme. Gecikme kabul etmeyiz." data-en="24/7 active system. Courier assignment within 15-30 minutes for urgent requests. We do not accept delays.">7/24 aktif sistem. Acil kurye taleplerinde 15-30 dakika içinde görevlendirme. Gecikme kabul etmeyiz.</p></div>
+      <div class="val-card"><div class="val-icon">🔍</div><h4 class="val-title" data-tr="Şeffaflık" data-en="Transparency">Şeffaflık</h4><p class="val-desc" data-tr="Gizli ücret yok. Komisyon oranlarımız açık. Her hesaplama müşteriye gösterilir." data-en="No hidden fees. Our commission rates are open. Every calculation is shown to the customer.">Gizli ücret yok. Komisyon oranlarımız açık. Her hesaplama müşteriye gösterilir.</p></div>
+      <div class="val-card"><div class="val-icon">🤖</div><h4 class="val-title" data-tr="İnovasyon" data-en="Innovation">İnovasyon</h4><p class="val-desc" data-tr="Yapay zeka ile desteklenen sistemlerimizle sektörde ilkleri hayata geçiriyoruz." data-en="We are pioneering in the industry with our AI-powered systems.">Yapay zeka ile desteklenen sistemlerimizle sektörde ilkleri hayata geçiriyoruz.</p></div>
+      <div class="val-card"><div class="val-icon">🛡️</div><h4 class="val-title" data-tr="Güvenilirlik" data-en="Reliability">Güvenilirlik</h4><p class="val-desc" data-tr="SGK'lı kurye modeli, ödeme garantisi ve 7/24 destek ile güvenilir bir partner olarak yanınızdayız." data-en="We stand by you as a reliable partner with insured courier model, payment guarantee and 24/7 support.">SGK'lı kurye modeli, ödeme garantisi ve 7/24 destek ile güvenilir bir partner olarak yanınızdayız.</p></div>
+      <div class="val-card"><div class="val-icon">🌱</div><h4 class="val-title" data-tr="Büyüme" data-en="Growth">Büyüme</h4><p class="val-desc" data-tr="Ankara'dan başlayarak tüm Türkiye'ye yayılma hedefiyle kurye sektörünü dijitalleştiriyoruz." data-en="Starting from Ankara, we are digitizing the courier industry with the goal of expanding across all of Turkey.">Ankara'dan başlayarak tüm Türkiye'ye yayılma hedefiyle kurye sektörünü dijitalleştiriyoruz.</p></div>
     </div>
   </div>
 </section>
 
 <section class="cta-sec">
-  <p class="lbl" style="display:flex;justify-content:center">Bize Katılın</p>
-  <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.04em;margin-bottom:1rem">Ankara'nın geleceğini<br/><span style="color:var(--gray-lt);font-weight:400">birlikte inşa edelim.</span></h2>
+  <p class="lbl" style="display:flex;justify-content:center" data-tr="Bize Katılın" data-en="Join Us">Bize Katılın</p>
+  <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.04em;margin-bottom:1rem" data-tr="Ankara'nın geleceğini<br/><span style='color:var(--gray-lt);font-weight:400'>birlikte inşa edelim.</span>" data-en="Let's build Ankara's future<br/><span style='color:var(--gray-lt);font-weight:400'>together.</span>">Ankara'nın geleceğini<br/><span style="color:var(--gray-lt);font-weight:400">birlikte inşa edelim.</span></h2>
   <div style="display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-top:2rem">
-    <a href="/restoran#basvuru" class="btn-lg">Restoran Başvurusu</a>
-    <a href="/kurye#basvuru" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2);transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'">Kurye Başvurusu</a>
-    <a href="/iletisim" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2);transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'">İletişime Geç</a>
+    <a href="/restoran#basvuru" class="btn-lg" data-tr="Restoran Başvurusu" data-en="Restaurant Application">Restoran Başvurusu</a>
+    <a href="/kurye#basvuru" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2);transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'" data-tr="Kurye Başvurusu" data-en="Courier Application">Kurye Başvurusu</a>
+    <a href="/iletisim" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.92rem;font-weight:700;padding:.85rem 2.2rem;border-radius:999px;text-decoration:none;background:transparent;color:var(--white);border:.5px solid rgba(255,255,255,.2);transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'" data-tr="İletişime Geç" data-en="Get in Touch">İletişime Geç</a>
   </div>
 </section>
 
 <footer>
-  <a href="/">Ana Sayfa</a><a href="/iletisim">İletişim</a><a href="/kvkk">Gizlilik</a>
-  <br/><br/>© 2026 AI Teknoloji ve Lojistik Ltd. Şti. · Vergi bilgileri yakında eklenecektir<br/>
-  Adres bilgileri yakında güncellenecektir
+  <a href="/" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a><a href="/iletisim" data-tr="İletişim" data-en="Contact">İletişim</a><a href="/kvkk" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a>
+  <br/><br/><span data-tr="© 2026 AI Teknoloji ve Lojistik Ltd. Şti. · Vergi bilgileri yakında eklenecektir" data-en="© 2026 AI Teknoloji ve Lojistik Ltd. Şti. · Tax details will be updated soon">© 2026 AI Teknoloji ve Lojistik Ltd. Şti. · Vergi bilgileri yakında eklenecektir</span><br/>
+  <span data-tr="Adres bilgileri yakında güncellenecektir" data-en="Address details will be updated soon">Adres bilgileri yakında güncellenecektir</span>
 </footer>
 
+<script src="/lang.js"></script>
 <script>
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });

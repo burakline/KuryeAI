@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" href="/1000414615.png"/>
     <link rel="preconnect" href="https://www.googletagmanager.com"/>
   <link rel="dns-prefetch" href="https://www.google-analytics.com"/>
+<script src="/lang.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-066PZHNLHD"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-066PZHNLHD');</script>
   <style>
@@ -84,94 +85,97 @@
     <img src="/1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
     <span class="nav-brand">Kurye<em>AI</em></span>
   </a>
-  <a href="/" class="nav-back">← Ana Sayfa</a>
+  <div style="display:flex;align-items:center;gap:.8rem">
+    <a href="/" class="nav-back" data-tr="← Ana Sayfa" data-en="← Home">← Ana Sayfa</a>
+    <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em">EN</button>
+  </div>
 </nav>
 
 <div class="page">
-  <p class="lbl">Blog</p>
-  <h1>Kurye ve lojistik<br/><span style="color:var(--teal)">rehberi.</span></h1>
-  <p class="page-sub">Kurye sektörü, restoran yönetimi ve lojistik hakkında faydalı içerikler. Her hafta yeni yazılar.</p>
+  <p class="lbl" data-tr="Blog" data-en="Blog">Blog</p>
+  <h1 data-tr='Kurye ve lojistik<br/><span style="color:var(--teal)">rehberi.</span>' data-en='Courier &amp; logistics<br/><span style="color:var(--teal)">guide.</span>'>Kurye ve lojistik<br/><span style="color:var(--teal)">rehberi.</span></h1>
+  <p class="page-sub" data-tr="Kurye sektörü, restoran yönetimi ve lojistik hakkında faydalı içerikler. Her hafta yeni yazılar." data-en="Useful content about the courier industry, restaurant management and logistics. New articles every week.">Kurye sektörü, restoran yönetimi ve lojistik hakkında faydalı içerikler. Her hafta yeni yazılar.</p>
 
   <!-- FEATURED -->
   <a href="/blog/motokurye-src-belgesi" class="featured">
-    <span class="feat-tag">⭐ Öne Çıkan</span>
-    <h2 class="feat-title">MotoKurye SRC Belgesi: Şart mı, Zorunlu mu? 2026 Rehberi</h2>
-    <p class="feat-desc">SRC belgesi ne zaman zorunlu, nasıl alınır? Ağır vasıta SRC'si ile motosiklet SRC belgesi arasındaki fark, sınav ücreti ve başvuru süreci — kurye olmak isteyenlere kapsamlı rehber.</p>
+    <span class="feat-tag" data-tr="⭐ Öne Çıkan" data-en="⭐ Featured">⭐ Öne Çıkan</span>
+    <h2 class="feat-title" data-tr="MotoKurye SRC Belgesi: Şart mı, Zorunlu mu? 2026 Rehberi" data-en="Motorcycle Courier SRC Certificate: Required or Optional? 2026 Guide">MotoKurye SRC Belgesi: Şart mı, Zorunlu mu? 2026 Rehberi</h2>
+    <p class="feat-desc" data-tr="SRC belgesi ne zaman zorunlu, nasıl alınır? Ağır vasıta SRC'si ile motosiklet SRC belgesi arasındaki fark, sınav ücreti ve başvuru süreci — kurye olmak isteyenlere kapsamlı rehber." data-en="When is the SRC certificate mandatory, and how do you get one? The difference between heavy-vehicle and motorcycle SRC certificates, exam fees and the application process — a comprehensive guide for aspiring couriers.">SRC belgesi ne zaman zorunlu, nasıl alınır? Ağır vasıta SRC'si ile motosiklet SRC belgesi arasındaki fark, sınav ücreti ve başvuru süreci — kurye olmak isteyenlere kapsamlı rehber.</p>
     <div class="feat-meta">
-      <span>📅 Mart 2026</span>
-      <span>⏱ 7 dk okuma</span>
-      <span>🏷️ Belge &amp; Sertifika</span>
+      <span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span>
+      <span data-tr="⏱ 7 dk okuma" data-en="⏱ 7 min read">⏱ 7 dk okuma</span>
+      <span data-tr="🏷️ Belge &amp; Sertifika" data-en="🏷️ Certificate &amp; Licensing">🏷️ Belge &amp; Sertifika</span>
     </div>
-    <span class="feat-cta">Devamını Oku <span>→</span></span>
+    <span class="feat-cta" data-tr="Devamını Oku <span>→</span>" data-en="Read More <span>→</span>">Devamını Oku <span>→</span></span>
   </a>
 
   <!-- BLOG GRID -->
   <div class="blog-grid">
     <a href="/blog/p1-belgesi" class="blog-card">
       <img src="https://images.pexels.com/photos/6684209/pexels-photo-6684209.jpeg?auto=compress&cs=tinysrgb&w=600&h=280&fit=crop" alt="P1 belgesi" class="blog-img" loading="lazy"/>
-      <span class="blog-tag tag-kurye">Belge</span>
-      <h3 class="blog-title">P1* Belgesi Nedir? Motosiklet Kurye Yeterlilik Sertifikası</h3>
-      <p class="blog-desc">MYK P1* belgesi kimler için gerekli, nasıl alınır? Sınav aşamaları ve 2026 ücretleri.</p>
-      <div class="blog-meta"><span>📅 Mart 2026</span><span>⏱ 6 dk</span></div>
-      <span class="blog-cta">Oku <span>→</span></span>
+      <span class="blog-tag tag-kurye" data-tr="Belge" data-en="Certificate">Belge</span>
+      <h3 class="blog-title" data-tr="P1* Belgesi Nedir? Motosiklet Kurye Yeterlilik Sertifikası" data-en="What Is a P1* Certificate? Motorcycle Courier Qualification">P1* Belgesi Nedir? Motosiklet Kurye Yeterlilik Sertifikası</h3>
+      <p class="blog-desc" data-tr="MYK P1* belgesi kimler için gerekli, nasıl alınır? Sınav aşamaları ve 2026 ücretleri." data-en="Who needs the MYK P1* certificate and how to get it? Exam stages and 2026 fees.">MYK P1* belgesi kimler için gerekli, nasıl alınır? Sınav aşamaları ve 2026 ücretleri.</p>
+      <div class="blog-meta"><span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span><span data-tr="⏱ 6 dk" data-en="⏱ 6 min">⏱ 6 dk</span></div>
+      <span class="blog-cta" data-tr="Oku <span>→</span>" data-en="Read <span>→</span>">Oku <span>→</span></span>
     </a>
     <a href="/blog/tasima-cantasi-ruhsat" class="blog-card">
       <img src="https://images.pexels.com/photos/7363190/pexels-photo-7363190.jpeg?auto=compress&cs=tinysrgb&w=600&h=280&fit=crop" alt="Taşıma çantası ruhsat" class="blog-img" loading="lazy"/>
-      <span class="blog-tag tag-mevzuat">Mevzuat</span>
-      <h3 class="blog-title">Motosiklet Taşıma Çantasını Ruhsata İşletme: 2026 Rehberi</h3>
-      <p class="blog-desc">Top case veya yan çantayla ticari taşımacılık için K belgesi, esnaf kaydı ve T plaka adımları.</p>
-      <div class="blog-meta"><span>📅 Mart 2026</span><span>⏱ 7 dk</span></div>
-      <span class="blog-cta">Oku <span>→</span></span>
+      <span class="blog-tag tag-mevzuat" data-tr="Mevzuat" data-en="Regulation">Mevzuat</span>
+      <h3 class="blog-title" data-tr="Motosiklet Taşıma Çantasını Ruhsata İşletme: 2026 Rehberi" data-en="Registering a Motorcycle Cargo Box on Your License: 2026 Guide">Motosiklet Taşıma Çantasını Ruhsata İşletme: 2026 Rehberi</h3>
+      <p class="blog-desc" data-tr="Top case veya yan çantayla ticari taşımacılık için K belgesi, esnaf kaydı ve T plaka adımları." data-en="K certificate, trade registration and T plate steps for commercial transport with a top case or side bags.">Top case veya yan çantayla ticari taşımacılık için K belgesi, esnaf kaydı ve T plaka adımları.</p>
+      <div class="blog-meta"><span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span><span data-tr="⏱ 7 dk" data-en="⏱ 7 min">⏱ 7 dk</span></div>
+      <span class="blog-cta" data-tr="Oku <span>→</span>" data-en="Read <span>→</span>">Oku <span>→</span></span>
     </a>
     <a href="/blog/psikoteknik-belgesi" class="blog-card">
       <img src="https://images.pexels.com/photos/6684209/pexels-photo-6684209.jpeg?auto=compress&cs=tinysrgb&w=600&h=280&fit=crop" alt="Psikoteknik belgesi" class="blog-img" loading="lazy"/>
-      <span class="blog-tag tag-kurye">Belge</span>
-      <h3 class="blog-title">Psikoteknik Belgesi Nedir? Kurye için Nasıl Alınır?</h3>
-      <p class="blog-desc">Psikoteknik testler nelerden oluşur, nerede yapılır? 2026 ücretleri ve geçerlilik süresi.</p>
-      <div class="blog-meta"><span>📅 Mart 2026</span><span>⏱ 5 dk</span></div>
-      <span class="blog-cta">Oku <span>→</span></span>
+      <span class="blog-tag tag-kurye" data-tr="Belge" data-en="Certificate">Belge</span>
+      <h3 class="blog-title" data-tr="Psikoteknik Belgesi Nedir? Kurye için Nasıl Alınır?" data-en="What Is a Psychotechnical Certificate? How Do Couriers Get One?">Psikoteknik Belgesi Nedir? Kurye için Nasıl Alınır?</h3>
+      <p class="blog-desc" data-tr="Psikoteknik testler nelerden oluşur, nerede yapılır? 2026 ücretleri ve geçerlilik süresi." data-en="What do psychotechnical tests involve and where are they done? 2026 fees and validity period.">Psikoteknik testler nelerden oluşur, nerede yapılır? 2026 ücretleri ve geçerlilik süresi.</p>
+      <div class="blog-meta"><span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span><span data-tr="⏱ 5 dk" data-en="⏱ 5 min">⏱ 5 dk</span></div>
+      <span class="blog-cta" data-tr="Oku <span>→</span>" data-en="Read <span>→</span>">Oku <span>→</span></span>
     </a>
     <a href="/blog/2026-trafik-cezalari" class="blog-card">
       <img src="https://images.pexels.com/photos/29952041/pexels-photo-29952041.jpeg?auto=compress&cs=tinysrgb&w=600&h=280&fit=crop" alt="2026 trafik cezaları" class="blog-img" loading="lazy"/>
-      <span class="blog-tag tag-mevzuat">Mevzuat</span>
-      <h3 class="blog-title">2026 Güncel Trafik Cezaları — Motosiklet Kurye Rehberi</h3>
-      <p class="blog-desc">Kask, hız, sigortasız araç ve ehliyetsiz sürüş cezaları. 2026 yılı güncel tutarları ile tam liste.</p>
-      <div class="blog-meta"><span>📅 Mart 2026</span><span>⏱ 8 dk</span></div>
-      <span class="blog-cta">Oku <span>→</span></span>
+      <span class="blog-tag tag-mevzuat" data-tr="Mevzuat" data-en="Regulation">Mevzuat</span>
+      <h3 class="blog-title" data-tr="2026 Güncel Trafik Cezaları — Motosiklet Kurye Rehberi" data-en="2026 Updated Traffic Fines — Motorcycle Courier Guide">2026 Güncel Trafik Cezaları — Motosiklet Kurye Rehberi</h3>
+      <p class="blog-desc" data-tr="Kask, hız, sigortasız araç ve ehliyetsiz sürüş cezaları. 2026 yılı güncel tutarları ile tam liste." data-en="Fines for no helmet, speeding, uninsured vehicles and unlicensed driving. Full list with 2026 current amounts.">Kask, hız, sigortasız araç ve ehliyetsiz sürüş cezaları. 2026 yılı güncel tutarları ile tam liste.</p>
+      <div class="blog-meta"><span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span><span data-tr="⏱ 8 dk" data-en="⏱ 8 min">⏱ 8 dk</span></div>
+      <span class="blog-cta" data-tr="Oku <span>→</span>" data-en="Read <span>→</span>">Oku <span>→</span></span>
     </a>
     <a href="/blog/guvenli-suruc-teknikleri" class="blog-card">
       <img src="https://images.pexels.com/photos/2930929/pexels-photo-2930929.jpeg?auto=compress&cs=tinysrgb&w=600&h=280&fit=crop" alt="Motosiklet güvenli sürüş" class="blog-img" loading="lazy"/>
-      <span class="blog-tag tag-guvenlik">Güvenlik</span>
-      <h3 class="blog-title">Motosiklet Güvenli Sürüş Teknikleri — 2026 Kapsamlı Rehber</h3>
-      <p class="blog-desc">Fren, viraj, şerit değiştirme, kör nokta yönetimi ve hava koşullarında güvenli sürüş.</p>
-      <div class="blog-meta"><span>📅 Mart 2026</span><span>⏱ 9 dk</span></div>
-      <span class="blog-cta">Oku <span>→</span></span>
+      <span class="blog-tag tag-guvenlik" data-tr="Güvenlik" data-en="Safety">Güvenlik</span>
+      <h3 class="blog-title" data-tr="Motosiklet Güvenli Sürüş Teknikleri — 2026 Kapsamlı Rehber" data-en="Motorcycle Safe Riding Techniques — 2026 Comprehensive Guide">Motosiklet Güvenli Sürüş Teknikleri — 2026 Kapsamlı Rehber</h3>
+      <p class="blog-desc" data-tr="Fren, viraj, şerit değiştirme, kör nokta yönetimi ve hava koşullarında güvenli sürüş." data-en="Braking, cornering, lane changes, blind spot management and riding safely in bad weather.">Fren, viraj, şerit değiştirme, kör nokta yönetimi ve hava koşullarında güvenli sürüş.</p>
+      <div class="blog-meta"><span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span><span data-tr="⏱ 9 dk" data-en="⏱ 9 min">⏱ 9 dk</span></div>
+      <span class="blog-cta" data-tr="Oku <span>→</span>" data-en="Read <span>→</span>">Oku <span>→</span></span>
     </a>
     <a href="/blog/motosiklet-ekipmanlari" class="blog-card">
       <img src="https://images.pexels.com/photos/18206715/pexels-photo-18206715.jpeg?auto=compress&cs=tinysrgb&w=600&h=280&fit=crop" alt="Motosiklet ekipmanları" class="blog-img" loading="lazy"/>
-      <span class="blog-tag tag-ekipman">Ekipman</span>
-      <h3 class="blog-title">Motosiklet Ekipmanlarının Önemi — 2026 Kapsamlı Rehber</h3>
-      <p class="blog-desc">Kask, eldiven, bot, ceket ve kurye ekipmanı rehberi. 2026 fiyat aralıkları ve bakım ipuçları.</p>
-      <div class="blog-meta"><span>📅 Mart 2026</span><span>⏱ 8 dk</span></div>
-      <span class="blog-cta">Oku <span>→</span></span>
+      <span class="blog-tag tag-ekipman" data-tr="Ekipman" data-en="Equipment">Ekipman</span>
+      <h3 class="blog-title" data-tr="Motosiklet Ekipmanlarının Önemi — 2026 Kapsamlı Rehber" data-en="The Importance of Motorcycle Gear — 2026 Comprehensive Guide">Motosiklet Ekipmanlarının Önemi — 2026 Kapsamlı Rehber</h3>
+      <p class="blog-desc" data-tr="Kask, eldiven, bot, ceket ve kurye ekipmanı rehberi. 2026 fiyat aralıkları ve bakım ipuçları." data-en="Helmet, gloves, boots, jacket and courier gear guide. 2026 price ranges and maintenance tips.">Kask, eldiven, bot, ceket ve kurye ekipmanı rehberi. 2026 fiyat aralıkları ve bakım ipuçları.</p>
+      <div class="blog-meta"><span data-tr="📅 Mart 2026" data-en="📅 March 2026">📅 Mart 2026</span><span data-tr="⏱ 8 dk" data-en="⏱ 8 min">⏱ 8 dk</span></div>
+      <span class="blog-cta" data-tr="Oku <span>→</span>" data-en="Read <span>→</span>">Oku <span>→</span></span>
     </a>
   </div>
 
   <!-- NEWSLETTER -->
   <div class="newsletter">
-    <h3 class="nl-title">📬 Yeni yazılardan haberdar olun</h3>
-    <p class="nl-sub">Haftada bir e-posta. Spam yok.</p>
+    <h3 class="nl-title" data-tr="📬 Yeni yazılardan haberdar olun" data-en="📬 Stay updated with new articles">📬 Yeni yazılardan haberdar olun</h3>
+    <p class="nl-sub" data-tr="Haftada bir e-posta. Spam yok." data-en="One email per week. No spam.">Haftada bir e-posta. Spam yok.</p>
     <div class="nl-form">
-      <input class="nl-input" type="email" placeholder="E-posta adresiniz" id="nl-email"/>
-      <button class="nl-btn" onclick="subscribeNewsletter()">Abone Ol</button>
+      <input class="nl-input" type="email" data-tr="E-posta adresiniz" data-en="Your email address" placeholder="E-posta adresiniz" id="nl-email"/>
+      <button class="nl-btn" onclick="subscribeNewsletter()" data-tr="Abone Ol" data-en="Subscribe">Abone Ol</button>
     </div>
-    <p id="nl-msg" style="font-size:.75rem;color:#30d158;margin-top:.8rem;display:none">✓ Abone oldunuz!</p>
+    <p id="nl-msg" style="font-size:.75rem;color:#30d158;margin-top:.8rem;display:none" data-tr="✓ Abone oldunuz!" data-en="✓ You're subscribed!">✓ Abone oldunuz!</p>
   </div>
 </div>
 
 <footer>
-  <a href="/">Ana Sayfa</a><a href="/fiyatlandirma">Fiyatlar</a><a href="/hakkimizda">Hakkımızda</a><a href="/iletisim">İletişim</a><a href="/kvkk">Gizlilik</a>
-  <br/><br/>© 2026 AI Teknoloji ve Lojistik Ltd. Şti.
+  <a href="/" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a><a href="/fiyatlandirma" data-tr="Fiyatlar" data-en="Pricing">Fiyatlar</a><a href="/hakkimizda" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a><a href="/iletisim" data-tr="İletişim" data-en="Contact">İletişim</a><a href="/kvkk" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a>
+  <br/><br/><span data-tr="© 2026 AI Teknoloji ve Lojistik Ltd. Şti." data-en="© 2026 AI Teknoloji ve Lojistik Ltd. Şti.">© 2026 AI Teknoloji ve Lojistik Ltd. Şti.</span>
 </footer>
 
 <script>

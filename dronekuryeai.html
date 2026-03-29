@@ -172,20 +172,34 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
-/* Drone uçuş animasyonu */
-@keyframes droneFly{
-  0%{transform:translateX(110vw) translateY(0) scale(.9)}
-  25%{transform:translateX(70vw) translateY(-18px) scale(.95)}
-  50%{transform:translateX(40vw) translateY(8px) scale(1)}
-  75%{transform:translateX(10vw) translateY(-12px) scale(.95)}
-  100%{transform:translateX(-30vw) translateY(0) scale(.9)}
+/* Drone uçuş animasyonu — sağdan sola */
+@keyframes droneFlyRTL{
+  0%{transform:translateX(110vw) translateY(0) scale(.95)}
+  15%{transform:translateX(80vw) translateY(-15px) scale(1)}
+  35%{transform:translateX(55vw) translateY(10px) scale(1.02)}
+  50%{transform:translateX(35vw) translateY(-8px) scale(1)}
+  70%{transform:translateX(15vw) translateY(12px) scale(.98)}
+  85%{transform:translateX(-5vw) translateY(-10px) scale(.95)}
+  100%{transform:translateX(-35vw) translateY(0) scale(.92)}
+}
+/* Drone uçuş animasyonu — soldan sağa */
+@keyframes droneFlyLTR{
+  0%{transform:translateX(-35vw) translateY(0) scale(.92) scaleX(-1)}
+  15%{transform:translateX(-5vw) translateY(-12px) scale(.95) scaleX(-1)}
+  35%{transform:translateX(15vw) translateY(8px) scale(.98) scaleX(-1)}
+  50%{transform:translateX(35vw) translateY(-10px) scale(1) scaleX(-1)}
+  70%{transform:translateX(55vw) translateY(12px) scale(1.02) scaleX(-1)}
+  85%{transform:translateX(80vw) translateY(-8px) scale(1) scaleX(-1)}
+  100%{transform:translateX(110vw) translateY(0) scale(.95) scaleX(-1)}
 }
 @keyframes droneHover{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
+  50%{transform:translateY(-8px)}
 }
-.flying-drone{position:fixed;top:18%;z-index:999;pointer-events:none;animation:droneFly 16s linear infinite;filter:drop-shadow(0 4px 20px rgba(0,200,215,.4))}
-.flying-drone svg{animation:droneHover 2s ease-in-out infinite}
+.flying-drone{position:fixed;z-index:999;pointer-events:none;filter:drop-shadow(0 6px 30px rgba(0,200,215,.5)) drop-shadow(0 0 10px rgba(0,200,215,.2))}
+.flying-drone svg{animation:droneHover 2.5s ease-in-out infinite}
+.flying-drone-1{top:14%;animation:droneFlyRTL 20s linear infinite}
+.flying-drone-2{top:55%;animation:droneFlyLTR 24s linear infinite;animation-delay:8s}
 
 /* Parlayan çizgiler */
 @keyframes dataFlow{
@@ -195,12 +209,12 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 .data-line{position:absolute;height:1px;width:200px;background:linear-gradient(90deg,transparent,var(--teal),transparent);background-size:200% 100%;animation:dataFlow 3s linear infinite;opacity:.15;pointer-events:none}
 
 /* AI Çip animasyonları */
-@keyframes chipFloat1{0%{transform:translate(0,0) rotate(0deg);opacity:.06}25%{transform:translate(30px,-40px) rotate(8deg);opacity:.1}50%{transform:translate(-20px,-80px) rotate(-5deg);opacity:.07}75%{transform:translate(40px,-40px) rotate(12deg);opacity:.1}100%{transform:translate(0,0) rotate(0deg);opacity:.06}}
-@keyframes chipFloat2{0%{transform:translate(0,0) rotate(0deg);opacity:.05}33%{transform:translate(-40px,30px) rotate(-10deg);opacity:.09}66%{transform:translate(20px,-30px) rotate(6deg);opacity:.06}100%{transform:translate(0,0) rotate(0deg);opacity:.05}}
-@keyframes chipFloat3{0%{transform:translate(0,0) rotate(0deg);opacity:.04}50%{transform:translate(50px,20px) rotate(15deg);opacity:.08}100%{transform:translate(0,0) rotate(0deg);opacity:.04}}
-@keyframes chipPulse{0%,100%{opacity:.06}50%{opacity:.12}}
+@keyframes chipFloat1{0%{transform:translate(0,0) rotate(0deg);opacity:.12}25%{transform:translate(30px,-50px) rotate(8deg);opacity:.2}50%{transform:translate(-20px,-90px) rotate(-5deg);opacity:.14}75%{transform:translate(40px,-50px) rotate(12deg);opacity:.2}100%{transform:translate(0,0) rotate(0deg);opacity:.12}}
+@keyframes chipFloat2{0%{transform:translate(0,0) rotate(0deg);opacity:.1}33%{transform:translate(-50px,35px) rotate(-10deg);opacity:.18}66%{transform:translate(25px,-35px) rotate(6deg);opacity:.12}100%{transform:translate(0,0) rotate(0deg);opacity:.1}}
+@keyframes chipFloat3{0%{transform:translate(0,0) rotate(0deg);opacity:.08}50%{transform:translate(60px,25px) rotate(15deg);opacity:.16}100%{transform:translate(0,0) rotate(0deg);opacity:.08}}
+@keyframes chipPulse{0%,100%{opacity:.1}50%{opacity:.22}}
 .ai-chip{position:fixed;pointer-events:none;z-index:1;color:var(--teal)}
-.ai-chip svg{filter:drop-shadow(0 0 8px rgba(0,200,215,.3))}
+.ai-chip svg{filter:drop-shadow(0 0 15px rgba(0,200,215,.5))}
 .ai-chip-1{top:12%;left:8%;animation:chipFloat1 20s ease-in-out infinite}
 .ai-chip-2{top:35%;right:5%;animation:chipFloat2 25s ease-in-out infinite}
 .ai-chip-3{top:60%;left:3%;animation:chipFloat3 22s ease-in-out infinite}
@@ -217,8 +231,8 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
 <body>
 
 <!-- Uçan drone animasyonu -->
-<div class="flying-drone" aria-hidden="true">
-  <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<div class="flying-drone flying-drone-1" aria-hidden="true">
+  <svg width="160" height="80" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
     <!-- Drone gövde -->
     <ellipse cx="60" cy="30" rx="18" ry="10" fill="#f0f0f0" stroke="#ddd" stroke-width=".5"/>
     <!-- Kamera/sensör -->
@@ -263,6 +277,31 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
     <circle cx="98" cy="42" r="2" fill="#222"/>
     <circle cx="98" cy="42" r=".8" fill="#ff5f57"/>
     <!-- Ayaklar -->
+    <line x1="48" y1="38" x2="44" y2="48" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="72" y1="38" x2="76" y2="48" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="42" y1="48" x2="50" y2="48" stroke="#bbb" stroke-width="2" stroke-linecap="round"/>
+    <line x1="70" y1="48" x2="78" y2="48" stroke="#bbb" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<!-- 2. Drone — soldan sağa -->
+<div class="flying-drone flying-drone-2" aria-hidden="true">
+  <svg width="140" height="70" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="60" cy="30" rx="18" ry="10" fill="#f0f0f0" stroke="#ddd" stroke-width=".5"/>
+    <circle cx="60" cy="36" r="3" fill="#333"/><circle cx="60" cy="36" r="1.5" fill="#00c8d7"/>
+    <text x="60" y="29" text-anchor="middle" font-size="5.5" font-weight="700" font-family="Arial,sans-serif"><tspan fill="#00c8d7">Drone</tspan><tspan fill="#333">Kurye</tspan><tspan fill="#00c8d7">AI</tspan></text>
+    <line x1="42" y1="28" x2="18" y2="18" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="78" y1="28" x2="102" y2="18" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="45" y1="32" x2="22" y2="42" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="75" y1="32" x2="98" y2="42" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="18" cy="18" rx="14" ry="3" fill="rgba(0,200,215,.25)" stroke="rgba(0,200,215,.4)" stroke-width=".5"><animateTransform attributeName="transform" type="rotate" values="0 18 18;360 18 18" dur=".3s" repeatCount="indefinite"/></ellipse>
+    <circle cx="18" cy="18" r="2.5" fill="#222"/><circle cx="18" cy="18" r="1" fill="#30d158"/>
+    <ellipse cx="102" cy="18" rx="14" ry="3" fill="rgba(0,200,215,.25)" stroke="rgba(0,200,215,.4)" stroke-width=".5"><animateTransform attributeName="transform" type="rotate" values="0 102 18;360 102 18" dur=".3s" repeatCount="indefinite"/></ellipse>
+    <circle cx="102" cy="18" r="2.5" fill="#222"/><circle cx="102" cy="18" r="1" fill="#ff5f57"/>
+    <ellipse cx="22" cy="42" rx="12" ry="2.5" fill="rgba(0,200,215,.2)" stroke="rgba(0,200,215,.3)" stroke-width=".5"><animateTransform attributeName="transform" type="rotate" values="0 22 42;360 22 42" dur=".25s" repeatCount="indefinite"/></ellipse>
+    <circle cx="22" cy="42" r="2" fill="#222"/><circle cx="22" cy="42" r=".8" fill="#30d158"/>
+    <ellipse cx="98" cy="42" rx="12" ry="2.5" fill="rgba(0,200,215,.2)" stroke="rgba(0,200,215,.3)" stroke-width=".5"><animateTransform attributeName="transform" type="rotate" values="0 98 42;360 98 42" dur=".25s" repeatCount="indefinite"/></ellipse>
+    <circle cx="98" cy="42" r="2" fill="#222"/><circle cx="98" cy="42" r=".8" fill="#ff5f57"/>
     <line x1="48" y1="38" x2="44" y2="48" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
     <line x1="72" y1="38" x2="76" y2="48" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
     <line x1="42" y1="48" x2="50" y2="48" stroke="#bbb" stroke-width="2" stroke-linecap="round"/>
@@ -652,6 +691,35 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
     <div class="section-badge" data-tr="Geleceğe Hazır Mısınız?" data-en="Are You Ready for the Future?">Geleceğe Hazır Mısınız?</div>
     <h2 class="section-title" style="max-width:600px;margin:0 auto .6rem" data-tr="Teslimatın geleceği <span style='color:var(--teal)'>gökyüzünde</span> yazılıyor." data-en="The future of delivery is being written in the <span style='color:var(--teal)'>sky.</span>">Teslimatın geleceği <span style="color:var(--teal)">gökyüzünde</span> yazılıyor.</h2>
     <p class="section-sub" style="max-width:500px;margin:0 auto 2rem" data-tr="DroneKuryeAI erken erişim listesine katılın. Türkiye'nin ilk drone teslimat hizmetinden ilk siz haberdar olun." data-en="Join the DroneKuryeAI early access list. Be the first to know about Turkey's first drone delivery service.">DroneKuryeAI erken erişim listesine katılın. Türkiye'nin ilk drone teslimat hizmetinden ilk siz haberdar olun.</p>
+
+    <!-- Atatürk — İstikbal Göklerdedir -->
+    <div style="margin:0 auto 2.5rem;max-width:480px;padding:1.8rem;background:linear-gradient(135deg,rgba(200,16,46,.06),rgba(0,200,215,.04));border:.5px solid rgba(200,16,46,.2);border-radius:16px;text-align:center;position:relative;overflow:hidden">
+      <!-- Türk Bayrağı arka plan -->
+      <div style="position:absolute;top:8px;left:12px;display:flex;align-items:center;gap:4px;opacity:.6">
+        <svg width="24" height="16" viewBox="0 0 30 20" fill="none">
+          <rect width="30" height="20" rx="2" fill="#C8102E"/>
+          <circle cx="11" cy="10" r="6" fill="#fff"/>
+          <circle cx="13" cy="10" r="5" fill="#C8102E"/>
+          <polygon points="16,10 19,12 17.5,9 20,7.5 17,7.5" fill="#fff"/>
+        </svg>
+      </div>
+      <!-- Atatürk silüeti -->
+      <div style="margin-bottom:.8rem">
+        <svg width="60" height="70" viewBox="0 0 60 70" fill="none" style="opacity:.25">
+          <ellipse cx="30" cy="16" rx="10" ry="12" fill="var(--teal)"/>
+          <path d="M20 28c-2 0-5 2-6 6l-4 18c0 2 1 3 3 3h34c2 0 3-1 3-3l-4-18c-1-4-4-6-6-6z" fill="var(--teal)"/>
+          <path d="M24 12c-1-3-2-6 0-9 3-4 9-4 12 0 2 3 1 6 0 9" stroke="var(--teal)" stroke-width="1.5" fill="none"/>
+          <rect x="18" y="55" width="24" height="2" rx="1" fill="var(--teal)" opacity=".4"/>
+        </svg>
+      </div>
+      <div style="font-size:1.15rem;font-weight:800;letter-spacing:-.02em;color:var(--white);margin-bottom:.4rem;line-height:1.3" data-tr="&laquo;İstikbal Göklerdedir.&raquo;" data-en="&laquo;The future is in the skies.&raquo;">&laquo;İstikbal Göklerdedir.&raquo;</div>
+      <div style="font-size:.82rem;font-style:italic;color:var(--teal);font-weight:600;letter-spacing:.02em">Mustafa Kemal Atatürk</div>
+      <!-- İmza -->
+      <svg width="120" height="30" viewBox="0 0 120 30" style="margin-top:.5rem;opacity:.35">
+        <path d="M10 22c5-3 10-8 18-12s15-5 20-2c3 2 2 5-1 7s-8 3-12 2c-3-1-4-3-2-5s6-4 12-3c8 1 18 2 25 0s15-5 20-8" fill="none" stroke="var(--teal)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M85 10c3-2 8-3 12-1s6 5 3 7" fill="none" stroke="var(--teal)" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
   </div>
 
   <div class="reveal" style="max-width:520px;margin:0 auto">
@@ -708,6 +776,12 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
   </div>
 </section>
 
+<!-- MÜZİK KONTROLÜ -->
+<div id="music-btn" onclick="toggleMusic()" style="position:fixed;bottom:20px;right:20px;z-index:998;width:44px;height:44px;border-radius:50%;background:rgba(0,200,215,.12);border:1px solid rgba(0,200,215,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;backdrop-filter:blur(8px)" title="Müzik Aç/Kapat">
+  <svg id="music-icon-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  <svg id="music-icon-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gray-lt)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="var(--gray-lt)" stroke-width="1.5"/></svg>
+</div>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div style="margin-bottom:1rem">
@@ -728,6 +802,71 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Ambient Müzik (Web Audio API — telif hakkı yok) ──
+let _musicCtx=null, _musicPlaying=false, _musicNodes=[];
+function createAmbientMusic(){
+  _musicCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const master=_musicCtx.createGain();
+  master.gain.value=0.12;
+  master.connect(_musicCtx.destination);
+
+  // Pad katmanı 1
+  function pad(freq,detune){
+    const o=_musicCtx.createOscillator();
+    const g=_musicCtx.createGain();
+    const f=_musicCtx.createBiquadFilter();
+    o.type='sine';o.frequency.value=freq;o.detune.value=detune;
+    f.type='lowpass';f.frequency.value=800;f.Q.value=1;
+    g.gain.value=0.3;
+    o.connect(f);f.connect(g);g.connect(master);
+    o.start();
+    _musicNodes.push(o);
+    // Yavaş frekans modülasyonu
+    const lfo=_musicCtx.createOscillator();
+    const lfoG=_musicCtx.createGain();
+    lfo.frequency.value=0.05+Math.random()*0.05;
+    lfoG.gain.value=freq*0.02;
+    lfo.connect(lfoG);lfoG.connect(o.frequency);
+    lfo.start();_musicNodes.push(lfo);
+  }
+  // C major ambient chord: C2, E2, G2, C3
+  pad(65.41,0);pad(82.41,5);pad(98.00,-3);pad(130.81,2);
+  // Arpejli bell tonu
+  function bell(){
+    if(!_musicPlaying)return;
+    const notes=[261.63,329.63,392.00,523.25,659.25,783.99];
+    const freq=notes[Math.floor(Math.random()*notes.length)];
+    const o=_musicCtx.createOscillator();
+    const g=_musicCtx.createGain();
+    o.type='sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(0.06,_musicCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,_musicCtx.currentTime+4);
+    o.connect(g);g.connect(master);
+    o.start();o.stop(_musicCtx.currentTime+4);
+    setTimeout(bell,2000+Math.random()*4000);
+  }
+  setTimeout(bell,1000);
+}
+function toggleMusic(){
+  if(!_musicPlaying){
+    if(!_musicCtx)createAmbientMusic();
+    else _musicCtx.resume();
+    _musicPlaying=true;
+    document.getElementById('music-icon-on').style.display='block';
+    document.getElementById('music-icon-off').style.display='none';
+    document.getElementById('music-btn').style.borderColor='rgba(0,200,215,.6)';
+    document.getElementById('music-btn').style.background='rgba(0,200,215,.2)';
+  }else{
+    _musicCtx.suspend();
+    _musicPlaying=false;
+    document.getElementById('music-icon-on').style.display='none';
+    document.getElementById('music-icon-off').style.display='block';
+    document.getElementById('music-btn').style.borderColor='rgba(0,200,215,.3)';
+    document.getElementById('music-btn').style.background='rgba(0,200,215,.12)';
+  }
+}
+window.toggleMusic=toggleMusic;
 </script>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <script type="module">

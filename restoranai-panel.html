@@ -2930,6 +2930,10 @@ async function initFirebase(){
             settings.rest_lng=ud.lng;
             if(ud.address)settings.rest_address=ud.address;
             _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_lat:ud.lat,rest_lng:ud.lng,rest_address:ud.address||settings.rest_address||''}).catch(()=>{});
+            // Pin'i yeniden çiz (koordinatlar güncellendi)
+            setTimeout(()=>{
+              if(mapInstance){if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;}_addRestPinToMap();}
+            },500);
           }
         }
       }catch(e){console.warn('Konum senkronizasyon hatası:',e);}

@@ -271,114 +271,116 @@
 <div class="bg-glow"></div>
 <div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
 
-<a href="/kuryeai" class="back-link">← Geri Dön</a>
+<a href="/kuryeai" class="back-link" data-tr="← Geri Dön" data-en="← Go Back">← Geri Dön</a>
+<button class="lang-toggle" onclick="toggleLang()" style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em;backdrop-filter:blur(8px)">EN</button>
 
 <div class="card">
 
   <div class="logo-wrap">
     <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
     <div class="logo-name">Kurye<em>AI</em></div>
-    <div class="logo-sub">Kurye Paneli</div>
+    <div class="logo-sub" data-tr="Kurye Paneli" data-en="Courier Panel">Kurye Paneli</div>
   </div>
 
   <div style="display:flex;justify-content:center;margin-bottom:1.8rem">
     <div class="status-badge">
       <span class="status-dot"></span>
-      Sistem Aktif
+      <span data-tr="Sistem Aktif" data-en="System Active">Sistem Aktif</span>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
-    <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
+    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')" data-tr="Giriş Yap" data-en="Sign In">Giriş Yap</button>
+    <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')" data-tr="Kayıt Ol" data-en="Sign Up">Kayıt Ol</button>
   </div>
 
   <!-- GİRİŞ -->
   <div class="tab-pane active" id="pane-giris">
-    <p class="form-title">Vardiyaya Başla <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></p>
-    <p class="form-sub">E-posta, telefon veya kurye ID ile giriş yapın.</p>
+    <p class="form-title"><span data-tr="Vardiyaya Başla" data-en="Start Your Shift">Vardiyaya Başla</span> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></p>
+    <p class="form-sub" data-tr="E-posta, telefon veya kurye ID ile giriş yapın." data-en="Sign in with your email, phone or courier ID.">E-posta, telefon veya kurye ID ile giriş yapın.</p>
 
     <div class="err-msg" id="err-msg"></div>
     <div class="success-msg" id="success-msg"></div>
 
     <div class="form-group">
-      <label class="form-label">E-posta / Telefon / ID</label>
+      <label class="form-label" data-tr="E-posta / Telefon / ID" data-en="Email / Phone / ID">E-posta / Telefon / ID</label>
       <input class="form-input" type="text" id="input-email"
-             placeholder="kurye@email.com veya KAI-XXXXXX" autocomplete="username"/>
+             placeholder="kurye@email.com veya KAI-XXXXXX" data-tr-ph="kurye@email.com veya KAI-XXXXXX" data-en-ph="courier@email.com or KAI-XXXXXX" autocomplete="username"/>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Şifre</label>
+      <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
         <input class="form-input" type="password" id="input-password"
                placeholder="••••••••" autocomplete="current-password"/>
-        <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+        <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
       <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
         <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
-        Beni hatırla
+        <span data-tr="Beni hatırla" data-en="Remember me">Beni hatırla</span>
       </label>
       <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
          onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
-         onclick="doForgot(event)">Şifremi unuttum</a>
+         onclick="doForgot(event)" data-tr="Şifremi unuttum" data-en="Forgot password">Şifremi unuttum</a>
     </div>
 
     <button class="btn-submit" id="btn-login" onclick="doLogin()">
       <div class="spinner"></div>
-      <span class="btn-text">Giriş Yap →</span>
+      <span class="btn-text" data-tr="Giriş Yap →" data-en="Sign In →">Giriş Yap →</span>
     </button>
 
     <div class="info-strip" style="margin-top:1.2rem">
-      <div class="info-row"><span class="info-dot"></span>Hesabınız admin onayından sonra aktif olur</div>
-      <div class="info-row"><span class="info-dot"></span>Sorun için: destek@kuryeai.com</div>
+      <div class="info-row"><span class="info-dot"></span><span data-tr="Hesabınız admin onayından sonra aktif olur" data-en="Your account will be active after admin approval">Hesabınız admin onayından sonra aktif olur</span></div>
+      <div class="info-row"><span class="info-dot"></span><span data-tr="Sorun için: destek@kuryeai.com" data-en="For support: destek@kuryeai.com">Sorun için: destek@kuryeai.com</span></div>
     </div>
   </div>
 
   <!-- KAYIT -->
   <div class="tab-pane" id="pane-kayit">
-    <p class="form-title">Kurye Kaydı <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></p>
-    <p class="form-sub">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
+    <p class="form-title"><span data-tr="Kurye Kaydı" data-en="Courier Registration">Kurye Kaydı</span> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M17 17H3c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h1l2 4h4l2-4h2l1 4 4 2v4"/><circle cx="17" cy="17" r="2"/><circle cx="7" cy="17" r="2"/></svg></p>
+    <p class="form-sub" data-tr="Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur." data-en="Verify your email after registration. Your account will be activated after admin approval.">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
 
     <div class="err-msg" id="kayit-err"></div>
     <div class="ok-msg" id="kayit-ok"></div>
 
     <div class="form-group">
-      <label class="form-label">Ad Soyad</label>
-      <input class="form-input" type="text" id="k-name" placeholder="Ad Soyad"/>
+      <label class="form-label" data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
+      <input class="form-input" type="text" id="k-name" placeholder="Ad Soyad" data-tr-ph="Ad Soyad" data-en-ph="Full Name"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Telefon</label>
-      <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"/>
+      <label class="form-label" data-tr="Telefon" data-en="Phone">Telefon</label>
+      <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX" data-tr-ph="05XX XXX XX XX" data-en-ph="05XX XXX XX XX"/>
     </div>
     <div class="form-group">
-      <label class="form-label">E-posta</label>
-      <input class="form-input" type="email" id="k-email" placeholder="kurye@email.com" autocomplete="username"/>
+      <label class="form-label" data-tr="E-posta" data-en="Email">E-posta</label>
+      <input class="form-input" type="email" id="k-email" placeholder="kurye@email.com" data-tr-ph="kurye@email.com" data-en-ph="courier@email.com" autocomplete="username"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Şifre</label>
+      <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
-        <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"/>
-        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw',this)">Göster</button>
+        <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" data-tr-ph="En az 6 karakter" data-en-ph="At least 6 characters" autocomplete="new-password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw',this)" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Şifre Tekrar</label>
+      <label class="form-label" data-tr="Şifre Tekrar" data-en="Confirm Password">Şifre Tekrar</label>
       <div class="pw-wrap">
-        <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"/>
-        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw2',this)">Göster</button>
+        <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" data-tr-ph="Şifreyi tekrar girin" data-en-ph="Re-enter your password" autocomplete="new-password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw2',this)" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
 
     <button class="btn-submit" id="btn-kayit" onclick="doKayit()">
       <div class="spinner"></div>
-      <span class="btn-text">Kayıt Ol →</span>
+      <span class="btn-text" data-tr="Kayıt Ol →" data-en="Sign Up →">Kayıt Ol →</span>
     </button>
   </div>
 </div>
 
+<script src="/lang.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
@@ -452,13 +454,23 @@
     const inp = document.getElementById('input-password');
     const btn = document.getElementById('pw-btn');
     inp.type = inp.type === 'password' ? 'text' : 'password';
-    btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
+    const lang = (typeof getLang === 'function') ? getLang() : 'tr';
+    const showTxt = lang === 'en' ? 'Show' : 'Göster';
+    const hideTxt = lang === 'en' ? 'Hide' : 'Gizle';
+    btn.textContent = inp.type === 'password' ? showTxt : hideTxt;
+    btn.setAttribute('data-tr', inp.type === 'password' ? 'Göster' : 'Gizle');
+    btn.setAttribute('data-en', inp.type === 'password' ? 'Show' : 'Hide');
   };
 
   window.toggleKayitPw = (id, btn) => {
     const el = document.getElementById(id);
     el.type = el.type === 'password' ? 'text' : 'password';
-    btn.textContent = el.type === 'password' ? 'Göster' : 'Gizle';
+    const lang = (typeof getLang === 'function') ? getLang() : 'tr';
+    const showTxt = lang === 'en' ? 'Show' : 'Göster';
+    const hideTxt = lang === 'en' ? 'Hide' : 'Gizle';
+    btn.textContent = el.type === 'password' ? showTxt : hideTxt;
+    btn.setAttribute('data-tr', el.type === 'password' ? 'Göster' : 'Gizle');
+    btn.setAttribute('data-en', el.type === 'password' ? 'Show' : 'Hide');
   };
 
   window.doKayit = async function() {
@@ -617,9 +629,9 @@ window.pwaInstall=async()=>{
 };
 </script>
 <div id="pwa-install-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#00c8d7,#009aaa);color:#000;padding:12px 20px;align-items:center;justify-content:space-between;gap:12px;z-index:999;padding-bottom:max(12px,env(safe-area-inset-bottom))">
-  <div style="display:flex;align-items:center;gap:10px"><span style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span><div><div style="font-size:13px;font-weight:700">Ana Ekrana Ekle</div><div style="font-size:11px;opacity:.8">KuryeAI'yi uygulama olarak kullan</div></div></div>
+  <div style="display:flex;align-items:center;gap:10px"><span style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span><div><div style="font-size:13px;font-weight:700" data-tr="Ana Ekrana Ekle" data-en="Add to Home Screen">Ana Ekrana Ekle</div><div style="font-size:11px;opacity:.8" data-tr="KuryeAI'yi uygulama olarak kullan" data-en="Use KuryeAI as an app">KuryeAI'yi uygulama olarak kullan</div></div></div>
   <div style="display:flex;gap:8px">
-    <button onclick="pwaInstall()" style="background:#000;color:#00c8d7;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">Ekle</button>
+    <button onclick="pwaInstall()" style="background:#000;color:#00c8d7;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer" data-tr="Ekle" data-en="Add">Ekle</button>
     <button onclick="document.getElementById('pwa-install-bar').style.display='none'" style="background:rgba(0,0,0,.15);color:#000;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 </div>

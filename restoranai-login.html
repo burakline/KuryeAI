@@ -226,106 +226,116 @@
 <div class="top-bar"></div>
 <div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
 
-<a href="/restoranai" class="back-link">← Geri Dön</a>
+<button class="lang-toggle" onclick="toggleLang()" style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em;backdrop-filter:blur(8px)">EN</button>
+
+<a href="/restoranai" class="back-link" data-tr="← Geri Dön" data-en="← Go Back">← Geri Dön</a>
 
 <div class="card">
 
   <div class="logo-wrap">
     <img src="1000417932.png" alt="RestoranAI" onerror="this.style.display='none'"/>
     <div class="logo-name">Restoran<em>AI</em></div>
-    <div class="logo-sub">Akıllı İşletme Paneli</div>
+    <div class="logo-sub" data-tr="Akıllı İşletme Paneli" data-en="Smart Business Panel">Akıllı İşletme Paneli</div>
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
-    <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
+    <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')" data-tr="Giriş Yap" data-en="Sign In">Giriş Yap</button>
+    <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')" data-tr="Kayıt Ol" data-en="Sign Up">Kayıt Ol</button>
   </div>
 
   <!-- GİRİŞ -->
   <div class="tab-pane active" id="pane-giris">
-    <p class="form-title">Hoş Geldiniz <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></p>
-    <p class="form-sub">E-posta, telefon veya işletme ID ile giriş yapın.</p>
+    <p class="form-title" data-tr="Hoş Geldiniz <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block;vertical-align:middle'><path d='M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0'/><path d='M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2'/><path d='M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8'/><path d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/></svg>" data-en="Welcome <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block;vertical-align:middle'><path d='M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0'/><path d='M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2'/><path d='M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8'/><path d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/></svg>">Hoş Geldiniz <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></p>
+    <p class="form-sub" data-tr="E-posta, telefon veya işletme ID ile giriş yapın." data-en="Sign in with your email, phone or business ID.">E-posta, telefon veya işletme ID ile giriş yapın.</p>
 
     <div class="err-msg" id="err-msg"></div>
     <div class="success-msg" id="success-msg"></div>
 
     <div class="form-group">
-      <label class="form-label">E-posta / Telefon / ID</label>
+      <label class="form-label" data-tr="E-posta / Telefon / ID" data-en="Email / Phone / ID">E-posta / Telefon / ID</label>
       <input class="form-input" type="text" id="input-email"
-             placeholder="restoran@email.com veya RAI-XXXXXX" autocomplete="username"/>
+             placeholder="restoran@email.com veya RAI-XXXXXX" autocomplete="username"
+             data-tr-ph="restoran@email.com veya RAI-XXXXXX" data-en-ph="restaurant@email.com or RAI-XXXXXX"/>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Şifre</label>
+      <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
         <input class="form-input" type="password" id="input-password"
                placeholder="••••••••" autocomplete="current-password"/>
-        <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+        <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
       <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
         <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
-        Beni hatırla
+        <span data-tr="Beni hatırla" data-en="Remember me">Beni hatırla</span>
       </label>
       <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
          onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
-         onclick="doForgot(event)">Şifremi unuttum</a>
+         onclick="doForgot(event)" data-tr="Şifremi unuttum" data-en="Forgot password">Şifremi unuttum</a>
     </div>
 
     <button class="btn-submit" id="btn-login" onclick="doLogin()">
       <div class="spinner"></div>
-      <span class="btn-text">Giriş Yap →</span>
+      <span class="btn-text" data-tr="Giriş Yap →" data-en="Sign In →">Giriş Yap →</span>
     </button>
   </div>
 
   <!-- KAYIT -->
   <div class="tab-pane" id="pane-kayit">
-    <p class="form-title">Restoran Kaydı <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><line x1="3" x2="21" y1="6" y2="6"/><path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.4 3.5a8.1 8.1 0 0 0 15.8 1"/><line x1="3" x2="21" y1="18" y2="18"/></svg></p>
-    <p class="form-sub">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
+    <p class="form-title" data-tr="Restoran Kaydı <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block;vertical-align:middle'><line x1='3' x2='21' y1='6' y2='6'/><path d='M20 11a8.1 8.1 0 0 0-15.5-2m-.4 3.5a8.1 8.1 0 0 0 15.8 1'/><line x1='3' x2='21' y1='18' y2='18'/></svg>" data-en="Restaurant Registration <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='display:inline-block;vertical-align:middle'><line x1='3' x2='21' y1='6' y2='6'/><path d='M20 11a8.1 8.1 0 0 0-15.5-2m-.4 3.5a8.1 8.1 0 0 0 15.8 1'/><line x1='3' x2='21' y1='18' y2='18'/></svg>">Restoran Kaydı <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><line x1="3" x2="21" y1="6" y2="6"/><path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.4 3.5a8.1 8.1 0 0 0 15.8 1"/><line x1="3" x2="21" y1="18" y2="18"/></svg></p>
+    <p class="form-sub" data-tr="Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur." data-en="Verify your email after registration. Your account will be activated upon admin approval.">Kayıt sonrası e-postanızı doğrulayın. Admin onayı ile hesabınız aktif olur.</p>
 
     <div class="err-msg" id="kayit-err"></div>
     <div class="ok-msg" id="kayit-ok"></div>
 
     <div class="form-group">
-      <label class="form-label">İşletme Adı</label>
-      <input class="form-input" type="text" id="k-name" placeholder="Restoran / İşletme Adı"/>
+      <label class="form-label" data-tr="İşletme Adı" data-en="Business Name">İşletme Adı</label>
+      <input class="form-input" type="text" id="k-name" placeholder="Restoran / İşletme Adı"
+             data-tr-ph="Restoran / İşletme Adı" data-en-ph="Restaurant / Business Name"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Yetkili Kişi</label>
-      <input class="form-input" type="text" id="k-owner" placeholder="Ad Soyad"/>
+      <label class="form-label" data-tr="Yetkili Kişi" data-en="Contact Person">Yetkili Kişi</label>
+      <input class="form-input" type="text" id="k-owner" placeholder="Ad Soyad"
+             data-tr-ph="Ad Soyad" data-en-ph="Full Name"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Telefon</label>
-      <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"/>
+      <label class="form-label" data-tr="Telefon" data-en="Phone">Telefon</label>
+      <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"
+             data-tr-ph="05XX XXX XX XX" data-en-ph="05XX XXX XX XX"/>
     </div>
     <div class="form-group">
-      <label class="form-label">E-posta</label>
-      <input class="form-input" type="email" id="k-email" placeholder="restoran@email.com" autocomplete="username"/>
+      <label class="form-label" data-tr="E-posta" data-en="Email">E-posta</label>
+      <input class="form-input" type="email" id="k-email" placeholder="restoran@email.com" autocomplete="username"
+             data-tr-ph="restoran@email.com" data-en-ph="restaurant@email.com"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Şifre</label>
+      <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
-        <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"/>
-        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw',this)">Göster</button>
+        <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"
+               data-tr-ph="En az 6 karakter" data-en-ph="At least 6 characters"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw',this)" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Şifre Tekrar</label>
+      <label class="form-label" data-tr="Şifre Tekrar" data-en="Confirm Password">Şifre Tekrar</label>
       <div class="pw-wrap">
-        <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"/>
-        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw2',this)">Göster</button>
+        <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"
+               data-tr-ph="Şifreyi tekrar girin" data-en-ph="Re-enter your password"/>
+        <button class="pw-toggle" type="button" onclick="toggleKayitPw('k-pw2',this)" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
 
     <button class="btn-submit" id="btn-kayit" onclick="doKayit()">
       <div class="spinner"></div>
-      <span class="btn-text">Kayıt Ol →</span>
+      <span class="btn-text" data-tr="Kayıt Ol →" data-en="Sign Up →">Kayıt Ol →</span>
     </button>
   </div>
 </div>
 
+<script src="/lang.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
@@ -398,17 +408,25 @@
   const _urlTab = new URLSearchParams(location.search).get('tab');
   if (_urlTab === 'kayit') switchTab('kayit');
 
+  const _t = (tr, en) => (typeof getLang === 'function' && getLang() === 'en') ? en : tr;
+
   window.togglePw = function() {
     const inp = document.getElementById('input-password');
     const btn = document.getElementById('pw-btn');
     inp.type = inp.type === 'password' ? 'text' : 'password';
-    btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
+    const show = inp.type === 'password';
+    btn.textContent = show ? _t('Göster','Show') : _t('Gizle','Hide');
+    btn.setAttribute('data-tr', show ? 'Göster' : 'Gizle');
+    btn.setAttribute('data-en', show ? 'Show' : 'Hide');
   };
 
   window.toggleKayitPw = (id, btn) => {
     const el = document.getElementById(id);
     el.type = el.type === 'password' ? 'text' : 'password';
-    btn.textContent = el.type === 'password' ? 'Göster' : 'Gizle';
+    const show = el.type === 'password';
+    btn.textContent = show ? _t('Göster','Show') : _t('Gizle','Hide');
+    btn.setAttribute('data-tr', show ? 'Göster' : 'Gizle');
+    btn.setAttribute('data-en', show ? 'Show' : 'Hide');
   };
 
   window.doKayit = async function() {
@@ -423,9 +441,9 @@
     const ok    = document.getElementById('kayit-ok');
     err.classList.remove('show'); ok.classList.remove('show');
 
-    if (!name||!owner||!phone||!email||!pw||!pw2) { err.textContent='Tüm alanları doldurun.'; err.classList.add('show'); return; }
-    if (pw !== pw2) { err.textContent='Şifreler eşleşmiyor.'; err.classList.add('show'); return; }
-    if (pw.length < 6) { err.textContent='Şifre en az 6 karakter olmalı.'; err.classList.add('show'); return; }
+    if (!name||!owner||!phone||!email||!pw||!pw2) { err.textContent=_t('Tüm alanları doldurun.','Please fill in all fields.'); err.classList.add('show'); return; }
+    if (pw !== pw2) { err.textContent=_t('Şifreler eşleşmiyor.','Passwords do not match.'); err.classList.add('show'); return; }
+    if (pw.length < 6) { err.textContent=_t('Şifre en az 6 karakter olmalı.','Password must be at least 6 characters.'); err.classList.add('show'); return; }
 
     btn.classList.add('loading'); btn.disabled = true;
     try {
@@ -437,12 +455,19 @@
       });
       await sendEmailVerification(cred.user);
       await signOut(auth);
-      ok.textContent = `Kayıt başarılı! İşletme ID'niz: ${restoranId}. E-posta doğrulama linki gönderildi. Doğrulama sonrası admin onayı beklemeniz gerekiyor.`;
+      ok.textContent = _t(
+        `Kayıt başarılı! İşletme ID'niz: ${restoranId}. E-posta doğrulama linki gönderildi. Doğrulama sonrası admin onayı beklemeniz gerekiyor.`,
+        `Registration successful! Your business ID: ${restoranId}. A verification link has been sent to your email. After verification, please wait for admin approval.`
+      );
       ok.classList.add('show');
       ['k-name','k-owner','k-phone','k-email','k-pw','k-pw2'].forEach(id => document.getElementById(id).value='');
       setTimeout(() => window.switchTab('giris'), 6000);
     } catch(e) {
-      const msgs = { 'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.', 'auth/invalid-email':'Geçersiz e-posta.', 'auth/weak-password':'Şifre çok zayıf.' };
+      const msgs = {
+        'auth/email-already-in-use': _t('Bu e-posta zaten kayıtlı.','This email is already registered.'),
+        'auth/invalid-email': _t('Geçersiz e-posta.','Invalid email address.'),
+        'auth/weak-password': _t('Şifre çok zayıf.','Password is too weak.')
+      };
       err.textContent = msgs[e.code] || e.message;
       err.classList.add('show');
     }
@@ -455,13 +480,13 @@
       const q = query(collection(db,'users'), where('restoranId','==',input.toUpperCase()));
       const snap = await getDocs(q);
       if (!snap.empty) return snap.docs[0].data().email;
-      throw new Error('Bu ID ile kayıtlı restoran bulunamadı.');
+      throw new Error(_t('Bu ID ile kayıtlı restoran bulunamadı.','No restaurant found with this ID.'));
     }
     if (/^[0-9+\s\-()]{7,}$/.test(input)) {
       const q = query(collection(db,'users'), where('phone','==',input.replace(/\s/g,'')));
       const snap = await getDocs(q);
       if (!snap.empty) return snap.docs[0].data().email;
-      throw new Error('Bu telefon numarasıyla kayıtlı hesap bulunamadı.');
+      throw new Error(_t('Bu telefon numarasıyla kayıtlı hesap bulunamadı.','No account found with this phone number.'));
     }
     return input;
   }
@@ -470,7 +495,7 @@
   async function doDemoLogin(btn) {
     const DEMO_EMAIL = 'demo@kuryeai.com';
     const DEMO_PW    = '123456';
-    showSuccess('Demo yükleniyor, lütfen bekleyin…');
+    showSuccess(_t('Demo yükleniyor, lütfen bekleyin…','Loading demo, please wait…'));
     btn.classList.add('loading'); btn.disabled = true;
 
     try {
@@ -499,9 +524,9 @@
       btn.classList.remove('loading'); btn.disabled = false;
       console.warn('Demo login failed:', e.code);
       if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-        showError('Demo hesabı henüz oluşturulmamış. Lütfen admin ile iletişime geçin.');
+        showError(_t('Demo hesabı henüz oluşturulmamış. Lütfen admin ile iletişime geçin.','Demo account has not been created yet. Please contact the admin.'));
       } else {
-        showError('Demo girişi başarısız: ' + (e.message || 'Bilinmeyen hata'));
+        showError(_t('Demo girişi başarısız: ','Demo login failed: ') + (e.message || _t('Bilinmeyen hata','Unknown error')));
       }
     }
   }
@@ -513,8 +538,8 @@
     const btn       = document.getElementById('btn-login');
     hideMessages();
 
-    if (!inputVal)  { showError('Lütfen e-posta, telefon veya ID girin.'); return; }
-    if (!password)  { showError('Lütfen şifrenizi girin.'); return; }
+    if (!inputVal)  { showError(_t('Lütfen e-posta, telefon veya ID girin.','Please enter your email, phone or ID.')); return; }
+    if (!password)  { showError(_t('Lütfen şifrenizi girin.','Please enter your password.')); return; }
 
     // Demo kullanıcı özel akış
     if (inputVal.toLowerCase() === 'demo@kuryeai.com') {
@@ -532,7 +557,7 @@
 
       if (!snap.exists()) {
         await auth.signOut();
-        showError('Hesabınız henüz aktif edilmemiş. Başvurunuz inceleniyor.');
+        showError(_t('Hesabınız henüz aktif edilmemiş. Başvurunuz inceleniyor.','Your account has not been activated yet. Your application is being reviewed.'));
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
@@ -540,22 +565,22 @@
 
       if (data.role !== 'restoran' && data.role !== 'admin') {
         await auth.signOut();
-        showError('Bu hesap RestoranAI paneli için tanımlı değil.');
+        showError(_t('Bu hesap RestoranAI paneli için tanımlı değil.','This account is not registered for the RestoranAI panel.'));
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
       if (!cred.user.emailVerified) {
         await auth.signOut();
-        showError('E-posta adresinizi doğrulamanız gerekiyor. Lütfen gelen kutunuzu kontrol edin.');
+        showError(_t('E-posta adresinizi doğrulamanız gerekiyor. Lütfen gelen kutunuzu kontrol edin.','You need to verify your email address. Please check your inbox.'));
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
       if (data.status === 'pending') {
         await auth.signOut();
-        showError('Hesabınız henüz onaylanmamış. En kısa sürede incelenecektir.');
+        showError(_t('Hesabınız henüz onaylanmamış. En kısa sürede incelenecektir.','Your account has not been approved yet. It will be reviewed shortly.'));
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
       if (data.status === 'suspended') {
         await auth.signOut();
-        showError('Hesabınız askıya alınmıştır. destek@kuryeai.com ile iletişime geçin.');
+        showError(_t('Hesabınız askıya alınmıştır. destek@kuryeai.com ile iletişime geçin.','Your account has been suspended. Please contact destek@kuryeai.com.'));
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
@@ -565,15 +590,15 @@
       btn.classList.remove('loading'); btn.disabled = false;
       const c = err.code;
       if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found') {
-        showError('E-posta veya şifre hatalı.');
+        showError(_t('E-posta veya şifre hatalı.','Incorrect email or password.'));
       } else if (c === 'auth/too-many-requests') {
-        showError('Çok fazla deneme yapıldı. Lütfen birkaç dakika bekleyin.');
+        showError(_t('Çok fazla deneme yapıldı. Lütfen birkaç dakika bekleyin.','Too many attempts. Please wait a few minutes.'));
       } else if (c === 'auth/invalid-email') {
-        showError('Geçersiz e-posta adresi.');
+        showError(_t('Geçersiz e-posta adresi.','Invalid email address.'));
       } else if (c === 'auth/network-request-failed') {
-        showError('İnternet bağlantınızı kontrol edin.');
+        showError(_t('İnternet bağlantınızı kontrol edin.','Please check your internet connection.'));
       } else {
-        showError('Giriş yapılamadı. Lütfen tekrar deneyin.');
+        showError(_t('Giriş yapılamadı. Lütfen tekrar deneyin.','Login failed. Please try again.'));
       }
     }
   };
@@ -581,13 +606,13 @@
   window.doForgot = async function(e) {
     e.preventDefault();
     const inputVal = document.getElementById('input-email').value.trim();
-    if (!inputVal) { showError('Şifre sıfırlamak için önce e-posta adresinizi girin.'); return; }
+    if (!inputVal) { showError(_t('Şifre sıfırlamak için önce e-posta adresinizi girin.','Please enter your email address first to reset your password.')); return; }
     try {
       const email = inputVal.includes('@') ? inputVal : await resolveEmail(inputVal);
       await sendPasswordResetEmail(auth, email);
-      showSuccess('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.');
+      showSuccess(_t('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.','A password reset link has been sent to your email.'));
     } catch(err) {
-      showError(err.message || 'E-posta gönderilemedi. Adresinizi kontrol edin.');
+      showError(err.message || _t('E-posta gönderilemedi. Adresinizi kontrol edin.','Could not send email. Please check your address.'));
     }
   };
 
@@ -625,12 +650,12 @@ window.pwaInstall=async()=>{
   <div style="display:flex;align-items:center;gap:10px">
     <span style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
     <div>
-      <div style="font-size:13px;font-weight:700">Ana Ekrana Ekle</div>
-      <div style="font-size:11px;opacity:.8">RestoranAI'yi uygulama olarak kullan</div>
+      <div style="font-size:13px;font-weight:700" data-tr="Ana Ekrana Ekle" data-en="Add to Home Screen">Ana Ekrana Ekle</div>
+      <div style="font-size:11px;opacity:.8" data-tr="RestoranAI'yi uygulama olarak kullan" data-en="Use RestoranAI as an app">RestoranAI'yi uygulama olarak kullan</div>
     </div>
   </div>
   <div style="display:flex;gap:8px">
-    <button onclick="pwaInstall()" style="background:#000;color:#00c8d7;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">Ekle</button>
+    <button onclick="pwaInstall()" style="background:#000;color:#00c8d7;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer" data-tr="Ekle" data-en="Install">Ekle</button>
     <button onclick="document.getElementById('pwa-install-bar').style.display='none'" style="background:rgba(0,0,0,.15);color:#000;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 </div>

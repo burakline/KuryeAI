@@ -47,14 +47,15 @@
 </head>
 <body>
 <div class="page-loader" id="page-loader"><div class="spinner-r"></div></div>
+<button class="lang-toggle" onclick="toggleLang()" style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em;backdrop-filter:blur(8px)">EN</button>
 
 <div class="box">
   <div class="logo"><span class="izinci">İzinci</span>Kurye<span class="ai">AI</span></div>
-  <div class="logo-sub">İşveren Paneli</div>
+  <div class="logo-sub" data-tr="İşveren Paneli" data-en="Employer Panel">İşveren Paneli</div>
 
   <div class="tabs">
-    <button class="tab active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
-    <button class="tab" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
+    <button class="tab active" id="tab-giris" onclick="switchTab('giris')" data-tr="Giriş Yap" data-en="Sign In">Giriş Yap</button>
+    <button class="tab" id="tab-kayit" onclick="switchTab('kayit')" data-tr="Kayıt Ol" data-en="Sign Up">Kayıt Ol</button>
   </div>
 
   <div class="card">
@@ -62,11 +63,11 @@
     <div class="tab-pane active" id="pane-giris">
       <div class="err-box" id="giris-err"></div>
       <div class="form-group">
-        <label class="form-label">E-posta</label>
-        <input class="form-input" type="email" id="g-email" placeholder="isletme@email.com" autocomplete="username"/>
+        <label class="form-label" data-tr="E-posta" data-en="Email">E-posta</label>
+        <input class="form-input" type="email" id="g-email" placeholder="isletme@email.com" data-tr-ph="isletme@email.com" data-en-ph="business@email.com" autocomplete="username"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Şifre</label>
+        <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="g-pw" placeholder="••••••••" autocomplete="current-password"/>
           <button type="button" class="pw-eye" onclick="togglePw('g-pw',this)">👁</button>
@@ -74,11 +75,11 @@
       </div>
       <div class="remember-row">
         <label class="remember-left">
-          <input type="checkbox" id="g-remember"/> Beni hatırla
+          <input type="checkbox" id="g-remember"/> <span data-tr="Beni hatırla" data-en="Remember me">Beni hatırla</span>
         </label>
-        <button class="forgot-link" onclick="doForgot()">Şifremi unuttum</button>
+        <button class="forgot-link" onclick="doForgot()" data-tr="Şifremi unuttum" data-en="Forgot password">Şifremi unuttum</button>
       </div>
-      <button class="btn-primary" id="btn-giris" onclick="doGiris()">Giriş Yap →</button>
+      <button class="btn-primary" id="btn-giris" onclick="doGiris()" data-tr="Giriş Yap →" data-en="Sign In →">Giriş Yap →</button>
     </div>
 
     <!-- KAYIT -->
@@ -86,38 +87,39 @@
       <div class="err-box" id="kayit-err"></div>
       <div class="ok-box" id="kayit-ok"></div>
       <div class="form-group">
-        <label class="form-label">Ad Soyad / İşletme Adı</label>
-        <input class="form-input" type="text" id="k-name" placeholder="Ad Soyad veya İşletme Adı"/>
+        <label class="form-label" data-tr="Ad Soyad / İşletme Adı" data-en="Full Name / Business Name">Ad Soyad / İşletme Adı</label>
+        <input class="form-input" type="text" id="k-name" placeholder="Ad Soyad veya İşletme Adı" data-tr-ph="Ad Soyad veya İşletme Adı" data-en-ph="Full Name or Business Name"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Telefon</label>
+        <label class="form-label" data-tr="Telefon" data-en="Phone">Telefon</label>
         <input class="form-input" type="tel" id="k-phone" placeholder="05XX XXX XX XX"/>
       </div>
       <div class="form-group">
-        <label class="form-label">E-posta</label>
-        <input class="form-input" type="email" id="k-email" placeholder="isletme@email.com" autocomplete="username"/>
+        <label class="form-label" data-tr="E-posta" data-en="Email">E-posta</label>
+        <input class="form-input" type="email" id="k-email" placeholder="isletme@email.com" data-tr-ph="isletme@email.com" data-en-ph="business@email.com" autocomplete="username"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Şifre</label>
+        <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
         <div class="pw-wrap">
-          <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" autocomplete="new-password"/>
+          <input class="form-input" type="password" id="k-pw" placeholder="En az 6 karakter" data-tr-ph="En az 6 karakter" data-en-ph="At least 6 characters" autocomplete="new-password"/>
           <button type="button" class="pw-eye" onclick="togglePw('k-pw',this)">👁</button>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Şifre Tekrar</label>
+        <label class="form-label" data-tr="Şifre Tekrar" data-en="Confirm Password">Şifre Tekrar</label>
         <div class="pw-wrap">
-          <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" autocomplete="new-password"/>
+          <input class="form-input" type="password" id="k-pw2" placeholder="Şifreyi tekrar girin" data-tr-ph="Şifreyi tekrar girin" data-en-ph="Re-enter your password" autocomplete="new-password"/>
           <button type="button" class="pw-eye" onclick="togglePw('k-pw2',this)">👁</button>
         </div>
       </div>
-      <button class="btn-primary" id="btn-kayit" onclick="doKayit()">Kayıt Ol & E-posta Doğrula →</button>
+      <button class="btn-primary" id="btn-kayit" onclick="doKayit()" data-tr="Kayıt Ol &amp; E-posta Doğrula →" data-en="Sign Up &amp; Verify Email →">Kayıt Ol & E-posta Doğrula →</button>
     </div>
   </div>
 
-  <a href="/izincikuryeai" class="back-link">← İzinciKurye Ana Sayfasına Dön</a>
+  <a href="/izincikuryeai" class="back-link" data-tr="← İzinciKurye Ana Sayfasına Dön" data-en="← Back to İzinciKurye Home">← İzinciKurye Ana Sayfasına Dön</a>
 </div>
 
+<script src="/lang.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,

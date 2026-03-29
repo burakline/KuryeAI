@@ -54,17 +54,18 @@
 <body>
 <div class="bg-grid"></div>
 <div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
-<a href="/acilkuryeai" class="back-link">← Geri Dön</a>
+<button class="lang-toggle" onclick="toggleLang()" style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em;backdrop-filter:blur(8px)">EN</button>
+<a href="/acilkuryeai" class="back-link" data-tr="← Geri Dön" data-en="← Go Back">← Geri Dön</a>
 
 <div class="card">
   <div class="logo-wrap">
     <div class="logo-name"><span class="acil">Acil</span>Kurye<span class="ai">AI</span></div>
-    <div class="logo-sub">Kurye Paneli</div>
+    <div class="logo-sub" data-tr="Kurye Paneli" data-en="Courier Panel">Kurye Paneli</div>
   </div>
 
   <div class="tabs">
-    <div class="tab active" id="tab-login" onclick="showTab('login')">Giriş Yap</div>
-    <div class="tab" id="tab-register" onclick="showTab('register')">Kayıt Ol</div>
+    <div class="tab active" id="tab-login" onclick="showTab('login')" data-tr="Giriş Yap" data-en="Sign In">Giriş Yap</div>
+    <div class="tab" id="tab-register" onclick="showTab('register')" data-tr="Kayıt Ol" data-en="Sign Up">Kayıt Ol</div>
   </div>
 
   <div id="err-msg" class="err-msg"></div>
@@ -72,60 +73,61 @@
 
   <!-- GİRİŞ FORMU -->
   <div id="form-login">
-    <p class="form-title">Hoş Geldin 🛵</p>
-    <p class="form-sub">E-posta veya ID ile giriş yapın.</p>
+    <p class="form-title" data-tr="Hoş Geldin 🛵" data-en="Welcome 🛵">Hoş Geldin 🛵</p>
+    <p class="form-sub" data-tr="E-posta veya ID ile giriş yapın." data-en="Sign in with your email or ID.">E-posta veya ID ile giriş yapın.</p>
     <div class="form-group">
-      <label class="form-label">E-posta / ID</label>
-      <input class="form-input" type="text" id="l-email" placeholder="kurye@email.com veya KAI-XXXXXX"/>
+      <label class="form-label" data-tr="E-posta / ID" data-en="Email / ID">E-posta / ID</label>
+      <input class="form-input" type="text" id="l-email" placeholder="kurye@email.com veya KAI-XXXXXX" data-tr-ph="kurye@email.com veya KAI-XXXXXX" data-en-ph="courier@email.com or KAI-XXXXXX"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Şifre</label>
+      <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
         <input class="form-input" type="password" id="l-pw" placeholder="••••••••"/>
-        <button class="pw-toggle" onclick="togglePw('l-pw',this)">Göster</button>
+        <button class="pw-toggle" onclick="togglePw('l-pw',this)" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
       <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
-        <input type="checkbox" id="l-remember" style="width:15px;height:15px;accent-color:#00c8d7"/> Beni hatırla
+        <input type="checkbox" id="l-remember" style="width:15px;height:15px;accent-color:#00c8d7"/> <span data-tr="Beni hatırla" data-en="Remember me">Beni hatırla</span>
       </label>
-      <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none" onclick="doForgot(event)">Şifremi unuttum</a>
+      <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none" onclick="doForgot(event)" data-tr="Şifremi unuttum" data-en="Forgot password">Şifremi unuttum</a>
     </div>
     <button class="btn-submit" id="btn-login" onclick="doLogin()">
-      <div class="spinner"></div><span class="btn-text">Giriş Yap →</span>
+      <div class="spinner"></div><span class="btn-text" data-tr="Giriş Yap →" data-en="Sign In →">Giriş Yap →</span>
     </button>
   </div>
 
   <!-- KAYIT FORMU -->
   <div id="form-register" style="display:none">
-    <p class="form-title">Kurye Kaydı 🛵</p>
-    <p class="form-sub">Bilgilerini gir, e-posta doğrulamasından sonra sisteme giriş yapabilirsin.</p>
+    <p class="form-title" data-tr="Kurye Kaydı 🛵" data-en="Courier Registration 🛵">Kurye Kaydı 🛵</p>
+    <p class="form-sub" data-tr="Bilgilerini gir, e-posta doğrulamasından sonra sisteme giriş yapabilirsin." data-en="Enter your details, you can sign in after email verification.">Bilgilerini gir, e-posta doğrulamasından sonra sisteme giriş yapabilirsin.</p>
     <div class="form-group">
-      <label class="form-label">Ad Soyad</label>
-      <input class="form-input" type="text" id="r-name" placeholder="Adınız Soyadınız"/>
+      <label class="form-label" data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
+      <input class="form-input" type="text" id="r-name" placeholder="Adınız Soyadınız" data-tr-ph="Adınız Soyadınız" data-en-ph="Your Full Name"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Telefon</label>
+      <label class="form-label" data-tr="Telefon" data-en="Phone">Telefon</label>
       <input class="form-input" type="tel" id="r-phone" placeholder="05XX XXX XX XX"/>
     </div>
     <div class="form-group">
-      <label class="form-label">E-posta</label>
-      <input class="form-input" type="email" id="r-email" placeholder="kurye@email.com"/>
+      <label class="form-label" data-tr="E-posta" data-en="Email">E-posta</label>
+      <input class="form-input" type="email" id="r-email" placeholder="kurye@email.com" data-tr-ph="kurye@email.com" data-en-ph="courier@email.com"/>
     </div>
     <div class="form-group">
-      <label class="form-label">Şifre</label>
+      <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
-        <input class="form-input" type="password" id="r-pw" placeholder="En az 6 karakter"/>
-        <button class="pw-toggle" onclick="togglePw('r-pw',this)">Göster</button>
+        <input class="form-input" type="password" id="r-pw" placeholder="En az 6 karakter" data-tr-ph="En az 6 karakter" data-en-ph="At least 6 characters"/>
+        <button class="pw-toggle" onclick="togglePw('r-pw',this)" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
     <button class="btn-submit" id="btn-register" onclick="doRegister()">
-      <div class="spinner"></div><span class="btn-text">Kayıt Ol →</span>
+      <div class="spinner"></div><span class="btn-text" data-tr="Kayıt Ol →" data-en="Sign Up →">Kayıt Ol →</span>
     </button>
-    <p class="info-note">Kayıt olduktan sonra e-posta adresinize doğrulama linki gönderilecektir.</p>
+    <p class="info-note" data-tr="Kayıt olduktan sonra e-posta adresinize doğrulama linki gönderilecektir." data-en="A verification link will be sent to your email after registration.">Kayıt olduktan sonra e-posta adresinize doğrulama linki gönderilecektir.</p>
   </div>
 </div>
 
+<script src="/lang.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,

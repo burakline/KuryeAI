@@ -55,53 +55,55 @@
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
 <div class="page-loader" id="page-loader"><div class="loader-ring"></div></div>
+<button class="lang-toggle" onclick="toggleLang()" style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em;backdrop-filter:blur(8px)">EN</button>
 
 <div class="card">
   <div class="logo-wrap">
     <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
     <div class="logo-name">Admin<em>AI</em></div>
-    <div class="logo-sub">Yönetim Paneli</div>
+    <div class="logo-sub" data-tr="Yönetim Paneli" data-en="Management Panel">Yönetim Paneli</div>
   </div>
 
   <div style="display:flex;justify-content:center;margin-bottom:1.8rem">
-    <div class="admin-badge">🔐 Yetkili Erişim</div>
+    <div class="admin-badge" data-tr="🔐 Yetkili Erişim" data-en="🔐 Authorized Access">🔐 Yetkili Erişim</div>
   </div>
 
-  <p class="form-title">Admin Girişi</p>
-  <p class="form-sub">Yalnızca yetkili admin hesapları giriş yapabilir.</p>
+  <p class="form-title" data-tr="Admin Girişi" data-en="Admin Login">Admin Girişi</p>
+  <p class="form-sub" data-tr="Yalnızca yetkili admin hesapları giriş yapabilir." data-en="Only authorized admin accounts can sign in.">Yalnızca yetkili admin hesapları giriş yapabilir.</p>
 
   <div class="err-msg" id="err-msg"></div>
   <div class="success-msg" id="success-msg"></div>
 
   <div class="form-group">
-    <label class="form-label">E-posta</label>
+    <label class="form-label" data-tr="E-posta" data-en="Email">E-posta</label>
     <input class="form-input" type="email" id="input-email" placeholder="admin@kuryeai.com" autocomplete="email"/>
   </div>
 
   <div class="form-group">
-    <label class="form-label">Şifre</label>
+    <label class="form-label" data-tr="Şifre" data-en="Password">Şifre</label>
     <div class="pw-wrap">
-      <input class="form-input" type="password" id="input-password" placeholder="••••••••" autocomplete="current-password"/>
-      <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()">Göster</button>
+      <input class="form-input" type="password" id="input-password" placeholder="••••••••" autocomplete="current-password" data-tr-ph="••••••••" data-en-ph="••••••••"/>
+      <button class="pw-toggle" id="pw-btn" type="button" onclick="togglePw()" data-tr="Göster" data-en="Show">Göster</button>
     </div>
   </div>
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
     <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.8rem;color:var(--sub)">
       <input type="checkbox" id="remember-me" style="width:15px;height:15px;accent-color:var(--teal)"/>
-      Beni hatırla
+      <span data-tr="Beni hatırla" data-en="Remember me">Beni hatırla</span>
     </label>
     <a href="#" style="font-size:.78rem;color:var(--sub);text-decoration:none;transition:color .2s"
        onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--sub)'"
-       onclick="doForgot(event)">Şifremi unuttum</a>
+       onclick="doForgot(event)" data-tr="Şifremi unuttum" data-en="Forgot password">Şifremi unuttum</a>
   </div>
 
   <button class="btn-submit" id="btn-login" onclick="doLogin()">
     <div class="spinner"></div>
-    <span class="btn-text">Giriş Yap →</span>
+    <span class="btn-text" data-tr="Giriş Yap →" data-en="Sign In →">Giriş Yap →</span>
   </button>
 </div>
 
+<script src="/lang.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail,
@@ -152,8 +154,15 @@
   window.togglePw = function() {
     const inp = document.getElementById('input-password');
     const btn = document.getElementById('pw-btn');
+    const lang = (localStorage.getItem('lang') || 'tr');
     inp.type = inp.type === 'password' ? 'text' : 'password';
-    btn.textContent = inp.type === 'password' ? 'Göster' : 'Gizle';
+    if (inp.type === 'password') {
+      btn.textContent = lang === 'en' ? 'Show' : 'Göster';
+      btn.setAttribute('data-tr', 'Göster'); btn.setAttribute('data-en', 'Show');
+    } else {
+      btn.textContent = lang === 'en' ? 'Hide' : 'Gizle';
+      btn.setAttribute('data-tr', 'Gizle'); btn.setAttribute('data-en', 'Hide');
+    }
   };
 
   window.doLogin = async function() {
@@ -165,8 +174,9 @@
     document.getElementById('err-msg').classList.remove('show');
     document.getElementById('success-msg').classList.remove('show');
 
-    if (!email)    { showError('Lütfen e-posta adresinizi girin.'); return; }
-    if (!password) { showError('Lütfen şifrenizi girin.'); return; }
+    const lang = (localStorage.getItem('lang') || 'tr');
+    if (!email)    { showError(lang === 'en' ? 'Please enter your email address.' : 'Lütfen e-posta adresinizi girin.'); return; }
+    if (!password) { showError(lang === 'en' ? 'Please enter your password.' : 'Lütfen şifrenizi girin.'); return; }
 
     btn.classList.add('loading'); btn.disabled = true;
 
@@ -177,7 +187,7 @@
 
       if (!snap.exists() || snap.data().role !== 'admin') {
         await auth.signOut();
-        showError('Bu hesap admin yetkisine sahip değil.');
+        showError(lang === 'en' ? 'This account does not have admin privileges.' : 'Bu hesap admin yetkisine sahip değil.');
         btn.classList.remove('loading'); btn.disabled = false; return;
       }
 
@@ -187,11 +197,11 @@
       btn.classList.remove('loading'); btn.disabled = false;
       const c = err.code;
       if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found') {
-        showError('E-posta veya şifre hatalı.');
+        showError(lang === 'en' ? 'Incorrect email or password.' : 'E-posta veya şifre hatalı.');
       } else if (c === 'auth/too-many-requests') {
-        showError('Çok fazla deneme. Lütfen bekleyin.');
+        showError(lang === 'en' ? 'Too many attempts. Please wait.' : 'Çok fazla deneme. Lütfen bekleyin.');
       } else {
-        showError('Giriş yapılamadı. Lütfen tekrar deneyin.');
+        showError(lang === 'en' ? 'Login failed. Please try again.' : 'Giriş yapılamadı. Lütfen tekrar deneyin.');
       }
     }
   };
@@ -199,12 +209,13 @@
   window.doForgot = async function(e) {
     e.preventDefault();
     const email = document.getElementById('input-email').value.trim();
-    if (!email) { showError('Önce e-posta adresinizi girin.'); return; }
+    const lang = (localStorage.getItem('lang') || 'tr');
+    if (!email) { showError(lang === 'en' ? 'Please enter your email first.' : 'Önce e-posta adresinizi girin.'); return; }
     try {
       await sendPasswordResetEmail(auth, email);
-      showSuccess('Şifre sıfırlama bağlantısı gönderildi.');
+      showSuccess(lang === 'en' ? 'Password reset link has been sent.' : 'Şifre sıfırlama bağlantısı gönderildi.');
     } catch(err) {
-      showError('E-posta gönderilemedi.');
+      showError(lang === 'en' ? 'Could not send email.' : 'E-posta gönderilemedi.');
     }
   };
 

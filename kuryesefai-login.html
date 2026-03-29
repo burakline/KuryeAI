@@ -51,28 +51,30 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </head>
 <body>
 <div class="loader" id="loader"><div class="ring"></div></div>
+<button class="lang-toggle" onclick="toggleLang()" style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em;backdrop-filter:blur(8px)">EN</button>
 <div class="wrap">
   <div class="card">
     <div class="logo">
       <div class="logo-icon">⭐</div>
       <div class="logo-name">Kurye<em>Şef</em>AI</div>
-      <div class="logo-sub">Bölge Şefi Paneli</div>
+      <div class="logo-sub" data-tr="Bölge Şefi Paneli" data-en="Zone Chief Panel">Bölge Şefi Paneli</div>
     </div>
     <div class="err" id="err"></div>
-    <div class="fg"><label class="fl">E-posta</label><input class="fi" type="email" id="email" placeholder="sef@kuryeai.com" autocomplete="email"/></div>
+    <div class="fg"><label class="fl" data-tr="E-posta" data-en="Email">E-posta</label><input class="fi" type="email" id="email" placeholder="sef@kuryeai.com" autocomplete="email"/></div>
     <div class="fg">
-      <label class="fl">Şifre</label>
+      <label class="fl" data-tr="Şifre" data-en="Password">Şifre</label>
       <div class="pw-wrap">
         <input class="fi" type="password" id="pw" placeholder="••••••••" autocomplete="current-password"/>
-        <button class="pw-tog" id="pw-tog" onclick="togglePw()">Göster</button>
+        <button class="pw-tog" id="pw-tog" onclick="togglePw()" data-tr="Göster" data-en="Show">Göster</button>
       </div>
     </div>
     <button class="btn" id="login-btn" onclick="doLogin()">
-      <div class="spin"></div><span class="btxt">Giriş Yap →</span>
+      <div class="spin"></div><span class="btxt" data-tr="Giriş Yap →" data-en="Sign In →">Giriş Yap →</span>
     </button>
-    <div class="footer"><a href="/">← Ana Sayfaya Dön</a></div>
+    <div class="footer"><a href="/" data-tr="← Ana Sayfaya Dön" data-en="← Back to Home">← Ana Sayfaya Dön</a></div>
   </div>
 </div>
+<script src="/lang.js"></script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";

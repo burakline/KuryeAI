@@ -2389,27 +2389,25 @@ window.setPlan=async(uid,plan)=>{
 };
 
 window.setRestLocation=async(uid,address)=>{
-  const input=prompt('Restoran adresi girin (geocode ile koordinat bulunacak):',address||'');
-  if(!input)return;
+  const input=prompt('Restoran adresi girin:\n(Örn: Emrah Mah. Yavrukurt Sokak No 20 Keçiören)',address||'');
+  if(!input||!input.trim())return;
   try{
     showToast('📍 Konum aranıyor…','info');
-    const q=encodeURIComponent(input+', Ankara, Türkiye');
+    const q=encodeURIComponent(input.trim()+', Ankara, Türkiye');
     const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
     const d=await r.json();
-    if(!d||!d[0]){showToast('Adres bulunamadı. Daha detaylı girin.','err');return;}
+    if(!d||!d[0]){showToast('Adres bulunamadı. Daha detaylı yazın.','err');return;}
     const lat=parseFloat(d[0].lat);
     const lng=parseFloat(d[0].lon);
+    if(!confirm('Bulunan konum:\n'+d[0].display_name+'\n\nKoordinat: '+lat.toFixed(5)+', '+lng.toFixed(5)+'\n\nOnaylıyor musunuz?'))return;
     // Firestore güncelle
-    await updateDoc(doc(db,'users',uid),{lat,lng,address:input});
-    // RTDB settings güncelle
-    await _rtdbUpdate(`/restaurants/${uid}/settings`,{rest_lat:lat,rest_lng:lng,rest_address:input});
-    allUsers=allUsers.map(u=>u.id===uid?{...u,lat,lng,address:input}:u);
+    await updateDoc(doc(db,'users',uid),{lat,lng,address:input.trim()});
+    // RTDB settings güncelle (PATCH — sadece bu alanları günceller, diğerlerini silmez)
+    await _rtdbUpdate(`/restaurants/${uid}/settings`,{rest_lat:lat,rest_lng:lng,rest_address:input.trim()});
+    allUsers=allUsers.map(u=>u.id===uid?{...u,lat,lng,address:input.trim()}:u);
     renderRestoranlar();
-    // Haritadaki pini güncelle
-    if(mapObj&&_restoranMarkers[uid]){
-      _restoranMarkers[uid].setLatLng([lat,lng]);
-    }
-    showToast(`✓ Konum güncellendi: ${lat.toFixed(4)}, ${lng.toFixed(4)}`,'ok');
+    if(mapObj&&_restoranMarkers[uid]){_restoranMarkers[uid].setLatLng([lat,lng]);}
+    showToast('✓ Restoran konumu güncellendi!','ok');
   }catch(e){showToast('Hata: '+e.message,'err');}
 };
 

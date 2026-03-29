@@ -3900,40 +3900,46 @@ window.printQR=()=>{
 window.useMyLocation=()=>{
   if(!navigator.geolocation){showToast('GPS desteklenmiyor','error');return;}
   showToast('📍 Konum alınıyor…','info');
-  navigator.geolocation.getCurrentPosition(pos=>{
+  navigator.geolocation.getCurrentPosition(async pos=>{
     settings.rest_lat=pos.coords.latitude;
     settings.rest_lng=pos.coords.longitude;
-    showToast('✓ Konum alındı! Kaydet butonuna basın.','success');
+    try{
+      await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
+      if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
+      showToast('✓ Konum güncellendi ve kaydedildi!','success');
+    }catch(e){showToast('Konum alındı ama kayıt başarısız: '+e.message,'error');}
   },()=>showToast('Konum alınamadı. Lütfen GPS izni verin.','error'),{enableHighAccuracy:true,timeout:10000});
 };
 
 window.saveSettings=async()=>{
-  settings.rest_name=document.getElementById("rest-name").value;
-  settings.rest_address=document.getElementById("rest-address").value;
-  settings.rest_phone=document.getElementById("rest-phone").value;
-  const _g=id=>document.getElementById(id).textContent.trim();
-  settings.rest_hours=`${_g('hours-oh')}:${_g('hours-om')} — ${_g('hours-ch')}:${_g('hours-cm')}`;
-  settings.custom_base=parseFloat(document.getElementById("custom-base").value)||0;
-  settings.custom_km=parseFloat(document.getElementById("custom-km").value)||0;
-  // Adres girildiyse geocode ile koordinat güncelle
-  if(settings.rest_address&&settings.rest_address.length>5){
-    try{
-      const q=encodeURIComponent(settings.rest_address+', Ankara, Türkiye');
-      const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
-      const d=await r.json();
-      if(d&&d[0]){
-        settings.rest_lat=parseFloat(d[0].lat);
-        settings.rest_lng=parseFloat(d[0].lon);
-        showToast('📍 Konum otomatik güncellendi','info');
-      }
-    }catch(e){console.warn('Geocode hatası:',e);}
-  }
   try{
+    settings.rest_name=document.getElementById("rest-name")?.value||settings.rest_name||'';
+    settings.rest_address=document.getElementById("rest-address")?.value||settings.rest_address||'';
+    settings.rest_phone=document.getElementById("rest-phone")?.value||settings.rest_phone||'';
+    const _g=id=>{const el=document.getElementById(id);return el?el.textContent.trim():'00';};
+    settings.rest_hours=`${_g('hours-oh')}:${_g('hours-om')} — ${_g('hours-ch')}:${_g('hours-cm')}`;
+    settings.custom_base=parseFloat(document.getElementById("custom-base")?.value)||0;
+    settings.custom_km=parseFloat(document.getElementById("custom-km")?.value)||0;
+    // Adres girildiyse geocode ile koordinat güncelle (GPS butonu kullanılmadıysa)
+    if(settings.rest_address&&settings.rest_address.length>5&&!settings.rest_lat){
+      try{
+        const q=encodeURIComponent(settings.rest_address+', Ankara, Türkiye');
+        const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1');
+        const d=await r.json();
+        if(d&&d[0]){
+          settings.rest_lat=parseFloat(d[0].lat);
+          settings.rest_lng=parseFloat(d[0].lon);
+        }
+      }catch(e){console.warn('Geocode hatası:',e);}
+    }
     await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
     // Haritadaki kendi pinimizi yeni isim/konum ile güncelle
     if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
     showToast('✓ Ayarlar kaydedildi');
-  }catch{showToast("Kayıt başarısız","error")}
+  }catch(e){
+    console.error('saveSettings hata:',e);
+    showToast("Kayıt başarısız: "+e.message,"error");
+  }
 };
 
 window.confirmReset=async()=>{

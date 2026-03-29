@@ -3906,13 +3906,15 @@ window.saveSettings=async()=>{
     settings.rest_hours=`${_g('hours-oh')}:${_g('hours-om')} — ${_g('hours-ch')}:${_g('hours-cm')}`;
     settings.custom_base=parseFloat(document.getElementById("custom-base")?.value)||0;
     settings.custom_km=parseFloat(document.getElementById("custom-km")?.value)||0;
-    // rest_lat ve rest_lng admin tarafından belirlenir, restoran değiştiremez
-    const savedLat=settings.rest_lat;
-    const savedLng=settings.rest_lng;
-    await _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,settings);
-    // Admin'in belirlediği koordinatları koru
-    if(savedLat)settings.rest_lat=savedLat;
-    if(savedLng)settings.rest_lng=savedLng;
+    // RTDB'ye sadece değişen alanları güncelle (admin'in belirlediği koordinatları silmez)
+    await _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{
+      rest_name:settings.rest_name,
+      rest_address:settings.rest_address,
+      rest_phone:settings.rest_phone,
+      rest_hours:settings.rest_hours,
+      custom_base:settings.custom_base,
+      custom_km:settings.custom_km
+    });
     // Haritadaki kendi pinimizi yeni isim/konum ile güncelle
     if(mapInstance){ if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;} _addRestPinToMap(); }
     showToast('✓ Ayarlar kaydedildi');

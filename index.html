@@ -545,13 +545,13 @@
 
 <!-- ÇEREZ BİLDİRİMİ -->
 <div class="cookie-banner" id="cookie-banner">
-  <p class="cookie-text">
+  <p class="cookie-text" data-tr="Size daha iyi deneyim sunmak için çerezler kullanıyoruz. <a href='/kvkk'>Gizlilik Politikası</a> ve <a href='/kullanim-kosullari'>Kullanım Koşulları</a>'nı kabul ediyorsunuz." data-en="We use cookies to provide a better experience. You accept our <a href='/kvkk'>Privacy Policy</a> and <a href='/kullanim-kosullari'>Terms of Use</a>.">
     Size daha iyi deneyim sunmak için çerezler kullanıyoruz.
     <a href="/kvkk">Gizlilik Politikası</a> ve <a href="/kullanim-kosullari">Kullanım Koşulları</a>'nı kabul ediyorsunuz.
   </p>
   <div class="cookie-btns">
-    <button class="cookie-reject" onclick="rejectCookies()">Reddet</button>
-    <button class="cookie-accept" onclick="acceptCookies()">Kabul Et</button>
+    <button class="cookie-reject" onclick="rejectCookies()" data-tr="Reddet" data-en="Reject">Reddet</button>
+    <button class="cookie-accept" onclick="acceptCookies()" data-tr="Kabul Et" data-en="Accept">Kabul Et</button>
   </div>
 </div>
 
@@ -568,14 +568,14 @@
     <span class="nav-brand">Kurye<em>AI</em></span>
   </a>
   <ul class="nav-links">
-    <li><a href="#urunler">Ürünler</a></li>
-    <li><a href="/fiyatlandirma">Fiyatlar</a></li>
-    <li><a href="#nasil-calisir">Nasıl Çalışır</a></li>
-    <li><a href="#sss">SSS</a></li>
+    <li><a href="#urunler" data-tr="Ürünler" data-en="Products">Ürünler</a></li>
+    <li><a href="/fiyatlandirma" data-tr="Fiyatlar" data-en="Pricing">Fiyatlar</a></li>
+    <li><a href="#nasil-calisir" data-tr="Nasıl Çalışır" data-en="How It Works">Nasıl Çalışır</a></li>
+    <li><a href="#sss" data-tr="SSS" data-en="FAQ">SSS</a></li>
   </ul>
   <div class="nav-right">
-<a href="/restoranai-login" class="nav-login restoran" title="Restoran Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label">Restoran Girişi</span><span class="nav-login-short">Restoran</span></a>
-    <a href="/kuryeai-login" class="nav-login kurye" title="Kurye Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label">Kurye Girişi</span><span class="nav-login-short">Kurye</span></a>
+<a href="/restoranai-login" class="nav-login restoran" title="Restoran Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label" data-tr="Restoran Girişi" data-en="Restaurant Login">Restoran Girişi</span><span class="nav-login-short">Restoran</span></a>
+    <a href="/kuryeai-login" class="nav-login kurye" title="Kurye Girişi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nav-login-label" data-tr="Kurye Girişi" data-en="Courier Login">Kurye Girişi</span><span class="nav-login-short" data-tr="Kurye" data-en="Courier">Kurye</span></a>
     <!-- Premium tema toggle -->
     <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
       <span class="ttp-track">
@@ -595,7 +595,8 @@
         </svg>
       </span>
     </button>
-    <a href="/acilkuryeai" class="btn-pill">Acil Kurye</a>
+    <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid var(--border,rgba(255,255,255,.15));border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--gray-lt,#999);transition:border-color .2s,color .2s;letter-spacing:.05em" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border,rgba(255,255,255,.15))';this.style.color='var(--gray-lt,#999)'">EN</button>
+    <a href="/acilkuryeai" class="btn-pill" data-tr="Acil Kurye" data-en="Emergency">Acil Kurye</a>
   </div>
 </nav>
 
@@ -604,29 +605,29 @@
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-glow-right"></div>
-  <p class="hero-eyebrow"><span class="pulse-dot"></span>AI Teknoloji ve Lojistik</p>
+  <p class="hero-eyebrow" data-tr="<span class='pulse-dot'></span>AI Teknoloji ve Lojistik" data-en="<span class='pulse-dot'></span>AI Technology &amp; Logistics"><span class="pulse-dot"></span>AI Teknoloji ve Lojistik</p>
       <div class="hero-logo-wrap">
         <img src="1000414615.png" alt="KuryeAI" onerror="this.style.display='none'"/>
       </div>
-      <h1 class="hero-h1">
+      <h1 class="hero-h1" data-tr="Türkiye'nin <span class='teal'>akıllı</span><br/>kurye platformu.<br/><span class='silver'>7/24 hızlı teslimat.</span>" data-en="Turkey's <span class='teal'>smart</span><br/>courier platform.<br/><span class='silver'>24/7 fast delivery.</span>">
         Türkiye'nin <span class="teal">akıllı</span><br/>
         kurye platformu.<br/>
         <span class="silver">7/24 hızlı teslimat.</span>
       </h1>
-      <p class="hero-sub">Acil Kurye, İzinci Kurye, Evrak Kuryesi, Yedek Parça Kuryesi, Eczane Kuryesi, Tıbbi Kurye, Restoran Adisyon, Mutfak, Masa ve Paket Sipariş Yönetimi. Türkiye'de ilk ve tek gerçek yapay zeka destekli kurye teslimat yönetim platformu.</p>
+      <p class="hero-sub" data-tr="Acil Kurye, İzinci Kurye, Evrak Kuryesi, Yedek Parça Kuryesi, Eczane Kuryesi, Tıbbi Kurye, Restoran Adisyon, Mutfak, Masa ve Paket Sipariş Yönetimi. Türkiye'de ilk ve tek gerçek yapay zeka destekli kurye teslimat yönetim platformu." data-en="Emergency Courier, Substitute Courier, Document Courier, Spare Parts Courier, Pharmacy Courier, Medical Courier, Restaurant POS, Kitchen, Dine-in &amp; Delivery Order Management. Turkey's first and only true AI-powered courier delivery management platform.">Acil Kurye, İzinci Kurye, Evrak Kuryesi, Yedek Parça Kuryesi, Eczane Kuryesi, Tıbbi Kurye, Restoran Adisyon, Mutfak, Masa ve Paket Sipariş Yönetimi. Türkiye'de ilk ve tek gerçek yapay zeka destekli kurye teslimat yönetim platformu.</p>
       <div class="hero-btns">
-        <a href="/acilkuryeai" class="btn-lg btn-red"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye İste</a>
-        <a href="#urunler" class="btn-lg btn-teal">Ürünleri Keşfet <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
-        <a href="/restoranai-login?demo=1" class="btn-lg btn-demo"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></span>Demo'yu Dene</a>
+        <a href="/acilkuryeai" class="btn-lg btn-red" data-tr="<span style='display:inline-flex;vertical-align:middle;margin-right:6px'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg></span>Acil Kurye İste" data-en="<span style='display:inline-flex;vertical-align:middle;margin-right:6px'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg></span>Request Emergency Courier"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Acil Kurye İste</a>
+        <a href="#urunler" class="btn-lg btn-teal" data-tr="Ürünleri Keşfet <span style='display:inline-flex;vertical-align:middle;margin-left:4px'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg></span>" data-en="Explore Products <span style='display:inline-flex;vertical-align:middle;margin-left:4px'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg></span>">Ürünleri Keşfet <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+        <a href="/restoranai-login?demo=1" class="btn-lg btn-demo" data-tr="<span style='display:inline-flex;vertical-align:middle;margin-right:6px'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><line x1='6' x2='10' y1='12' y2='12'/><line x1='8' x2='8' y1='10' y2='14'/><line x1='15' x2='15.01' y1='13' y2='13'/><line x1='18' x2='18.01' y1='11' y2='11'/><rect width='20' height='12' x='2' y='6' rx='2'/></svg></span>Demo'yu Dene" data-en="<span style='display:inline-flex;vertical-align:middle;margin-right:6px'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><line x1='6' x2='10' y1='12' y2='12'/><line x1='8' x2='8' y1='10' y2='14'/><line x1='15' x2='15.01' y1='13' y2='13'/><line x1='18' x2='18.01' y1='11' y2='11'/><rect width='20' height='12' x='2' y='6' rx='2'/></svg></span>Try Demo"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg></span>Demo'yu Dene</a>
         <a href="/izincikuryeai" class="btn-lg btn-green"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>İzinciKuryeAI</a>
       </div>
-  <div class="scroll-ind"><div class="scroll-line"></div><span>Kaydır</span></div>
+  <div class="scroll-ind"><div class="scroll-line"></div><span data-tr="Kaydır" data-en="Scroll">Kaydır</span></div>
 </section>
 
 <!-- TRUST STRIP -->
 <div class="trust-strip">
   <div class="trust-inner">
-    <span class="trust-lbl">Entegre Çalışır</span>
+    <span class="trust-lbl" data-tr="Entegre Çalışır" data-en="Integrated With">Entegre Çalışır</span>
     <div class="trust-sep"></div>
     <div class="trust-pills">
       <span class="trust-pill">
@@ -651,7 +652,7 @@
       </span>
       <span class="trust-pill">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        Masa Siparişi
+        <span data-tr="Masa Siparişi" data-en="Dine-in Orders">Masa Siparişi</span>
       </span>
     </div>
   </div>
@@ -660,22 +661,22 @@
 <!-- TICKER -->
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
-    <span class="ti accent">Acil Kurye</span><span class="ti">Türkiye Kurye</span>
-    <span class="ti accent">İzinci Kurye</span><span class="ti">Tıbbi Kurye</span>
-    <span class="ti">Eczane Kuryesi</span><span class="ti accent">İlaç Kuryesi</span>
-    <span class="ti">Sabit Kurye</span><span class="ti">Havuz Kurye</span>
-    <span class="ti accent">Evrak Kuryesi</span><span class="ti">VIP Kurye</span>
-    <span class="ti">SIM Kart Dağıtım</span><span class="ti accent">Express Kurye</span>
-    <span class="ti">Kredi Kartı Dağıtım</span><span class="ti">Gazete Kuryesi</span>
+    <span class="ti accent" data-tr="Acil Kurye" data-en="Emergency Courier">Acil Kurye</span><span class="ti" data-tr="Türkiye Kurye" data-en="Turkey Courier">Türkiye Kurye</span>
+    <span class="ti accent" data-tr="İzinci Kurye" data-en="Substitute Courier">İzinci Kurye</span><span class="ti" data-tr="Tıbbi Kurye" data-en="Medical Courier">Tıbbi Kurye</span>
+    <span class="ti" data-tr="Eczane Kuryesi" data-en="Pharmacy Courier">Eczane Kuryesi</span><span class="ti accent" data-tr="İlaç Kuryesi" data-en="Medicine Courier">İlaç Kuryesi</span>
+    <span class="ti" data-tr="Sabit Kurye" data-en="Dedicated Courier">Sabit Kurye</span><span class="ti" data-tr="Havuz Kurye" data-en="Pool Courier">Havuz Kurye</span>
+    <span class="ti accent" data-tr="Evrak Kuryesi" data-en="Document Courier">Evrak Kuryesi</span><span class="ti" data-tr="VIP Kurye" data-en="VIP Courier">VIP Kurye</span>
+    <span class="ti" data-tr="SIM Kart Dağıtım" data-en="SIM Card Distribution">SIM Kart Dağıtım</span><span class="ti accent" data-tr="Express Kurye" data-en="Express Courier">Express Kurye</span>
+    <span class="ti" data-tr="Kredi Kartı Dağıtım" data-en="Credit Card Distribution">Kredi Kartı Dağıtım</span><span class="ti" data-tr="Gazete Kuryesi" data-en="Newspaper Courier">Gazete Kuryesi</span>
     <span class="ti accent">RestoranAI</span><span class="ti">KuryeAI</span>
     <!-- duplicate -->
-    <span class="ti accent">Acil Kurye</span><span class="ti">Türkiye Kurye</span>
-    <span class="ti accent">İzinci Kurye</span><span class="ti">Tıbbi Kurye</span>
-    <span class="ti">Eczane Kuryesi</span><span class="ti accent">İlaç Kuryesi</span>
-    <span class="ti">Sabit Kurye</span><span class="ti">Havuz Kurye</span>
-    <span class="ti accent">Evrak Kuryesi</span><span class="ti">VIP Kurye</span>
-    <span class="ti">SIM Kart Dağıtım</span><span class="ti accent">Express Kurye</span>
-    <span class="ti">Kredi Kartı Dağıtım</span><span class="ti">Gazete Kuryesi</span>
+    <span class="ti accent" data-tr="Acil Kurye" data-en="Emergency Courier">Acil Kurye</span><span class="ti" data-tr="Türkiye Kurye" data-en="Turkey Courier">Türkiye Kurye</span>
+    <span class="ti accent" data-tr="İzinci Kurye" data-en="Substitute Courier">İzinci Kurye</span><span class="ti" data-tr="Tıbbi Kurye" data-en="Medical Courier">Tıbbi Kurye</span>
+    <span class="ti" data-tr="Eczane Kuryesi" data-en="Pharmacy Courier">Eczane Kuryesi</span><span class="ti accent" data-tr="İlaç Kuryesi" data-en="Medicine Courier">İlaç Kuryesi</span>
+    <span class="ti" data-tr="Sabit Kurye" data-en="Dedicated Courier">Sabit Kurye</span><span class="ti" data-tr="Havuz Kurye" data-en="Pool Courier">Havuz Kurye</span>
+    <span class="ti accent" data-tr="Evrak Kuryesi" data-en="Document Courier">Evrak Kuryesi</span><span class="ti" data-tr="VIP Kurye" data-en="VIP Courier">VIP Kurye</span>
+    <span class="ti" data-tr="SIM Kart Dağıtım" data-en="SIM Card Distribution">SIM Kart Dağıtım</span><span class="ti accent" data-tr="Express Kurye" data-en="Express Courier">Express Kurye</span>
+    <span class="ti" data-tr="Kredi Kartı Dağıtım" data-en="Credit Card Distribution">Kredi Kartı Dağıtım</span><span class="ti" data-tr="Gazete Kuryesi" data-en="Newspaper Courier">Gazete Kuryesi</span>
     <span class="ti accent">RestoranAI</span><span class="ti">KuryeAI</span>
   </div>
 </div>
@@ -684,35 +685,35 @@
 <section class="section acil" id="acil-kurye">
   <div class="acil-inner">
     <div class="reveal">
-      <div class="acil-badge"><span class="acil-dot"></span>7/24 Aktif</div>
-      <h2 class="acil-title">Acil Kurye<br/><span>İhtiyacınız mı Var?</span></h2>
-      <p class="acil-desc">Türkiye genelinde anlık kurye hizmeti. Tıbbi malzeme, evrak, ilaç, kişisel gönderi — ne olursa olsun. Formu doldurun, WhatsApp'tan anında iletişime geçelim.</p>
+      <div class="acil-badge" data-tr="<span class='acil-dot'></span>7/24 Aktif" data-en="<span class='acil-dot'></span>24/7 Active"><span class="acil-dot"></span>7/24 Aktif</div>
+      <h2 class="acil-title" data-tr="Acil Kurye<br/><span>İhtiyacınız mı Var?</span>" data-en="Need an<br/><span>Emergency Courier?</span>">Acil Kurye<br/><span>İhtiyacınız mı Var?</span></h2>
+      <p class="acil-desc" data-tr="Türkiye genelinde anlık kurye hizmeti. Tıbbi malzeme, evrak, ilaç, kişisel gönderi — ne olursa olsun. Formu doldurun, WhatsApp'tan anında iletişime geçelim." data-en="Instant courier service across Turkey. Medical supplies, documents, medicine, personal deliveries — whatever you need. Fill out the form and we'll contact you instantly via WhatsApp.">Türkiye genelinde anlık kurye hizmeti. Tıbbi malzeme, evrak, ilaç, kişisel gönderi — ne olursa olsun. Formu doldurun, WhatsApp'tan anında iletişime geçelim.</p>
       <div class="acil-price">
-        <div class="acil-price-row"><span class="acil-price-l">Saatlik ücret</span><span class="acil-price-v">350 ₺ / saat</span></div>
-        <div class="acil-price-row"><span class="acil-price-l">KM başı ücret</span><span class="acil-price-v">+ 12 ₺ / km</span></div>
-        <div class="acil-price-row"><span class="acil-price-l">Ödeme</span><span class="acil-price-v">Teslimat sırasında</span></div>
+        <div class="acil-price-row"><span class="acil-price-l" data-tr="Saatlik ücret" data-en="Hourly rate">Saatlik ücret</span><span class="acil-price-v" data-tr="350 ₺ / saat" data-en="350 ₺ / hour">350 ₺ / saat</span></div>
+        <div class="acil-price-row"><span class="acil-price-l" data-tr="KM başı ücret" data-en="Per KM rate">KM başı ücret</span><span class="acil-price-v">+ 12 ₺ / km</span></div>
+        <div class="acil-price-row"><span class="acil-price-l" data-tr="Ödeme" data-en="Payment">Ödeme</span><span class="acil-price-v" data-tr="Teslimat sırasında" data-en="Upon delivery">Teslimat sırasında</span></div>
       </div>
       <a href="/acilkuryeai" class="btn-lg btn-red" style="display:inline-flex"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg></span>Hemen Başvur <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
       <div class="acil-cats">
-        <span class="acil-cat">Tıbbi Kurye</span>
-        <span class="acil-cat">Eczane Kuryesi</span>
-        <span class="acil-cat">İlaç Kuryesi</span>
-        <span class="acil-cat">Evrak Kuryesi</span>
-        <span class="acil-cat">VIP Kurye</span>
-        <span class="acil-cat">Express Kurye</span>
-        <span class="acil-cat">SIM Kart Dağıtım</span>
-        <span class="acil-cat">Kredi Kartı Dağıtım</span>
-        <span class="acil-cat">Gazete Kuryesi</span>
-        <span class="acil-cat">Kişisel Kurye</span>
+        <span class="acil-cat" data-tr="Tıbbi Kurye" data-en="Medical Courier">Tıbbi Kurye</span>
+        <span class="acil-cat" data-tr="Eczane Kuryesi" data-en="Pharmacy Courier">Eczane Kuryesi</span>
+        <span class="acil-cat" data-tr="İlaç Kuryesi" data-en="Medicine Courier">İlaç Kuryesi</span>
+        <span class="acil-cat" data-tr="Evrak Kuryesi" data-en="Document Courier">Evrak Kuryesi</span>
+        <span class="acil-cat" data-tr="VIP Kurye" data-en="VIP Courier">VIP Kurye</span>
+        <span class="acil-cat" data-tr="Express Kurye" data-en="Express Courier">Express Kurye</span>
+        <span class="acil-cat" data-tr="SIM Kart Dağıtım" data-en="SIM Card Distribution">SIM Kart Dağıtım</span>
+        <span class="acil-cat" data-tr="Kredi Kartı Dağıtım" data-en="Credit Card Distribution">Kredi Kartı Dağıtım</span>
+        <span class="acil-cat" data-tr="Gazete Kuryesi" data-en="Newspaper Courier">Gazete Kuryesi</span>
+        <span class="acil-cat" data-tr="Kişisel Kurye" data-en="Personal Courier">Kişisel Kurye</span>
       </div>
     </div>
     <div class="acil-card reveal">
-      <p style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:1rem">Hızlı Bilgi Formu</p>
-      <p style="font-size:.88rem;color:var(--gray-lt);margin-bottom:1.5rem;line-height:1.6">Detaylı bilgi için <a href="/acilkuryeai" style="color:var(--red);text-decoration:none;font-weight:700">AcilKuryeAI sayfasına</a> gidin. Ya da direkt WhatsApp'tan yazın:</p>
+      <p style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-lt);margin-bottom:1rem" data-tr="Hızlı Bilgi Formu" data-en="Quick Info Form">Hızlı Bilgi Formu</p>
+      <p style="font-size:.88rem;color:var(--gray-lt);margin-bottom:1.5rem;line-height:1.6" data-tr="Detaylı bilgi için <a href='/acilkuryeai' style='color:var(--red);text-decoration:none;font-weight:700'>AcilKuryeAI sayfasına</a> gidin. Ya da direkt WhatsApp'tan yazın:" data-en="Visit the <a href='/acilkuryeai' style='color:var(--red);text-decoration:none;font-weight:700'>AcilKuryeAI page</a> for details. Or message us directly on WhatsApp:">Detaylı bilgi için <a href="/acilkuryeai" style="color:var(--red);text-decoration:none;font-weight:700">AcilKuryeAI sayfasına</a> gidin. Ya da direkt WhatsApp'tan yazın:</p>
       <a href="https://wa.me/905072171995?text=Merhaba!%20Acil%20kurye%20ihtiyacım%20var.%20%0A%0AGönderici%20Adı:%20%0AGönderim%20Adresi:%20%0ATeslimat%20Adresi:%20%0AGönderi%20Türü:%20%0ATeslim%20Zamanı:%20" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25d366;color:#fff;font-size:.92rem;font-weight:700;padding:.9rem;border-radius:999px;text-decoration:none;transition:background .2s;margin-bottom:1rem">
         <span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>WhatsApp ile Acil Talep
       </a>
-<p style="font-size:.72rem;color:var(--gray);text-align:center;margin-top:1rem">Mesai saatleri dışında da 7/24 hizmetinizdeyiz.</p>
+<p style="font-size:.72rem;color:var(--gray);text-align:center;margin-top:1rem" data-tr="Mesai saatleri dışında da 7/24 hizmetinizdeyiz." data-en="We are at your service 24/7, even outside business hours.">Mesai saatleri dışında da 7/24 hizmetinizdeyiz.</p>
     </div>
   </div>
 </section>
@@ -721,24 +722,24 @@
 <section class="section izinci" id="izinci">
   <div class="izinci-inner">
     <div class="reveal">
-      <p class="lbl">Türkiye'de Bir İlk</p>
+      <p class="lbl" data-tr="Türkiye'de Bir İlk" data-en="A First in Turkey">Türkiye'de Bir İlk</p>
       <h2 class="h2"><span style="color:var(--green)">İzinci</span>Kurye<em style="font-style:normal;color:var(--teal)">AI</em></h2>
-      <p class="body-lg">İzinli kurye yerine bakıyorsunuz? Yoksa izinci kurye olarak çalışmak mı istiyorsunuz? Türkiye'nin ilk dijital izinci kurye platformu.</p>
+      <p class="body-lg" data-tr="İzinli kurye yerine bakıyorsunuz? Yoksa izinci kurye olarak çalışmak mı istiyorsunuz? Türkiye'nin ilk dijital izinci kurye platformu." data-en="Looking for a substitute courier? Or want to work as a substitute courier? Turkey's first digital substitute courier platform.">İzinli kurye yerine bakıyorsunuz? Yoksa izinci kurye olarak çalışmak mı istiyorsunuz? Türkiye'nin ilk dijital izinci kurye platformu.</p>
     </div>
     <div class="izinci-grid reveal">
       <a href="/izincikuryeai" class="izinci-card">
         <div class="izinci-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg></div>
-        <h3 class="izinci-card-title">İzinci Kurye Arıyorum</h3>
-        <p class="izinci-card-desc">Kuryeniz izinli mi? Araç arızası mı? Yoğun gün mü? İhtiyacınız olan gün ve saatte deneyimli izinci kurye bulun.</p>
+        <h3 class="izinci-card-title" data-tr="İzinci Kurye Arıyorum" data-en="I'm Looking for a Substitute Courier">İzinci Kurye Arıyorum</h3>
+        <p class="izinci-card-desc" data-tr="Kuryeniz izinli mi? Araç arızası mı? Yoğun gün mü? İhtiyacınız olan gün ve saatte deneyimli izinci kurye bulun." data-en="Is your courier on leave? Vehicle breakdown? Busy day? Find an experienced substitute courier for the day and time you need.">Kuryeniz izinli mi? Araç arızası mı? Yoğun gün mü? İhtiyacınız olan gün ve saatte deneyimli izinci kurye bulun.</p>
         <div class="izinci-commission"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>Saatlik 250₺ + 8₺/km · %5 platform komisyonu</div>
-        <span class="izinci-cta">Hemen Talep Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="izinci-cta" data-tr="Hemen Talep Oluştur <span style='display:inline-flex;vertical-align:middle'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg></span>" data-en="Create Request Now <span style='display:inline-flex;vertical-align:middle'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg></span>">Hemen Talep Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/izincikuryeai-izinci-login" class="izinci-card">
         <div class="izinci-icon"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 85" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><!-- Rear wheel --><circle cx="20" cy="65" r="15"/><!-- Front wheel --><circle cx="80" cy="65" r="15"/><!-- Delivery box --><rect x="4" y="20" width="26" height="20" rx="2"/><path d="M4 28h26"/><path d="M17 20v8"/><!-- Box mount to rear rack --><path d="M17 40l3 10"/><!-- Scooter rear frame --><path d="M20 50c2-6 8-10 14-10"/><!-- Step platform --><path d="M34 40h20l2 10H34z"/><!-- Front body/cowl --><path d="M54 40l8-8h14l6 8v10"/><!-- Front fork --><path d="M78 50l2 8"/><!-- Rear fork --><path d="M34 50l-12 8"/><!-- Handlebar post --><path d="M72 32v10"/><path d="M68 35h8"/><!-- Rider helmet --><circle cx="67" cy="19" r="9"/><!-- Visor --><path d="M59 21a9 9 0 0 0 16 0"/><!-- Rider torso --><path d="M62 27l-6 11-4 4"/><!-- Rider arm --><path d="M62 27l8 7"/><!-- Rider knee/leg --><path d="M52 42l-2 8"/></svg></div>
-        <h3 class="izinci-card-title">İzinci Kurye Olmak İstiyorum</h3>
-        <p class="izinci-card-desc">Tecrübeli kurye misiniz? İstediğiniz gün ve saatte çalışın. Türkiye genelinde işletmelerle buluşun. Hakediş aynı gün.</p>
+        <h3 class="izinci-card-title" data-tr="İzinci Kurye Olmak İstiyorum" data-en="I Want to Be a Substitute Courier">İzinci Kurye Olmak İstiyorum</h3>
+        <p class="izinci-card-desc" data-tr="Tecrübeli kurye misiniz? İstediğiniz gün ve saatte çalışın. Türkiye genelinde işletmelerle buluşun. Hakediş aynı gün." data-en="Are you an experienced courier? Work on the days and hours you choose. Connect with businesses across Turkey. Same-day payment.">Tecrübeli kurye misiniz? İstediğiniz gün ve saatte çalışın. Türkiye genelinde işletmelerle buluşun. Hakediş aynı gün.</p>
         <div class="izinci-commission"><span style="display:inline-flex;vertical-align:middle;margin-right:6px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>Saatlik 237,5₺ + 7,6₺/km net kazanç</div>
-        <span class="izinci-cta">Kurye Profilimi Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="izinci-cta" data-tr="Kurye Profilimi Oluştur <span style='display:inline-flex;vertical-align:middle'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg></span>" data-en="Create My Courier Profile <span style='display:inline-flex;vertical-align:middle'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg></span>">Kurye Profilimi Oluştur <span style="display:inline-flex;vertical-align:middle"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
     </div>
   </div>
@@ -748,73 +749,73 @@
 <section class="section products" id="urunler">
   <div class="inner">
     <div class="prod-header reveal">
-      <p class="lbl">Ürünlerimiz</p>
-      <h2 class="h2">Beş güçlü ürün,<br/><span class="muted">1 ekosistem.</span></h2>
-      <p class="body-lg">Restoran, kurye ve işletmeler için ihtiyacınız olan her şey tek çatı altında.</p>
+      <p class="lbl" data-tr="Ürünlerimiz" data-en="Our Products">Ürünlerimiz</p>
+      <h2 class="h2" data-tr="Beş güçlü ürün,<br/><span class='muted'>1 ekosistem.</span>" data-en="Five powerful products,<br/><span class='muted'>1 ecosystem.</span>">Beş güçlü ürün,<br/><span class="muted">1 ekosistem.</span></h2>
+      <p class="body-lg" data-tr="Restoran, kurye ve işletmeler için ihtiyacınız olan her şey tek çatı altında." data-en="Everything you need for restaurants, couriers and businesses under one roof.">Restoran, kurye ve işletmeler için ihtiyacınız olan her şey tek çatı altında.</p>
     </div>
     <div class="prod-grid reveal">
       <a href="/restoranai" class="prod-card">
         <p class="prod-num">01 — RestoranAI</p>
         <div class="prod-text-logo"><span style="color:var(--orange)">Restoran</span><span style="color:var(--teal)">AI</span></div>
-        <p class="prod-slogan">Akıllı İşletme</p>
-        <p class="prod-desc">Tüm sipariş kanallarınızı tek ekranda toplayın. Yemeksepeti, Trendyol, Getir, Migros, WhatsApp. AI destekli analizler.</p>
+        <p class="prod-slogan" data-tr="Akıllı İşletme" data-en="Smart Business">Akıllı İşletme</p>
+        <p class="prod-desc" data-tr="Tüm sipariş kanallarınızı tek ekranda toplayın. Yemeksepeti, Trendyol, Getir, Migros, WhatsApp. AI destekli analizler." data-en="Consolidate all your order channels on one screen. Yemeksepeti, Trendyol, Getir, Migros, WhatsApp. AI-powered analytics.">Tüm sipariş kanallarınızı tek ekranda toplayın. Yemeksepeti, Trendyol, Getir, Migros, WhatsApp. AI destekli analizler.</p>
         <div class="prod-features">
-          <div class="pf"><span class="pf-dot"></span>Tüm platformlar tek entegrasyon</div>
-          <div class="pf"><span class="pf-dot"></span>Masa + paket sipariş yönetimi</div>
-          <div class="pf"><span class="pf-dot"></span>Ciro & AI analiz raporları</div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Tüm platformlar tek entegrasyon" data-en="All platforms single integration">Tüm platformlar tek entegrasyon</span></div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Masa + paket sipariş yönetimi" data-en="Dine-in + delivery order management">Masa + paket sipariş yönetimi</span></div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Ciro & AI analiz raporları" data-en="Revenue & AI analytics reports">Ciro & AI analiz raporları</span></div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta" data-tr="Detaylı Bilgi" data-en="Learn More">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/kuryeai" class="prod-card">
         <p class="prod-num">02 — KuryeAI</p>
         <div class="prod-text-logo"><span style="color:#fff">Kurye</span><span style="color:var(--teal)">AI</span></div>
-        <p class="prod-slogan">Akıllı Teslimat</p>
-        <p class="prod-desc">Kurye operasyonunuzu yapay zeka ile yönetin. Canlı konum, otomatik dağıtım, performans raporları.</p>
+        <p class="prod-slogan" data-tr="Akıllı Teslimat" data-en="Smart Delivery">Akıllı Teslimat</p>
+        <p class="prod-desc" data-tr="Kurye operasyonunuzu yapay zeka ile yönetin. Canlı konum, otomatik dağıtım, performans raporları." data-en="Manage your courier operations with AI. Live location, automatic dispatch, performance reports.">Kurye operasyonunuzu yapay zeka ile yönetin. Canlı konum, otomatik dağıtım, performans raporları.</p>
         <div class="prod-features">
-          <div class="pf"><span class="pf-dot"></span>Canlı kurye konum takibi</div>
-          <div class="pf"><span class="pf-dot"></span>Otomatik & adil sipariş dağıtımı</div>
-          <div class="pf"><span class="pf-dot"></span>Havuz & sabit kurye modelleri</div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Canlı kurye konum takibi" data-en="Live courier location tracking">Canlı kurye konum takibi</span></div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Otomatik & adil sipariş dağıtımı" data-en="Automatic & fair order distribution">Otomatik & adil sipariş dağıtımı</span></div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Havuz & sabit kurye modelleri" data-en="Pool & dedicated courier models">Havuz & sabit kurye modelleri</span></div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta" data-tr="Detaylı Bilgi" data-en="Learn More">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/izincikuryeai" class="prod-card">
         <p class="prod-num">03 — İzinciKuryeAI</p>
         <div class="prod-text-logo"><span style="color:var(--green)">İzinci</span><span style="color:#fff">Kurye</span><span style="color:var(--teal)">AI</span></div>
-        <p class="prod-slogan">Türkiye'de Bir İlk</p>
-        <p class="prod-desc">İzinli kurye yerine anlık izinci kurye bulun. İşletme ve kuryeleri buluşturan Türkiye'nin ilk dijital platformu.</p>
+        <p class="prod-slogan" data-tr="Türkiye'de Bir İlk" data-en="A First in Turkey">Türkiye'de Bir İlk</p>
+        <p class="prod-desc" data-tr="İzinli kurye yerine anlık izinci kurye bulun. İşletme ve kuryeleri buluşturan Türkiye'nin ilk dijital platformu." data-en="Find an instant substitute courier to cover for absent couriers. Turkey's first digital platform connecting businesses and couriers.">İzinli kurye yerine anlık izinci kurye bulun. İşletme ve kuryeleri buluşturan Türkiye'nin ilk dijital platformu.</p>
         <div class="prod-features">
-          <div class="pf"><span class="pf-dot"></span>Anlık eşleştirme</div>
-          <div class="pf"><span class="pf-dot"></span>%5 platform komisyonu</div>
-          <div class="pf"><span class="pf-dot"></span>Aynı gün hakediş ödemesi</div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Anlık eşleştirme" data-en="Instant matching">Anlık eşleştirme</span></div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="%5 platform komisyonu" data-en="5% platform commission">%5 platform komisyonu</span></div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="Aynı gün hakediş ödemesi" data-en="Same-day payment">Aynı gün hakediş ödemesi</span></div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta" data-tr="Detaylı Bilgi" data-en="Learn More">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <a href="/acilkuryeai" class="prod-card">
         <p class="prod-num">04 — AcilKuryeAI</p>
         <div class="prod-text-logo"><span style="color:var(--red)">Acil</span><span style="color:#fff">Kurye</span><span style="color:var(--teal)">AI</span></div>
-        <p class="prod-slogan">7/24 Anlık Kurye</p>
-        <p class="prod-desc">Türkiye genelinde anlık kurye hizmeti. Tıbbi malzeme, evrak, ilaç, kişisel gönderi. Formla talep oluştur, kurye kapına gelsin.</p>
+        <p class="prod-slogan" data-tr="7/24 Anlık Kurye" data-en="24/7 Instant Courier">7/24 Anlık Kurye</p>
+        <p class="prod-desc" data-tr="Türkiye genelinde anlık kurye hizmeti. Tıbbi malzeme, evrak, ilaç, kişisel gönderi. Formla talep oluştur, kurye kapına gelsin." data-en="Instant courier service across Turkey. Medical supplies, documents, medicine, personal deliveries. Submit a request and a courier comes to your door.">Türkiye genelinde anlık kurye hizmeti. Tıbbi malzeme, evrak, ilaç, kişisel gönderi. Formla talep oluştur, kurye kapına gelsin.</p>
         <div class="prod-features">
-          <div class="pf"><span class="pf-dot"></span>15–30 dakika içinde teslimat</div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="15–30 dakika içinde teslimat" data-en="Delivery within 15–30 minutes">15–30 dakika içinde teslimat</span></div>
           <div class="pf"><span class="pf-dot"></span>350₺/saat + 12₺/km</div>
-          <div class="pf"><span class="pf-dot"></span>7/24 kesintisiz hizmet</div>
+          <div class="pf"><span class="pf-dot"></span><span data-tr="7/24 kesintisiz hizmet" data-en="24/7 uninterrupted service">7/24 kesintisiz hizmet</span></div>
         </div>
-        <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+        <span class="prod-cta" data-tr="Detaylı Bilgi" data-en="Learn More">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
       </a>
       <!-- 05 QRMenuAI — tam genişlik kart -->
       <a href="/qrmenuai" class="prod-card prod-card-new" style="grid-column:1/-1;flex-direction:row;align-items:center;gap:2.5rem;flex-wrap:wrap">
         <div style="flex:1;min-width:240px">
-          <div class="prod-card-qr-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg> Yeni Ürün</div>
+          <div class="prod-card-qr-badge" data-tr="<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;margin-right:4px'><path d='M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'/></svg> Yeni Ürün" data-en="<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;margin-right:4px'><path d='M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'/></svg> New Product"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg> Yeni Ürün</div>
           <p class="prod-num" style="color:var(--teal)">05 — QRMenuAI</p>
           <div class="prod-text-logo" style="font-size:1.8rem"><span style="color:var(--teal)">QR</span><span style="color:#fff">Menu</span><span style="color:var(--teal)">AI</span></div>
-          <p class="prod-slogan">Dijital Menü & QR Sipariş</p>
-          <p class="prod-desc">Restoranınızın dijital menüsü tek QR kod ile müşterinin ekranında. RestoranAI ile tam entegre, anında güncelleme, sıfır baskı maliyeti.</p>
+          <p class="prod-slogan" data-tr="Dijital Menü & QR Sipariş" data-en="Digital Menu & QR Ordering">Dijital Menü & QR Sipariş</p>
+          <p class="prod-desc" data-tr="Restoranınızın dijital menüsü tek QR kod ile müşterinin ekranında. RestoranAI ile tam entegre, anında güncelleme, sıfır baskı maliyeti." data-en="Your restaurant's digital menu on the customer's screen with a single QR code. Fully integrated with RestoranAI, instant updates, zero printing costs.">Restoranınızın dijital menüsü tek QR kod ile müşterinin ekranında. RestoranAI ile tam entegre, anında güncelleme, sıfır baskı maliyeti.</p>
           <div class="prod-features">
-            <div class="pf"><span class="pf-dot"></span>kuryeai.com/restoranadınQRmenuAI özel link</div>
-            <div class="pf"><span class="pf-dot"></span>RestoranAI menüsüyle otomatik senkron</div>
-            <div class="pf"><span class="pf-dot"></span>Yıllık 4.995₺ — Aylık ≈416₺</div>
+            <div class="pf"><span class="pf-dot"></span><span data-tr="kuryeai.com/restoranadınQRmenuAI özel link" data-en="kuryeai.com/yourrestaurantQRmenuAI custom link">kuryeai.com/restoranadınQRmenuAI özel link</span></div>
+            <div class="pf"><span class="pf-dot"></span><span data-tr="RestoranAI menüsüyle otomatik senkron" data-en="Auto-sync with RestoranAI menu">RestoranAI menüsüyle otomatik senkron</span></div>
+            <div class="pf"><span class="pf-dot"></span><span data-tr="Yıllık 4.995₺ — Aylık ≈416₺" data-en="Annual 4,995₺ — Monthly ~416₺">Yıllık 4.995₺ — Aylık ≈416₺</span></div>
           </div>
-          <span class="prod-cta">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
+          <span class="prod-cta" data-tr="Detaylı Bilgi" data-en="Learn More">Detaylı Bilgi <span style="display:inline-flex;vertical-align:middle;margin-left:4px"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span>
         </div>
         <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:rgba(0,200,215,.05);border-radius:16px;border:.5px solid rgba(0,200,215,.15)">
           <!-- Dekoratif QR -->
@@ -849,16 +850,16 @@
 <section class="section feat-bento" id="ozellikler">
   <div class="inner">
     <div class="reveal" style="margin-bottom:0">
-      <p class="lbl">Platform Özellikleri</p>
-      <h2 class="h2">Her şey <span class="muted">tek çatı altında.</span></h2>
-      <p class="body-lg">Siparişten teslimat raporuna kadar tüm operasyon, tek akıllı platformda.</p>
+      <p class="lbl" data-tr="Platform Özellikleri" data-en="Platform Features">Platform Özellikleri</p>
+      <h2 class="h2" data-tr="Her şey <span class='muted'>tek çatı altında.</span>" data-en="Everything <span class='muted'>under one roof.</span>">Her şey <span class="muted">tek çatı altında.</span></h2>
+      <p class="body-lg" data-tr="Siparişten teslimat raporuna kadar tüm operasyon, tek akıllı platformda." data-en="From orders to delivery reports, all operations on one smart platform.">Siparişten teslimat raporuna kadar tüm operasyon, tek akıllı platformda.</p>
     </div>
     <div class="bento-grid reveal">
       <!-- Card 1: Wide — Platform integrations -->
       <div class="bento-card wide">
-        <p class="bento-tag">Tam Entegrasyon</p>
-        <h3 class="bento-title">Tüm sipariş kanalları tek panelde</h3>
-        <p class="bento-desc">Yemeksepeti, Trendyol Yemek, Getir, Migros Yemek ve WhatsApp siparişleri — tek ekranda, gerçek zamanlı.</p>
+        <p class="bento-tag" data-tr="Tam Entegrasyon" data-en="Full Integration">Tam Entegrasyon</p>
+        <h3 class="bento-title" data-tr="Tüm sipariş kanalları tek panelde" data-en="All order channels in one panel">Tüm sipariş kanalları tek panelde</h3>
+        <p class="bento-desc" data-tr="Yemeksepeti, Trendyol Yemek, Getir, Migros Yemek ve WhatsApp siparişleri — tek ekranda, gerçek zamanlı." data-en="Yemeksepeti, Trendyol Yemek, Getir, Migros Yemek and WhatsApp orders — on one screen, in real time.">Yemeksepeti, Trendyol Yemek, Getir, Migros Yemek ve WhatsApp siparişleri — tek ekranda, gerçek zamanlı.</p>
         <div class="pbadges">
           <span class="pb pb-ys">Yemeksepeti</span>
           <span class="pb-arrow">+</span>
@@ -875,9 +876,9 @@
       </div>
       <!-- Card 2: AI routing -->
       <div class="bento-card">
-        <p class="bento-tag">AI Teknoloji</p>
-        <h3 class="bento-title">Otomatik kurye atama</h3>
-        <p class="bento-desc">Yapay zeka en yakın ve müsait kuryeyi ortalama 12 saniyede otomatik atar.</p>
+        <p class="bento-tag" data-tr="AI Teknoloji" data-en="AI Technology">AI Teknoloji</p>
+        <h3 class="bento-title" data-tr="Otomatik kurye atama" data-en="Automatic courier assignment">Otomatik kurye atama</h3>
+        <p class="bento-desc" data-tr="Yapay zeka en yakın ve müsait kuryeyi ortalama 12 saniyede otomatik atar." data-en="AI automatically assigns the nearest available courier in an average of 12 seconds.">Yapay zeka en yakın ve müsait kuryeyi ortalama 12 saniyede otomatik atar.</p>
         <div class="route-vis">
           <div class="rv-dot" style="background:var(--teal);box-shadow:0 0 6px var(--teal)"></div>
           <div class="rv-line"></div>
@@ -890,9 +891,9 @@
       </div>
       <!-- Card 3: Live tracking -->
       <div class="bento-card">
-        <p class="bento-tag">Canlı Takip</p>
-        <h3 class="bento-title">Gerçek zamanlı konum</h3>
-        <p class="bento-desc">Her kurye konumu ve tahmini teslim süresi canlı izleyin.</p>
+        <p class="bento-tag" data-tr="Canlı Takip" data-en="Live Tracking">Canlı Takip</p>
+        <h3 class="bento-title" data-tr="Gerçek zamanlı konum" data-en="Real-time location">Gerçek zamanlı konum</h3>
+        <p class="bento-desc" data-tr="Her kurye konumu ve tahmini teslim süresi canlı izleyin." data-en="Watch every courier's location and estimated delivery time live.">Her kurye konumu ve tahmini teslim süresi canlı izleyin.</p>
         <div class="live-track">
           <div class="lt-dot"></div>
           <span class="lt-txt">Serkan M. · 14 dk · Kızılay</span>
@@ -904,9 +905,9 @@
       </div>
       <!-- Card 4: Reports -->
       <div class="bento-card">
-        <p class="bento-tag">AI Analiz</p>
-        <h3 class="bento-title">Akıllı raporlar</h3>
-        <p class="bento-desc">Günlük, haftalık, aylık ciro ve sipariş analizleri. AI önerileri ile büyüyün.</p>
+        <p class="bento-tag" data-tr="AI Analiz" data-en="AI Analytics">AI Analiz</p>
+        <h3 class="bento-title" data-tr="Akıllı raporlar" data-en="Smart reports">Akıllı raporlar</h3>
+        <p class="bento-desc" data-tr="Günlük, haftalık, aylık ciro ve sipariş analizleri. AI önerileri ile büyüyün." data-en="Daily, weekly, monthly revenue and order analytics. Grow with AI recommendations.">Günlük, haftalık, aylık ciro ve sipariş analizleri. AI önerileri ile büyüyün.</p>
         <div class="mini-chart">
           <div class="mc-bar" style="height:40%"></div>
           <div class="mc-bar" style="height:55%"></div>
@@ -921,8 +922,8 @@
       <!-- Card 5: QR Menu -->
       <div class="bento-card">
         <p class="bento-tag">QRMenuAI</p>
-        <h3 class="bento-title">Masadan QR ile sipariş</h3>
-        <p class="bento-desc">Garson yok, bekleme yok. Müşteri kendi siparişini veriyor, mutfağa anında gidiyor.</p>
+        <h3 class="bento-title" data-tr="Masadan QR ile sipariş" data-en="Order from the table via QR">Masadan QR ile sipariş</h3>
+        <p class="bento-desc" data-tr="Garson yok, bekleme yok. Müşteri kendi siparişini veriyor, mutfağa anında gidiyor." data-en="No waiter, no waiting. The customer places their own order, it goes to the kitchen instantly.">Garson yok, bekleme yok. Müşteri kendi siparişini veriyor, mutfağa anında gidiyor.</p>
         <div style="display:flex;align-items:center;gap:.8rem;margin-top:1.1rem">
           <svg width="36" height="36" viewBox="0 0 100 100"><rect x="10" y="10" width="30" height="30" rx="2" fill="none" stroke="#00c8d7" stroke-width="6"/><rect x="18" y="18" width="14" height="14" fill="#00c8d7"/><rect x="60" y="10" width="30" height="30" rx="2" fill="none" stroke="#00c8d7" stroke-width="6"/><rect x="68" y="18" width="14" height="14" fill="#00c8d7"/><rect x="10" y="60" width="30" height="30" rx="2" fill="none" stroke="#00c8d7" stroke-width="6"/><rect x="18" y="68" width="14" height="14" fill="#00c8d7"/><rect x="60" y="60" width="8" height="8" rx="1" fill="#00c8d7"/><rect x="72" y="60" width="8" height="8" rx="1" fill="#00c8d7"/><rect x="84" y="60" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/><rect x="60" y="72" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/><rect x="72" y="72" width="8" height="8" rx="1" fill="#00c8d7"/><rect x="84" y="72" width="8" height="8" rx="1" fill="#00c8d7"/></svg>
           <div style="font-size:.68rem;color:var(--gray-lt);line-height:1.5">Tara → Sipariş ver<br/><span style="color:var(--teal)">Mutfakta anında görün</span></div>
@@ -937,19 +938,19 @@
   <div class="stats-grid reveal">
     <div class="stat-item">
       <div class="stat-icon-wrap sic-teal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-      <div class="stat-n">7<em>/24</em></div><div class="stat-l">Kesintisiz Hizmet</div>
+      <div class="stat-n">7<em>/24</em></div><div class="stat-l" data-tr="Kesintisiz Hizmet" data-en="Nonstop Service">Kesintisiz Hizmet</div>
     </div>
     <div class="stat-item">
       <div class="stat-icon-wrap sic-green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
-      <div class="stat-n"><em>%</em>100</div><div class="stat-l">Canlı Takip</div>
+      <div class="stat-n"><em>%</em>100</div><div class="stat-l" data-tr="Canlı Takip" data-en="Live Tracking">Canlı Takip</div>
     </div>
     <div class="stat-item">
       <div class="stat-icon-wrap sic-red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-      <div class="stat-n">3<em>x</em></div><div class="stat-l">Daha Hızlı</div>
+      <div class="stat-n">3<em>x</em></div><div class="stat-l" data-tr="Daha Hızlı" data-en="Faster">Daha Hızlı</div>
     </div>
     <div class="stat-item">
       <div class="stat-icon-wrap sic-purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/></svg></div>
-      <div class="stat-n">AI</div><div class="stat-l">Destekli Analiz</div>
+      <div class="stat-n">AI</div><div class="stat-l" data-tr="Destekli Analiz" data-en="Powered Analytics">Destekli Analiz</div>
     </div>
   </div>
 </div>
@@ -958,14 +959,14 @@
 <section class="section how" id="nasil-calisir">
   <div class="inner">
     <div class="how-header reveal">
-      <p class="lbl">Nasıl Çalışır</p>
-      <h2 class="h2">4 adımda <span class="muted">tam kontrol.</span></h2>
+      <p class="lbl" data-tr="Nasıl Çalışır" data-en="How It Works">Nasıl Çalışır</p>
+      <h2 class="h2" data-tr="4 adımda <span class='muted'>tam kontrol.</span>" data-en="Full control <span class='muted'>in 4 steps.</span>">4 adımda <span class="muted">tam kontrol.</span></h2>
     </div>
     <div class="steps reveal">
-      <div class="step"><div class="step-bar"></div><p class="step-num">01</p><h4 class="step-title">Kaydolun</h4><p class="step-desc">Restoran, kurye veya işletme olarak başvurun. 24 saat içinde hesabınız aktif edilir.</p></div>
-      <div class="step"><div class="step-bar"></div><p class="step-num">02</p><h4 class="step-title">Entegre Edin</h4><p class="step-desc">Sipariş platformlarınızı bağlayın. Yemeksepeti, Getir, Trendyol tek panelde.</p></div>
-      <div class="step"><div class="step-bar"></div><p class="step-num">03</p><h4 class="step-title">Yönetin</h4><p class="step-desc">Siparişleri tek ekrandan takip edin. AI en uygun kurye'ye otomatik atar.</p></div>
-      <div class="step"><div class="step-bar"></div><p class="step-num">04</p><h4 class="step-title">Büyüyün</h4><p class="step-desc">AI destekli raporlar ve analizlerle işletmenizi optimize edin.</p></div>
+      <div class="step"><div class="step-bar"></div><p class="step-num">01</p><h4 class="step-title" data-tr="Kaydolun" data-en="Sign Up">Kaydolun</h4><p class="step-desc" data-tr="Restoran, kurye veya işletme olarak başvurun. 24 saat içinde hesabınız aktif edilir." data-en="Apply as a restaurant, courier or business. Your account is activated within 24 hours.">Restoran, kurye veya işletme olarak başvurun. 24 saat içinde hesabınız aktif edilir.</p></div>
+      <div class="step"><div class="step-bar"></div><p class="step-num">02</p><h4 class="step-title" data-tr="Entegre Edin" data-en="Integrate">Entegre Edin</h4><p class="step-desc" data-tr="Sipariş platformlarınızı bağlayın. Yemeksepeti, Getir, Trendyol tek panelde." data-en="Connect your order platforms. Yemeksepeti, Getir, Trendyol in one panel.">Sipariş platformlarınızı bağlayın. Yemeksepeti, Getir, Trendyol tek panelde.</p></div>
+      <div class="step"><div class="step-bar"></div><p class="step-num">03</p><h4 class="step-title" data-tr="Yönetin" data-en="Manage">Yönetin</h4><p class="step-desc" data-tr="Siparişleri tek ekrandan takip edin. AI en uygun kurye'ye otomatik atar." data-en="Track orders from one screen. AI automatically assigns the best courier.">Siparişleri tek ekrandan takip edin. AI en uygun kurye'ye otomatik atar.</p></div>
+      <div class="step"><div class="step-bar"></div><p class="step-num">04</p><h4 class="step-title" data-tr="Büyüyün" data-en="Grow">Büyüyün</h4><p class="step-desc" data-tr="AI destekli raporlar ve analizlerle işletmenizi optimize edin." data-en="Optimize your business with AI-powered reports and analytics.">AI destekli raporlar ve analizlerle işletmenizi optimize edin.</p></div>
     </div>
   </div>
 </section>

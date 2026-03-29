@@ -42,9 +42,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;height:60px;display:flex;ali
 .nav-links{display:flex;gap:1.8rem;list-style:none}
 .nav-links a{font-size:.78rem;font-weight:600;color:var(--gray-lt);text-decoration:none;transition:color .2s;letter-spacing:.02em}
 .nav-links a:hover{color:var(--teal)}
-.nav-back{font-size:.8rem;color:var(--gray-lt);text-decoration:none;transition:color .2s}
-.nav-back:hover{color:var(--white)}
 .nav-right{display:flex;align-items:center;gap:.8rem}
+.nav-login{font-size:.74rem;font-weight:600;letter-spacing:.01em;color:var(--gray-lt);text-decoration:none;padding:.38rem .9rem;border-radius:8px;border:1px solid rgba(0,200,215,.25);background:rgba(255,255,255,.04);backdrop-filter:blur(8px);transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:.3rem;color:var(--teal)}
+.nav-login:hover{border-color:rgba(0,200,215,.55);background:rgba(0,200,215,.09);color:var(--teal);transform:translateY(-1px)}
+@media(max-width:768px){.nav-login{padding:.34rem .62rem;font-size:.68rem;gap:.25rem}.nav-login .nav-login-label{display:none}.nav-login .nav-login-short{display:inline}.nav-login svg{width:11px;height:11px}}
+@media(min-width:769px){.nav-login .nav-login-short{display:none}}
+/* Tema toggle pill */
+.theme-toggle-pill{position:relative;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:3px 6px;cursor:pointer;transition:all .25s;height:28px}
+.theme-toggle-pill:hover{border-color:rgba(0,200,215,.3);background:rgba(255,255,255,.1)}
+.ttp-track{width:32px;height:18px;background:rgba(255,255,255,.1);border-radius:999px;position:relative;transition:background .3s}
+.ttp-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;background:var(--teal);border-radius:50%;transition:transform .3s}
+html[data-theme="light"] .ttp-thumb{transform:translateX(14px)}
+.ttp-sun,.ttp-moon{display:flex;align-items:center;color:var(--gray-lt);transition:color .2s}
+html[data-theme="light"] .ttp-sun{color:var(--teal)}
+html[data-theme="dark"] .ttp-moon{color:var(--teal)}
 
 /* ── HERO ── */
 .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 1.5rem 4rem;position:relative;overflow:hidden;text-align:center}
@@ -255,8 +266,15 @@ background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,
     <li><a href="#vizyon" data-tr="Vizyon" data-en="Vision">Vizyon</a></li>
   </ul>
   <div class="nav-right">
+    <a href="/" class="nav-login" data-tr="Ana Sayfa" data-en="Home"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nav-login-label" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</span><span class="nav-login-short" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</span></a>
+    <!-- Tema toggle -->
+    <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
+      <span class="ttp-track"><span class="ttp-thumb"></span></span>
+      <span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+      <span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+    </button>
+    <!-- Dil toggle -->
     <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid rgba(0,200,215,.25);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--gray-lt);transition:border-color .2s,color .2s;letter-spacing:.05em">EN</button>
-    <a href="/" class="nav-back" data-tr="← Ana Sayfa" data-en="← Home">← Ana Sayfa</a>
   </div>
 </nav>
 

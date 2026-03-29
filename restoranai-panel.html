@@ -2920,23 +2920,17 @@ async function initFirebase(){
         settings.rest_name = RESTAURANT_NAME;
         _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_name:RESTAURANT_NAME}).catch(()=>{});
       }
-      // Firestore'daki koordinatları RTDB'ye senkronize et (admin'in belirlediği konum öncelikli)
-      try{
-        const userSnap=await getDoc(doc(fs,'users',RESTAURANT_ID));
-        if(userSnap.exists()){
-          const ud=userSnap.data();
-          if(ud.lat&&ud.lng){
-            settings.rest_lat=ud.lat;
-            settings.rest_lng=ud.lng;
-            if(ud.address)settings.rest_address=ud.address;
-            _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_lat:ud.lat,rest_lng:ud.lng,rest_address:ud.address||settings.rest_address||''}).catch(()=>{});
-            // Pin'i yeniden çiz (koordinatlar güncellendi)
-            setTimeout(()=>{
-              if(mapInstance){if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;}_addRestPinToMap();}
-            },500);
-          }
+      // Firestore'daki koordinatları al ve RTDB+harita güncelle
+      const userSnap=await getDoc(doc(fs,'users',RESTAURANT_ID)).catch(e=>{console.warn('Firestore konum okunamadı:',e);return null;});
+      if(userSnap&&userSnap.exists()){
+        const ud=userSnap.data();
+        if(ud.lat&&ud.lng){
+          settings.rest_lat=ud.lat;
+          settings.rest_lng=ud.lng;
+          if(ud.address)settings.rest_address=ud.address;
+          _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_lat:ud.lat,rest_lng:ud.lng,rest_address:ud.address||''}).catch(()=>{});
         }
-      }catch(e){console.warn('Konum senkronizasyon hatası:',e);}
+      }
       applySettings();
     }
     showToast('Firebase bağlantısı kuruldu ✓');
@@ -3291,7 +3285,8 @@ async function showOrderOnMap(deliveryAddress){
 
 function initMap(){
   if(mapInstance)return;
-  mapInstance=L.map("map",{zoomControl:true}).setView(ANKARA_CENTER,13);
+  const center=(settings.rest_lat&&settings.rest_lng)?[settings.rest_lat,settings.rest_lng]:ANKARA_CENTER;
+  mapInstance=L.map("map",{zoomControl:true}).setView(center,15);
   _restBaseLayer=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
     attribution:'© OpenStreetMap',maxZoom:18
   }).addTo(mapInstance);
@@ -3357,7 +3352,8 @@ function initMapDash(){
   if(mapDashInstance)return;
   const el=document.getElementById("map-dash");
   if(!el)return;
-  mapDashInstance=L.map("map-dash",{zoomControl:false,attributionControl:false}).setView(ANKARA_CENTER,13);
+  const dashCenter=(settings.rest_lat&&settings.rest_lng)?[settings.rest_lat,settings.rest_lng]:ANKARA_CENTER;
+  mapDashInstance=L.map("map-dash",{zoomControl:false,attributionControl:false}).setView(dashCenter,15);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(mapDashInstance);
   updateMapDashMarkers();
 }

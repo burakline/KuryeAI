@@ -2915,11 +2915,24 @@ async function initFirebase(){
       settings={...initialSettings}; applySettings();
     } else {
       settings={...SEED_SETTINGS,...ss.val()};
-      // Firestore'daki isim RTDB'den farklıysa (eski/demo veri) RTDB'yi güncelle
+      // Firestore'daki isim RTDB'den farklıysa güncelle
       if(RESTAURANT_NAME && settings.rest_name !== RESTAURANT_NAME){
         settings.rest_name = RESTAURANT_NAME;
-        _rtdbSet(`/restaurants/${RESTAURANT_ID}/settings`,{...ss.val(),rest_name:RESTAURANT_NAME}).catch(()=>{});
+        _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_name:RESTAURANT_NAME}).catch(()=>{});
       }
+      // Firestore'daki koordinatları RTDB'ye senkronize et (admin'in belirlediği konum öncelikli)
+      try{
+        const userSnap=await getDoc(doc(fs,'users',RESTAURANT_ID));
+        if(userSnap.exists()){
+          const ud=userSnap.data();
+          if(ud.lat&&ud.lng){
+            settings.rest_lat=ud.lat;
+            settings.rest_lng=ud.lng;
+            if(ud.address)settings.rest_address=ud.address;
+            _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_lat:ud.lat,rest_lng:ud.lng,rest_address:ud.address||settings.rest_address||''}).catch(()=>{});
+          }
+        }
+      }catch(e){console.warn('Konum senkronizasyon hatası:',e);}
       applySettings();
     }
     showToast('Firebase bağlantısı kuruldu ✓');

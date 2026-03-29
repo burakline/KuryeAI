@@ -2929,6 +2929,11 @@ async function initFirebase(){
           settings.rest_lng=ud.lng;
           if(ud.address)settings.rest_address=ud.address;
           _rtdbUpdate(`/restaurants/${RESTAURANT_ID}/settings`,{rest_lat:ud.lat,rest_lng:ud.lng,rest_address:ud.address||''}).catch(()=>{});
+          // Haritaları restoran konumuna taşı + pinleri güncelle
+          setTimeout(()=>{
+            if(mapInstance){mapInstance.setView([ud.lat,ud.lng],15);if(_restPinMarker){mapInstance.removeLayer(_restPinMarker);_restPinMarker=null;}_addRestPinToMap();}
+            _refreshDashMap();
+          },500);
         }
       }
       applySettings();
@@ -3355,7 +3360,18 @@ function initMapDash(){
   const dashCenter=(settings.rest_lat&&settings.rest_lng)?[settings.rest_lat,settings.rest_lng]:ANKARA_CENTER;
   mapDashInstance=L.map("map-dash",{zoomControl:false,attributionControl:false}).setView(dashCenter,15);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(mapDashInstance);
+  // Dashboard haritasında da restoran pin'i göster
+  if(settings.rest_lat&&settings.rest_lng){
+    const pinName=RESTAURANT_NAME||settings.rest_name||'Restoranım';
+    L.marker([settings.rest_lat,settings.rest_lng],{icon:_makeRestoIcon(RESTAURANT_LOGO_URL,pinName)}).addTo(mapDashInstance);
+  }
   updateMapDashMarkers();
+}
+function _refreshDashMap(){
+  if(!mapDashInstance)return;
+  if(settings.rest_lat&&settings.rest_lng){
+    mapDashInstance.setView([settings.rest_lat,settings.rest_lng],15);
+  }
 }
 
 // ── Uydu / Tam Ekran (Restoran) ───────────────────────────────────────────────

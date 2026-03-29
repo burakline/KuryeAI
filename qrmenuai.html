@@ -175,32 +175,33 @@ footer a{color:var(--teal);text-decoration:none}
     <span class="qr">QR</span><span class="menu">Menu</span><span class="ai">AI</span>
   </a>
   <div class="nav-right-qr">
-    <a href="/" class="nav-link-qr">Ana Sayfa</a>
-    <a href="/restoranai-login" class="nav-link-qr">Giriş Yap</a>
+    <a href="/" class="nav-link-qr" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a>
+    <a href="/restoranai-login" class="nav-link-qr" data-tr="Giriş Yap" data-en="Sign In">Giriş Yap</a>
     <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
       <span class="ttp-track"><span class="ttp-thumb"></span></span>
       <span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
       <span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
     </button>
-    <a href="/restoranai-login" class="btn-nav-teal">Hemen Başla</a>
+    <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em">EN</button>
+    <a href="/restoranai-login" class="btn-nav-teal" data-tr="Hemen Başla" data-en="Get Started">Hemen Başla</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero-qr">
   <div class="hero-qr-bg"></div>
-  <p class="hero-eyebrow-qr"><span class="pulse-dot"></span>RestoranAI Ek Özellik — 5. Ürün</p>
+  <p class="hero-eyebrow-qr"><span class="pulse-dot"></span><span data-tr="RestoranAI Ek Özellik — 5. Ürün" data-en="RestoranAI Add-on — 5th Product">RestoranAI Ek Özellik — 5. Ürün</span></p>
 
   <h1 class="hero-logo-big"><span class="qr">QR</span><span class="menu">Menu</span><span class="ai">AI</span></h1>
 
-  <p class="hero-sub-qr">
+  <p class="hero-sub-qr" data-tr="Restoranınızın dijital menüsü <strong>tek QR kod</strong> ile müşterinin ekranında.<br/>Anında güncellenebilir, sıfır baskı maliyeti, <strong>RestoranAI ile tam entegre.</strong>" data-en="Your restaurant's digital menu on the customer's screen with a <strong>single QR code</strong>.<br/>Instantly updatable, zero printing costs, <strong>fully integrated with RestoranAI.</strong>">
     Restoranınızın dijital menüsü <strong>tek QR kod</strong> ile müşterinin ekranında.<br/>
     Anında güncellenebilir, sıfır baskı maliyeti, <strong>RestoranAI ile tam entegre.</strong>
   </p>
 
   <div class="hero-btns-qr">
-    <a href="/restoranai-login" class="btn-lg-teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> Hemen Başla — 4.995₺/yıl</a>
-    <a href="#nasil-calisir" class="btn-lg-ghost">Nasıl Çalışır? →</a>
+    <a href="/restoranai-login" class="btn-lg-teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> <span data-tr="Hemen Başla — 4.995₺/yıl" data-en="Get Started — 4,995₺/year">Hemen Başla — 4.995₺/yıl</span></a>
+    <a href="#nasil-calisir" class="btn-lg-ghost" data-tr="Nasıl Çalışır? →" data-en="How It Works? →">Nasıl Çalışır? →</a>
   </div>
 
   <!-- Mockup -->
@@ -230,15 +231,15 @@ footer a{color:var(--teal);text-decoration:none}
           <rect x="81" y="81" width="8" height="8" rx="1" fill="#00c8d7" opacity=".5"/>
         </svg>
       </div>
-      <div class="qr-label">kuryeai.com/nefisbistroQRmenuAI</div>
+      <div class="qr-label" data-tr="kuryeai.com/nefisbistroQRmenuAI" data-en="kuryeai.com/nefisbistroQRmenuAI">kuryeai.com/nefisbistroQRmenuAI</div>
     </div>
 
     <div class="phone-mock">
       <div class="phone-top"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg> NEFİS BİSTRO — MENÜ</div>
       <div class="phone-item">
         <div>
-          <div class="phone-item-name">Izgara Köfte</div>
-          <div style="font-size:.68rem;color:var(--gray-lt)">Kremalı sos, mantar</div>
+          <div class="phone-item-name" data-tr="Izgara Köfte" data-en="Grilled Meatballs">Izgara Köfte</div>
+          <div style="font-size:.68rem;color:var(--gray-lt)" data-tr="Kremalı sos, mantar" data-en="Cream sauce, mushrooms">Kremalı sos, mantar</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="phone-item-price">₺89</span>
@@ -248,7 +249,7 @@ footer a{color:var(--teal);text-decoration:none}
       <div class="phone-item">
         <div>
           <div class="phone-item-name">Fettuccine Alfredo</div>
-          <div style="font-size:.68rem;color:var(--gray-lt)">Parmesan, krema</div>
+          <div style="font-size:.68rem;color:var(--gray-lt)" data-tr="Parmesan, krema" data-en="Parmesan, cream">Parmesan, krema</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="phone-item-price">₺95</span>
@@ -257,8 +258,8 @@ footer a{color:var(--teal);text-decoration:none}
       </div>
       <div class="phone-item">
         <div>
-          <div class="phone-item-name">Karışık Izgara</div>
-          <div style="font-size:.68rem;color:var(--gray-lt)">Et, tavuk, köfte</div>
+          <div class="phone-item-name" data-tr="Karışık Izgara" data-en="Mixed Grill">Karışık Izgara</div>
+          <div style="font-size:.68rem;color:var(--gray-lt)" data-tr="Et, tavuk, köfte" data-en="Beef, chicken, meatballs">Et, tavuk, köfte</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="phone-item-price">₺149</span>
@@ -266,7 +267,7 @@ footer a{color:var(--teal);text-decoration:none}
         </div>
       </div>
       <div style="padding:10px 14px;text-align:center">
-        <div style="background:var(--teal);color:#000;border-radius:999px;padding:8px;font-size:.75rem;font-weight:800">Sepeti Gör (2 ürün)</div>
+        <div style="background:var(--teal);color:#000;border-radius:999px;padding:8px;font-size:.75rem;font-weight:800" data-tr="Sepeti Gör (2 ürün)" data-en="View Cart (2 items)">Sepeti Gör (2 ürün)</div>
       </div>
     </div>
   </div>
@@ -275,29 +276,29 @@ footer a{color:var(--teal);text-decoration:none}
 <!-- NASIL ÇALIŞIR -->
 <section class="section-qr" id="nasil-calisir">
   <div class="section-inner">
-    <div class="sec-lbl">Nasıl Çalışır?</div>
-    <h2 class="sec-h2">3 adımda dijital menü</h2>
-    <p class="sec-sub">RestoranAI panelinden QRMenuAI'ı aktive et, QR kodunu yazdır, müşteriler kameralarıyla okusun.</p>
+    <div class="sec-lbl" data-tr="Nasıl Çalışır?" data-en="How It Works?">Nasıl Çalışır?</div>
+    <h2 class="sec-h2" data-tr="3 adımda dijital menü" data-en="Digital menu in 3 steps">3 adımda dijital menü</h2>
+    <p class="sec-sub" data-tr="RestoranAI panelinden QRMenuAI'ı aktive et, QR kodunu yazdır, müşteriler kameralarıyla okusun." data-en="Activate QRMenuAI from the RestoranAI panel, print the QR code, and let customers scan with their cameras.">RestoranAI panelinden QRMenuAI'ı aktive et, QR kodunu yazdır, müşteriler kameralarıyla okusun.</p>
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">1</div>
-        <div class="step-title">RestoranAI'da Aktive Et</div>
-        <div class="step-desc">Panel Ayarları'ndan QRMenuAI özelliğini satın al. Menünü zaten RestoranAI'da oluşturmuşsun — ekstra iş yok.</div>
+        <div class="step-title" data-tr="RestoranAI'da Aktive Et" data-en="Activate in RestoranAI">RestoranAI'da Aktive Et</div>
+        <div class="step-desc" data-tr="Panel Ayarları'ndan QRMenuAI özelliğini satın al. Menünü zaten RestoranAI'da oluşturmuşsun — ekstra iş yok." data-en="Purchase the QRMenuAI feature from Panel Settings. You've already created your menu in RestoranAI — no extra work needed.">Panel Ayarları'ndan QRMenuAI özelliğini satın al. Menünü zaten RestoranAI'da oluşturmuşsun — ekstra iş yok.</div>
       </div>
       <div class="step-card">
         <div class="step-num">2</div>
-        <div class="step-title">QR Kodunu Yazdır</div>
-        <div class="step-desc">Sana özel <strong style="color:var(--teal)">kuryeai.com/restoranadınQRmenuAI</strong> linki ve QR kodu otomatik oluşturulur. Masalara koy, duvara as.</div>
+        <div class="step-title" data-tr="QR Kodunu Yazdır" data-en="Print the QR Code">QR Kodunu Yazdır</div>
+        <div class="step-desc" data-tr="Sana özel <strong style='color:var(--teal)'>kuryeai.com/restoranadınQRmenuAI</strong> linki ve QR kodu otomatik oluşturulur. Masalara koy, duvara as." data-en="Your unique <strong style='color:var(--teal)'>kuryeai.com/yourrestaurantQRmenuAI</strong> link and QR code are generated automatically. Place on tables, hang on walls.">Sana özel <strong style="color:var(--teal)">kuryeai.com/restoranadınQRmenuAI</strong> linki ve QR kodu otomatik oluşturulur. Masalara koy, duvara as.</div>
       </div>
       <div class="step-card">
         <div class="step-num">3</div>
-        <div class="step-title">Müşteri Okutunca Menü Açılır</div>
-        <div class="step-desc">Uygulama indirme yok. Kamera ile okut, anında dijital menü. Fiyat güncellediğinde QR kod değişmez, menü anında güncellenir.</div>
+        <div class="step-title" data-tr="Müşteri Okutunca Menü Açılır" data-en="Customer Scans, Menu Opens">Müşteri Okutunca Menü Açılır</div>
+        <div class="step-desc" data-tr="Uygulama indirme yok. Kamera ile okut, anında dijital menü. Fiyat güncellediğinde QR kod değişmez, menü anında güncellenir." data-en="No app download needed. Scan with camera, instant digital menu. When you update prices, the QR code stays the same — the menu updates instantly.">Uygulama indirme yok. Kamera ile okut, anında dijital menü. Fiyat güncellediğinde QR kod değişmez, menü anında güncellenir.</div>
       </div>
       <div class="step-card">
         <div class="step-num">4</div>
-        <div class="step-title">Menü Otomatik Güncellenir</div>
-        <div class="step-desc">RestoranAI menüsünde yaptığın değişiklikler anında QR menüye yansır. Baskı masrafı, geri toplama derdi yok.</div>
+        <div class="step-title" data-tr="Menü Otomatik Güncellenir" data-en="Menu Updates Automatically">Menü Otomatik Güncellenir</div>
+        <div class="step-desc" data-tr="RestoranAI menüsünde yaptığın değişiklikler anında QR menüye yansır. Baskı masrafı, geri toplama derdi yok." data-en="Changes you make in the RestoranAI menu are instantly reflected in the QR menu. No printing costs, no hassle of collecting old menus.">RestoranAI menüsünde yaptığın değişiklikler anında QR menüye yansır. Baskı masrafı, geri toplama derdi yok.</div>
       </div>
     </div>
   </div>
@@ -306,51 +307,51 @@ footer a{color:var(--teal);text-decoration:none}
 <!-- URL YAPISI -->
 <section class="section-qr" style="padding-top:0">
   <div class="section-inner">
-    <div class="sec-lbl">Özel URL</div>
-    <h2 class="sec-h2">Markanıza özel link</h2>
-    <p class="sec-sub">Restoranınızın adıyla akılda kalıcı, kısa bir dijital menü adresi.</p>
+    <div class="sec-lbl" data-tr="Özel URL" data-en="Custom URL">Özel URL</div>
+    <h2 class="sec-h2" data-tr="Markanıza özel link" data-en="A link unique to your brand">Markanıza özel link</h2>
+    <p class="sec-sub" data-tr="Restoranınızın adıyla akılda kalıcı, kısa bir dijital menü adresi." data-en="A memorable, short digital menu address with your restaurant's name.">Restoranınızın adıyla akılda kalıcı, kısa bir dijital menü adresi.</p>
     <div class="url-demo">
-      <span class="domain">kuryeai.com/</span><span class="slug">restoranadınız</span><span class="suffix">QRmenuAI</span>
+      <span class="domain">kuryeai.com/</span><span class="slug" data-tr="restoranadınız" data-en="yourrestaurant">restoranadınız</span><span class="suffix">QRmenuAI</span>
     </div>
-    <div style="margin-top:12px;font-size:.8rem;color:var(--gray-lt)">Restoran adınız kayıt sırasında belirlenir. Örn: <span style="color:var(--teal)">kuryeai.com/kebapçıahmetQRmenuAI</span></div>
+    <div style="margin-top:12px;font-size:.8rem;color:var(--gray-lt)" data-tr="Restoran adınız kayıt sırasında belirlenir. Örn: <span style='color:var(--teal)'>kuryeai.com/kebapçıahmetQRmenuAI</span>" data-en="Your restaurant name is set during registration. E.g.: <span style='color:var(--teal)'>kuryeai.com/kebapciahmetQRmenuAI</span>">Restoran adınız kayıt sırasında belirlenir. Örn: <span style="color:var(--teal)">kuryeai.com/kebapçıahmetQRmenuAI</span></div>
   </div>
 </section>
 
 <!-- ÖZELLİKLER -->
 <section class="section-qr" style="background:var(--dark)">
   <div class="section-inner">
-    <div class="sec-lbl">Özellikler</div>
-    <h2 class="sec-h2">Her şey dahil</h2>
+    <div class="sec-lbl" data-tr="Özellikler" data-en="Features">Özellikler</div>
+    <h2 class="sec-h2" data-tr="Her şey dahil" data-en="Everything included">Her şey dahil</h2>
     <div class="feat-grid">
       <div class="feat-card">
         <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
-        <div class="feat-title">Uygulama Gerektirmez</div>
-        <div class="feat-desc">Müşteri kamerasıyla okutunca tarayıcıda açılır. iOS ve Android'de sorunsuz.</div>
+        <div class="feat-title" data-tr="Uygulama Gerektirmez" data-en="No App Required">Uygulama Gerektirmez</div>
+        <div class="feat-desc" data-tr="Müşteri kamerasıyla okutunca tarayıcıda açılır. iOS ve Android'de sorunsuz." data-en="Opens in the browser when the customer scans with their camera. Works seamlessly on iOS and Android.">Müşteri kamerasıyla okutunca tarayıcıda açılır. iOS ve Android'de sorunsuz.</div>
       </div>
       <div class="feat-card">
         <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-        <div class="feat-title">Anlık Güncelleme</div>
-        <div class="feat-desc">RestoranAI panelinden fiyat veya ürün değiştir, QR menüye saniyeler içinde yansır.</div>
+        <div class="feat-title" data-tr="Anlık Güncelleme" data-en="Instant Updates">Anlık Güncelleme</div>
+        <div class="feat-desc" data-tr="RestoranAI panelinden fiyat veya ürün değiştir, QR menüye saniyeler içinde yansır." data-en="Change prices or items from the RestoranAI panel — reflected in the QR menu within seconds.">RestoranAI panelinden fiyat veya ürün değiştir, QR menüye saniyeler içinde yansır.</div>
       </div>
       <div class="feat-card">
         <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
-        <div class="feat-title">Markanıza Uygun Tasarım</div>
-        <div class="feat-desc">Restoran adı, logo ve renkleriyle kişiselleştirilmiş menü sayfası.</div>
+        <div class="feat-title" data-tr="Markanıza Uygun Tasarım" data-en="Design Matching Your Brand">Markanıza Uygun Tasarım</div>
+        <div class="feat-desc" data-tr="Restoran adı, logo ve renkleriyle kişiselleştirilmiş menü sayfası." data-en="A personalized menu page with your restaurant name, logo, and colors.">Restoran adı, logo ve renkleriyle kişiselleştirilmiş menü sayfası.</div>
       </div>
       <div class="feat-card">
         <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></span>
-        <div class="feat-title">Görüntülenme Analitiği</div>
-        <div class="feat-desc">Kaç kişi menüyü açtı, en çok hangi ürüne bakıldı. RestoranAI panelinde görüntüle.</div>
+        <div class="feat-title" data-tr="Görüntülenme Analitiği" data-en="View Analytics">Görüntülenme Analitiği</div>
+        <div class="feat-desc" data-tr="Kaç kişi menüyü açtı, en çok hangi ürüne bakıldı. RestoranAI panelinde görüntüle." data-en="How many people opened the menu, which items were viewed most. View it all in the RestoranAI panel.">Kaç kişi menüyü açtı, en çok hangi ürüne bakıldı. RestoranAI panelinde görüntüle.</div>
       </div>
       <div class="feat-card">
         <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
-        <div class="feat-title">RestoranAI ile Tam Entegre</div>
-        <div class="feat-desc">Menüyü ayrıca yönetmek yok. RestoranAI'daki menü zaten QR menüdür.</div>
+        <div class="feat-title" data-tr="RestoranAI ile Tam Entegre" data-en="Fully Integrated with RestoranAI">RestoranAI ile Tam Entegre</div>
+        <div class="feat-desc" data-tr="Menüyü ayrıca yönetmek yok. RestoranAI'daki menü zaten QR menüdür." data-en="No need to manage a separate menu. Your RestoranAI menu is already the QR menu.">Menüyü ayrıca yönetmek yok. RestoranAI'daki menü zaten QR menüdür.</div>
       </div>
       <div class="feat-card">
         <span class="feat-icon" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.5-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.5 6-4z"/><path d="M12 12c2 2.5 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.5-6 4z"/></svg></span>
-        <div class="feat-title">Sınırsız Kategori & Ürün</div>
-        <div class="feat-desc">Menünüzde istediğiniz kadar kategori ve ürün. Fotoğraf, açıklama, fiyat hepsi desteklenir.</div>
+        <div class="feat-title" data-tr="Sınırsız Kategori &amp; Ürün" data-en="Unlimited Categories &amp; Items">Sınırsız Kategori & Ürün</div>
+        <div class="feat-desc" data-tr="Menünüzde istediğiniz kadar kategori ve ürün. Fotoğraf, açıklama, fiyat hepsi desteklenir." data-en="As many categories and items as you want in your menu. Photos, descriptions, and prices are all supported.">Menünüzde istediğiniz kadar kategori ve ürün. Fotoğraf, açıklama, fiyat hepsi desteklenir.</div>
       </div>
     </div>
   </div>

@@ -234,17 +234,18 @@
   <a href="/izincikuryeai" style="text-decoration:none">
     <span class="nav-brand"><span class="izinci">İzinci</span><span class="kurye">Kurye</span><span class="ai">AI</span></span>
   </a>
-  <a href="/" class="nav-back">← Ana Sayfa</a>
+  <a href="/" class="nav-back" data-tr="← Ana Sayfa" data-en="← Home">← Ana Sayfa</a>
+  <button class="lang-toggle" onclick="toggleLang()" style="background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:border-color .2s,color .2s;letter-spacing:.05em">EN</button>
   <button id="theme-toggle-btn" class="theme-toggle-pill" title="Temayı değiştir" aria-label="Temayı değiştir">
     <span class="ttp-track"><span class="ttp-thumb"></span></span>
     <span class="ttp-sun" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
     <span class="ttp-moon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
   </button>
   <div class="auth-drop" id="auth-drop">
-    <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')">🔐 Giriş / Kayıt ▾</button>
+    <button class="auth-drop-btn" onclick="document.getElementById('auth-drop').classList.toggle('open')" data-tr="🔐 Giriş / Kayıt ▾" data-en="🔐 Login / Register ▾">🔐 Giriş / Kayıt ▾</button>
     <div class="auth-drop-menu">
-      <a href="/izincikuryeai-isveren-login" class="auth-drop-item">🏪 İşveren Girişi</a>
-      <a href="/izincikuryeai-izinci-login" class="auth-drop-item">🛵 İzinci Girişi</a>
+      <a href="/izincikuryeai-isveren-login" class="auth-drop-item" data-tr="🏪 İşveren Girişi" data-en="🏪 Employer Login">🏪 İşveren Girişi</a>
+      <a href="/izincikuryeai-izinci-login" class="auth-drop-item" data-tr="🛵 İzinci Girişi" data-en="🛵 Substitute Login">🛵 İzinci Girişi</a>
     </div>
   </div>
 </nav>
@@ -256,18 +257,18 @@
   <div class="hero-inner">
     <!-- Sol: Metin -->
     <div class="hero-left">
-      <div class="hero-badge"><span class="bdot"></span>Türkiye'de Bir İlk</div>
-      <h1>İzinci kurye bulmak<br/><span class="hi">artık çok kolay.</span><br/><span class="muted">Dijital. Hızlı. Güvenli.</span></h1>
-      <p class="hero-sub">İzinli kuryeniz mi var? Araç arızası mı? Yoğun gün mü? Türkiye'nin ilk dijital izinci kurye platformuyla dakikalar içinde çözüm bulun.</p>
+      <div class="hero-badge"><span class="bdot"></span><span data-tr="Türkiye'de Bir İlk" data-en="A First in Turkey">Türkiye'de Bir İlk</span></div>
+      <h1 data-tr="İzinci kurye bulmak<br/><span class='hi'>artık çok kolay.</span><br/><span class='muted'>Dijital. Hızlı. Güvenli.</span>" data-en="Finding a substitute courier<br/><span class='hi'>is now so easy.</span><br/><span class='muted'>Digital. Fast. Secure.</span>">İzinci kurye bulmak<br/><span class="hi">artık çok kolay.</span><br/><span class="muted">Dijital. Hızlı. Güvenli.</span></h1>
+      <p class="hero-sub" data-tr="İzinli kuryeniz mi var? Araç arızası mı? Yoğun gün mü? Türkiye'nin ilk dijital izinci kurye platformuyla dakikalar içinde çözüm bulun." data-en="Is your courier on leave? Vehicle breakdown? Busy day? Find a solution in minutes with Turkey's first digital substitute courier platform.">İzinli kuryeniz mi var? Araç arızası mı? Yoğun gün mü? Türkiye'nin ilk dijital izinci kurye platformuyla dakikalar içinde çözüm bulun.</p>
       <div class="hero-btns">
-        <a href="/izincikuryeai-isveren-login" class="btn-hero-primary">🏪 İzinci Kurye Arıyorum</a>
-        <a href="/izincikuryeai-izinci-login" class="btn-hero-secondary">🛵 İzinci Kurye Olmak İstiyorum</a>
+        <a href="/izincikuryeai-isveren-login" class="btn-hero-primary" data-tr="🏪 İzinci Kurye Arıyorum" data-en="🏪 I Need a Substitute Courier">🏪 İzinci Kurye Arıyorum</a>
+        <a href="/izincikuryeai-izinci-login" class="btn-hero-secondary" data-tr="🛵 İzinci Kurye Olmak İstiyorum" data-en="🛵 I Want to Be a Substitute Courier">🛵 İzinci Kurye Olmak İstiyorum</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-n">250₺</div><div class="hero-stat-l">Saat Başı</div></div>
-        <div class="hero-stat"><div class="hero-stat-n">+8₺</div><div class="hero-stat-l">KM Ücreti</div></div>
-        <div class="hero-stat"><div class="hero-stat-n">%70</div><div class="hero-stat-l">Kurye Hakedişi</div></div>
-        <div class="hero-stat"><div class="hero-stat-n">7/24</div><div class="hero-stat-l">Platform Aktif</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">250₺</div><div class="hero-stat-l" data-tr="Saat Başı" data-en="Per Hour">Saat Başı</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">+8₺</div><div class="hero-stat-l" data-tr="KM Ücreti" data-en="Per KM Fee">KM Ücreti</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">%70</div><div class="hero-stat-l" data-tr="Kurye Hakedişi" data-en="Courier Earnings">Kurye Hakedişi</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">7/24</div><div class="hero-stat-l" data-tr="Platform Aktif" data-en="Platform Active">Platform Aktif</div></div>
       </div>
     </div>
     <!-- Sağ: iPhone 17 Pro Max -->
@@ -295,82 +296,82 @@
                   <div class="ik-logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></div>
                   <span class="ik-brand">İzinci<em>AI</em></span>
                 </div>
-                <div class="ik-badge">Türkiye'de İlk</div>
+                <div class="ik-badge" data-tr="Türkiye'de İlk" data-en="First in Turkey">Türkiye'de İlk</div>
               </div>
               <!-- Search -->
               <div class="ik-search">
                 <div class="ik-search-box">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  İzinci kurye ara...
+                  <span data-tr="İzinci kurye ara..." data-en="Search substitute couriers...">İzinci kurye ara...</span>
                 </div>
               </div>
               <!-- Couriers -->
-              <div class="ik-sec">Müsait İzinciler (8)</div>
+              <div class="ik-sec" data-tr="Müsait İzinciler (8)" data-en="Available Substitutes (8)">Müsait İzinciler (8)</div>
               <div class="ik-card">
                 <div class="ik-av">MK</div>
                 <div class="ik-card-body">
                   <div class="ik-card-name">Mehmet K.</div>
-                  <div class="ik-card-sub">Motorlu · 4.8 ★ · 156 görev</div>
-                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c">Müsait</span>
+                  <div class="ik-card-sub" data-tr="Motorlu · 4.8 ★ · 156 görev" data-en="Motorcycle · 4.8 ★ · 156 tasks">Motorlu · 4.8 ★ · 156 görev</div>
+                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c" data-tr="Müsait" data-en="Available">Müsait</span>
                 </div>
                 <div class="ik-card-right">
                   <div class="ik-card-rate">250₺/saat</div>
-                  <div class="ik-card-dist">1.2 km uzakta</div>
+                  <div class="ik-card-dist" data-tr="1.2 km uzakta" data-en="1.2 km away">1.2 km uzakta</div>
                 </div>
               </div>
               <div class="ik-card">
                 <div class="ik-av" style="background:linear-gradient(135deg,#00c48c,#009060)">AY</div>
                 <div class="ik-card-body">
                   <div class="ik-card-name">Ahmet Y.</div>
-                  <div class="ik-card-sub">Bisikletli · 4.9 ★ · 243 görev</div>
-                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c">Müsait</span>
+                  <div class="ik-card-sub" data-tr="Bisikletli · 4.9 ★ · 243 görev" data-en="Bicycle · 4.9 ★ · 243 tasks">Bisikletli · 4.9 ★ · 243 görev</div>
+                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c" data-tr="Müsait" data-en="Available">Müsait</span>
                 </div>
                 <div class="ik-card-right">
                   <div class="ik-card-rate">200₺/saat</div>
-                  <div class="ik-card-dist">2.8 km uzakta</div>
+                  <div class="ik-card-dist" data-tr="2.8 km uzakta" data-en="2.8 km away">2.8 km uzakta</div>
                 </div>
               </div>
               <div class="ik-card">
                 <div class="ik-av" style="background:linear-gradient(135deg,#f59e0b,#d97706)">SB</div>
                 <div class="ik-card-body">
                   <div class="ik-card-name">Serhat B.</div>
-                  <div class="ik-card-sub">Araçlı · 4.7 ★ · 89 görev</div>
-                  <span class="ik-card-status" style="background:rgba(245,158,11,.1);color:#f59e0b">1 saat sonra</span>
+                  <div class="ik-card-sub" data-tr="Araçlı · 4.7 ★ · 89 görev" data-en="Car · 4.7 ★ · 89 tasks">Araçlı · 4.7 ★ · 89 görev</div>
+                  <span class="ik-card-status" style="background:rgba(245,158,11,.1);color:#f59e0b" data-tr="1 saat sonra" data-en="In 1 hour">1 saat sonra</span>
                 </div>
                 <div class="ik-card-right">
                   <div class="ik-card-rate">350₺/saat</div>
-                  <div class="ik-card-dist">4.1 km uzakta</div>
+                  <div class="ik-card-dist" data-tr="4.1 km uzakta" data-en="4.1 km away">4.1 km uzakta</div>
                 </div>
               </div>
               <div class="ik-card">
                 <div class="ik-av" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">EK</div>
                 <div class="ik-card-body">
                   <div class="ik-card-name">Emre K.</div>
-                  <div class="ik-card-sub">Motorlu · 5.0 ★ · 312 görev</div>
-                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c">Müsait</span>
+                  <div class="ik-card-sub" data-tr="Motorlu · 5.0 ★ · 312 görev" data-en="Motorcycle · 5.0 ★ · 312 tasks">Motorlu · 5.0 ★ · 312 görev</div>
+                  <span class="ik-card-status" style="background:rgba(0,196,140,.1);color:#00c48c" data-tr="Müsait" data-en="Available">Müsait</span>
                 </div>
                 <div class="ik-card-right">
                   <div class="ik-card-rate">280₺/saat</div>
-                  <div class="ik-card-dist">0.8 km uzakta</div>
+                  <div class="ik-card-dist" data-tr="0.8 km uzakta" data-en="0.8 km away">0.8 km uzakta</div>
                 </div>
               </div>
               <!-- Bottom nav -->
               <div class="ik-bottom-nav">
                 <div class="ik-nav-item active">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                  Bul
+                  <span data-tr="Bul" data-en="Find">Bul</span>
                 </div>
                 <div class="ik-nav-item">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                  Harita
+                  <span data-tr="Harita" data-en="Map">Harita</span>
                 </div>
                 <div class="ik-nav-item">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
-                  Görevler
+                  <span data-tr="Görevler" data-en="Tasks">Görevler</span>
                 </div>
                 <div class="ik-nav-item">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
-                  Profil
+                  <span data-tr="Profil" data-en="Profile">Profil</span>
                 </div>
               </div>
             </div>
@@ -385,35 +386,35 @@
 
 <!-- KİME YÖNELİK -->
 <div class="section">
-  <span class="section-badge">Platform</span>
-  <h2 class="section-title">İki taraf için tek platform.</h2>
-  <p class="section-sub">İşletmeler izinci kurye arar, kuryeler ekstra kazanır. Her iki taraf için ayrı panel.</p>
+  <span class="section-badge" data-tr="Platform" data-en="Platform">Platform</span>
+  <h2 class="section-title" data-tr="İki taraf için tek platform." data-en="One platform for both sides.">İki taraf için tek platform.</h2>
+  <p class="section-sub" data-tr="İşletmeler izinci kurye arar, kuryeler ekstra kazanır. Her iki taraf için ayrı panel." data-en="Businesses find substitute couriers, couriers earn extra. Separate panels for both sides.">İşletmeler izinci kurye arar, kuryeler ekstra kazanır. Her iki taraf için ayrı panel.</p>
   <div class="audience-grid">
     <div class="audience-card isveren">
       <div class="audience-icon">🏪</div>
-      <div class="audience-title">İşletmeler İçin</div>
-      <div class="audience-desc">Kurye ekibinizde boşluk mu var? Yoğun güne yetişemiyor musunuz? Sisteme giriş yapın, talep oluşturun — izinci kurye atansın.</div>
+      <div class="audience-title" data-tr="İşletmeler İçin" data-en="For Businesses">İşletmeler İçin</div>
+      <div class="audience-desc" data-tr="Kurye ekibinizde boşluk mu var? Yoğun güne yetişemiyor musunuz? Sisteme giriş yapın, talep oluşturun — izinci kurye atansın." data-en="Gap in your courier team? Can't keep up with a busy day? Log in, create a request — get a substitute courier assigned.">Kurye ekibinizde boşluk mu var? Yoğun güne yetişemiyor musunuz? Sisteme giriş yapın, talep oluşturun — izinci kurye atansın.</div>
       <ul class="audience-list">
-        <li>Dakikalar içinde izinci kurye atama</li>
-        <li>Önceden ücret tahmini</li>
-        <li>Tüm talepleri panelden yönetin</li>
-        <li>Kurye profillerini önceden görün</li>
-        <li>Güvenli ödeme sistemi</li>
+        <li data-tr="Dakikalar içinde izinci kurye atama" data-en="Substitute courier assignment in minutes">Dakikalar içinde izinci kurye atama</li>
+        <li data-tr="Önceden ücret tahmini" data-en="Upfront cost estimate">Önceden ücret tahmini</li>
+        <li data-tr="Tüm talepleri panelden yönetin" data-en="Manage all requests from the panel">Tüm talepleri panelden yönetin</li>
+        <li data-tr="Kurye profillerini önceden görün" data-en="Preview courier profiles in advance">Kurye profillerini önceden görün</li>
+        <li data-tr="Güvenli ödeme sistemi" data-en="Secure payment system">Güvenli ödeme sistemi</li>
       </ul>
-      <a href="/izincikuryeai-isveren-login" class="btn-audience teal">🏪 İşveren Girişi / Kayıt →</a>
+      <a href="/izincikuryeai-isveren-login" class="btn-audience teal" data-tr="🏪 İşveren Girişi / Kayıt →" data-en="🏪 Employer Login / Register →">🏪 İşveren Girişi / Kayıt →</a>
     </div>
     <div class="audience-card kurye">
       <div class="audience-icon">🛵</div>
-      <div class="audience-title">Kuryeler İçin</div>
-      <div class="audience-desc">Boş zamanlarınızda veya ana işinizin yanında ekstra kazanın. Profilinizi oluşturun, uygun talepleri kabul edin.</div>
+      <div class="audience-title" data-tr="Kuryeler İçin" data-en="For Couriers">Kuryeler İçin</div>
+      <div class="audience-desc" data-tr="Boş zamanlarınızda veya ana işinizin yanında ekstra kazanın. Profilinizi oluşturun, uygun talepleri kabul edin." data-en="Earn extra in your free time or alongside your main job. Create your profile, accept suitable requests.">Boş zamanlarınızda veya ana işinizin yanında ekstra kazanın. Profilinizi oluşturun, uygun talepleri kabul edin.</div>
       <ul class="audience-list">
-        <li>Hakedişin %70'i size ait</li>
-        <li>İstediğiniz zaman çalışın</li>
-        <li>Detaylı profil & araç kaydı</li>
-        <li>Vardiya bazlı çalışma sistemi</li>
-        <li>Aynı gün ödeme</li>
+        <li data-tr="Hakedişin %70'i size ait" data-en="70% of earnings are yours">Hakedişin %70'i size ait</li>
+        <li data-tr="İstediğiniz zaman çalışın" data-en="Work whenever you want">İstediğiniz zaman çalışın</li>
+        <li data-tr="Detaylı profil & araç kaydı" data-en="Detailed profile & vehicle registration">Detaylı profil & araç kaydı</li>
+        <li data-tr="Vardiya bazlı çalışma sistemi" data-en="Shift-based work system">Vardiya bazlı çalışma sistemi</li>
+        <li data-tr="Aynı gün ödeme" data-en="Same-day payment">Aynı gün ödeme</li>
       </ul>
-      <a href="/izincikuryeai-izinci-login" class="btn-audience green">🛵 İzinci Girişi / Kayıt →</a>
+      <a href="/izincikuryeai-izinci-login" class="btn-audience green" data-tr="🛵 İzinci Girişi / Kayıt →" data-en="🛵 Substitute Login / Register →">🛵 İzinci Girişi / Kayıt →</a>
     </div>
   </div>
 </div>
@@ -422,50 +423,50 @@
 
 <!-- NASIL ÇALIŞIR -->
 <div class="section">
-  <span class="section-badge">Nasıl Çalışır?</span>
-  <h2 class="section-title">Her iki taraf için<br/>adım adım akış.</h2>
+  <span class="section-badge" data-tr="Nasıl Çalışır?" data-en="How It Works?">Nasıl Çalışır?</span>
+  <h2 class="section-title" data-tr="Her iki taraf için<br/>adım adım akış." data-en="Step by step flow<br/>for both sides.">Her iki taraf için<br/>adım adım akış.</h2>
   <div class="how-tabs">
-    <button class="how-tab active" onclick="switchHow('isveren',this)">🏪 İşveren Akışı</button>
-    <button class="how-tab" onclick="switchHow('kurye',this)">🛵 Kurye Akışı</button>
+    <button class="how-tab active" onclick="switchHow('isveren',this)" data-tr="🏪 İşveren Akışı" data-en="🏪 Employer Flow">🏪 İşveren Akışı</button>
+    <button class="how-tab" onclick="switchHow('kurye',this)" data-tr="🛵 Kurye Akışı" data-en="🛵 Courier Flow">🛵 Kurye Akışı</button>
   </div>
   <div class="how-steps active" id="how-isveren">
     <div class="step-card">
       <div class="step-num">01</div>
       <div class="step-icon">🔐</div>
-      <div class="step-title">Kayıt & Giriş</div>
-      <div class="step-desc">İşveren hesabı oluşturun. E-posta doğrulaması yapın. Birkaç dakikada sisteme dahil olun.</div>
+      <div class="step-title" data-tr="Kayıt & Giriş" data-en="Register & Login">Kayıt & Giriş</div>
+      <div class="step-desc" data-tr="İşveren hesabı oluşturun. E-posta doğrulaması yapın. Birkaç dakikada sisteme dahil olun." data-en="Create an employer account. Verify your email. Join the system in minutes.">İşveren hesabı oluşturun. E-posta doğrulaması yapın. Birkaç dakikada sisteme dahil olun.</div>
     </div>
     <div class="step-card">
       <div class="step-num">02</div>
       <div class="step-icon">📝</div>
-      <div class="step-title">Talep Oluşturun</div>
-      <div class="step-desc">İhtiyaç duyduğunuz tarih, saat, teslimat bölgesi ve araç bilgilerini girin. Sistem ücret tahminini gösterir.</div>
+      <div class="step-title" data-tr="Talep Oluşturun" data-en="Create a Request">Talep Oluşturun</div>
+      <div class="step-desc" data-tr="İhtiyaç duyduğunuz tarih, saat, teslimat bölgesi ve araç bilgilerini girin. Sistem ücret tahminini gösterir." data-en="Enter the date, time, delivery zone, and vehicle info you need. The system shows a cost estimate.">İhtiyaç duyduğunuz tarih, saat, teslimat bölgesi ve araç bilgilerini girin. Sistem ücret tahminini gösterir.</div>
     </div>
     <div class="step-card">
       <div class="step-num">03</div>
       <div class="step-icon">✅</div>
-      <div class="step-title">Kurye Teklif Verir</div>
-      <div class="step-desc">Platform üzerindeki uygun kuryeler tekliflerini gönderir. Profil ve deneyime göre en uygununu seçin.</div>
+      <div class="step-title" data-tr="Kurye Teklif Verir" data-en="Courier Makes an Offer">Kurye Teklif Verir</div>
+      <div class="step-desc" data-tr="Platform üzerindeki uygun kuryeler tekliflerini gönderir. Profil ve deneyime göre en uygununu seçin." data-en="Available couriers on the platform send their offers. Choose the best one based on profile and experience.">Platform üzerindeki uygun kuryeler tekliflerini gönderir. Profil ve deneyime göre en uygununu seçin.</div>
     </div>
   </div>
   <div class="how-steps" id="how-kurye">
     <div class="step-card">
       <div class="step-num">01</div>
       <div class="step-icon">👤</div>
-      <div class="step-title">Profil Oluşturun</div>
-      <div class="step-desc">Araç bilgileri, ehliyet, deneyim ve çalışma tercihlerinizi girerek detaylı profilinizi oluşturun.</div>
+      <div class="step-title" data-tr="Profil Oluşturun" data-en="Create Your Profile">Profil Oluşturun</div>
+      <div class="step-desc" data-tr="Araç bilgileri, ehliyet, deneyim ve çalışma tercihlerinizi girerek detaylı profilinizi oluşturun." data-en="Create your detailed profile by entering vehicle info, license, experience, and work preferences.">Araç bilgileri, ehliyet, deneyim ve çalışma tercihlerinizi girerek detaylı profilinizi oluşturun.</div>
     </div>
     <div class="step-card">
       <div class="step-num">02</div>
       <div class="step-icon">🔍</div>
-      <div class="step-title">Talepleri İnceleyin</div>
-      <div class="step-desc">Açık talepleri görün, güzergah ve ücrete göre filtreleyin. Uygun olanlara teklif verin.</div>
+      <div class="step-title" data-tr="Talepleri İnceleyin" data-en="Browse Requests">Talepleri İnceleyin</div>
+      <div class="step-desc" data-tr="Açık talepleri görün, güzergah ve ücrete göre filtreleyin. Uygun olanlara teklif verin." data-en="View open requests, filter by route and price. Make offers on suitable ones.">Açık talepleri görün, güzergah ve ücrete göre filtreleyin. Uygun olanlara teklif verin.</div>
     </div>
     <div class="step-card">
       <div class="step-num">03</div>
       <div class="step-icon">💰</div>
-      <div class="step-title">Kazanın</div>
-      <div class="step-desc">Teklif kabul edilince görev başlıyor. Vardiya bitiminde hakedişinizin %70'i hesabınıza aktarılır.</div>
+      <div class="step-title" data-tr="Kazanın" data-en="Earn">Kazanın</div>
+      <div class="step-desc" data-tr="Teklif kabul edilince görev başlıyor. Vardiya bitiminde hakedişinizin %70'i hesabınıza aktarılır." data-en="Once the offer is accepted, the task begins. At shift end, 70% of your earnings are transferred to your account.">Teklif kabul edilince görev başlıyor. Vardiya bitiminde hakedişinizin %70'i hesabınıza aktarılır.</div>
     </div>
   </div>
 </div>
